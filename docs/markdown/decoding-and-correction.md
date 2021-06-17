@@ -19,3 +19,6 @@ Several software packages already exist that solve this problem.
 - Higgott, PyMatching, https://pymatching.readthedocs.io/en/latest/
 
 (list other important decoding algorithms)
+
+**Problem**: *Construct decoding graphs for surface codes. For more general codes, could return a hypergraph where each hyperedge represents the set of events (stabilizer or flag measurements) that are triggered by a single fault* (suggested by Ted Yoder)
+
