@@ -4,8 +4,11 @@
 
 **Detailed Description** Let $C=C_mC_{m-1}...C_1$ be a Clifford circuit on $n$ qubits. Let $Q$ be an $n$ qubit Pauli operator. Define $Q_0=Q$ and for $j=1,2,...,m$ let 
 $$
-Q_k=(C_kC_{k-1}...C_1)\cdot Q\cdot (C_kC_{k-1}...C_1)^\dagger
+Q_k=(C_kC_{k-1}...C_1)\cdot Q\cdot (C_kC_{k-1}...C_1)^\dagger.
 $$
+1. Given $C$ and $Q$ return the list $[Q_0,Q_1,...,Q_m]$.
+2. Given $C$ and $Q$ show $Q_J$ visually on the curuit $C$ as you step through $j$. This could be done within the QEC GUI or with a Juypter notebook.
+3. Provide methods to pass all singleton, pairs, etc. (or other defined combinations) through the circuit $C$ and gather totols, samples or statistics.
 
 **Problem**: *Given a stabilizer circuit, insert faults according to some model and propagate errors to the output qubits and measurements**
 
