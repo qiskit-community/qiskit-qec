@@ -6,3 +6,5 @@
     - Gottesman, *Stabilizer codes and quantum error correction*, quant-ph/9705052
 
 - Symplectic Gram-Schimdt
+    - Wilde, *On the logical operators of quantum codes*, arXiv:0903.5256
+
