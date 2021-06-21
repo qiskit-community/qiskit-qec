@@ -17,6 +17,18 @@ Scope control is used initially to establish a good foundation.  The basic proce
 
 Scope control is done by prioritizing which requirements get worked on first. The priorities are determined by selected core QEC or architecure requirements or via requirements required by a few selected projects.
 
+
+## Ways to Contribute
+
+1. Development QEC or Architectural requirements (general or detailed)
+2. Developing approaches and pseudocode for requirements
+3. Writing prototype code for requirements
+4. Creating and testing unit tests
+5. Review requirements, appraoches, pseudo code, prototype code, ...
+6. Review and provide architectural recommendations
+7. Development detailed documentation (User, Code, Detailed)
+
+
 ## Major Projects
 
 There are currently two different major projects to develop the QEC framework. The first is the core CLI/API framework and the second is the visual code GUI.
@@ -25,3 +37,5 @@ There are currently two different major projects to develop the QEC framework. T
 ## CLI/API Framework
 
 ## Visual Code GUI
+
+
