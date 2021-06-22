@@ -1,8 +1,8 @@
 # Stabilizer code database
 
-**People**
+**People working on these topics**
 
-@dsvandet
+Andrew Cross, Drew Vandeth
 
 **Problem**: *Store and lookup quantum error correcting codes and their known properties in a database*
 
