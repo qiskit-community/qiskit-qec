@@ -32,7 +32,7 @@ A hyperbolic generating set can be found using a modified Gram-Schmidt process. 
 
 ---
 
-**Problem**: Let $A$ be a subgroup of $\mathcal{P}_n$ with hyperbolic generating set  $Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}$. Extend $Q$ to a hyperbolic generating set
+**Problem**: Let $A$ be a subgroup of $\mathcal{P}\_n$ with hyperbolic generating set  $Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}$. Extend $Q$ to a hyperbolic generating set
 for $\mathcal{P}_n$ 
 
 ---
