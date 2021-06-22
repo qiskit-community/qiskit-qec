@@ -1,8 +1,8 @@
 ## Automorphism group computation
 
 - Definition of the automorphism groups of subsystem stabilizer codes. There are multiple types of automorphism groups.
-    - Wirthmüller, Automorphisms of stabilizer codes, arXiv:1102.5715
-    - Rains, Quantum codes of minimum distance two, quant-ph/9704043
+    - Wirthmüller, Automorphisms of stabilizer codes, https://arxiv.org/abs/1102.5715
+    - Rains, Quantum codes of minimum distance two, https://arxiv.org/abs/quant-ph/9704043
 - How does the definition differ for subspace and subsystem codes?
 
 ---
