@@ -16,8 +16,8 @@ An optional argument should return a normalized version.
 
 A set $\mathcal{Q}=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}\subseteq\mathcal{P}_n$ is a hyperbolic generating
 set if 
-- $\mathcal{Q}$ is a minimal generating set for $\langle Q\rangle$
-- $Z( \mathcal{Q} )=\langle A_1,A_2,...,A_k \rangle$
+- $\mathcal{Q}$ is a minimal generating set for $\langle \mathcal{Q}\rangle$
+- $Z(\mathcal{Q} )=\langle A_1,A_2,...,A_k \rangle$
 - $A_i$ commutes with all generators except for $B_i$.
 - $B_i$ commutes with all generators except for $A_i$.
 
