@@ -1,5 +1,9 @@
 # Stabilizer code database
 
+**People**
+
+@dsvandet
+
 **Problem**: *Store and lookup quantum error correcting codes and their known properties in a database*
 
 - What are the codes, properties, and data representations?
