@@ -2,6 +2,7 @@
 
 ## QEC Requirements
 
+* [Core QEC Representations](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/core-representations.md)
 * [Pauli Subgroup Computations](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/pauli-subgroup-computations.md)
 * [Automorphism group computation](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/code-automorphism-group.md)
 * [Stabilizer code database](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/code-database.md). 
