@@ -14,14 +14,14 @@ generating sets (by including) have the samecardinality, hence there is not ambi
 **Problem**: Given a subgroup $A$ of $\mathcal{P}_n$ find a hyperbolic generating set for $A$. 
 An optional argument should return a normalized version.
 
-A set $Q=\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\}\in\mathcal{P}_n$ is a hyperbolic generating
+A set $Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}\in\mathcal{P}_n$ is a hyperbolic generating
 set if 
 - $Q$ is a minimal generating set for $\langle Q\rangle$
 - $Z(Q)=\langle A_1,A_2,...,A_k \rangle
 - $A_i$ commutes with all generators except for $B_i$.
 - $B_i$ commutes with all generators except for $A_i$.
 
-Thus the standard generating set $\{iI,X_1,Z_1,X_2,Z_2,...,X_n,Z_n\}$ is a hyperbolic generating set for
+Thus the standard generating set $\\{iI,X_1,Z_1,X_2,Z_2,...,X_n,Z_n\\}$ is a hyperbolic generating set for
 $\mathcal{P}_n$.
 
 A hyperbolic generating set $Q=\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\}\in\mathcal{P}_n$ 
