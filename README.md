@@ -21,7 +21,7 @@ Scope control is done by prioritizing which requirements get worked on first. Th
 ## Ways to Contribute
 
 1. Development QEC or Architectural requirements (general or detailed)
-  - Requirments and details are curently stored [her](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/Requirements.md)
+  - Requirments and details are curently stored [here](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/Requirements.md)
 3. Developing approaches and pseudocode for requirements
 4. Writing prototype code for requirements
 5. Creating and testing unit tests
