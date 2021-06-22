@@ -28,7 +28,7 @@ A hyperbolic generating set $\mathcal{Q}=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,
 is said to be normal if all generators have order $2$ except possibly for one element of the center.
 
 A hyperbolic generating set can be found using a modified Gram-Schmidt process.  See for example 
--T. Brun, Min-Hsiu Hsieh arxiv.orf:1610.04013
+-T. Brun, Min-Hsiu Hsieh https://arxiv.org/abs/1610.04013
 
 ---
 
