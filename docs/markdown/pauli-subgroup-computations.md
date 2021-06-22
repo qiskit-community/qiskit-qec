@@ -17,14 +17,14 @@ An optional argument should return a normalized version.
 A set $Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}\in\mathcal{P}_n$ is a hyperbolic generating
 set if 
 - $Q$ is a minimal generating set for $\langle Q\rangle$
-- $Z(Q)=\langle A_1,A_2,...,A_k \rangle
+- $Z(Q)=\langle A_1,A_2,...,A_k \rangle$
 - $A_i$ commutes with all generators except for $B_i$.
 - $B_i$ commutes with all generators except for $A_i$.
 
 Thus the standard generating set $\\{iI,X_1,Z_1,X_2,Z_2,...,X_n,Z_n\\}$ is a hyperbolic generating set for
 $\mathcal{P}_n$.
 
-A hyperbolic generating set $Q=\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\}\in\mathcal{P}_n$ 
+A hyperbolic generating set $Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}\in\mathcal{P}_n$ 
 is said to be normal if all generators have order $2$ except possibly for one element of the center.
 
 A hyperbolic generating set can be found using a modified Gram-Schmidt process.  See for example 
@@ -33,7 +33,7 @@ A hyperbolic generating set can be found using a modified Gram-Schmidt process. 
 ---
 
 **Problem**: Let $A$ be a subgroup of $\mathcal{P}_n$ with hyperbolic generating set 
-$Q=\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\}$. Extend $Q$ to a hyperbolic generating set
+$Q=\\{A_1,A_2,...,A_k,A_{k+1},B_{k+1},...,A_{k+t},B_{k+t}\\}$. Extend $Q$ to a hyperbolic generating set
 for $\mathcal{P}_n$ 
 
 ---
