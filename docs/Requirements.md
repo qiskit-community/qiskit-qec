@@ -1,5 +1,6 @@
 ## QEC Requirements
 
+* [Pauli Subgroup Computations](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/pauli-subgroup-computations.md)
 * [Automorphism group computation](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/code-automorphism-group.md)
 * [Stabilizer code database](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/code-database.md). 
 * [Constructing families of codes](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/markdown/code-families.md). 
