@@ -29,6 +29,15 @@ Scope control is done by prioritizing which requirements get worked on first. Th
 7. Review and provide architectural recommendations
 8. Development detailed documentation (User, Code, Detailed)
 
+## Code Location
+
+Not all code for qiskit-qec is currently located in this repository since Qiskit already has certain modules that contain some of the code necessary for the QEC framework. This included the quantum_info module in qiskit-terra for example. Below is list of PR's etc for some code under development. This will eventually moved to a better location:
+
+### qiskit-terra.quantum_info
+
+This extends the new PauliList class to have more than one external PauliRepresentation.
+https://github.com/dsvandet/qiskit-terra/tree/qi/pauli-list
+
 
 ## Major Projects
 
