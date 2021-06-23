@@ -14,6 +14,10 @@ This section deals with the representation of fundamental or core QEC objects su
 
 ---
 
+**Requirement**: How to represent a list of Pauli Operators?
+
+___
+
 **Requirement**: How to represent Clifford operators?
 
 ---
