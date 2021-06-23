@@ -47,5 +47,9 @@ for $\mathcal{P}_n$
 
 **Problem**: Let $A$ be a subgroup of $\mathcal{P}_n$. 1) Find all maximal subgroups of $A$. 2) Find all maximal gauge groups of $A$, find all maximal stabilizer subgroups of $A$. Construct generating sets (hyperbolic, or normal hyperbolic is required) for all maximal subgroups found.
 
+---
+
+**Problem**: Let $A\in\mathcal{P}_n$ and $\mathcal{G}$ a Pauli subgroup. Determine if $A$ is in $G$. IsElementOf
+
 
 
