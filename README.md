@@ -38,7 +38,7 @@ Scope control is done by prioritizing which requirements get worked on first. Th
 
 ## Contributing Flow
 1. Create/Choose an issue on github
-2. Checkout a new branch named in the format: <issue-number>-<short>-<description>
+2. Checkout a new branch named in the format: <issue-number>_<short-description>
 3. Make all changes desired on that branch
 4. Push that branch to github
 5. Make a PR from your branch into **develop** branch. Assign it to yourself and request reviews from Drew Vandeth or Grace Harper
