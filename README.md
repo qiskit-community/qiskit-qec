@@ -3,6 +3,12 @@
 
 **Qiskit Framework for Qauntum Error Correction** is an open-source framework for developers, experimentalist and theorists of Quantum Error Correction (QEC). The framework is in the development stage.
 
+## Fast Access Links
+
+- [Requirements](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/Requirements.md)
+- [Discussions of Requirements and Code Ideas](https://github.com/Qiskit/qiskit-qec/discussions)
+- [Introduction to QEC papers](#introduction-to-qec-papers)
+
 ## Contributing 
 
 Contributors to the framework are welcome. The following describes how the framework is being designed and built. The current approach is designed to enable a wide range of disciplines to contibute earlier and to enable better computer engineering earlier on. This approach has a development process and a scope control. The Development porcess is based on increasing details of requirements and code details. The basic process is outlined in the following figure:
@@ -47,5 +53,11 @@ There are currently two different major projects to develop the QEC framework. T
 ## CLI/API Framework
 
 ## Visual Code GUI
+
+## Introduction to QEC papers
+
+The following provides a list of papers that are good introductions to QEC or various aspects of QEC
+
+
 
 
