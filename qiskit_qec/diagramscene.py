@@ -263,16 +263,20 @@ class DiagramItem(QGraphicsPolygonItem):
         return value
     def get_center(self):
         return self.scenePos()
+
+
+
 class Stabilizer(QGraphicsPolygonItem):
     def __init__(self, point_list:list[QPointF], qubits:list):
         super().__init__(point_list)
         self.point_list = point_list
         self.qubits = qubits
-        self.qbrush = QBrush()
-        self.qbrush.setColor(QColor('red'))
+        self.qbrush = QBrush(QColor('red'), Qt.SolidPattern)
         self.setBrush(self.qbrush)
-
-    # TODO delete stabs
+        self.pen = QPen()
+        self.pen.setColor(QColor('red'))
+        self.setPen(self.pen)
+        # TODO delete stabs
 
 
 
