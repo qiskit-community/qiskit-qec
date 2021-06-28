@@ -59,5 +59,3 @@ There are currently two different major projects to develop the QEC framework. T
 The following provides a list of papers that are good introductions to QEC or various aspects of QEC
 
 
-
-
