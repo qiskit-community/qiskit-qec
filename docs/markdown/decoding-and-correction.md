@@ -17,8 +17,10 @@ Several software projects have already implemented algorithms for decoding and e
 Several software packages already exist that solve this problem.
 
 - Higgott, PyMatching, https://pymatching.readthedocs.io/en/latest/
+- [Qiskit Ignis `topological_codes`](https://github.com/Qiskit/qiskit-tutorials/blob/master/tutorials/noise/6_repetition_code.ipynb)
 
 (list other important decoding algorithms)
 
 **Problem**: *Construct decoding graphs for surface codes. For more general codes, could return a hypergraph where each hyperedge represents the set of events (stabilizer or flag measurements) that are triggered by a single fault* (suggested by Ted Yoder)
 
+For codes where a single error triggers exactly two events (or sets of independent pairs) this is done by the `GraphDecoder` in `topological_codes`.
