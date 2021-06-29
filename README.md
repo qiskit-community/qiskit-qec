@@ -15,13 +15,15 @@ Contributors to the framework are welcome. The following describes how the frame
 
 ![Development Process](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/images/DevelopmentProcessv1.png?raw=true "Development Process")
 
-QEC requirements, both general and specific, are first written down. Each requirement must then me given a detailed precise mathematical descripition. These descriptions are then use to develop various solution appoaches and associated pseudo code. From here prototype code is developed. Once the code has been tested and fits within the agreed upon architectural framework it becomes framework code. A similar process occurs for the architectural side of the project.
+
+QEC requirements, both general and specific, are first written down. Each requirement must then me given a detailed precise mathematical description. These descriptions are then use to develop various solution approaches and associated pseudo code. From here prototype code is developed. Once the code has been tested and fits within the agreed upon architectural framework it becomes framework code. A similar process occurs for the architectural side of the project.
 
 Scope control is used initially to establish a good foundation.  The basic process is outlined in the following figure:
 
 ![Scope Control](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/images/ScopeControlv1.png?raw=true "Scope Control")
 
 Scope control is done by prioritizing which requirements get worked on first. The priorities are determined by selected core QEC or architecure requirements or via requirements required by a few selected projects.
+
 
 
 ## Ways to Contribute
@@ -34,6 +36,13 @@ Scope control is done by prioritizing which requirements get worked on first. Th
 6. Review requirements, appraoches, pseudo code, prototype code, ...
 7. Review and provide architectural recommendations
 8. Development detailed documentation (User, Code, Detailed)
+
+## Contributing Flow
+1. Create/Choose an issue on github
+2. Checkout a new branch named in the format: <issue-number>_<short-description>
+3. Make all changes desired on that branch
+4. Push that branch to github
+5. Make a PR from your branch into **develop** branch. Assign it to yourself and request reviews from Drew Vandeth or Grace Harper
 
 ## Code Location
 
