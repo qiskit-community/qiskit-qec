@@ -15,7 +15,8 @@ Contributors to the framework are welcome. The following describes how the frame
 
 ![Development Process](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/images/DevelopmentProcessv1.png?raw=true "Development Process")
 
-QEC requirements, both general and specific, are first written down. Each requirement must then me given a detailed precise mathematical descripition. These descriptions are then use to develop various soluton appoaches and associated pseudo code. From here prototype code is developed. Once the code has been tested and fits within the agreed upon architectural framework is becomes framework code. A similar process occurs for the architectural side of the project.
+
+QEC requirements, both general and specific, are first written down. Each requirement must then me given a detailed precise mathematical description. These descriptions are then use to develop various solution approaches and associated pseudo code. From here prototype code is developed. Once the code has been tested and fits within the agreed upon architectural framework it becomes framework code. A similar process occurs for the architectural side of the project.
 
 Scope control is used initially to establish a good foundation.  The basic process is outlined in the following figure:
 
@@ -28,7 +29,7 @@ Scope control is done by prioritizing which requirements get worked on first. Th
 ## Ways to Contribute
 
 1. Development QEC or Architectural requirements (general or detailed)
-  - Requirments and details are curently stored [here](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/Requirements.md)
+  - Requirements and details are curently stored [here](https://github.com/Qiskit/qiskit-qec/blob/develop/docs/Requirements.md)
 3. Developing approaches and pseudocode for requirements
 4. Writing prototype code for requirements
 5. Creating and testing unit tests
