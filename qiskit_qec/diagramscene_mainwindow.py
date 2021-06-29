@@ -21,9 +21,6 @@ import diagramscene_rc
 class MainWindow(QMainWindow):
   insert_text_button = 10
 
-
-
-
   def __init__(self):
     super().__init__()
 

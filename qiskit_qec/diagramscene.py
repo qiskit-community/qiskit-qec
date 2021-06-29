@@ -268,7 +268,7 @@ class DiagramItem(QGraphicsPolygonItem):
 
 class Stabilizer(QGraphicsPolygonItem):
     def __init__(self, point_list:list[QPointF], qubits:list):
-        super().__init__(point_list)
+        super().__init__(QPolygonF(point_list))
         self.point_list = point_list
         self.qubits = qubits
         self.qbrush = QBrush(QColor('red'), Qt.SolidPattern)
