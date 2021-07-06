@@ -69,6 +69,8 @@ There are currently two different major projects to develop the QEC framework. T
 The following provides a list of papers that are good introductions to QEC or various aspects of QEC
   
 ## Publicly Accessible QEC Software packages
+  
+* **stabnf**: This source code is the C implementation with a simple text-based user interface of an algorithm that writes stabilizer quantum circuits under normal form by Marc Bataille. Details of the work can be found in this article: [arxov.org:2107.00885](https://arxiv.org/abs/2012.09224). It is available from [github](https://github.com/marcbataille/stabilizer-circuits-normal-forms). Language: C
 
 * **qecsim**: is a Python 3 package for simulating quantum error correction using stabilizer codes by David Tuckett. It provides access to all features via a command-line interface. It can also be used as a library via the fully-documented API. It includes many common codes, error models and decoders, and can be extended with additional components. It is available from [github repo](https://github.com/qecsim/qecsim). Language: Python and C. Status: Active
 
