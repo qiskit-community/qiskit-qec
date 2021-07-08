@@ -1,4 +1,3 @@
-
 #############################################################################
 ##
 ## Copyright (C) 2013 Riverbank Computing Limited.
@@ -41,116 +40,24 @@
 #############################################################################
 
 import math
+import array
 import sys
-
+from PySide6.QtWidgets import QDialog, QMainWindow
 from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
                             Signal)
 from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
-                           QPainter, QPainterPath, QPen, QPixmap, QPolygonF, QBrush, QKeyEvent)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QComboBox,
-                               QFontComboBox, QGraphicsAnchorLayout,
-                               QGraphicsItem, QGraphicsLineItem,
-                               QGraphicsPolygonItem, QGraphicsTextItem,
-                               QGraphicsScene, QGraphicsView, QGridLayout,
-                               QHBoxLayout, QLabel, QMainWindow, QMenu,
-                               QMessageBox, QSizePolicy, QToolBox, QToolButton,
-                               QWidget)
-
+                           QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
+                           QBrush, QKeyEvent)
+from PySide6.QtWidgets import (
+    QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
+    QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
+    QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
+    QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
+    QToolButton, QWidget, QPushButton, QVBoxLayout)
+from enum import Enum
 import diagramscene_rc
 
-
-class Arrow(QGraphicsLineItem):
-    def __init__(self, startItem, endItem, parent=None, scene=None):
-        super().__init__(parent, scene)
-
-        self._arrow_head = QPolygonF()
-
-        self._my_start_item = startItem
-        self._my_end_item = endItem
-        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        self._my_color = Qt.black
-        self.setPen(QPen(self._my_color, 2, Qt.SolidLine,
-                Qt.RoundCap, Qt.RoundJoin))
-
-    def set_color(self, color):
-        self._my_color = color
-
-    def start_item(self):
-        return self._my_start_item
-
-    def end_item(self):
-        return self._my_end_item
-
-    def boundingRect(self):
-        extra = (self.pen().width() + 20) / 2.0
-        p1 = self.line().p1()
-        p2 = self.line().p2()
-        rect = QRectF(p1, QSizeF(p2.x() - p1.x(), p2.y() - p1.y()))
-        return rect.normalized().adjusted(-extra, -extra, extra, extra)
-
-    def shape(self):
-        path = super(Arrow, self).shape()
-        path.addPolygon(self._arrow_head)
-        return path
-
-    def update_position(self):
-        start = self.mapFromItem(self._my_start_item, 0, 0)
-        end = self.mapFromItem(self._my_end_item, 0, 0)
-        self.setLine(QLineF(start, end))
-
-    def paint(self, painter, option, widget=None):
-        if (self._my_start_item.collidesWithItem(self._my_end_item)):
-            return
-
-        my_start_item = self._my_start_item
-        my_end_item = self._my_end_item
-        my_color = self._my_color
-        my_pen = self.pen()
-        my_pen.setColor(self._my_color)
-        arrow_size = 20.0
-        painter.setPen(my_pen)
-        painter.setBrush(self._my_color)
-
-        center_line = QLineF(my_start_item.pos(), my_end_item.pos())
-        end_polygon = my_end_item.polygon()
-        p1 = end_polygon.at(0) + my_end_item.pos()
-
-        intersect_point = QPointF()
-        for i in end_polygon:
-            p2 = i + my_end_item.pos()
-            poly_line = QLineF(p1, p2)
-            intersectType, intersect_point = poly_line.intersects(center_line)
-            if intersectType == QLineF.BoundedIntersection:
-                break
-            p1 = p2
-
-        self.setLine(QLineF(intersect_point, my_start_item.pos()))
-        line = self.line()
-
-        angle = math.acos(line.dx() / line.length())
-        if line.dy() >= 0:
-            angle = (math.pi * 2.0) - angle
-
-        arrow_head1 = QPointF(math.sin(angle + math.pi / 3.0) * arrow_size,
-                              math.cos(angle + math.pi / 3) * arrow_size)
-        arrow_p1 = line.p1() + arrow_head1
-        arrow_head2 = QPointF(math.sin(angle + math.pi - math.pi / 3.0) * arrow_size,
-                              math.cos(angle + math.pi - math.pi / 3.0) * arrow_size)
-        arrow_p2 = line.p1() + arrow_head2
-
-        self._arrow_head.clear()
-        for point in [line.p1(), arrow_p1, arrow_p2]:
-            self._arrow_head.append(point)
-
-        painter.drawLine(line)
-        painter.drawPolygon(self._arrow_head)
-        if self.isSelected():
-            painter.setPen(QPen(my_color, 1, Qt.DashLine))
-            my_line = QLineF(line)
-            my_line.translate(0, 4.0)
-            painter.drawLine(my_line)
-            my_line.translate(0, -8.0)
-            painter.drawLine(my_line)
+print(diagramscene_rc)
 
 
 class DiagramTextItem(QGraphicsTextItem):
@@ -179,67 +86,30 @@ class DiagramTextItem(QGraphicsTextItem):
             self.setTextInteractionFlags(Qt.TextEditorInteraction)
         super(DiagramTextItem, self).mouseDoubleClickEvent(event)
 
-class DiagramItem(QGraphicsPolygonItem):
-    Step, Conditional, StartEnd, Io = range(4)
 
-    def __init__(self, diagram_type, contextMenu, parent=None, scene=None):
-        super().__init__(parent, scene)
+class Qubit(QGraphicsEllipseItem):
+    size = 50
+    name = "QUBIT"
 
-        self.arrows = []
-        self.stabs = []
+    def __init__(self, contextMenu, parent=None):
+        super().__init__(0, 0, self.size, self.size, parent)
 
-        self.diagram_type = diagram_type
+        self.groups = []
+
         self._my_context_menu = contextMenu
 
-        path = QPainterPath()
-        if self.diagram_type == self.StartEnd:
-            path.moveTo(200, 50)
-            path.arcTo(150, 0, 50, 50, 0, 90)
-            path.arcTo(50, 0, 50, 50, 90, 90)
-            path.arcTo(50, 50, 50, 50, 180, 90)
-            path.arcTo(150, 50, 50, 50, 270, 90)
-            path.lineTo(200, 25)
-            self._my_polygon = path.toFillPolygon()
-        elif self.diagram_type == self.Conditional:
-            self._my_polygon = QPolygonF([
-                    QPointF(-100, 0), QPointF(0, 100),
-                    QPointF(100, 0), QPointF(0, -100),
-                    QPointF(-100, 0)])
-        elif self.diagram_type == self.Step:
-            self._my_polygon = QPolygonF([
-                    QPointF(-100, -100), QPointF(100, -100),
-                    QPointF(100, 100), QPointF(-100, 100),
-                    QPointF(-100, -100)])
-        else:
-            self._my_polygon = QPolygonF([
-                    QPointF(-120, -80), QPointF(-70, 80),
-                    QPointF(120, 80), QPointF(70, -80),
-                    QPointF(-120, -80)])
-
-        self.setPolygon(self._my_polygon)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
 
-    def remove_arrow(self, arrow):
-        try:
-            self.arrows.remove(arrow)
-        except ValueError:
-            pass
+    def add_group(self, stab):
+        self.groups.append(stab)
 
-    def remove_arrows(self):
-        for arrow in self.arrows[:]:
-            arrow.start_item().remove_arrow(arrow)
-            arrow.end_item().remove_arrow(arrow)
-            self.scene().removeItem(arrow)
-
-    def add_arrow(self, arrow):
-        self.arrows.append(arrow)
-
-    def add_stab(self, stab):
-        self.stabs.append(stab)
+    def remove_group(self, group):
+        if group in self.groups:
+            self.groups.remove(group)  # must come first to avoid recursion
+            group.remove_qubit(self)  # TODO switch to signals
 
     # TODO deal with deleting stabs
-
 
     def image(self):
         pixmap = QPixmap(250, 250)
@@ -247,7 +117,12 @@ class DiagramItem(QGraphicsPolygonItem):
         painter = QPainter(pixmap)
         painter.setPen(QPen(Qt.black, 8))
         painter.translate(125, 125)
-        painter.drawPolyline(self._my_polygon)
+
+        path = QPainterPath(QPointF(-20, -20))
+        path.moveTo(100, 0)
+        path.arcTo(-100, -100, 200, 200, 0, 800)
+
+        painter.drawPolyline(path.toFillPolygon())
         return pixmap
 
     def contextMenuEvent(self, event):
@@ -256,35 +131,141 @@ class DiagramItem(QGraphicsPolygonItem):
         self._my_context_menu.exec(event.screenPos())
 
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionChange:
-            for arrow in self.arrows:
-                arrow.updatePosition()
+        for gr in self.groups:
+            gr.generate_polygon()
+        return super().itemChange(change, value)
 
-        return value
     def get_center(self):
-        return self.scenePos()
+        upper_left = self.scenePos()
+        upper_left.setX(upper_left.x() + self.size / 2)
+        upper_left.setY(upper_left.y() + self.size / 2)
+        return upper_left
 
 
+class GaugeGroup(QGraphicsPolygonItem):
 
-class Stabilizer(QGraphicsPolygonItem):
-    def __init__(self, point_list:list[QPointF], qubits:list):
-        super().__init__(QPolygonF(point_list))
-        self.point_list = point_list
-        self.qubits = qubits
+    name = "Gauge Group"
+
+    def __init__(self, qubits: list[Qubit]):
+
+        super().__init__()
+        self.setFillRule(Qt.OddEvenFill)
+        self._qubits = qubits
+        self.bubble_sort_qubits()
+        self.cur_points = []
         self.qbrush = QBrush(QColor('red'), Qt.SolidPattern)
         self.setBrush(self.qbrush)
         self.pen = QPen()
         self.pen.setColor(QColor('red'))
         self.setPen(self.pen)
-        # TODO delete stabs
 
+        self.generate_polygon()
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+
+    @property
+    def centroid(self):
+        qlen = len(self._qubits)
+        x_sum = 0
+        y_sum = 0
+        for q in self._qubits:
+            x_sum += q.x()
+            y_sum += q.y()
+        centroid = QPointF(x_sum / qlen, y_sum / qlen)
+        return centroid
+
+    def less(self, qba: Qubit, qbb: Qubit):
+        point_a = qba.get_center()
+        point_b = qbb.get_center()
+        if (point_a.x() - self.centroid.x() >=
+                0) and (point_b.x() - self.centroid.x() < 0):
+            return True
+        if (point_a.x() - self.centroid.x() <
+                0) and (point_b.x() - self.centroid.x() >= 0):
+            return False
+
+        if (point_a.x() - self.centroid.x()
+                == 0) and (point_b.x() - self.centroid.x() == 0):
+            if (point_a.y() - self.centroid.y() >=
+                    0) or (point_b.y() - self.centroid.y() >= 0):
+                return point_a.y() > point_b.y()
+            return point_b.y() > point_a.y()
+
+        # compute the cross product of vectors(center -> a) x(center -> b) int
+        det = (point_a.x() -
+               self.centroid.x()) * (point_b.y() - self.centroid.y()) - (
+                   point_b.x() - self.centroid.x()) * (point_a.y() -
+                                                       self.centroid.y())
+        if (det < 0):
+            return True
+        if (det > 0):
+            return False
+
+        # points a and b are on the same line from the center
+
+        # check which point is closer to the center
+        d1 = (point_a.x() - self.centroid.x()) * (point_a.x() - self.centroid.x(
+        )) + (point_a.y() - self.centroid.y()) * (point_a.y() -
+                                                  self.centroid.y())
+        d2 = (point_b.x() - self.centroid.x()) * (point_b.x() - self.centroid.x(
+        )) + (point_b.y() - self.centroid.y()) * (point_b.y() -
+                                                  self.centroid.y())
+        return d1 > d2
+
+    def bubble_sort_qubits(self):
+        #bubble sort
+        n = len(self._qubits)
+
+        # Traverse through all array elements
+        for i in range(n):
+
+            # Last i elements are already in place
+            for j in range(0, n - i - 1):
+
+                # traverse the array from 0 to n-i-1
+                # Swap if the element found is greater
+                # than the next element
+                if self.less(self._qubits[j], self._qubits[j + 1]):
+                    self._qubits[j], self._qubits[j + 1] = self._qubits[
+                        j + 1], self._qubits[j]
+
+    def generate_polygon(self) -> [QPointF]:
+        self.cur_points = []
+        for q in self._qubits:
+            self.cur_points.append(q.get_center())
+
+        poly = QPolygonF(self.cur_points)
+        self.setPolygon(poly)
+
+    def remove_qubit(self, qubit):
+        if qubit in self._qubits:
+            self._qubits.remove(qubit)  # must come first to avoid recursion
+
+            qubit.remove_group(self)  # TODO switch to signals
+            self.bubble_sort_qubits()
+            self.generate_polygon()
+
+    def add_qubits(self, qubits):
+        for qb in qubits:
+            self._qubits.append(qb)
+        self.bubble_sort_qubits()
+        self.generate_polygon()
+
+
+class Stabilizer(GaugeGroup):
+    name = "Stabilizer"
+
+    def __init__(self, qubits: list):
+        super().__init__(qubits)
 
 
 class DiagramScene(QGraphicsScene):
     RETURN = 16777220
+    DELETE = 16777223
+    BACKSPACE = 16777219
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
 
-    item_inserted = Signal(DiagramItem)
+    item_inserted = Signal(Qubit)
 
     text_inserted = Signal(QGraphicsTextItem)
 
@@ -295,7 +276,6 @@ class DiagramScene(QGraphicsScene):
 
         self._my_item_menu = itemMenu
         self._my_mode = self.MoveItem
-        self._my_item_type = DiagramItem.Step
         self.line = None
         self._text_item = None
         self._my_item_color = Qt.white
@@ -305,10 +285,6 @@ class DiagramScene(QGraphicsScene):
 
     def set_line_color(self, color):
         self._my_line_color = color
-        if self.is_item_change(Arrow):
-            item = self.selectedItems()[0]
-            item.set_color(self._my_line_color)
-            self.update()
 
     def set_text_color(self, color):
         self._my_text_color = color
@@ -318,7 +294,7 @@ class DiagramScene(QGraphicsScene):
 
     def set_item_color(self, color):
         self._my_item_color = color
-        if self.is_item_change(DiagramItem):
+        if self.is_item_change(Qubit):
             item = self.selectedItems()[0]
             item.setBrush(self._my_item_color)
 
@@ -330,9 +306,6 @@ class DiagramScene(QGraphicsScene):
 
     def set_mode(self, mode):
         self._my_mode = mode
-
-    def set_item_type(self, type):
-        self._my_item_type = type
 
     def editor_lost_focus(self, item):
         cursor = item.textCursor()
@@ -348,14 +321,14 @@ class DiagramScene(QGraphicsScene):
             return
 
         if self._my_mode == self.InsertItem:
-            item = DiagramItem(self._my_item_type, self._my_item_menu)
+            item = Qubit(self._my_item_menu)
             item.setBrush(self._my_item_color)
             self.addItem(item)
             item.setPos(mouseEvent.scenePos())
             self.item_inserted.emit(item)
         elif self._my_mode == self.InsertLine:
-            self.line = QGraphicsLineItem(QLineF(mouseEvent.scenePos(),
-                                        mouseEvent.scenePos()))
+            self.line = QGraphicsLineItem(
+                QLineF(mouseEvent.scenePos(), mouseEvent.scenePos()))
             self.line.setPen(QPen(self._my_line_color, 2))
             self.addItem(self.line)
         elif self._my_mode == self.InsertText:
@@ -380,31 +353,6 @@ class DiagramScene(QGraphicsScene):
             super(DiagramScene, self).mouseMoveEvent(mouseEvent)
 
     def mouseReleaseEvent(self, mouseEvent):
-        if self.line and self._my_mode == self.InsertLine:
-            start_items = self.items(self.line.line().p1())
-            if len(start_items) and start_items[0] == self.line:
-                start_items.pop(0)
-            end_items = self.items(self.line.line().p2())
-            if len(end_items) and end_items[0] == self.line:
-                end_items.pop(0)
-
-            self.removeItem(self.line)
-            self.line = None
-
-            if (len(start_items) and len(end_items) and
-                    isinstance(start_items[0], DiagramItem) and
-                    isinstance(end_items[0], DiagramItem) and
-                    start_items[0] != end_items[0]):
-                start_item = start_items[0]
-                end_item = end_items[0]
-                arrow = Arrow(start_item, end_item)
-                arrow.set_color(self._my_line_color)
-                start_item.add_arrow(arrow)
-                end_item.add_arrow(arrow)
-                arrow.setZValue(-1000.0)
-                self.addItem(arrow)
-                arrow.update_position()
-
         self.line = None
         super(DiagramScene, self).mouseReleaseEvent(mouseEvent)
 
@@ -415,18 +363,99 @@ class DiagramScene(QGraphicsScene):
         return False
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == self.DELETE or event.key() == self.BACKSPACE:
+            for i in self.selectedItems():
+                if isinstance(i, GaugeGroup):
+                    for q in i._qubits:
+                        q.remove_group(i)
+                if isinstance(i, Qubit):
+                    for g in i.groups:
+                        g.remove_qubit(i)
+
+                self.removeItem(i)
 
         if event.key() == self.RETURN:
-            print("return pressed")
+            self.set_mode(self.InsertItem)
+            gb = self.SelectGroupTypeBox()
+            gb.exec()
+            if gb.group_class == gb.groupType.GAUGEGROUP:
+                group = GaugeGroup
+            elif gb.group_class == gb.groupType.STABILIZER:
+                group = Stabilizer
+            else:
+                # TODO add logging
+                return
+
             points = []
             qubits = []
             for i in self.selectedItems():
-                qubits.append(i)
-                points.append(i.get_center())
-                print(f"points are {points}")
-                stab = Stabilizer(points, qubits)
-                self.addItem(stab)
+                if isinstance(i, Qubit):
+                    qubits.append(i)
+                    points.append(i.get_center())
+            group_item = group(qubits)
+            self.addItem(group_item)
             for q in qubits:
-                q.add_stab(stab)
+                q.add_group(group_item)
 
+        self.set_mode(self.MoveItem)
+        for item in self.selectedItems():
+            item.setSelected(False)
 
+    class SelectGroupTypeBox(QDialog):
+
+        class groupType(Enum):
+            UNSET = "UNSET"
+            INVALID = "INVALID"
+            GAUGEGROUP = "Gauge Group"
+            STABILIZER = "Stabilizer"
+
+            def __str__(self):
+                return self.value
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.setWindowTitle("Choose which group you wish to create")
+            self._group_class = self.groupType.UNSET
+
+            self.cur_layout = QVBoxLayout()
+            self.setLayout(self.cur_layout)
+
+            self._label = QLabel(
+                f"Current group choice is: {str(self.group_class)}")
+            self.cur_layout.addWidget(self._label)
+
+            self._gauge_button = QPushButton("Gauge Operator", parent=self)
+            self.cur_layout.addWidget(self._gauge_button)
+            self._gauge_button.clicked.connect(
+                lambda: self._set_group(self.groupType.GAUGEGROUP))
+
+            self._stabilizer_button = QPushButton("Stabilizer Operator",
+                                                  parent=self)
+            self.cur_layout.addWidget(self._stabilizer_button)
+            self._stabilizer_button.clicked.connect(
+                lambda: self._set_group(self.groupType.STABILIZER))
+
+            self._choice_layout = QHBoxLayout()
+            self.cur_layout.addLayout(self._choice_layout)
+
+            self._okay_button = QPushButton("Okay")
+            self._choice_layout.addWidget(self._okay_button)
+            self._okay_button.clicked.connect(self.accept)
+
+            self._cancel_button = QPushButton("Cancel")
+            self._choice_layout.addWidget(self._cancel_button)
+            self._cancel_button.clicked.connect(self.reject)
+
+        def update(self):
+            self._label.setText(
+                f"Current group choice is: {str(self.group_class)}")
+
+        @property
+        def group_class(self):
+            return self._group_class
+
+        def _set_group(self, value):
+            if not isinstance(value, self.groupType):
+                value = self.groupType.INVALID
+            self._group_class = value
+            self.update()
