@@ -42,13 +42,15 @@
 import math
 import array
 import sys
+from typing import Optional
+
 from PySide6.QtWidgets import QDialog, QMainWindow
 from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
                             Signal)
 from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
                            QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
                            QBrush, QKeyEvent)
-from PySide6.QtWidgets import (
+from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
     QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
     QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
@@ -56,6 +58,7 @@ from PySide6.QtWidgets import (
     QToolButton, QWidget, QPushButton, QVBoxLayout)
 from enum import Enum
 import diagramscene_rc
+import uuid
 
 print(diagramscene_rc)
 
@@ -95,6 +98,8 @@ class Qubit(QGraphicsEllipseItem):
         super().__init__(0, 0, self.size, self.size, parent)
 
         self.groups = []
+        
+        self.uuid = uuid.uuid4()
 
         self._my_context_menu = contextMenu
 
@@ -145,24 +150,32 @@ class Qubit(QGraphicsEllipseItem):
 class GaugeGroup(QGraphicsPolygonItem):
 
     name = "Gauge Group"
+    
+    class PauliType(Enum):
+        X = "X"
+        Y = "Y"
+        Z = "Z"
+        EMPTY = "EMPTY"
+        
 
     def __init__(self, qubits: list[Qubit]):
 
         super().__init__()
         self.setFillRule(Qt.OddEvenFill)
-        self._qubits = qubits
-        self.bubble_sort_qubits()
-        self.cur_points = []
-        self.qbrush = QBrush(QColor('red'), Qt.SolidPattern)
-        self.setBrush(self.qbrush)
-        self.pen = QPen()
-        self.pen.setColor(QColor('red'))
-        self.setPen(self.pen)
+        self._error_groups = {}
+        self._group_polies = set()
 
-        self.generate_polygon()
+        self._qubits = []
+        self.add_qubits(qubits)
+        self.cur_points = []
+
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        
+        self.generate_polygon()
 
+        
+    
     @property
     def centroid(self):
         qlen = len(self._qubits)
@@ -233,7 +246,8 @@ class GaugeGroup(QGraphicsPolygonItem):
         self.cur_points = []
         for q in self._qubits:
             self.cur_points.append(q.get_center())
-
+        
+        # todo how to properly call paint
         poly = QPolygonF(self.cur_points)
         self.setPolygon(poly)
 
@@ -244,12 +258,76 @@ class GaugeGroup(QGraphicsPolygonItem):
             qubit.remove_group(self)  # TODO switch to signals
             self.bubble_sort_qubits()
             self.generate_polygon()
+        if qubit in self._error_groups:
+            self._error_groups.pop(qubit.uuid)
 
     def add_qubits(self, qubits):
         for qb in qubits:
             self._qubits.append(qb)
         self.bubble_sort_qubits()
+        
+        for qb_ind in range(len(self._qubits)):
+            # just choose the type of the qubit next to it
+            if self._qubits[qb_ind].uuid not in self._error_groups:
+                if qb_ind == 0:
+                    self._error_groups[self._qubits[qb_ind].uuid] = self.PauliType.EMPTY
+                else:
+                    self._error_groups[self._qubits[qb_ind].uuid] = self._error_groups[self._qubits[qb_ind - 1].uuid]
+
         self.generate_polygon()
+        
+        
+    def set_entire_group_pauli(self, pauli: PauliType=PauliType.X):
+        for key in self._error_groups.keys():
+            self._error_groups[key] = pauli
+        self.generate_polygon()
+        
+    
+    def set_qubit_pauli(self, qubits: Qubit, pauli: PauliType=PauliType.X):
+        for qu in qubits:
+            self._error_groups[qu.uuid] = pauli
+        self.generate_polygon()
+        
+        
+    def paint(self, painter:QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
+        pen = self.pen()
+        
+        painter.setPen(pen)
+        qpoints = []
+        for q in self._qubits:
+            qpoints.append(q.get_center())
+        poly = QPolygonF(qpoints)
+        painter.drawPolygon(poly)
+        print(f"ERROR GRPU:S {self._error_groups}")
+        for qu in range(len(self._qubits)):
+            pen.setColor('black')
+            pauli = self._error_groups[self._qubits[qu].uuid]
+            if pauli == self.PauliType.X:
+                col = QColor('red')
+            elif pauli == self.PauliType.Y:
+                col = QColor('yellow')
+            elif pauli == self.PauliType.Z:
+                col = QColor('blue')
+            elif pauli == self.PauliType.EMPTY:
+                col = QColor('white')
+                pen.setColor('white')
+            else:
+                continue
+
+            pen.setColor(QColor('black'))
+            painter.setBrush(col)
+
+            qu_p = self._qubits[qu].get_center()
+            centr_p = self.centroid
+            p1_p = self._qubits[(qu + 1)%(len(self._qubits))].get_center()
+            hp1_p = QPointF((p1_p.x() + qu_p.x())/2, (p1_p.y() + qu_p.y())/2)
+            p2_p = self._qubits[(qu - 1)%(len(self._qubits))].get_center()
+            hp2_p = QPointF((p2_p.x() + qu_p.x())/2, (p2_p.y() + qu_p.y())/2)
+            
+            poly = QPolygonF([hp1_p, qu_p, hp2_p, centr_p])
+            painter.drawPolygon(poly)
+            self._group_polies.add(poly)
+            
 
 
 class Stabilizer(GaugeGroup):
@@ -263,6 +341,7 @@ class DiagramScene(QGraphicsScene):
     RETURN = 16777220
     DELETE = 16777223
     BACKSPACE = 16777219
+    C_KEY = 67
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
 
     item_inserted = Signal(Qubit)
@@ -326,11 +405,6 @@ class DiagramScene(QGraphicsScene):
             self.addItem(item)
             item.setPos(mouseEvent.scenePos())
             self.item_inserted.emit(item)
-        elif self._my_mode == self.InsertLine:
-            self.line = QGraphicsLineItem(
-                QLineF(mouseEvent.scenePos(), mouseEvent.scenePos()))
-            self.line.setPen(QPen(self._my_line_color, 2))
-            self.addItem(self.line)
         elif self._my_mode == self.InsertText:
             text_item = DiagramTextItem()
             text_item.setFont(self._my_font)
@@ -363,6 +437,12 @@ class DiagramScene(QGraphicsScene):
         return False
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == self.C_KEY:
+            for myi in self.items():
+                if isinstance(myi, GaugeGroup):
+                    for q in myi._error_groups.keys():
+                        myi._error_groups[q] = GaugeGroup.PauliType.Y
+                    myi.generate_polygon()
         if event.key() == self.DELETE or event.key() == self.BACKSPACE:
             for i in self.selectedItems():
                 if isinstance(i, GaugeGroup):
@@ -376,16 +456,16 @@ class DiagramScene(QGraphicsScene):
 
         if event.key() == self.RETURN:
             self.set_mode(self.InsertItem)
-            gb = self.SelectGroupTypeBox()
-            gb.exec()
-            if gb.group_class == gb.groupType.GAUGEGROUP:
-                group = GaugeGroup
-            elif gb.group_class == gb.groupType.STABILIZER:
-                group = Stabilizer
-            else:
-                # TODO add logging
-                return
-
+            # gb = self.SelectGroupTypeBox()
+            # gb.exec()
+            # if gb.group_class == gb.groupType.GAUGEGROUP:
+            #     group = GaugeGroup
+            # elif gb.group_class == gb.groupType.STABILIZER:
+            #     group = Stabilizer
+            # else:
+            #     # TODO add logging
+            #     return
+            group = GaugeGroup
             points = []
             qubits = []
             for i in self.selectedItems():
