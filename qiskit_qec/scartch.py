@@ -1,20 +1,20 @@
 # class OrderedQubits():
 #     def __init__(self, qubits:[Qubit]):
-#         self._qubits = sorted(qubits, cmp=self.less)
+#         self.qubits = sorted(qubits, cmp=self.less)
 #         print(f"sorted qubits: {qubits}")
 #
 #
 #     @property
 #     def qubits(self):
-#         return self._qubits
+#         return self.qubits
 #
 #     @qubits.setter
 #     def set_qubits(self, qubits):
-#         self._qubits = sorted(qubits, cmp=self.less)
+#         self.qubits = sorted(qubits, cmp=self.less)
 #
 #     def add_qubit(self, qb):
-#         self._qubits.append(qb)
-#         self._qubits = sorted(self._qubits, cmp=self.less)
+#         self.qubits.append(qb)
+#         self.qubits = sorted(self.qubits, cmp=self.less)
 #
 #
 #     @property

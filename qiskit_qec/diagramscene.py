@@ -44,9 +44,10 @@ import array
 import sys
 from typing import Optional
 
-from PySide6.QtWidgets import QDialog, QMainWindow
+import random
+from PySide6.QtWidgets import QDialog, QMainWindow, QStyle
 from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
-                            Signal)
+                            Signal, QObject)
 from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
                            QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
                            QBrush, QKeyEvent)
@@ -63,6 +64,29 @@ import uuid
 print(diagramscene_rc)
 
 
+class PauliType(Enum):
+    X = "X"
+    Y = "Y"
+    Z = "Z"
+    EMPTY = "EMPTY"
+
+    def __str__(self):
+        return self.value
+
+
+
+class GroupType(Enum):
+    UNSET = "UNSET"
+    INVALID = "INVALID"
+    GAUGEGROUP = "Gauge Group"
+    STABILIZER = "Stabilizer"
+
+    def __str__(self):
+        return self.value
+
+
+    
+    
 class DiagramTextItem(QGraphicsTextItem):
     lost_focus = Signal(QGraphicsTextItem)
 
@@ -147,43 +171,54 @@ class Qubit(QGraphicsEllipseItem):
         return upper_left
 
 
+    def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
+        super().paint(painter, option, widget)
+        if self.isSelected():
+            pen = QPen(QColor('blue'))
+            painter.setPen(pen)
+            painter.pen().setWidth(2)
+            trans = QColor("white")
+            trans.setAlpha(0)
+            painter.setBrush(trans)
+            painter.drawPolygon(self.boundingRect())
+        
+
+
 class GaugeGroup(QGraphicsPolygonItem):
 
     name = "Gauge Group"
     
-    class PauliType(Enum):
-        X = "X"
-        Y = "Y"
-        Z = "Z"
-        EMPTY = "EMPTY"
-        
-
-    def __init__(self, qubits: list[Qubit]):
+    def __init__(self, qubits: list[Qubit], group_type:PauliType=None):
 
         super().__init__()
         self.setFillRule(Qt.OddEvenFill)
         self._error_groups = {}
-        self._group_polies = set()
-
-        self._qubits = []
-        self.add_qubits(qubits)
-        self.cur_points = []
-
+        self.setup_qubits_and_paulis(qubits, group_type)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         
         self.generate_polygon()
 
+
         
-    
+    def setup_qubits_and_paulis(self, qubits, group_type: PauliType):
+        self.broken = False
+        self.qubits = []
+        self.cur_points = []
+        self.add_qubits(qubits)
+        self._group_paulies = set()
+        if group_type is not None:
+            self.set_entire_group_pauli(group_type)
+
+
     @property
     def centroid(self):
-        qlen = len(self._qubits)
+        qlen = len(self.qubits)
         x_sum = 0
         y_sum = 0
-        for q in self._qubits:
-            x_sum += q.x()
-            y_sum += q.y()
+        for q in self.qubits:
+            x_sum += q.get_center().x()
+            y_sum += q.get_center().y()
         centroid = QPointF(x_sum / qlen, y_sum / qlen)
         return centroid
 
@@ -227,7 +262,7 @@ class GaugeGroup(QGraphicsPolygonItem):
 
     def bubble_sort_qubits(self):
         #bubble sort
-        n = len(self._qubits)
+        n = len(self.qubits)
 
         # Traverse through all array elements
         for i in range(n):
@@ -238,13 +273,13 @@ class GaugeGroup(QGraphicsPolygonItem):
                 # traverse the array from 0 to n-i-1
                 # Swap if the element found is greater
                 # than the next element
-                if self.less(self._qubits[j], self._qubits[j + 1]):
-                    self._qubits[j], self._qubits[j + 1] = self._qubits[
-                        j + 1], self._qubits[j]
+                if self.less(self.qubits[j], self.qubits[j + 1]):
+                    self.qubits[j], self.qubits[j + 1] = self.qubits[
+                        j + 1], self.qubits[j]
 
     def generate_polygon(self) -> [QPointF]:
         self.cur_points = []
-        for q in self._qubits:
+        for q in self.qubits:
             self.cur_points.append(q.get_center())
         
         # todo how to properly call paint
@@ -252,8 +287,8 @@ class GaugeGroup(QGraphicsPolygonItem):
         self.setPolygon(poly)
 
     def remove_qubit(self, qubit):
-        if qubit in self._qubits:
-            self._qubits.remove(qubit)  # must come first to avoid recursion
+        if qubit in self.qubits:
+            self.qubits.remove(qubit)  # must come first to avoid recursion
 
             qubit.remove_group(self)  # TODO switch to signals
             self.bubble_sort_qubits()
@@ -263,70 +298,91 @@ class GaugeGroup(QGraphicsPolygonItem):
 
     def add_qubits(self, qubits):
         for qb in qubits:
-            self._qubits.append(qb)
+            self.qubits.append(qb)
         self.bubble_sort_qubits()
         
-        for qb_ind in range(len(self._qubits)):
+        for qb_ind in range(len(self.qubits)):
             # just choose the type of the qubit next to it
-            if self._qubits[qb_ind].uuid not in self._error_groups:
+            if self.qubits[qb_ind].uuid not in self._error_groups:
                 if qb_ind == 0:
-                    self._error_groups[self._qubits[qb_ind].uuid] = self.PauliType.EMPTY
+                    self._error_groups[self.qubits[qb_ind].uuid] = PauliType.EMPTY
                 else:
-                    self._error_groups[self._qubits[qb_ind].uuid] = self._error_groups[self._qubits[qb_ind - 1].uuid]
+                    self._error_groups[self.qubits[qb_ind].uuid] = self._error_groups[self.qubits[qb_ind - 1].uuid]
 
         self.generate_polygon()
         
         
     def set_entire_group_pauli(self, pauli: PauliType=PauliType.X):
+        self.broken = False
         for key in self._error_groups.keys():
             self._error_groups[key] = pauli
         self.generate_polygon()
         
     
     def set_qubit_pauli(self, qubits: Qubit, pauli: PauliType=PauliType.X):
+        self.broken = True
         for qu in qubits:
             self._error_groups[qu.uuid] = pauli
         self.generate_polygon()
         
-        
+    def set_random_paulis(self):
+        for q in self._error_groups.keys():
+            options = list(PauliType)
+            options.remove(PauliType.EMPTY)
+            c = random.choice(options)
+        self._error_groups[q] = c
+        self.generate_polygon()
+
+
     def paint(self, painter:QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
-        pen = self.pen()
         
+        
+        
+        pen = self.pen()
         painter.setPen(pen)
-        qpoints = []
-        for q in self._qubits:
-            qpoints.append(q.get_center())
-        poly = QPolygonF(qpoints)
-        painter.drawPolygon(poly)
-        print(f"ERROR GRPU:S {self._error_groups}")
-        for qu in range(len(self._qubits)):
-            pen.setColor('black')
-            pauli = self._error_groups[self._qubits[qu].uuid]
-            if pauli == self.PauliType.X:
-                col = QColor('red')
-            elif pauli == self.PauliType.Y:
-                col = QColor('yellow')
-            elif pauli == self.PauliType.Z:
-                col = QColor('blue')
-            elif pauli == self.PauliType.EMPTY:
-                col = QColor('white')
-                pen.setColor('white')
-            else:
-                continue
-
-            pen.setColor(QColor('black'))
-            painter.setBrush(col)
-
-            qu_p = self._qubits[qu].get_center()
-            centr_p = self.centroid
-            p1_p = self._qubits[(qu + 1)%(len(self._qubits))].get_center()
-            hp1_p = QPointF((p1_p.x() + qu_p.x())/2, (p1_p.y() + qu_p.y())/2)
-            p2_p = self._qubits[(qu - 1)%(len(self._qubits))].get_center()
-            hp2_p = QPointF((p2_p.x() + qu_p.x())/2, (p2_p.y() + qu_p.y())/2)
-            
-            poly = QPolygonF([hp1_p, qu_p, hp2_p, centr_p])
+        
+        if not self.broken:
+            painter.setBrush(QColor(self.scene().get_group_type_color(self._error_groups[self.qubits[0].uuid])))
+            qpoints = []
+            for q in self.qubits:
+                qpoints.append(q.get_center())
+            poly = QPolygonF(qpoints)
             painter.drawPolygon(poly)
-            self._group_polies.add(poly)
+        
+        else:
+            for qu in range(len(self.qubits)):
+                pen.setColor('black')
+                pauli = self._error_groups[self.qubits[qu].uuid]
+                if pauli == PauliType.EMPTY:
+                    pen.setColor('white')
+                print(f"colr is  {self.scene().get_group_type_color(pauli)}")
+                painter.setBrush(self.scene().get_group_type_color(pauli))
+
+                qu_p = self.qubits[qu].get_center()
+                centr_p = self.centroid
+                p1_p = self.qubits[(qu + 1)%(len(self.qubits))].get_center()
+                hp1_p = QPointF((p1_p.x() + qu_p.x())/2, (p1_p.y() + qu_p.y())/2)
+                p2_p = self.qubits[(qu - 1)%(len(self.qubits))].get_center()
+                hp2_p = QPointF((p2_p.x() + qu_p.x())/2, (p2_p.y() + qu_p.y())/2)
+                
+                poly = QPolygonF([hp1_p, qu_p, hp2_p, centr_p])
+                painter.drawPolygon(poly)
+                self._group_paulies.add(poly)
+        
+        if self.isSelected():
+            print("cheese is the best")
+            pen = QPen(QColor('blue'))
+            painter.setPen(pen)
+            painter.pen().setWidth(5)
+            trans = QColor("white")
+            trans.setAlpha(0)
+            painter.setBrush(trans)
+            qpoints = []
+            for q in self.qubits:
+                qpoints.append(q.get_center())
+
+            painter.drawPolygon(QPolygonF(qpoints))
+            
             
 
 
@@ -342,6 +398,7 @@ class DiagramScene(QGraphicsScene):
     DELETE = 16777223
     BACKSPACE = 16777219
     C_KEY = 67
+    R_KEY = 81
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
 
     item_inserted = Signal(Qubit)
@@ -352,7 +409,7 @@ class DiagramScene(QGraphicsScene):
 
     def __init__(self, itemMenu, parent=None):
         super().__init__(parent)
-
+        self.setup_group_type_color_map()
         self._my_item_menu = itemMenu
         self._my_mode = self.MoveItem
         self.line = None
@@ -361,6 +418,27 @@ class DiagramScene(QGraphicsScene):
         self._my_text_color = Qt.black
         self._my_line_color = Qt.black
         self._my_font = QFont()
+        
+        
+    def setup_group_type_color_map(self):
+        self.group_type_color_map = {}
+        # todo make random if becomes too many
+        self.group_type_color_map[PauliType.X] = QColor('beige')
+        self.group_type_color_map[PauliType.Y] = QColor('darkseagreen')
+        self.group_type_color_map[ PauliType.Z ] = QColor('darksalmon')
+        self.group_type_color_map[PauliType.EMPTY] = QColor('white')
+        
+    def update_group_type_color_map(self, group_type:PauliType, color_str:str):
+        color = QColor(color_str)
+        self.group_type_color_map[group_type] = color
+        for i in self.items():
+            if isinstance(i, GaugeGroup):
+                i.generate_polygon()
+        
+    def get_group_type_color(self, group_type: PauliType):
+        print(f"group pault ti get is; {group_type}")
+        print(f"colormaps is; {self.group_type_color_map}")
+        return self.group_type_color_map[group_type]
 
     def set_line_color(self, color):
         self._my_line_color = color
@@ -437,17 +515,32 @@ class DiagramScene(QGraphicsScene):
         return False
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == self.R_KEY:
+            for i in self.items():
+                if isinstance(i, GaugeGroup):
+                    i.set_random_paulis()
+                    
         if event.key() == self.C_KEY:
-            for myi in self.items():
-                if isinstance(myi, GaugeGroup):
-                    for q in myi._error_groups.keys():
-                        myi._error_groups[q] = GaugeGroup.PauliType.Y
-                    myi.generate_polygon()
+            gb = self.SelectGroupSectionTypeBox()
+            gb.exec()
+            group_type = gb.group_type
+            print(f"coloring w group tupe: {group_type}")
+            for item in self.selectedItems():
+                if isinstance(item, GaugeGroup):
+                    selected_qubits = []
+                    for qubit in item.qubits:
+                        if qubit.isSelected():
+                            selected_qubits.append(qubit)
+                    item.set_qubit_pauli(selected_qubits, group_type)
+            self.clearSelection()
+            
+
+
         if event.key() == self.DELETE or event.key() == self.BACKSPACE:
             for i in self.selectedItems():
                 if isinstance(i, GaugeGroup):
-                    for q in i._qubits:
-                        q.remove_group(i)
+                    for q in i.qubits:
+                        q.remove_group(i, self.group_type_color_map)
                 if isinstance(i, Qubit):
                     for g in i.groups:
                         g.remove_qubit(i)
@@ -456,23 +549,23 @@ class DiagramScene(QGraphicsScene):
 
         if event.key() == self.RETURN:
             self.set_mode(self.InsertItem)
-            # gb = self.SelectGroupTypeBox()
-            # gb.exec()
-            # if gb.group_class == gb.groupType.GAUGEGROUP:
-            #     group = GaugeGroup
-            # elif gb.group_class == gb.groupType.STABILIZER:
-            #     group = Stabilizer
-            # else:
-            #     # TODO add logging
-            #     return
-            group = GaugeGroup
+            gb = self.SelectGroupInfoBox()
+            gb.exec()
+            if gb.group_class == GroupType.GAUGEGROUP:
+                group = GaugeGroup
+            elif gb.group_class == GroupType.STABILIZER:
+                group = Stabilizer
+            else:
+                # TODO add logging
+                return
+            gtype = gb.group_type
             points = []
             qubits = []
             for i in self.selectedItems():
                 if isinstance(i, Qubit):
                     qubits.append(i)
                     points.append(i.get_center())
-            group_item = group(qubits)
+            group_item = group(qubits, gtype)
             self.addItem(group_item)
             for q in qubits:
                 q.add_group(group_item)
@@ -481,42 +574,90 @@ class DiagramScene(QGraphicsScene):
         for item in self.selectedItems():
             item.setSelected(False)
 
-    class SelectGroupTypeBox(QDialog):
+    class SelectGroupSectionTypeBox(QDialog):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.setWindowTitle("Choose Type")
+            self._group_type = PauliType.EMPTY
+            
+            self._type_layout = QVBoxLayout()
+            self.setLayout(self._type_layout)
 
-        class groupType(Enum):
-            UNSET = "UNSET"
-            INVALID = "INVALID"
-            GAUGEGROUP = "Gauge Group"
-            STABILIZER = "Stabilizer"
+            self._group_type_box = QComboBox()
+            self._type_layout.addWidget(self._group_type_box)
 
-            def __str__(self):
-                return self.value
+            for gt in PauliType:
+                print(f"fish sdlkf sdf GT is {gt}")
+                # Adds an item to the combobox with the given text, and containing the specified userData (stored in the Qt::UserRole). The item is appended to the list of existing items.
+                self._group_type_box.addItem(str(gt))
+            self._group_type_box.currentTextChanged.connect(
+                self.set_group_type
+            )
+            self._group_type_box.setCurrentText(str(PauliType.EMPTY))
+            
+            self._choice_layout = QHBoxLayout()
+            self._type_layout.addLayout(self._choice_layout)
+
+            self._okay_button = QPushButton("Okay")
+            self._choice_layout.addWidget(self._okay_button)
+            self._okay_button.clicked.connect(self.accept)
+
+            
+        @property
+        def group_type(self):
+            return self._group_type
+        
+        def set_group_type(self):
+            self._group_type = PauliType(self._group_type_box.currentText())
+            print(f"just set type only gt to {self._group_type} ")
+            self.update()
+
+    class SelectGroupInfoBox(QDialog):
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.setWindowTitle("Choose which group you wish to create")
-            self._group_class = self.groupType.UNSET
+            self._group_class = GroupType.UNSET
+            self._group_type = PauliType.EMPTY
+            self._group_info_layout = QHBoxLayout()
+            self.setLayout(self._group_info_layout)
 
-            self.cur_layout = QVBoxLayout()
-            self.setLayout(self.cur_layout)
+
+
+            self.group_type_layout = QVBoxLayout()
+            self._group_info_layout.addLayout(self.group_type_layout)
+
 
             self._label = QLabel(
                 f"Current group choice is: {str(self.group_class)}")
-            self.cur_layout.addWidget(self._label)
+            self.group_type_layout.addWidget(self._label)
 
             self._gauge_button = QPushButton("Gauge Operator", parent=self)
-            self.cur_layout.addWidget(self._gauge_button)
+            self._gauge_button.setChecked(False)
+            self.group_type_layout.addWidget(self._gauge_button)
             self._gauge_button.clicked.connect(
-                lambda: self._set_group(self.groupType.GAUGEGROUP))
+                lambda: self.set_group(GroupType.GAUGEGROUP))
+            self._gauge_button.setFocusPolicy(Qt.NoFocus)
 
             self._stabilizer_button = QPushButton("Stabilizer Operator",
                                                   parent=self)
-            self.cur_layout.addWidget(self._stabilizer_button)
+            self.group_type_layout.addWidget(self._stabilizer_button)
             self._stabilizer_button.clicked.connect(
-                lambda: self._set_group(self.groupType.STABILIZER))
+                lambda: self.set_group(GroupType.STABILIZER))
+            self._stabilizer_button.setFocusPolicy(Qt.NoFocus)
+            
+            self._group_type_box = QComboBox()
+            self._group_info_layout.addWidget(self._group_type_box)
+           
+            for gt in PauliType:
+                self._group_type_box.addItem(str(gt))
+            self._group_type_box.currentTextChanged.connect(
+                self.set_group_type
+            )
+            self._group_type_box.setCurrentText(str(PauliType.EMPTY))
 
             self._choice_layout = QHBoxLayout()
-            self.cur_layout.addLayout(self._choice_layout)
+            self.group_type_layout.addLayout(self._choice_layout)
 
             self._okay_button = QPushButton("Okay")
             self._choice_layout.addWidget(self._okay_button)
@@ -526,6 +667,7 @@ class DiagramScene(QGraphicsScene):
             self._choice_layout.addWidget(self._cancel_button)
             self._cancel_button.clicked.connect(self.reject)
 
+    
         def update(self):
             self._label.setText(
                 f"Current group choice is: {str(self.group_class)}")
@@ -533,9 +675,19 @@ class DiagramScene(QGraphicsScene):
         @property
         def group_class(self):
             return self._group_class
+        
+        @property
+        def group_type(self):
+            print(f"returning group tyupe: {self._group_type}")
+            return self._group_type
 
-        def _set_group(self, value):
-            if not isinstance(value, self.groupType):
-                value = self.groupType.INVALID
+        def set_group(self, value: GroupType):
+            if not isinstance(value , GroupType):
+                value = GroupType.INVALID
             self._group_class = value
+            self.update()
+            
+        def set_group_type(self):
+            self._group_type = PauliType(self._group_type_box.currentText())
+            print(f"just set gt to {self._group_type} ")
             self.update()
