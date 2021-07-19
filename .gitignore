@@ -1,10 +1,14 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*__pycache__/*
 *.py[cod]
 *$py.class
 
 # C extensions
 *.so
+
+PyCharm
+.idea/
 
 # Distribution / packaging
 .Python
@@ -127,6 +131,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+<<<<<<< HEAD
+=======
 
 # Intellij PyCharm
 .idea/
+>>>>>>> origin/develop
