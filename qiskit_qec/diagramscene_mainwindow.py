@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox, QToolButton,
     QWidget)
 
-import diagramscene_rc
+import qiskit_qec.diagramscene_rc
 
 
 class MainWindow(QMainWindow):

@@ -58,12 +58,13 @@ from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
     QToolButton, QWidget, QPushButton, QVBoxLayout)
 from enum import Enum
-import diagramscene_rc
+from qiskit_qec.grid_tessellations.tessellation import Square
+
+import qiskit_qec.diagramscene_rc as diagramscene_rc
 import uuid
 
 print(diagramscene_rc)
 
-from grid_tessellations.tessellation import Square
 
 
 class PauliType(Enum):
@@ -595,6 +596,7 @@ class DiagramScene(QGraphicsScene):
         self.addItem(GaugeGroup(qubits))
         for q in qubits:
             q.add_group(gg)
+        print("team")
 
     class SelectGroupSectionTypeBox(QDialog):
         def __init__(self, *args, **kwargs):
