@@ -63,6 +63,8 @@ import uuid
 
 print(diagramscene_rc)
 
+from grid_tessellations.tessellation import Square
+
 
 class PauliType(Enum):
     X = "X"
@@ -84,8 +86,6 @@ class GroupType(Enum):
     def __str__(self):
         return self.value
 
-
-    
     
 class DiagramTextItem(QGraphicsTextItem):
     lost_focus = Signal(QGraphicsTextItem)
@@ -118,8 +118,8 @@ class Qubit(QGraphicsEllipseItem):
     size = 50
     name = "QUBIT"
 
-    def __init__(self, contextMenu, parent=None):
-        super().__init__(0, 0, self.size, self.size, parent)
+    def __init__(self, contextMenu, parent=None, x_pos=0, y_pos=0):
+        super().__init__(x_pos, y_pos, self.size, self.size, parent)
 
         self.groups = []
         
@@ -174,7 +174,8 @@ class Qubit(QGraphicsEllipseItem):
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
         super().paint(painter, option, widget)
         if self.isSelected():
-            pen = QPen(QColor('blue'))
+            pen = QPen(self.scene().HIGHLIGHT_COLOR)
+
             painter.setPen(pen)
             painter.pen().setWidth(2)
             trans = QColor("white")
@@ -336,8 +337,6 @@ class GaugeGroup(QGraphicsPolygonItem):
 
     def paint(self, painter:QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
         
-        
-        
         pen = self.pen()
         painter.setPen(pen)
         
@@ -355,7 +354,6 @@ class GaugeGroup(QGraphicsPolygonItem):
                 pauli = self._error_groups[self.qubits[qu].uuid]
                 if pauli == PauliType.EMPTY:
                     pen.setColor('white')
-                print(f"colr is  {self.scene().get_group_type_color(pauli)}")
                 painter.setBrush(self.scene().get_group_type_color(pauli))
 
                 qu_p = self.qubits[qu].get_center()
@@ -370,8 +368,7 @@ class GaugeGroup(QGraphicsPolygonItem):
                 self._group_paulies.add(poly)
         
         if self.isSelected():
-            print("cheese is the best")
-            pen = QPen(QColor('blue'))
+            pen = QPen(self.scene().HIGHLIGHT_COLOR)
             painter.setPen(pen)
             painter.pen().setWidth(5)
             trans = QColor("white")
@@ -397,17 +394,22 @@ class DiagramScene(QGraphicsScene):
     RETURN = 16777220
     DELETE = 16777223
     BACKSPACE = 16777219
-    C_KEY = 67
-    R_KEY = 81
-    InsertItem, InsertLine, InsertText, MoveItem = range(4)
+    KEY_C = 67
+    KEY_R = 81
+    KEY_1 = 49
+    KEY_2 = 50
+    KEY_3 = 51
+    KEY_4 = 52
 
+    InsertItem, InsertLine, InsertText, MoveItem = range(4)
+    HIGHLIGHT_COLOR = QColor('blue')
     item_inserted = Signal(Qubit)
 
     text_inserted = Signal(QGraphicsTextItem)
 
     item_selected = Signal(QGraphicsItem)
 
-    def __init__(self, itemMenu, parent=None):
+    def __init__(self, itemMenu, parent=None, tiling=Square):
         super().__init__(parent)
         self.setup_group_type_color_map()
         self._my_item_menu = itemMenu
@@ -418,6 +420,8 @@ class DiagramScene(QGraphicsScene):
         self._my_text_color = Qt.black
         self._my_line_color = Qt.black
         self._my_font = QFont()
+        self._tiling = tiling()
+        self.addItem(self._tiling)
         
         
     def setup_group_type_color_map(self):
@@ -478,7 +482,7 @@ class DiagramScene(QGraphicsScene):
             return
 
         if self._my_mode == self.InsertItem:
-            item = Qubit(self._my_item_menu)
+            item = Qubit(self._my_item_menu, parent=self._tiling)
             item.setBrush(self._my_item_color)
             self.addItem(item)
             item.setPos(mouseEvent.scenePos())
@@ -515,12 +519,12 @@ class DiagramScene(QGraphicsScene):
         return False
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == self.R_KEY:
+        if event.key() == self.KEY_R:
             for i in self.items():
                 if isinstance(i, GaugeGroup):
                     i.set_random_paulis()
                     
-        if event.key() == self.C_KEY:
+        if event.key() == self.KEY_C:
             gb = self.SelectGroupSectionTypeBox()
             gb.exec()
             group_type = gb.group_type
@@ -559,12 +563,10 @@ class DiagramScene(QGraphicsScene):
                 # TODO add logging
                 return
             gtype = gb.group_type
-            points = []
             qubits = []
             for i in self.selectedItems():
                 if isinstance(i, Qubit):
                     qubits.append(i)
-                    points.append(i.get_center())
             group_item = group(qubits, gtype)
             self.addItem(group_item)
             for q in qubits:
@@ -573,6 +575,26 @@ class DiagramScene(QGraphicsScene):
         self.set_mode(self.MoveItem)
         for item in self.selectedItems():
             item.setSelected(False)
+            
+        if event.key() == self.KEY_2:
+            self.temp_group_maker(2)
+        elif event.key() == self.KEY_3:
+            self.temp_group_maker(3)
+        elif event.key() == self.KEY_4:
+            self.temp_group_maker(4)
+            
+    def temp_group_maker(self, n):
+        self.set_mode(self.InsertItem)
+        qubits = []
+        for point in self._tiling.make_tile(n):
+            item = Qubit(contextMenu=self._my_item_menu, x_pos=point.x(), y_pos=point.y(),parent=self._tiling )
+            self.addItem(item)
+            qubits.append(item)
+            self.item_inserted.emit(item)
+        gg = GaugeGroup(qubits, PauliType.X)
+        self.addItem(GaugeGroup(qubits))
+        for q in qubits:
+            q.add_group(gg)
 
     class SelectGroupSectionTypeBox(QDialog):
         def __init__(self, *args, **kwargs):
