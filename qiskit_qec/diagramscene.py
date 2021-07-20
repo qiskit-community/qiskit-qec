@@ -49,7 +49,7 @@ from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
                             Signal)
 from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
                            QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
-                           QBrush, QKeyEvent)
+                           QBrush, QKeyEvent, QPolygon)
 from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
     QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
@@ -58,10 +58,10 @@ from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QToolButton, QWidget, QPushButton, QVBoxLayout, QGraphicsSceneMouseEvent)
 from enum import Enum
 from qiskit_qec.grid_tessellations.tessellation import Square
-
+from typing import  Sequence, Union, Dict
 import qiskit_qec.diagramscene_rc as diagramscene_rc
 import uuid
-
+import random
 print(diagramscene_rc)
 
 
@@ -118,7 +118,7 @@ class DiagramTextItem(QGraphicsTextItem):
 class GaugeGroup(QGraphicsPolygonItem):
     name = "Gauge Group"
     
-    def __init__(self, points):
+    def __init__(self, points, pauli_map:Dict[QPointF,PauliType]=None):
 
         super().__init__(points)
         
@@ -127,7 +127,120 @@ class GaugeGroup(QGraphicsPolygonItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         
+        if pauli_map is None:
+            self.broken = False
+            self._error_groups = dict() # vertices -- Paulis
+            for p in points:
+                self.update_error_groups(p, PauliType.EMPTY)
+        else:
+            self.broken = True
+            self._error_groups = pauli_map
+
+    def generate_polygon(self):
+        # force paint event
+        self.update(self.boundingRect())
+        
+    def update_error_groups(self, point:QPointF, value:PauliType):
+        key_point = (point.x(), point.y())
+        self._error_groups[key_point] = value
+        
+    def get_from_error_group(self, point: QPointF):
+        key_point = (point.x(), point.y())
+        if key_point in self._error_groups:
+            return self._error_groups[key_point]
+        else:
+            return None
+    def is_point_in_error_group(self, point: QPointF):
+        key_point = (point.x(), point.y())
+        return key_point in self._error_groups
+        
+    def set_random_paulis(self):
+        self.broken = True
+        for q in self._error_groups.keys():
+            options = list(PauliType)
+            options.remove(PauliType.EMPTY)
+            c = random.choice(options)
+            self._error_groups[q] = c
+        self.generate_polygon()
+        
+    def setPolygon(self, polygon: Union[QPolygonF, Sequence[QPointF], QPolygon, QRectF]) -> None:
+        
+        # update Paulis for rotation
+        cur_poly = self.polygon()
+        num_vert = len(cur_poly)
+        if cur_poly != 0:
+            new_values = []
+            for indx in range(num_vert):
+                if self.is_point_in_error_group(cur_poly[indx]):
+                    new_values.append((polygon[indx], self.get_from_error_group(cur_poly[indx])))
+                else:
+                    new_values.append((polygon[indx], PauliType.EMPTY))
+            self._error_groups = dict()
+            for tup in new_values:
+                self.update_error_groups(tup[0], tup[1])
+        
+        super().setPolygon(polygon)
+        
+    def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[ QWidget ] = ...) -> None:
     
+        pen = self.pen()
+        painter.setPen(pen)
+    
+        if not self.broken:
+            
+            painter.setBrush(QColor(self.scene().get_group_type_color(random.choice(list(self._error_groups.values())))))
+            painter.drawPolygon(self.polygon())
+    
+        else:
+            x_sum = 0
+            y_sum = 0
+            count = 0
+            for point in self.polygon():
+                count += 1
+                x_sum += point.x()
+                y_sum += point.y()
+            centroid = QPointF(x_sum / count, y_sum / count)
+
+            qcolor = QColor('black')
+            pen.setColor(qcolor)
+            painter.setPen(pen)
+            painter.drawPolygon(self.polygon())
+
+            for indx in range(len(self.polygon())):
+                poly = self.polygon()
+                vertex = poly[indx]
+
+                qcolor = QColor('salmon')
+                qcolor.setAlpha(0)
+                pen.setColor(qcolor)
+                pauli = self.get_from_error_group(vertex)
+                painter.setBrush(self.scene().get_group_type_color(pauli))
+                painter.setPen(pen)
+                
+             
+                p1_p = poly[ (indx + 1) % (len(poly)) ]
+                hp1_p = QPointF((p1_p.x() + vertex.x()) / 2, (p1_p.y() + vertex.y()) / 2)
+                p2_p = poly[ (indx - 1) % (len(poly)) ]
+                hp2_p = QPointF((p2_p.x() + vertex.x()) / 2, (p2_p.y() + vertex.y()) / 2)
+            
+                poly = QPolygonF([ hp1_p, vertex, hp2_p, centroid ])
+                painter.drawPolygon(poly)
+    
+        if self.isSelected():
+            pen = QPen(self.scene().HIGHLIGHT_COLOR)
+            painter.setPen(pen)
+            painter.pen().setWidth(5)
+            trans = QColor("white")
+            trans.setAlpha(0)
+            painter.setBrush(trans)
+            painter.drawPolygon(self.polygon())
+        
+    def set_entire_group_pauli(self, pauli: PauliType = PauliType.X):
+        self.broken = False
+        for key in self._error_groups.keys():
+            self.update_error_groups(key, pauli)
+        self.generate_polygon()
+
         
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         current_poly = self.polygon()
@@ -148,14 +261,13 @@ class DiagramScene(QGraphicsScene):
     RETURN = 16777220
     DELETE = 16777223
     BACKSPACE = 16777219
-    KEY_C = 67
-    KEY_R = 81
     KEY_1 = 49
     KEY_2 = 50
     KEY_3 = 51
     KEY_4 = 52
-    C_KEY = 67
-    R_KEY = 82
+    KEY_C = 67
+    KEY_R = 82
+    KEY_J = 74
 
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
     HIGHLIGHT_COLOR = QColor('blue')
@@ -195,8 +307,6 @@ class DiagramScene(QGraphicsScene):
                 i.generate_polygon()
         
     def get_group_type_color(self, group_type: PauliType):
-        print(f"group pault ti get is; {group_type}")
-        print(f"colormaps is; {self.group_type_color_map}")
         return self.group_type_color_map[group_type]
 
     def set_line_color(self, color):
@@ -282,22 +392,44 @@ class DiagramScene(QGraphicsScene):
         elif event.key() == self.KEY_4:
             self.add_group(4)
         
-        if event.key() == self.R_KEY:
+        if event.key() == self.KEY_R:
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroup):
                     cur_polygon = item.polygon()
                     item.setPolygon(QPolygonF(self._tiling.rotate_tile_around_origin(cur_polygon)))
             self._tiling.update(self._tiling.boundingRect())
         
-        if event.key() == self.C_KEY:
+        if event.key() == self.KEY_C:
             scene_polys = []
+            scene_error_groups = dict()
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroup):
                     scene_polys.append((item.scenePos(), item.polygon()))
                     
+                    for k in item._error_groups.keys():
+                        ipos = item.pos()
+                        polypos = k
+                        scene_vert_pos = (polypos[0] + ipos.x(), polypos[1] + ipos.y())
+                        scene_error_groups[scene_vert_pos] = item._error_groups[k]
+                        
                     self.removeItem(item)
                     self._tiling.update(self._tiling.boundingRect())
-            self.addItem(GaugeGroup(self._tiling.combine_tiles(scene_polys)))
+
+             
+            new_poly, new_pos = self._tiling.combine_tiles(scene_polys)
+            poly_error_groups = dict()
+            for k in scene_error_groups.keys():
+                scene_pos = k
+                polypos = (scene_pos[0] - new_pos.x(), scene_pos[1] - new_pos.y())
+                poly_error_groups[polypos] = scene_error_groups[k]
+            gg = GaugeGroup(QPolygonF(new_poly), poly_error_groups)
+            gg.setPos(new_pos)
+            self.addItem(gg)
+        
+        if event.key() == self.KEY_J:
+            for item in self.selectedItems():
+                if isinstance(item, GaugeGroup):
+                    item.set_random_paulis()
             
          
     def add_group(self, vertex_num: int):

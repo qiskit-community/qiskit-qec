@@ -111,7 +111,7 @@ class Square(Tessellation):
                 QPointF(self.square_size, 0),
             ]
         
-    def rotate_tile_around_origin(self, tile_points: QPolygonF, ninety_mult: int=1):
+    def rotate_tile_around_origin(self, tile_points: QPolygonF, ninety_mult: int=1) -> [QPointF]:
         if ninety_mult == 0:
             return tile_points
         if ninety_mult == 1:
@@ -166,11 +166,13 @@ class Square(Tessellation):
     
     
     
-    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> [QPointF]:
+    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> ([QPointF], QPointF):
+        # SHOULD NOT CHANGE SCENE POS OF VERTICES BY THE END (WILL MESS UP ERROR GROUPS)
         # covert polys to scene then combine to megapoly then convert back to poly
-        min_x = 0
-        min_y = 0
+        min_x = sys.maxsize
+        min_y = sys.maxsize
         scene_vertices = []
+        scene_vert_set = set()
         for tup in polygon_list:
             poly = tup[1]
             pos = tup[0]
@@ -179,7 +181,10 @@ class Square(Tessellation):
             if pos.y() < min_y:
                 min_y = pos.y()
             for point in poly:
-                scene_vertices.append(QPointF(pos.x() + point.x(), pos.y() + point.y()))
+                pp = (pos.x() + point.x(), pos.y() + point.y())
+                if pp not in scene_vert_set:
+                    scene_vertices.append(QPointF(pos.x() + point.x(), pos.y() + point.y()))
+                    scene_vert_set.add(pp)
             
             
         centroid = self.calculate_centroid(scene_vertices)
@@ -194,13 +199,13 @@ class Square(Tessellation):
 
         # subtract by min X and min Y?
 
-        return new_poly_vertices
+        return new_poly_vertices, QPointF(min_x, min_y)
         
     def polygon_centroid(self, polygon:QPolygonF):
         x_sum = 0
         y_sum = 0
         count = 0
-        for point in self.polygon:
+        for point in polygon:
             count += 1
             x_sum += point.x()
             y_sum += point.y()
