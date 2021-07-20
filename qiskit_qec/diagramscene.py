@@ -118,7 +118,7 @@ class DiagramTextItem(QGraphicsTextItem):
 class GaugeGroup(QGraphicsPolygonItem):
     name = "Gauge Group"
     
-    def __init__(self, points, pauli_map:Dict[QPointF,PauliType]=None):
+    def __init__(self, points, pauli_map:Dict[QPointF,PauliType]=None, pauli_def:PauliType=PauliType.EMPTY):
 
         super().__init__(points)
         
@@ -130,8 +130,14 @@ class GaugeGroup(QGraphicsPolygonItem):
         if pauli_map is None:
             self.broken = False
             self._error_groups = dict() # vertices -- Paulis
-            for p in points:
-                self.update_error_groups(p, PauliType.EMPTY)
+            
+            if pauli_def:
+                for p in points:
+                    self.update_error_groups(p, pauli_def)
+            else:
+                for p in points:
+                    self.update_error_groups(p,PauliType.EMPTY)
+                
         else:
             self.broken = True
             self._error_groups = pauli_map
@@ -146,10 +152,8 @@ class GaugeGroup(QGraphicsPolygonItem):
         
     def get_from_error_group(self, point: QPointF):
         key_point = (point.x(), point.y())
-        if key_point in self._error_groups:
-            return self._error_groups[key_point]
-        else:
-            return None
+        return self._error_groups[key_point]
+
     def is_point_in_error_group(self, point: QPointF):
         key_point = (point.x(), point.y())
         return key_point in self._error_groups
@@ -268,6 +272,7 @@ class DiagramScene(QGraphicsScene):
     KEY_C = 67
     KEY_R = 82
     KEY_J = 74
+    KEY_A = 65
 
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
     HIGHLIGHT_COLOR = QColor('blue')
@@ -430,8 +435,21 @@ class DiagramScene(QGraphicsScene):
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroup):
                     item.set_random_paulis()
-            
-         
+                    
+        if event.key() == self.KEY_A:
+            options = list(PauliType)
+            options.remove(PauliType.EMPTY)
+            size = self._tiling.square_size
+            for i in range(10):
+                for j in range(3):
+                    tile = self._tiling.make_tile(4)
+                    gg = GaugeGroup(QPolygonF(tile), pauli_def=random.choice(options))
+                    gg.setPos(size * i, size * j)
+                    self.addItem(gg)
+
+
     def add_group(self, vertex_num: int):
         tile = GaugeGroup(self._tiling.make_tile(vertex_num))
         self.addItem(tile)
+        
+        
