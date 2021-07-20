@@ -152,6 +152,7 @@ class DiagramScene(QGraphicsScene):
     KEY_3 = 51
     KEY_4 = 52
     C_KEY = 67
+    R_KEY = 82
 
     InsertItem, InsertLine, InsertText, MoveItem = range(4)
     HIGHLIGHT_COLOR = QColor('blue')
@@ -277,7 +278,12 @@ class DiagramScene(QGraphicsScene):
             self.add_group(3)
         elif event.key() == self.KEY_4:
             self.add_group(4)
-            
+        
+        if event.key() == self.R_KEY:
+            for item in self.selectedItems():
+                if isinstance(item, GaugeGroup):
+                    cur_polygon = item.polygon()
+                    item.setPolygon(QPolygonF(self._tiling.rotate_tile_around_origin(cur_polygon)))
             
     def add_group(self, vertex_num: int):
         tile = GaugeGroup(self._tiling.make_tile(vertex_num))

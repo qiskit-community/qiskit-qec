@@ -19,8 +19,7 @@ from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QToolButton, QWidget, QPushButton, QVBoxLayout)
 from enum import Enum
 import uuid
-
-
+import numpy as np
 
 class Tessellation(QGraphicsPolygonItem):
     def __init__(self):
@@ -111,6 +110,51 @@ class Square(Tessellation):
                 QPointF(self.square_size, self.square_size),
                 QPointF(self.square_size, 0),
             ]
+        
+    def rotate_tile_around_origin(self, tile_points: QPolygonF, ninety_mult: int=1):
+        if ninety_mult == 0:
+            return tile_points
+        if ninety_mult == 1:
+            new_points = []
+            x_mat = []
+            x_sum = 0
+            
+            y_mat = []
+            y_sum = 0
+            
+            count = 0
+            for p in tile_points:
+                count += 1
+                x_sum += p.x()
+                x_mat.append(p.x())
+                
+                
+                y_mat.append(p.y())
+                y_sum += p.y()
+             
+            P = np.array([x_mat, y_mat])
+            centr_x = self.square_size/2
+            centr_y = self.square_size/2
+            
+            C_top = np.full((1, count), centr_x)[0]
+            C_bot = np.full((1, count), centr_y)[0]
+            C = np.array([C_top, C_bot])
+            
+            R = [
+                [0, 1],
+                [-1, 0]
+            ]
+            
+            P_new = np.matmul(R, (P - C)) + C
+            
+            for i in range(len(P_new[0])):
+                new_points.append(QPointF(P_new[0][i], P_new[1][i]))
+                
+                print(f"""oldpoint: {P[0][i], P[1][i]}
+                          tilepoint: {tile_points[i]}
+                           newpoint: {new_points[i]}""")
+            return new_points
+        
     
     def perimeter_size(self):
         # TODO turn this into boundRect overwrite
