@@ -134,8 +134,9 @@ class Square(Tessellation):
                 y_sum += p.y()
              
             P = np.array([x_mat, y_mat])
-            centr_x = self.square_size/2
-            centr_y = self.square_size/2
+            poly_centr = self.calculate_centroid(tile_points)
+            centr_x = poly_centr.x()
+            centr_y = poly_centr.y()
             
             C_top = np.full((1, count), centr_x)[0]
             C_bot = np.full((1, count), centr_y)[0]
@@ -149,7 +150,9 @@ class Square(Tessellation):
             P_new = np.matmul(R, (P - C)) + C
             
             for i in range(len(P_new[0])):
-                new_points.append(QPointF(P_new[0][i], P_new[1][i]))
+                valid_point = self.find_closest_vertex(QPointF(P_new[0][i], P_new[1][i]))
+                new_points.append(valid_point)
+            
                 
                 print(f"""oldpoint: {P[0][i], P[1][i]}
                           tilepoint: {tile_points[i]}

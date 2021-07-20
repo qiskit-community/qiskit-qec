@@ -287,6 +287,7 @@ class DiagramScene(QGraphicsScene):
                 if isinstance(item, GaugeGroup):
                     cur_polygon = item.polygon()
                     item.setPolygon(QPolygonF(self._tiling.rotate_tile_around_origin(cur_polygon)))
+            self._tiling.update(self._tiling.boundingRect())
         
         if event.key() == self.C_KEY:
             scene_polys = []
