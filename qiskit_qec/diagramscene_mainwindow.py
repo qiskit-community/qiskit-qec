@@ -1,4 +1,4 @@
-from qiskit_qec.diagramscene import Qubit, DiagramTextItem, DiagramScene
+from qiskit_qec.diagramscene import DiagramTextItem, DiagramScene
 
 import math
 import sys
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
         self.scene = DiagramScene(self._item_menu)
         self.scene.setSceneRect(QRectF(0, 0, 5000, 5000))
-        self.scene.item_inserted.connect(self.item_inserted)
+#        self.scene.item_inserted.connect(self.item_inserted)
         self.scene.text_inserted.connect(self.text_inserted)
         self.scene.item_selected.connect(self.item_selected)
 
@@ -92,9 +92,9 @@ class MainWindow(QMainWindow):
         overlap_items = selected_item.collidingItems()
 
         z_value = 0
-        for item in overlap_items:
-            if (item.zValue() >= z_value and isinstance(item, Qubit)):
-                z_value = item.zValue() + 0.1
+        # for item in overlap_items:
+        #     if (item.zValue() >= z_value and isinstance(item, Qubit)):
+        #         z_value = item.zValue() + 0.1
         selected_item.setZValue(z_value)
 
     def send_to_back(self):
@@ -105,9 +105,9 @@ class MainWindow(QMainWindow):
         overlap_items = selected_item.collidingItems()
 
         z_value = 0
-        for item in overlap_items:
-            if (item.zValue() <= z_value and isinstance(item, Qubit)):
-                z_value = item.zValue() - 0.1
+        # for item in overlap_items:
+        #    if (item.zValue() <= z_value and isinstance(item, Qubit)):
+        #       z_value = item.zValue() - 0.1
         selected_item.setZValue(z_value)
 
     def item_inserted(self, item):
@@ -198,7 +198,7 @@ class MainWindow(QMainWindow):
         self._button_group.idClicked.connect(self.button_group_clicked)
 
         layout = QGridLayout()
-        layout.addWidget(self.create_cell_widget(Qubit.name, Qubit), 0, 0)
+        #layout.addWidget(self.create_cell_widget(Qubit.name, Qubit), 0, 0)
 
         text_button = QToolButton()
         text_button.setCheckable(True)

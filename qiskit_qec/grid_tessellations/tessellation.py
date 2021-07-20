@@ -54,6 +54,7 @@ class Square(Tessellation):
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
         pen = self.pen()
         pen.setColor(self.color)
+        pen.setWidth(10)
         painter.setPen(pen)
         
         scene_rect = self.scene().sceneRect()
