@@ -55,7 +55,7 @@ from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
     QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
     QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
-    QToolButton, QWidget, QPushButton, QVBoxLayout)
+    QToolButton, QWidget, QPushButton, QVBoxLayout, QGraphicsSceneMouseEvent)
 from enum import Enum
 from qiskit_qec.grid_tessellations.tessellation import Square
 
@@ -124,6 +124,14 @@ class GaugeGroup(QGraphicsPolygonItem):
         self.setFillRule(Qt.OddEvenFill)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        current_poly = self.polygon()
+        print(f"current poly: {current_poly} and pos: {self.pos()} and scenepos: {self.scenePos()}")
+        new_point = self.scene()._tiling.find_closest_vertex(self.scenePos())
+        self.setPos(new_point)
+        super().mouseReleaseEvent(event)
+        
         
 
 class Stabilizer(GaugeGroup):
@@ -244,9 +252,12 @@ class DiagramScene(QGraphicsScene):
             self._tiling.update(self.sceneRect())
             super(DiagramScene, self).mouseMoveEvent(mouseEvent)
 
-    def mouseReleaseEvent(self, mouseEvent):
-        self.line = None
-        super(DiagramScene, self).mouseReleaseEvent(mouseEvent)
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        if self.mouseGrabberItem() is not None and self.mouseGrabberItem() != 0:
+            self._tiling.update(self.sceneRect())
+        super(DiagramScene, self).mouseReleaseEvent(event)
+            
+        
 
     def is_item_change(self, type):
         for item in self.selectedItems():
