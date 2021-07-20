@@ -295,6 +295,7 @@ class DiagramScene(QGraphicsScene):
                     scene_polys.append((item.scenePos(), item.polygon()))
                     
                     self.removeItem(item)
+                    self._tiling.update(self._tiling.boundingRect())
             self.addItem(GaugeGroup(self._tiling.combine_tiles(scene_polys)))
             
          
