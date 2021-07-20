@@ -114,20 +114,23 @@ class DiagramTextItem(QGraphicsTextItem):
 
 
 
+
 class GaugeGroup(QGraphicsPolygonItem):
     name = "Gauge Group"
     
     def __init__(self, points):
 
         super().__init__(points)
+        
         self.setBrush(QBrush('blue'))
         self.setFillRule(Qt.OddEvenFill)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         
+    
+        
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         current_poly = self.polygon()
-        print(f"current poly: {current_poly} and pos: {self.pos()} and scenepos: {self.scenePos()}")
         new_point = self.scene()._tiling.find_closest_vertex(self.scenePos())
         self.setPos(new_point)
         super().mouseReleaseEvent(event)
@@ -284,7 +287,17 @@ class DiagramScene(QGraphicsScene):
                 if isinstance(item, GaugeGroup):
                     cur_polygon = item.polygon()
                     item.setPolygon(QPolygonF(self._tiling.rotate_tile_around_origin(cur_polygon)))
+        
+        if event.key() == self.C_KEY:
+            scene_polys = []
+            for item in self.selectedItems():
+                if isinstance(item, GaugeGroup):
+                    scene_polys.append((item.scenePos(), item.polygon()))
+                    
+                    self.removeItem(item)
+            self.addItem(GaugeGroup(self._tiling.combine_tiles(scene_polys)))
             
+         
     def add_group(self, vertex_num: int):
         tile = GaugeGroup(self._tiling.make_tile(vertex_num))
         self.addItem(tile)

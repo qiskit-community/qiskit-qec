@@ -115,6 +115,7 @@ class Square(Tessellation):
         if ninety_mult == 0:
             return tile_points
         if ninety_mult == 1:
+            
             new_points = []
             x_mat = []
             x_sum = 0
@@ -160,13 +161,115 @@ class Square(Tessellation):
         # TODO turn this into boundRect overwrite
         return (self.grid_width * self.square_size, self.grid_height * self.square_size)
     
-        
+    
+    
+    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> [QPointF]:
+        # covert polys to scene then combine to megapoly then convert back to poly
+        min_x = 0
+        min_y = 0
+        scene_vertices = []
+        for tup in polygon_list:
+            poly = tup[1]
+            pos = tup[0]
+            if pos.x() < min_x:
+                min_x = pos.x()
+            if pos.y() < min_y:
+                min_y = pos.y()
+            for point in poly:
+                scene_vertices.append(QPointF(pos.x() + point.x(), pos.y() + point.y()))
             
-        
             
+        centroid = self.calculate_centroid(scene_vertices)
+        # vertices will also be bubble sorted
+        new_vertices = self.bubble_sort_vertices(scene_vertices, centroid)
+        print(f"new points: {new_vertices}")
         
+        new_poly_vertices = []
+        for point in new_vertices:
+            new_poly_vertices.append(QPointF(point.x() - min_x, point.y() - min_y))
+        print(f"new poly points: {new_poly_vertices}")
+
+        # subtract by min X and min Y?
+
+        return new_poly_vertices
+        
+    def polygon_centroid(self, polygon:QPolygonF):
+        x_sum = 0
+        y_sum = 0
+        count = 0
+        for point in self.polygon:
+            count += 1
+            x_sum += point.x()
+            y_sum += point.y()
+        centroid = QPointF(x_sum / count, y_sum / count)
+        return centroid
+    
+    def calculate_centroid(self, vertices:[QPointF]):
+        x_sum = 0
+        y_sum = 0
+        count = 0
+        for point in vertices:
+                count += 1
+                x_sum += point.x()
+                y_sum += point.y()
+        centroid = QPointF(x_sum/count, y_sum/count)
+        return centroid
         
 
+    def less(self, point_a :QPointF, point_b: QPointF, centroid: QPointF):
+        if (point_a.x() - centroid.x() >=
+            0) and (point_b.x() - centroid.x() < 0):
+            return True
+        if (point_a.x() - centroid.x() <
+            0) and (point_b.x() - centroid.x() >= 0):
+            return False
+    
+        if (point_a.x() - centroid.x()
+            == 0) and (point_b.x() - centroid.x() == 0):
+            if (point_a.y() - centroid.y() >=
+                0) or (point_b.y() - centroid.y() >= 0):
+                return point_a.y() > point_b.y()
+            return point_b.y() > point_a.y()
+    
+        # compute the cross product of vectors(center -> a) x(center -> b) int
+        det = (point_a.x() -
+               centroid.x()) * (point_b.y() - centroid.y()) - (
+                  point_b.x() - centroid.x()) * (point_a.y() -
+                                                      centroid.y())
+        if (det < 0):
+            return True
+        if (det > 0):
+            return False
+    
+        # points a and b are on the same line from the center
+    
+        # check which point is closer to the center
+        d1 = (point_a.x() - centroid.x()) * (point_a.x() - centroid.x(
+        )) + (point_a.y() - centroid.y()) * (point_a.y() -
+                                                  centroid.y())
+        d2 = (point_b.x() - centroid.x()) * (point_b.x() - centroid.x(
+        )) + (point_b.y() - centroid.y()) * (point_b.y() -
+                                                  centroid.y())
+        return d1 > d2
+
+
+    def bubble_sort_vertices(self, vertices:[QPointF], centroid: QPointF):
+        # bubble sort
+        n = len(vertices)
+    
+        # Traverse through all array elements
+        for i in range(n):
+        
+            # Last i elements are already in place
+            for j in range(0, n - i - 1):
+            
+                # traverse the array from 0 to n-i-1
+                # Swap if the element found is greater
+                # than the next element
+                if self.less(vertices[ j ], vertices[ j + 1 ], centroid):
+                    vertices[ j ], vertices[ j + 1 ] = vertices[j + 1 ], vertices[ j ]
+                    
+        return vertices
         
         
     
