@@ -22,6 +22,9 @@ import uuid
 import numpy as np
 
 class Tessellation(QGraphicsPolygonItem):
+    """
+    Designates "qubits" by creating a grid whose intersecting lines are qubits
+    """
     def __init__(self):
         super().__init__()
 
@@ -110,7 +113,7 @@ class Square(Tessellation):
                 QPointF(self.square_size, self.square_size),
                 QPointF(self.square_size, 0),
             ]
-        
+     
     def rotate_tile_around_origin(self, tile_points: QPolygonF, ninety_mult: int=1) -> [QPointF]:
         if ninety_mult == 0:
             return tile_points

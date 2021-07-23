@@ -255,7 +255,7 @@ class GaugeBoi():
         painter.setPen(pen)
     
         if not self.broken:
-            painter.setBrush(QColor(self.scene().get_group_type_color(self._error_groups[ self.qubits[ 0 ].uuid ])))
+            painter.setBrush(QColor(self.scene().get_pauli_type_color(self._error_groups[ self.qubits[ 0 ].uuid ])))
             qpoints = [ ]
             for q in self.qubits:
                 qpoints.append(q.get_center())
@@ -268,7 +268,7 @@ class GaugeBoi():
                 pauli = self._error_groups[ self.qubits[ qu ].uuid ]
                 if pauli == PauliType.EMPTY:
                     pen.setColor('white')
-                painter.setBrush(self.scene().get_group_type_color(pauli))
+                painter.setBrush(self.scene().get_pauli_type_color(pauli))
             
                 qu_p = self.qubits[ qu ].get_center()
                 centr_p = self.centroid
@@ -352,42 +352,7 @@ class DiagramSceneBoi():
                     self.removeItem(i)
 
 
-    class SelectGroupSectionTypeBox(QDialog):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.setWindowTitle("Choose Type")
-            self._group_type = PauliType.EMPTY
-        
-            self._type_layout = QVBoxLayout()
-            self.setLayout(self._type_layout)
-        
-            self._group_type_box = QComboBox()
-            self._type_layout.addWidget(self._group_type_box)
-        
-            for gt in PauliType:
-                print(f"fish sdlkf sdf GT is {gt}")
-                # Adds an item to the combobox with the given text, and containing the specified userData (stored in the Qt::UserRole). The item is appended to the list of existing items.
-                self._group_type_box.addItem(str(gt))
-            self._group_type_box.currentTextChanged.connect(
-                self.set_group_type
-            )
-            self._group_type_box.setCurrentText(str(PauliType.EMPTY))
-        
-            self._choice_layout = QHBoxLayout()
-            self._type_layout.addLayout(self._choice_layout)
-        
-            self._okay_button = QPushButton("Okay")
-            self._choice_layout.addWidget(self._okay_button)
-            self._okay_button.clicked.connect(self.accept)
-    
-        @property
-        def group_type(self):
-            return self._group_type
-    
-        def set_group_type(self):
-            self._group_type = PauliType(self._group_type_box.currentText())
-            print(f"just set type only gt to {self._group_type} ")
-            self.update()
+
 
     class SelectGroupInfoBox(QDialog):
     
