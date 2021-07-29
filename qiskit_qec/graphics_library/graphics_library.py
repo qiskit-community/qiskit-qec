@@ -41,7 +41,7 @@
 
 import math
 import array
-import sys
+import sys, math
 from typing import Optional, Tuple
 
 from PySide6.QtWidgets import QDialog, QMainWindow
@@ -121,20 +121,22 @@ class GaugeGroup(QGraphicsPolygonItem):
         
         super().__init__(points)
         
+        self.bounding_rect = None
+        self.two_points = False
+        if len(points) < 3:
+            self.two_points = True
+            self.calculate_bounding_rect_from_poly_points(points[0],points[1])
+            
         self.setFillRule(Qt.OddEvenFill)
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
-        
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
+
         if pauli_map is None:
             self.broken = False
             self._error_groups = dict()  # vertices -- Paulis
             
-            if pauli_def:
-                for p in points:
-                    self.update_error_group(p, pauli_def)
-            else:
-                for p in points:
-                    self.update_error_group(p, PauliType.EMPTY)
+            self.set_entire_group_pauli(pauli_def)
         
         else:
             self.broken = True
@@ -154,7 +156,10 @@ class GaugeGroup(QGraphicsPolygonItem):
     
     def get_from_error_group(self, point: QPointF):
         key_point = (point.x(), point.y())
-        return self._error_groups[ key_point ]
+        if key_point in self._error_groups:
+            
+            return self._error_groups[ key_point ]
+        return None
     
     def key_point_from_error_group(self):
         key_point_list = self._error_groups.keys()
@@ -176,6 +181,7 @@ class GaugeGroup(QGraphicsPolygonItem):
     
     def setPolygon(self, polygon: Union[ QPolygonF, Sequence[ QPointF ], QPolygon, QRectF ]) -> None:
         
+        
         # update Paulis for rotation
         cur_poly = self.polygon()
         num_vert = len(cur_poly)
@@ -191,6 +197,56 @@ class GaugeGroup(QGraphicsPolygonItem):
                 self.update_error_group(tup[ 0 ], tup[ 1 ])
         
         super().setPolygon(polygon)
+   
+    def set_boundingrect(self, rectf: QRectF=None):
+        self.prepareGeometryChange()
+        print("it's pretty clear...")
+        self.bounding_rect = rectf
+        self.setFlag(QGraphicsItem.ItemIsMovable, True)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
+
+        
+    
+    def boundingRect(self) -> QRectF:
+        if self.two_points:
+            if self.bounding_rect is not None:
+                return self.bounding_rect
+        return super().boundingRect()
+    
+    
+        
+    def calculate_bounding_rect_from_poly_points(self, point1, point2):
+        # point1 = self.mapToScene(poly_point1)
+        # point2 = self.mapToScene(poly_point2)
+        x_dif = math.fabs(point1.x() - point2.x())
+        y_dif = math.fabs(point1.y() - point2.y())
+        if point1.x() < point2.x():
+            self.set_boundingrect(QRectF(point1.x(), point1.y() - x_dif, x_dif, x_dif))
+            # a ---> b over
+        elif point2.x() > point1.x():
+            self.set_boundingrect(QRectF(point2.x(), point2.y() - x_dif, x_dif, x_dif))
+            
+            
+
+    def paint_two_qubit(self, point1: QPointF, point2: QPointF, painter: QPainter):
+        pen = self.pen()
+        painter.setPen(pen)
+
+        self.setPolygon(QPolygonF(self.boundingRect()))
+
+        if not self.broken:
+            painter.setBrush(
+                QColor(self.scene().get_pauli_type_color(random.choice(list(self._error_groups.values())))))
+            
+            if point1.x() < point2.x():
+                    # a ---> b over
+                painter.drawPie(self.boundingRect(), 0, 2880)
+            elif point2.x() > point1.x():
+                painter.drawPie(self.boundingRect(), -2880, 0)
+                
+    
+    
     
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[ QWidget ] = ...) -> None:
         
@@ -199,48 +255,52 @@ class GaugeGroup(QGraphicsPolygonItem):
         
         # TODO figure out where to decide polygon shape
         
-        if not self.broken:
-            painter.setBrush(
-                QColor(self.scene().get_pauli_type_color(random.choice(list(self._error_groups.values())))))
-            painter.drawPolygon(self.polygon())
         
+        if len(self.polygon()) < 3:
+            self.paint_two_qubit(self.polygon()[0], self.polygon()[1], painter)
         else:
-            x_sum = 0
-            y_sum = 0
-            count = 0
-            for point in self.polygon():
-                count += 1
-                x_sum += point.x()
-                y_sum += point.y()
-            centroid = QPointF(x_sum / count, y_sum / count)
+            if not self.broken:
+                painter.setBrush(
+                    QColor(self.scene().get_pauli_type_color(random.choice(list(self._error_groups.values())))))
+                painter.drawPolygon(self.polygon())
             
-            qcolor = QColor('black')
-            pen.setColor(qcolor)
-            painter.setPen(pen)
-            painter.drawPolygon(self.polygon())
-            
-            for indx in range(len(self.polygon())):
-                poly = self.polygon()
-                vertex = poly[ indx ]
+            else:
+                x_sum = 0
+                y_sum = 0
+                count = 0
+                for point in self.polygon():
+                    count += 1
+                    x_sum += point.x()
+                    y_sum += point.y()
+                centroid = QPointF(x_sum / count, y_sum / count)
                 
-                qcolor = QColor('salmon')
-                qcolor.setAlpha(0)
-                pen.setColor(qcolor)
-                pauli = self.get_from_error_group(vertex)
-                painter.setBrush(self.scene().get_pauli_type_color(pauli))
-                painter.setPen(pen)
-                
-                p1_p = poly[ (indx + 1) % (len(poly)) ]
-                hp1_p = QPointF((p1_p.x() + vertex.x()) / 2, (p1_p.y() + vertex.y()) / 2)
-                p2_p = poly[ (indx - 1) % (len(poly)) ]
-                hp2_p = QPointF((p2_p.x() + vertex.x()) / 2, (p2_p.y() + vertex.y()) / 2)
-                
-                poly = QPolygonF([ hp1_p, vertex, hp2_p, centroid ])
-                painter.drawPolygon(poly)
-                qcolor.setAlpha(255)
+                qcolor = QColor('black')
                 pen.setColor(qcolor)
                 painter.setPen(pen)
-        
+                painter.drawPolygon(self.polygon())
+                
+                for indx in range(len(self.polygon())):
+                    poly = self.polygon()
+                    vertex = poly[ indx ]
+                    
+                    qcolor = QColor('salmon')
+                    qcolor.setAlpha(0)
+                    pen.setColor(qcolor)
+                    pauli = self.get_from_error_group(vertex)
+                    painter.setBrush(self.scene().get_pauli_type_color(pauli))
+                    painter.setPen(pen)
+                    
+                    p1_p = poly[ (indx + 1) % (len(poly)) ]
+                    hp1_p = QPointF((p1_p.x() + vertex.x()) / 2, (p1_p.y() + vertex.y()) / 2)
+                    p2_p = poly[ (indx - 1) % (len(poly)) ]
+                    hp2_p = QPointF((p2_p.x() + vertex.x()) / 2, (p2_p.y() + vertex.y()) / 2)
+                    
+                    poly = QPolygonF([ hp1_p, vertex, hp2_p, centroid ])
+                    painter.drawPolygon(poly)
+                    qcolor.setAlpha(255)
+                    pen.setColor(qcolor)
+                    painter.setPen(pen)
+            
         if self.isSelected():
             pen = QPen(self.scene().HIGHLIGHT_COLOR)
             painter.setPen(pen)
@@ -251,18 +311,29 @@ class GaugeGroup(QGraphicsPolygonItem):
             painter.drawPolygon(self.polygon())
     
     def set_entire_group_pauli(self, pauli: PauliType = PauliType.X):
-        self.broken = False
-        for key in self._error_groups.keys():
-            self.update_error_group_using_key_point(key, pauli)
-        self.generate_polygon()
+       self._error_groups = dict()
+       for point in self.polygon():
+           self.update_error_group(point, pauli)
+       self.broken = False
+       self.generate_polygon()
     
     
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         current_poly = self.polygon()
-        new_point = self.scene()._tiling.find_closest_vertex(self.scenePos())
+        new_point = self.scene()._tiling.find_closest_qubit_location(self.scenePos())
         self.setPos(new_point)
         super().mouseReleaseEvent(event)
 
+    def mousePressEvent(self, event: QGraphicsSceneMouseEvent) -> None:
+        print("GETTING CLICKED")
+        print("boundingRect: ", self.boundingRect())
+        print("my bounding_rect: ", self.bounding_rect)
+        print(f"my scenePos: {self.scenePos()}")
+        print(f"my pos: {self.pos()}")
+
+        super().mousePressEvent(event)
+        
+        
 
 class Stabilizer(GaugeGroup):
     name = "Stabilizer"

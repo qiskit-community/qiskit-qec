@@ -31,7 +31,7 @@ class Tessellation(QGraphicsPolygonItem):
     def paint(self):
         raise NotImplementedError
     
-    def find_closest_vertex(self, point:QPointF):
+    def find_closest_qubit_location(self, point:QPointF):
         raise NotImplementedError
     
     def make_tile(self, num_vertices:int) -> QGraphicsItem:
@@ -75,7 +75,7 @@ class Square(Tessellation):
             xax = j * self.square_size
             painter.drawLine(QLineF(xax, 0, xax,num_height))
             
-    def find_closest_vertex(self, point:QPointF) -> QPointF:
+    def find_closest_qubit_location(self, point:QPointF) -> QPointF:
         x = point.x()
         y = point.y()
         
@@ -153,7 +153,7 @@ class Square(Tessellation):
             P_new = np.matmul(R, (P - C)) + C
             
             for i in range(len(P_new[0])):
-                valid_point = self.find_closest_vertex(QPointF(P_new[0][i], P_new[1][i]))
+                valid_point = self.find_closest_qubit_location(QPointF(P_new[0][i], P_new[1][i]))
                 new_points.append(valid_point)
             
                 

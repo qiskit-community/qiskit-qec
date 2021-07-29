@@ -109,6 +109,7 @@ class DiagramScene(QGraphicsScene):
         
     def get_pauli_type_color(self, group_type: PauliType):
         return self.group_type_color_map[group_type]
+    
 
     def set_line_color(self, color):
         self._my_line_color = color
@@ -269,6 +270,7 @@ class DiagramScene(QGraphicsScene):
 
     def add_group(self, vertex_num: int):
         tile = GaugeGroup(self._tiling.make_tile(vertex_num))
+        tile.setPos(200,200)
         self.addItem(tile)
 
 
