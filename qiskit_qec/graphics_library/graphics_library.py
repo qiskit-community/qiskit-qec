@@ -55,7 +55,7 @@ from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
     QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
     QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
     QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
-    QToolButton, QWidget, QPushButton, QVBoxLayout, QGraphicsSceneMouseEvent)
+    QToolButton, QWidget, QPushButton, QVBoxLayout, QGraphicsSceneMouseEvent, QGraphicsPathItem)
 from enum import Enum
 from qiskit_qec.grid_tessellations.tessellation import Square
 from typing import  Sequence, Union, Dict
@@ -114,7 +114,7 @@ class DiagramTextItem(QGraphicsTextItem):
         super(DiagramTextItem, self).mouseDoubleClickEvent(event)
 
 
-class GaugeGroup(QGraphicsPolygonItem):
+class GaugeGroup(QGraphicsPathItem):
     name = "Gauge Group"
     
     def __init__(self, points, pauli_map: Dict[ QPointF, PauliType ] = None, pauli_def: PauliType = PauliType.EMPTY):
@@ -123,6 +123,8 @@ class GaugeGroup(QGraphicsPolygonItem):
         
         self.bounding_rect = None
         self.two_points = False
+        # the ONLY way to touch shards is by GroupTile.shardme
+        
         if len(points) < 3:
             self.two_points = True
             self.calculate_bounding_rect_from_poly_points(points[0],points[1])
@@ -205,17 +207,7 @@ class GaugeGroup(QGraphicsPolygonItem):
         self.setFlag(QGraphicsItem.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.ItemIsSelectable, True)
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges, True)
-
-        
-    
-    def boundingRect(self) -> QRectF:
-        if self.two_points:
-            if self.bounding_rect is not None:
-                return self.bounding_rect
-        return super().boundingRect()
-    
-    
-        
+ 
     def calculate_bounding_rect_from_poly_points(self, point1, point2):
         # point1 = self.mapToScene(poly_point1)
         # point2 = self.mapToScene(poly_point2)
@@ -227,8 +219,6 @@ class GaugeGroup(QGraphicsPolygonItem):
         elif point2.x() > point1.x():
             self.set_boundingrect(QRectF(point2.x(), point2.y() - x_dif, x_dif, x_dif))
             
-            
-
     def paint_two_qubit(self, point1: QPointF, point2: QPointF, painter: QPainter):
         pen = self.pen()
         painter.setPen(pen)
@@ -245,9 +235,6 @@ class GaugeGroup(QGraphicsPolygonItem):
             elif point2.x() > point1.x():
                 painter.drawPie(self.boundingRect(), -2880, 0)
                 
-    
-    
-    
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[ QWidget ] = ...) -> None:
         
         pen = self.pen()
@@ -332,7 +319,6 @@ class GaugeGroup(QGraphicsPolygonItem):
         print(f"my pos: {self.pos()}")
 
         super().mousePressEvent(event)
-        
         
 
 class Stabilizer(GaugeGroup):

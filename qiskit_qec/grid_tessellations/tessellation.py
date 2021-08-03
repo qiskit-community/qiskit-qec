@@ -11,7 +11,7 @@ from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
 from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
                            QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
                            QBrush, QKeyEvent)
-from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
+from PySide6.QtWidgets import (QStyleOptionGraphicsItem, QGraphicsPathItem,
     QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
     QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
     QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
@@ -21,7 +21,77 @@ from enum import Enum
 import uuid
 import numpy as np
 
+
+
+class GroupTile(QPainterPath):
+    # literally just the outline of the path
+    # has info needed to self-break because ....
+    # have whatever info tessellation needs to rotate/edit object
+    # TODO exists only for orientation/ordered_qubits for Tessellation since Tessellation
+    # can't just give qubits in order for rendering since tessellation determines tile shape
+    
+    def __init__(self, qubits: [QPointF], orientation=0, *args, **kwargs):
+        super(GroupTile, self).__init__(*args, **kwargs)
+        self.ordered_qubits = qubits
+        self.num_qubits = len(self.ordered_qubits)
+        self.orientation = orientation
+        # TODO self outline
+        # TODO self broken shards
+    # TODO is this too much? will i have to make 1 for each rotate?
+    # not this just keep track of order of qubits
+    # be the exact same Q..Item except w 1 array of order of qubits
+    # vertices (qubits)
+    # rotation
+    
+    def rotate_me(self, degree:int) -> ([QPointF], int):
+        # new Qbits and orientation
+        raise NotImplementedError
+    
+
+class SquareGridGroupTile(GroupTile):
+    def __init__(self, qubits: [QPointF], orientation=0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def break_me(self):
+        pass
+
+
+class StandardSquareGridGroupTile(SquareGridGroupTile):
+    #  QPainterPath::addPolygon
+    # closeSubpath()
+    def __init__(self, qubits: [QPointF], two_qubit_orientation=0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.qubits = qubits
+        self.two_qubit_orientation = two_qubit_orientation
+        
+        # TODO generate self
+    
+    def break_me(self):
+        if len(self.qubits) == 2:
+            pass
+            # disgusting
+            # sharding depends on orientation and size of arc which is based off square size
+        else:
+            pass
+            
+    def rotate_me(self, rotation:int) -> ([QPointF], int):
+        rotation = rotation%360
+        if len(self.qubits) == 2:
+            #disgusting
+            if rotation == 180:
+                if self.two_qubit_orientation == 0:
+                    return self.qubits, 1
+                else:
+                    return self.qubits, 0
+            if rotation == 90:
+                pass
+                
+        # normal polygon rotation
+
 class Tessellation(QGraphicsPolygonItem):
+    #TODO should this be PainterPath?
+    # tile == polygon
+    # group == qubits
     """
     Designates "qubits" by creating a grid whose intersecting lines are qubits
     """
@@ -34,9 +104,13 @@ class Tessellation(QGraphicsPolygonItem):
     def find_closest_qubit_location(self, point:QPointF):
         raise NotImplementedError
     
-    def make_tile(self, num_vertices:int) -> QGraphicsItem:
+    def generate_tile(self, qubits: List[QPointF]) -> GroupTile:
         raise NotImplementedError
 
+# FUNC
+# q = qubit func
+# t = tile func
+# return q, t
 
 class Square(Tessellation):
     # grid -- num of x
@@ -49,10 +123,10 @@ class Square(Tessellation):
         self.grid_width = grid_width
         
     def itemChange(self, change, value):
+        #TODO remove me?
         self.update(self.boundingRect())
         return super().itemChange(change, value)
         
-  
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[QWidget] = ...) -> None:
         pen = self.pen()
         pen.setColor(self.color)
@@ -92,11 +166,16 @@ class Square(Tessellation):
             closest_y = y-yrem
             
         return QPointF(closest_x, closest_y)
+   
+    def generate_tile(self, qubits: List[QPointF]) -> GroupTile:
+        pass
+   
+    def create_new_group_material(self, num_vertices) -> (List[QPointF], GroupTile):
+        # returns qubits, painterpath
     
-    
-    def make_tile(self, num_vertices:int) -> List[QPointF]:
         # TODO handle < 2
-        # TODO automate num_vert to valid polygon?
+        # TODO GroupTile instead of poly
+        # TODO return List, QPainter
         if num_vertices == 2:
             return [QPointF(0, self.square_size), QPointF(self.square_size, self.square_size)]
         
@@ -114,55 +193,72 @@ class Square(Tessellation):
                 QPointF(self.square_size, 0),
             ]
      
-    def rotate_tile_around_origin(self, tile_points: QPolygonF, ninety_mult: int=1) -> [QPointF]:
+    def rotate_tile_around_origin(self, qubits: [QPointF], ninety_mult: int=1) -> GroupTile:
+        # JUST rotates qubits and then chooses GroupTile Type
+        # rotation always leads to new qubits, even when it doesn't
+        #vertices of a Path are always qubits
+        # standardized shapes for N qubits w vertices
+        
+        # rotations that change qubits
+        # rotations that change orientation of path
+        
+        # rotate the orientation of the path
+        # check
+        qubits = self.rotate_qubit_group(qubits, ninety_mult)
+        painter_path = self.generate_tile(qubits)
+        return  painter_path
+        
+        
+    
+    
+    def rotate_qubit_group(self, qubits: [QPointF], ninety_mult: int=1) -> [QPointF]:
+        # TODO return qubits
         if ninety_mult == 0:
             return tile_points
         if ninety_mult == 1:
-            
-            new_points = []
-            x_mat = []
+        
+            new_points = [ ]
+            x_mat = [ ]
             x_sum = 0
-            
-            y_mat = []
+        
+            y_mat = [ ]
             y_sum = 0
-            
+        
             count = 0
             for p in tile_points:
                 count += 1
                 x_sum += p.x()
                 x_mat.append(p.x())
-                
-                
+            
                 y_mat.append(p.y())
                 y_sum += p.y()
-             
-            P = np.array([x_mat, y_mat])
+        
+            P = np.array([ x_mat, y_mat ])
             poly_centr = self.calculate_centroid(tile_points)
             centr_x = poly_centr.x()
             centr_y = poly_centr.y()
-            
-            C_top = np.full((1, count), centr_x)[0]
-            C_bot = np.full((1, count), centr_y)[0]
-            C = np.array([C_top, C_bot])
-            
+        
+            C_top = np.full((1, count), centr_x)[ 0 ]
+            C_bot = np.full((1, count), centr_y)[ 0 ]
+            C = np.array([ C_top, C_bot ])
+        
             R = [
-                [0, 1],
-                [-1, 0]
+                [ 0, 1 ],
+                [ -1, 0 ]
             ]
-            
+        
             P_new = np.matmul(R, (P - C)) + C
-            
-            for i in range(len(P_new[0])):
-                valid_point = self.find_closest_qubit_location(QPointF(P_new[0][i], P_new[1][i]))
+        
+            for i in range(len(P_new[ 0 ])):
+                valid_point = self.find_closest_qubit_location(QPointF(P_new[ 0 ][ i ], P_new[ 1 ][ i ]))
                 new_points.append(valid_point)
             
-                
-                print(f"""oldpoint: {P[0][i], P[1][i]}
-                          tilepoint: {tile_points[i]}
-                           newpoint: {new_points[i]}""")
+                print(f"""oldpoint: {P[ 0 ][ i ], P[ 1 ][ i ]}
+                          tilepoint: {tile_points[ i ]}
+                           newpoint: {new_points[ i ]}""")
             return new_points
-        
-    
+
+
     def perimeter_size(self):
         # TODO turn this into boundRect overwrite
         return (self.grid_width * self.square_size, self.grid_height * self.square_size)
