@@ -1,26 +1,22 @@
-
-import math
-import array
 import sys
 from typing import List, Optional
 
 import random
-from PySide6.QtWidgets import QDialog, QMainWindow, QStyle
-from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
-                            Signal, QObject)
-from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
-                           QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
-                           QBrush, QKeyEvent)
-from PySide6.QtWidgets import (QStyleOptionGraphicsItem, QGraphicsPathItem,
-    QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
-    QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
-    QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
-    QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
-    QToolButton, QWidget, QPushButton, QVBoxLayout)
-from enum import Enum
-import uuid
+from PySide6.QtCore import (QLineF, QPointF)
+from PySide6.QtGui import (QPainter, QPainterPath, QPolygonF)
+from PySide6.QtWidgets import (QStyleOptionGraphicsItem, QGraphicsPolygonItem, QWidget)
 import numpy as np
+from qiskit_qec.graphics_library.graphics_library import PauliType
+import random
+import sys
+from typing import List, Optional
 
+import numpy as np
+from PySide6.QtCore import (QLineF, QPointF)
+from PySide6.QtGui import (QPainter, QPainterPath, QPolygonF)
+from PySide6.QtWidgets import (QGraphicsPolygonItem, QStyleOptionGraphicsItem, QWidget)
+
+from qiskit_qec.graphics_library.graphics_library import PauliType
 
 
 class GroupTile(QPainterPath):
@@ -30,11 +26,13 @@ class GroupTile(QPainterPath):
     # TODO exists only for orientation/ordered_qubits for Tessellation since Tessellation
     # can't just give qubits in order for rendering since tessellation determines tile shape
     
-    def __init__(self, qubits: [QPointF], orientation=0, *args, **kwargs):
-        super(GroupTile, self).__init__(*args, **kwargs)
+    def __init__(self, qubits: [QPointF], is_sharded:bool=True):
+        print("Group Tile thing ")
+        super().__init__()
         self.ordered_qubits = qubits
-        self.num_qubits = len(self.ordered_qubits)
-        self.orientation = orientation
+        self.is_sharded = is_sharded
+
+
         # TODO self outline
         # TODO self broken shards
     # TODO is this too much? will i have to make 1 for each rotate?
@@ -47,46 +45,6 @@ class GroupTile(QPainterPath):
         # new Qbits and orientation
         raise NotImplementedError
     
-
-class SquareGridGroupTile(GroupTile):
-    def __init__(self, qubits: [QPointF], orientation=0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-    
-    def break_me(self):
-        pass
-
-
-class StandardSquareGridGroupTile(SquareGridGroupTile):
-    #  QPainterPath::addPolygon
-    # closeSubpath()
-    def __init__(self, qubits: [QPointF], two_qubit_orientation=0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.qubits = qubits
-        self.two_qubit_orientation = two_qubit_orientation
-        
-        # TODO generate self
-    
-    def break_me(self):
-        if len(self.qubits) == 2:
-            pass
-            # disgusting
-            # sharding depends on orientation and size of arc which is based off square size
-        else:
-            pass
-            
-    def rotate_me(self, rotation:int) -> ([QPointF], int):
-        rotation = rotation%360
-        if len(self.qubits) == 2:
-            #disgusting
-            if rotation == 180:
-                if self.two_qubit_orientation == 0:
-                    return self.qubits, 1
-                else:
-                    return self.qubits, 0
-            if rotation == 90:
-                pass
-                
-        # normal polygon rotation
 
 class Tessellation(QGraphicsPolygonItem):
     #TODO should this be PainterPath?
@@ -104,8 +62,6 @@ class Tessellation(QGraphicsPolygonItem):
     def find_closest_qubit_location(self, point:QPointF):
         raise NotImplementedError
     
-    def generate_tile(self, qubits: List[QPointF]) -> GroupTile:
-        raise NotImplementedError
 
 # FUNC
 # q = qubit func
@@ -113,8 +69,134 @@ class Tessellation(QGraphicsPolygonItem):
 # return q, t
 
 class Square(Tessellation):
+    # TODO qubits are always ordered based on less algorithm shown here. The ordering of the qubits is what allows for
+    # rotation communication between Group and Tessellation
     # grid -- num of x
     # num -- pixels
+
+    class SquareGridGroupTile(GroupTile):
+        #  QPainterPath::addPolygon
+        # closeSubpath()
+        SHARD_PATH = 0
+        SHARD_COLOR = 1
+        POLYGON = 0
+
+
+        def __init__(self, qubits: [ QPointF ], is_sharded=False, two_qubit_orientation=None, tile_type=None, pauli_map=None):
+            super().__init__(qubits, is_sharded)
+            # qubits are always sorted counter_clockwise unless other denoted
+            print("creating squre grid tile")
+            if tile_type is None:
+                self.tile_type = self.POLYGON
+            else:
+                self.tile_type = tile_type
+                
+            if self.tile_type == self.POLYGON:
+                self.addPolygon(QPolygonF(self.ordered_qubits))
+            else:
+                if len(qubits) == 2:
+                    self.two_qubit_orientation = two_qubit_orientation
+                    # TODO semicircle in 2D
+                raise NotImplementedError
+           
+           
+            # never shard until called
+            self.sharding = None
+            if pauli_map is not None:
+                self._pauli_map = pauli_map
+            else:
+                self._pauli_map = dict()
+                for qu in self.ordered_qubits:
+                    self.update_pauli_map(qu, PauliType.EMPTY)
+                    
+                    
+     
+        @property
+        def sharding(self):
+            self.is_sharded = True
+            if self._sharding is not None:
+                return self._sharding
+            self._sharding = dict()
+            if len(self.ordered_qubits) == 2:
+                pass
+                # disgusting
+                # sharding depends on orientation and size of arc which is based off square size
+            elif self.tile_type == self.POLYGON:
+                x_sum = 0
+                y_sum = 0
+                count = 0
+                for point in self.ordered_qubits:
+                    count += 1
+                    x_sum += point.x()
+                    y_sum += point.y()
+                centroid = QPointF(x_sum / count, y_sum / count)
+        
+                for indx in range(len(self.ordered_qubits)):
+                    vertex = self.ordered_qubits[ indx ]
+                    p1_p = self.ordered_qubits[ (indx + 1) % (len(self.ordered_qubits)) ]
+                    hp1_p = QPointF((p1_p.x() + vertex.x()) / 2, (p1_p.y() + vertex.y()) / 2)
+                    p2_p = self.ordered_qubits[ (indx - 1) % (len(self.ordered_qubits)) ]
+                    hp2_p = QPointF((p2_p.x() + vertex.x()) / 2, (p2_p.y() + vertex.y()) / 2)
+                    
+                    vertex_point = (vertex.x(), vertex.y())
+                    tmp_path = QPainterPath()
+                    tmp_path.addPolygon([ hp1_p, vertex, hp2_p, centroid ])
+                    self.sharding[ vertex_point ] = tmp_path
+    
+            else:
+                raise NotImplementedError
+            
+        @sharding.setter
+        def sharding(self, value):
+            self._sharding = value
+
+
+        def set_entire_tile_pauli(self, pauli: PauliType):
+            self.sharding = None
+            self.is_sharded = False
+            for qu in self._pauli_map:
+                self.update_pauli_map(qu, pauli)
+        
+
+        def update_pauli_map(self, point: QPointF, value: PauliType):
+            if isinstance(point, QPointF):
+                key_point = (point.x(), point.y())
+            else:
+                key_point = point
+            self._pauli_map[ key_point ] = value
+
+        def get_pauli_for_qubit(self, point):
+            if isinstance(point, QPointF):
+                key_point = (point.x(), point.y())
+            else: 
+                key_point = point
+            if key_point in self._pauli_map:
+                return self._pauli_map[ key_point ]
+            return None
+
+        def key_point_from_pauli_map(self):
+            key_point_list = self._pauli_map.keys()
+            return key_point_list
+
+
+        def is_qubit_in_pauli_map(self, point):
+            if isinstance(point, QPointF):
+                key_point = (point.x(), point.y())
+            else:
+                key_point = point
+            return key_point in self._error_groups
+
+        def set_random_paulis(self):
+            for q in self._pauli_map.keys():
+                options = list(PauliType)
+                options.remove(PauliType.EMPTY)
+                c = random.choice(options)
+                self.update_pauli_map(q, c)
+                
+        def get_some_pauli_in_use(self):
+            return random.choice(list(self._pauli_map.values()))
+            
+            
     def __init__(self, color='grey', square_size=50, grid_height=10, grid_width=10):
         super(Square, self).__init__()
         self.color = color
@@ -167,10 +249,17 @@ class Square(Tessellation):
             
         return QPointF(closest_x, closest_y)
    
-    def generate_tile(self, qubits: List[QPointF]) -> GroupTile:
-        pass
-   
-    def create_new_group_material(self, num_vertices) -> (List[QPointF], GroupTile):
+    def create_tile(self, num_vertices:int=4):
+        vertices = self.create_new_group_material(num_vertices)
+        cur_type = None
+        if len(vertices) > 3:
+            cur_type = self.SquareGridGroupTile.POLYGON
+            tile = self.SquareGridGroupTile(vertices, tile_type=cur_type)
+            return tile
+        raise NotImplementedError
+        
+    
+    def create_new_group_material(self, num_vertices: int) -> [QPointF]:
         # returns qubits, painterpath
     
         # TODO handle < 2
@@ -204,6 +293,7 @@ class Square(Tessellation):
         
         # rotate the orientation of the path
         # check
+        
         qubits = self.rotate_qubit_group(qubits, ninety_mult)
         painter_path = self.generate_tile(qubits)
         return  painter_path
@@ -211,52 +301,73 @@ class Square(Tessellation):
         
     
     
-    def rotate_qubit_group(self, qubits: [QPointF], ninety_mult: int=1) -> [QPointF]:
-        # TODO return qubits
+    def rotate_qubit_group(self, group_tile: SquareGridGroupTile,  ninety_mult: int=1) -> [QPointF]:
+        # TODO make sure error group stays okay order qubits and reorder
         if ninety_mult == 0:
-            return tile_points
+            return group_tile
+        
+        if len(group_tile.ordered_qubits) == 2:
+            if ninety_mult == 2:
+                if group_tile.two_qubit_orientation == 0:
+                    return group_tile.ordered_qubits, 1
+                else:
+                    return group_tile.ordered_qubits, 0
+            else:
+                raise NotImplementedError
         if ninety_mult == 1:
+            if group_tile.tile_type == self.SquareGridGroupTile.POLYGON:
+                new_points = []
+                x_mat = []
+                x_sum = 0
         
-            new_points = [ ]
-            x_mat = [ ]
-            x_sum = 0
+                y_mat = []
+                y_sum = 0
         
-            y_mat = [ ]
-            y_sum = 0
+                count = 0
+                for p in group_tile.ordered_qubits:
+                    count += 1
+                    x_sum += p.x()
+                    x_mat.append(p.x())
+                
+                    y_mat.append(p.y())
+                    y_sum += p.y()
         
-            count = 0
-            for p in tile_points:
-                count += 1
-                x_sum += p.x()
-                x_mat.append(p.x())
-            
-                y_mat.append(p.y())
-                y_sum += p.y()
+                P = np.array([x_mat, y_mat])
+                poly_centr = self.calculate_centroid(group_tile.ordered_qubits)
+                centr_x = poly_centr.x()
+                centr_y = poly_centr.y()
         
-            P = np.array([ x_mat, y_mat ])
-            poly_centr = self.calculate_centroid(tile_points)
-            centr_x = poly_centr.x()
-            centr_y = poly_centr.y()
+                C_top = np.full((1, count), centr_x)[ 0 ]
+                C_bot = np.full((1, count), centr_y)[ 0 ]
+                C = np.array([ C_top, C_bot ])
         
-            C_top = np.full((1, count), centr_x)[ 0 ]
-            C_bot = np.full((1, count), centr_y)[ 0 ]
-            C = np.array([ C_top, C_bot ])
+                R = [
+                    [ 0, 1 ],
+                    [ -1, 0 ]
+                ]
+                
+                P_new = np.matmul(R, (P - C)) + C
         
-            R = [
-                [ 0, 1 ],
-                [ -1, 0 ]
-            ]
-        
-            P_new = np.matmul(R, (P - C)) + C
-        
-            for i in range(len(P_new[ 0 ])):
-                valid_point = self.find_closest_qubit_location(QPointF(P_new[ 0 ][ i ], P_new[ 1 ][ i ]))
-                new_points.append(valid_point)
-            
-                print(f"""oldpoint: {P[ 0 ][ i ], P[ 1 ][ i ]}
-                          tilepoint: {tile_points[ i ]}
-                           newpoint: {new_points[ i ]}""")
-            return new_points
+                for i in range(len(P_new[ 0 ])):
+                    valid_point = self.find_closest_qubit_location(QPointF(P_new[ 0 ][ i ], P_new[ 1 ][ i ]))
+                    new_points.append(valid_point)
+                    
+                # update colour mapping
+                # so long as we're using this matrix, the color of group_tile.ordered_qubits[x] will be the same as new_points[x]
+                # TODO make this prettier
+                old_qubits = group_tile.ordered_qubits
+                new_pauli_map = {}
+                for ind in range(len(old_qubits)):
+                    old_qu = old_qubits[ind]
+                    pauli = group_tile.get_pauli_for_qubit(old_qu)
+                    
+                    new_qu = new_points[ind]
+                    new_pauli_map[(new_qu.x(), new_qu.y())] = pauli
+                    
+                    
+
+                new_group_tile = self.SquareGridGroupTile(new_points,None,self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map)
+                return new_group_tile
 
 
     def perimeter_size(self):
@@ -265,7 +376,7 @@ class Square(Tessellation):
     
     
     
-    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> ([QPointF], QPointF):
+    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> (QPainterPath, QPointF):
         # SHOULD NOT CHANGE SCENE POS OF VERTICES BY THE END (WILL MESS UP ERROR GROUPS)
         # covert polys to scene then combine to megapoly then convert back to poly
         min_x = sys.maxsize
@@ -297,6 +408,8 @@ class Square(Tessellation):
         print(f"new poly points: {new_poly_vertices}")
 
         # subtract by min X and min Y?
+        
+        # QPainterpath, upperright most point
 
         return new_poly_vertices, QPointF(min_x, min_y)
         
@@ -380,6 +493,13 @@ class Square(Tessellation):
         
         
     
-    
+    def find_closest_valid_scene_position(self, scenePos: QPointF):
+        # square is easy,
+
+        new_pos = self.find_closest_qubit_location(scenePos)
+        return new_pos
+        
+        
+        
     
     

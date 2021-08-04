@@ -39,32 +39,20 @@
 ##
 #############################################################################
 
-import math
-import array
-import sys
-from typing import Optional
-
-from PySide6.QtWidgets import QDialog, QMainWindow
-from PySide6.QtCore import (QLineF, QPointF, QRect, QRectF, QSize, QSizeF, Qt,
-                            Signal)
-from PySide6.QtGui import (QAction, QColor, QFont, QIcon, QIntValidator,
-                           QPainter, QPainterPath, QPen, QPixmap, QPolygonF,
-                           QBrush, QKeyEvent, QPolygon)
-from PySide6.QtWidgets import (QStyleOptionGraphicsItem,
-    QApplication, QButtonGroup, QComboBox, QFontComboBox, QGraphicsAnchorLayout,
-    QGraphicsItem, QGraphicsLineItem, QGraphicsPolygonItem, QGraphicsTextItem,
-    QGraphicsEllipseItem, QGraphicsScene, QGraphicsView, QGridLayout,
-    QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox, QSizePolicy, QToolBox,
-    QToolButton, QWidget, QPushButton, QVBoxLayout, QGraphicsSceneMouseEvent)
-from enum import Enum
-from qiskit_qec.grid_tessellations.tessellation import Square
-from typing import  Sequence, Union, Dict
-import qiskit_qec.diagramscene_rc as diagramscene_rc
-import uuid
 import random
+
+from PySide6.QtCore import (QLineF, Qt,
+                            Signal)
+from PySide6.QtGui import (QColor, QFont, QKeyEvent, QPolygonF)
+from PySide6.QtWidgets import (QGraphicsItem, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsTextItem, QMessageBox)
+
+import qiskit_qec.diagramscene_rc as diagramscene_rc
+from qiskit_qec.grid_tessellations.tessellation import Square
+
 print(diagramscene_rc)
 
-from qiskit_qec.graphics_library.graphics_library import GaugeGroup, GroupType,PauliType, DiagramTextItem, SelectGroupSectionTypeBox
+from qiskit_qec.graphics_library.graphics_ui_library import GaugeGroup, GaugeGroupFace, DiagramTextItem
+from qiskit_qec.graphics_library.graphics_library import PauliType, SelectGroupSectionTypeBox
 
 
 
@@ -91,6 +79,8 @@ class DiagramScene(QGraphicsScene):
         self._tiling = tiling()
         self.addItem(self._tiling)
         
+        self.all_gauge_groups = [] # this is bc some Gauges have multiple faces
+        
         
     def setup_pauli_type_color_map(self):
         self.group_type_color_map = {}
@@ -105,7 +95,7 @@ class DiagramScene(QGraphicsScene):
         self.group_type_color_map[group_type] = color
         for i in self.items():
             if isinstance(i, GaugeGroup):
-                i.generate_polygon()
+                i.update_on_bounding_rect()
         
     def get_pauli_type_color(self, group_type: PauliType):
         return self.group_type_color_map[group_type]
@@ -195,12 +185,16 @@ class DiagramScene(QGraphicsScene):
             self.add_group(4)
         
         if event.key() == Qt.Key_R:
+            # update error group --> map
+            # update sharding
             for item in self.selectedItems():
-                if isinstance(item, GaugeGroup):
-                    cur_polygon = item.polygon()
-                    item.setPolygon(QPolygonF(self._tiling.rotate_tile_around_origin(cur_polygon)))
-            self._tiling.update(self._tiling.boundingRect())
-        
+                if isinstance(item, GaugeGroupFace):
+                    # TODO check if belongs to multi-faced group, if so idk be different or something
+                    cur_path = item.path()
+                    item.setPath(self._tiling.rotate_tile_around_origin(cur_path))
+            self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
+            
+ 
         if event.key() == Qt.Key_C:
             scene_polys = []
             scene_error_groups = dict()
@@ -220,11 +214,10 @@ class DiagramScene(QGraphicsScene):
              
             new_poly, new_pos = self._tiling.combine_tiles(scene_polys)
             poly_error_groups = dict()
-            for k in scene_error_groups.keys():
-                scene_pos = k
+            for scene_pos in scene_error_groups.keys():
                 polypos = (scene_pos[0] - new_pos.x(), scene_pos[1] - new_pos.y())
-                poly_error_groups[polypos] = scene_error_groups[k]
-            gg = GaugeGroup(QPolygonF(new_poly), poly_error_groups)
+                poly_error_groups[polypos] = scene_error_groups[scene_pos]
+            gg = GaugeGroup(new_poly, poly_error_groups)
             gg.setPos(new_pos)
             self.addItem(gg)
         
@@ -239,7 +232,7 @@ class DiagramScene(QGraphicsScene):
             size = self._tiling.square_size
             for i in range(2, 9):
                 for j in range(2, 6):
-                    tile = self._tiling.make_tile(4)
+                    tile = self._tiling.create_tile(4)
                     gg = GaugeGroup(QPolygonF(tile), pauli_def=random.choice(options))
                     gg.setPos(size * i, size * j)
                     self.addItem(gg)
@@ -250,7 +243,7 @@ class DiagramScene(QGraphicsScene):
             pauli = sgstb.pauli_type
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroup):
-                    item.set_entire_group_pauli(pauli)
+                    item.set_entire_group_face_pauli(pauli)
             
         if event.key() == Qt.Key_S:
             if len(self.selectedItems()) >1:
@@ -265,12 +258,16 @@ class DiagramScene(QGraphicsScene):
                         pauli = sgstb.pauli_type
                         item.update_error_group_using_key_point(key_point, pauli)
                     
-                    item.generate_polygon()
+                    item.update_on_bounding_rect()
             
 
     def add_group(self, vertex_num: int):
-        tile = GaugeGroup(self._tiling.make_tile(vertex_num))
-        tile.setPos(200,200)
-        self.addItem(tile)
+        gauge_group_gi = GaugeGroup()
+        self.all_gauge_groups.append(gauge_group_gi)
+        gauge_group_path = self._tiling.create_tile(vertex_num)
+        gauge_group_face = GaugeGroupFace(gauge_group_path)
+        gauge_group_gi.set_faces([gauge_group_face])
+        gauge_group_face.setPos(200,200)
+        self.addItem(gauge_group_face)
 
 

@@ -71,7 +71,7 @@ class Qubit(QGraphicsEllipseItem):
     
     def itemChange(self, change, value):
         for gr in self.groups:
-            gr.generate_polygon()
+            gr.update_on_bounding_rect()
         return super().itemChange(change, value)
     
     def get_center(self):
@@ -110,7 +110,7 @@ class GaugeBoi():
         self.add_qubits(qubits)
         self._group_paulies = set()
         if group_type is not None:
-            self.set_entire_group_pauli(group_type)
+            self.set_entire_group_face_pauli(group_type)
 
 
     @property
@@ -185,7 +185,7 @@ class GaugeBoi():
         
             qubit.remove_group(self)  # TODO switch to signals
             self.bubble_sort_qubits()
-            self.generate_polygon()
+            self.update_on_bounding_rect()
         if qubit in self._error_groups:
             self._error_groups.pop(qubit.uuid)
 
@@ -203,9 +203,9 @@ class GaugeBoi():
                     self._error_groups[ self.qubits[ qb_ind ].uuid ] = self._error_groups[
                         self.qubits[ qb_ind - 1 ].uuid ]
     
-        self.generate_polygon()
+        self.update_on_bounding_rect()
 
-        self.generate_polygon()
+        self.update_on_bounding_rect()
 
 
     def setup_qubits_and_paulis(self, qubits, group_type: PauliType):
@@ -215,10 +215,10 @@ class GaugeBoi():
         self.add_qubits(qubits)
         self._group_paulies = set()
         if group_type is not None:
-            self.set_entire_group_pauli(group_type)
+            self.set_entire_group_face_pauli(group_type)
 
 
-    def generate_polygon(self) -> [ QPointF ]:
+    def update_on_bounding_rect(self) -> [ QPointF ]:
         self.cur_points = [ ]
         for q in self.qubits:
             self.cur_points.append(q.get_center())
@@ -228,18 +228,18 @@ class GaugeBoi():
         self.setPolygon(poly)
 
 
-    def set_entire_group_pauli(self, pauli: PauliType = PauliType.X):
+    def set_entire_group_face_pauli(self, pauli: PauliType = PauliType.X):
         self.broken = False
         for key in self._error_groups.keys():
             self._error_groups[ key ] = pauli
-        self.generate_polygon()
+        self.update_on_bounding_rect()
 
 
     def set_qubit_pauli(self, qubits: Qubit, pauli: PauliType = PauliType.X):
         self.broken = True
         for qu in qubits:
             self._error_groups[ qu.uuid ] = pauli
-        self.generate_polygon()
+        self.update_on_bounding_rect()
 
     def set_random_paulis(self):
         for q in self._error_groups.keys():
@@ -247,7 +247,7 @@ class GaugeBoi():
             options.remove(PauliType.EMPTY)
             c = random.choice(options)
         self._error_groups[ q ] = c
-        self.generate_polygon()
+        self.update_on_bounding_rect()
 
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: Optional[ QWidget ] = ...) -> None:
     
