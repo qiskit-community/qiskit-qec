@@ -118,12 +118,12 @@ class GaugeGroupFace(QGraphicsPathItem):
         
         # TODO figure out where to decide polygon shape
         
-        path = self.path_tile
-        if not path.is_sharded:
-                painter.setBrush(
-                    QColor(self.scene().get_pauli_type_color(path.get_some_pauli_in_use()))
-                )
-                painter.drawPath(self.path())
+        path_tile = self.path_tile
+        if not path_tile.is_sharded:
+            painter.setBrush(
+                QColor(self.scene().get_pauli_type_color(path_tile.get_some_pauli_in_use()))
+            )
+            painter.drawPath(self.path())
             
         else:
             outline_color = QColor('black')
@@ -140,6 +140,7 @@ class GaugeGroupFace(QGraphicsPathItem):
                 painter.drawPath(self.path_tile.sharding[shard_vertex])
             
         if self.isSelected():
+            #TODO figureo out why only 3/4 of square gets highlighted
             pen = QPen(self.scene().HIGHLIGHT_COLOR)
             painter.setPen(pen)
             painter.pen().setWidth(5)

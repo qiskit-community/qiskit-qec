@@ -190,9 +190,8 @@ class DiagramScene(QGraphicsScene):
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroupFace):
                     # TODO check if belongs to multi-faced group, if so idk be different or something
-                    cur_path = item.path()
+                    cur_path = item.path_tile
                     item.setPath(self._tiling.rotate_tile_around_origin(cur_path))
-            self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
             
  
         if event.key() == Qt.Key_C:
@@ -260,7 +259,9 @@ class DiagramScene(QGraphicsScene):
                     
                     item.update_on_bounding_rect()
             
-
+        self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
+        super().keyPressEvent(event)
+        
     def add_group(self, vertex_num: int):
         gauge_group_gi = GaugeGroup()
         self.all_gauge_groups.append(gauge_group_gi)

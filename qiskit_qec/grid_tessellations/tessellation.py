@@ -30,6 +30,7 @@ class GroupTile(QPainterPath):
         print("Group Tile thing ")
         super().__init__()
         self.ordered_qubits = qubits
+        print("ordering quibts super: ", self.ordered_qubits)
         self.is_sharded = is_sharded
 
 
@@ -44,7 +45,34 @@ class GroupTile(QPainterPath):
     def rotate_me(self, degree:int) -> ([QPointF], int):
         # new Qbits and orientation
         raise NotImplementedError
-    
+       
+    @property
+    def sharding(self):
+        raise NotImplementedError
+
+    def set_entire_tile_pauli(self, pauli: PauliType):
+        raise NotImplementedError
+
+
+    def update_pauli_map(self, point: QPointF, value: PauliType):
+        raise NotImplementedError
+
+    def get_pauli_for_qubit(self, point):
+        raise NotImplementedError
+
+    def key_point_from_pauli_map(self):
+        raise NotImplementedError
+
+
+    def is_qubit_in_pauli_map(self, point):
+        raise NotImplementedError
+
+    def set_random_paulis(self):
+        raise NotImplementedError
+
+    def get_some_pauli_in_use(self):
+        raise NotImplementedError
+
 
 class Tessellation(QGraphicsPolygonItem):
     #TODO should this be PainterPath?
@@ -86,6 +114,8 @@ class Square(Tessellation):
             super().__init__(qubits, is_sharded)
             # qubits are always sorted counter_clockwise unless other denoted
             print("creating squre grid tile")
+            print("sqaregridgroup rodering qubits: ", self.ordered_qubits)
+
             if tile_type is None:
                 self.tile_type = self.POLYGON
             else:
@@ -108,7 +138,7 @@ class Square(Tessellation):
                 self._pauli_map = dict()
                 for qu in self.ordered_qubits:
                     self.update_pauli_map(qu, PauliType.EMPTY)
-                    
+        #TODO _pauli_map into a proper property
                     
      
         @property
@@ -251,12 +281,17 @@ class Square(Tessellation):
    
     def create_tile(self, num_vertices:int=4):
         vertices = self.create_new_group_material(num_vertices)
-        cur_type = None
-        if len(vertices) > 3:
-            cur_type = self.SquareGridGroupTile.POLYGON
-            tile = self.SquareGridGroupTile(vertices, tile_type=cur_type)
+        tile = self.convert_qubits_to_tile(vertices)
+        return tile
+       
+    def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None):
+        if len(qubits) > 2:
+            if tile_type is None:
+                tile_type = self.SquareGridGroupTile.POLYGON
+            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation)
             return tile
         raise NotImplementedError
+
         
     
     def create_new_group_material(self, num_vertices: int) -> [QPointF]:
@@ -282,26 +317,9 @@ class Square(Tessellation):
                 QPointF(self.square_size, 0),
             ]
      
-    def rotate_tile_around_origin(self, qubits: [QPointF], ninety_mult: int=1) -> GroupTile:
-        # JUST rotates qubits and then chooses GroupTile Type
-        # rotation always leads to new qubits, even when it doesn't
-        #vertices of a Path are always qubits
-        # standardized shapes for N qubits w vertices
-        
-        # rotations that change qubits
-        # rotations that change orientation of path
-        
-        # rotate the orientation of the path
-        # check
-        
-        qubits = self.rotate_qubit_group(qubits, ninety_mult)
-        painter_path = self.generate_tile(qubits)
-        return  painter_path
-        
-        
     
     
-    def rotate_qubit_group(self, group_tile: SquareGridGroupTile,  ninety_mult: int=1) -> [QPointF]:
+    def rotate_tile_around_origin(self, group_tile: SquareGridGroupTile,  ninety_mult: int=1) -> GroupTile:
         # TODO make sure error group stays okay order qubits and reorder
         if ninety_mult == 0:
             return group_tile
