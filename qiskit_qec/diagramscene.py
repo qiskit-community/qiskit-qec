@@ -206,7 +206,7 @@ class DiagramScene(QGraphicsScene):
         
         if event.key() == Qt.Key_J:
             for item in self.selectedItems():
-                if isinstance(item, GaugeGroup):
+                if isinstance(item, GaugeGroupFace):
                     item.set_random_paulis()
                     
         if event.key() == Qt.Key_A:
@@ -244,6 +244,7 @@ class DiagramScene(QGraphicsScene):
                     item.update_on_bounding_rect()
             
         self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
+        self.update(self._tiling.boundingRect())
         super().keyPressEvent(event)
         print("hi")
     

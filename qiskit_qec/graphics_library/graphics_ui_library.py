@@ -155,7 +155,9 @@ class GaugeGroupFace(QGraphicsPathItem):
   
     def set_entire_group_face_pauli(self, pauli: PauliType = PauliType.X):
         self.path().set_entire_path_pauli(pauli)
-
+    
+    def set_random_paulis(self):
+        self.path_tile.set_random_paulis()
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         current_path = self.path()
@@ -191,6 +193,7 @@ class GaugeGroup():
         self.group_faces = faces
 
     def add_face(self, face: GaugeGroupFace):
+        face.set_gauge_group(self)
         if self.group_faces is None:
             self.group_faces = [face]
         else:

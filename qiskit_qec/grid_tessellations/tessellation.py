@@ -108,9 +108,10 @@ class Square(Tessellation):
         SHARD_PATH = 0
         SHARD_COLOR = 1
         POLYGON = 0
+        ARC = 1
 
 
-        def __init__(self, qubits: [ QPointF ], is_sharded=False, two_qubit_orientation=None, tile_type=None, pauli_map=None):
+        def __init__(self, qubits: [ QPointF ], two_qubit_orientation=None, tile_type=None, pauli_map=None, is_sharded=False):
             super().__init__(qubits, is_sharded)
             # qubits are always sorted counter_clockwise unless other denoted
             print("creating squre grid tile")
@@ -124,10 +125,50 @@ class Square(Tessellation):
             if self.tile_type == self.POLYGON:
                 self.addPolygon(QPolygonF(self.ordered_qubits))
             else:
-                if len(qubits) == 2:
+                if self.tile_type == self.ARC:
+                    # closeSubpath?
                     self.two_qubit_orientation = two_qubit_orientation
-                    # TODO semicircle in 2D
-                raise NotImplementedError
+                    qubit0 = qubits[0]
+                    qubit1 = qubits[1]
+
+                    arc = QPainterPath(qubit0)
+                    w = qubit1.x() - qubit0.x()
+                    h = qubit1.y() - qubit0.y()
+                    
+
+                    
+                    
+                    sz = h if h > w else w
+                    
+                    start_angle = 0
+                    angle = 180
+                    if self.two_qubit_orientation == 1:
+                        angle = angle * -1
+                        
+                    start_point = QPointF(qubit0.x(), qubit0.y())
+                    if w == 0:
+                        start_point.setX(start_point.x() - sz/2)
+                        start_angle = 90
+                        
+                    if h == 0:
+                        start_point.setY(start_point.y() - sz/2)
+                        start_angle = 0
+                        
+                    if w != 0 and h != 0:
+                        start_point.setY(start_point.y() - sz/4)
+                        start_point.setX(start_point.x() - sz/4)
+                        start_angle = 90 + 45
+                        
+                    arc.arcTo(start_point.x(), start_point.y(), sz, sz, start_angle, angle)
+                    
+                    self.arc_rect_h = h
+                    self.arc_rect_w = w
+                    self.start_point = start_point
+                    
+                    self.addPath(arc)
+                    
+                    
+            self.is_sharded = is_sharded
            
            
             # never shard until called
@@ -172,7 +213,8 @@ class Square(Tessellation):
                     tmp_path = QPainterPath()
                     tmp_path.addPolygon([ hp1_p, vertex, hp2_p, centroid ])
                     self.sharding[ vertex_point ] = tmp_path
-    
+                return self._sharding
+            
             else:
                 raise NotImplementedError
             
@@ -217,20 +259,23 @@ class Square(Tessellation):
             return key_point in self._error_groups
 
         def set_random_paulis(self):
+            self.is_sharded = True
             for q in self._pauli_map.keys():
                 options = list(PauliType)
                 options.remove(PauliType.EMPTY)
                 c = random.choice(options)
                 self.update_pauli_map(q, c)
+            
                 
         def get_some_pauli_in_use(self):
             return random.choice(list(self._pauli_map.values()))
             
             
     def __init__(self, color='grey', square_size=50, grid_height=10, grid_width=10):
+        
         super(Square, self).__init__()
-        self.color = color
         self.square_size = square_size
+        self.color = color
         self.grid_height = grid_height
         self.grid_width = grid_width
         
@@ -284,13 +329,15 @@ class Square(Tessellation):
         tile = self.convert_qubits_to_tile(vertices)
         return tile
        
-    def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None, pauli_map=None):
+    def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None, pauli_map=None, is_sharded=False):
         if len(qubits) > 2:
             if tile_type is None:
                 tile_type = self.SquareGridGroupTile.POLYGON
-            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation, pauli_map=pauli_map)
+            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation, pauli_map=pauli_map, is_sharded=is_sharded)
             return tile
-        raise NotImplementedError
+        else:
+            tile = self.SquareGridGroupTile(qubits, tile_type=self.SquareGridGroupTile.ARC ,two_qubit_orientation=0)
+            return tile
 
         
     
@@ -384,7 +431,7 @@ class Square(Tessellation):
                     
                     
 
-                new_group_tile = self.SquareGridGroupTile(new_points,None,self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map)
+                new_group_tile = self.SquareGridGroupTile(new_points,None,self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map, is_sharded=True)
                 return new_group_tile
 
 
@@ -395,6 +442,13 @@ class Square(Tessellation):
    
     
     def combine_paths_scene(self, scenepos_tile_list: [(QPointF, SquareGridGroupTile)]) -> (SquareGridGroupTile, QPointF):
+        # # fix scene issues
+        # for tup in scenepos_tile_list:
+        #     scene_pos = tup[0]
+        #     cur_path = tup[1]
+        #     if cur_path.tile_type == self.SquareGridGroupTile.ARC:
+        #         scene_pos.setX(scene_pos.x() + cur_path.start_point.x())
+        #         scene_pos.setX(scene_pos.y() + cur_path.start_point.y())
 
         
         # SHOULD NOT CHANGE SCENE POS OF VERTICES BY THE END (WILL MESS UP ERROR GROUPS)
@@ -407,16 +461,16 @@ class Square(Tessellation):
             poly = tup[1].ordered_qubits
             # TODO handle case when it's not a polygon
             scene_pos = tup[0]
-            if scene_pos.x() < min_x:
-                min_x = scene_pos.x()
-            if scene_pos.y() < min_y:
-                min_y = scene_pos.y()
             for point in poly:
                 pp = (scene_pos.x() + point.x(), scene_pos.y() + point.y())
                 if pp not in scene_vert_set:
                     scene_vertices.append(QPointF(scene_pos.x() + point.x(), scene_pos.y() + point.y()))
                     scene_vert_set.add(pp)
-            
+        for vert in scene_vertices:
+            if vert.x() < min_x:
+                min_x = vert.x()
+            if vert.y() < min_y:
+                min_y = vert.y()
             
         centroid = self.calculate_centroid(scene_vertices)
         # vertices will also be bubble sorted
@@ -441,7 +495,7 @@ class Square(Tessellation):
         for qu in scene_qubit_pos.keys():
             new_pauli_map[(qu[0] - min_x, qu[1] - min_y)] = scene_qubit_pos[qu] # convert from scene to local coordinates
 
-        tile = self.convert_qubits_to_tile(new_poly_vertices, tile_type=self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map)
+        tile = self.convert_qubits_to_tile(new_poly_vertices, tile_type=self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map, is_sharded=True)
         # subtract by min X and min Y?
         
         # QPainterpath, upperright most point
