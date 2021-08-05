@@ -100,6 +100,9 @@ class GaugeGroupFace(QGraphicsPathItem):
     
     def set_gauge_group(self, gg):
         self.gauge_group = gg
+        
+    def remove_gauge_group(self):
+        self.gauge_group = None
     
     def setPath(self, path: GroupTile) -> None: # grouptile
         self.path_tile = path
@@ -199,6 +202,14 @@ class GaugeGroup():
         for f in faces:
             f.set_gauge_group(self)
         self.update_qubits()
+
+    def remove_faces(self, faces:[GaugeGroupFace]):
+        for f in faces:
+            f.remove_gauge_group()
+            self.group_faces.remove(f) # expensively remove face
+            
+    def get_faces(self):
+        return self.group_faces
 
     def update_qubits(self):
         self.group_qubits = [ ]

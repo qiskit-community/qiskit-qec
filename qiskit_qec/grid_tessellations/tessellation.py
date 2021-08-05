@@ -284,11 +284,11 @@ class Square(Tessellation):
         tile = self.convert_qubits_to_tile(vertices)
         return tile
        
-    def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None):
+    def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None, pauli_map=None):
         if len(qubits) > 2:
             if tile_type is None:
                 tile_type = self.SquareGridGroupTile.POLYGON
-            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation)
+            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation, pauli_map=pauli_map)
             return tile
         raise NotImplementedError
 
@@ -392,26 +392,29 @@ class Square(Tessellation):
         # TODO turn this into boundRect overwrite
         return (self.grid_width * self.square_size, self.grid_height * self.square_size)
     
+   
     
-    
-    def combine_tiles(self, polygon_list: [(QPointF, QPolygonF)]) -> (QPainterPath, QPointF):
+    def combine_paths_scene(self, scenepos_tile_list: [(QPointF, SquareGridGroupTile)]) -> (SquareGridGroupTile, QPointF):
+
+        
         # SHOULD NOT CHANGE SCENE POS OF VERTICES BY THE END (WILL MESS UP ERROR GROUPS)
         # covert polys to scene then combine to megapoly then convert back to poly
         min_x = sys.maxsize
         min_y = sys.maxsize
         scene_vertices = []
         scene_vert_set = set()
-        for tup in polygon_list:
-            poly = tup[1]
-            pos = tup[0]
-            if pos.x() < min_x:
-                min_x = pos.x()
-            if pos.y() < min_y:
-                min_y = pos.y()
+        for tup in scenepos_tile_list:
+            poly = tup[1].ordered_qubits
+            # TODO handle case when it's not a polygon
+            scene_pos = tup[0]
+            if scene_pos.x() < min_x:
+                min_x = scene_pos.x()
+            if scene_pos.y() < min_y:
+                min_y = scene_pos.y()
             for point in poly:
-                pp = (pos.x() + point.x(), pos.y() + point.y())
+                pp = (scene_pos.x() + point.x(), scene_pos.y() + point.y())
                 if pp not in scene_vert_set:
-                    scene_vertices.append(QPointF(pos.x() + point.x(), pos.y() + point.y()))
+                    scene_vertices.append(QPointF(scene_pos.x() + point.x(), scene_pos.y() + point.y()))
                     scene_vert_set.add(pp)
             
             
@@ -425,11 +428,25 @@ class Square(Tessellation):
             new_poly_vertices.append(QPointF(point.x() - min_x, point.y() - min_y))
         print(f"new poly points: {new_poly_vertices}")
 
+
+        # combine paulis
+        scene_qubit_pos = dict()
+        new_pauli_map = dict()
+        for tup in scenepos_tile_list:
+            scene_pos = tup[0]
+            qubits = tup[1].ordered_qubits
+            cur_path = tup[1]
+            for qu in qubits:
+                scene_qubit_pos[(qu.x() + scene_pos.x(), qu.y() + scene_pos.y())] = cur_path.get_pauli_for_qubit(qu) # might overwrite and that's fine
+        for qu in scene_qubit_pos.keys():
+            new_pauli_map[(qu[0] - min_x, qu[1] - min_y)] = scene_qubit_pos[qu] # convert from scene to local coordinates
+
+        tile = self.convert_qubits_to_tile(new_poly_vertices, tile_type=self.SquareGridGroupTile.POLYGON, pauli_map=new_pauli_map)
         # subtract by min X and min Y?
         
         # QPainterpath, upperright most point
 
-        return new_poly_vertices, QPointF(min_x, min_y)
+        return tile, QPointF(min_x, min_y)
         
     def polygon_centroid(self, polygon:QPolygonF):
         x_sum = 0

@@ -40,6 +40,7 @@
 #############################################################################
 
 import random
+from typing import Set
 
 from PySide6.QtCore import (QLineF, Qt,
                             Signal)
@@ -189,36 +190,19 @@ class DiagramScene(QGraphicsScene):
             # update sharding
             for item in self.selectedItems():
                 if isinstance(item, GaugeGroupFace):
-                    # TODO check if belongs to multi-faced group, if so idk be different or something
+                    # TODO check if belongs to multi-faced group and handle accordingly
                     cur_path = item.path_tile
                     item.setPath(self._tiling.rotate_tile_around_origin(cur_path))
             
  
         if event.key() == Qt.Key_C:
-            scene_polys = []
-            scene_error_groups = dict()
+            selected_items = set()
             for item in self.selectedItems():
-                if isinstance(item, GaugeGroup):
-                    scene_polys.append((item.scenePos(), item.polygon()))
-                    
-                    for k in item._error_groups.keys():
-                        ipos = item.pos()
-                        polypos = k
-                        scene_vert_pos = (polypos[0] + ipos.x(), polypos[1] + ipos.y())
-                        scene_error_groups[scene_vert_pos] = item._error_groups[k]
-                        
-                    self.removeItem(item)
-                    self._tiling.update(self._tiling.boundingRect())
-
+                if isinstance(item, GaugeGroupFace):
+                    selected_items.add(item)
+            if len(selected_items) > 1:
+                self.combine_group_faces(selected_items)
              
-            new_poly, new_pos = self._tiling.combine_tiles(scene_polys)
-            poly_error_groups = dict()
-            for scene_pos in scene_error_groups.keys():
-                polypos = (scene_pos[0] - new_pos.x(), scene_pos[1] - new_pos.y())
-                poly_error_groups[polypos] = scene_error_groups[scene_pos]
-            gg = GaugeGroup(new_poly, poly_error_groups)
-            gg.setPos(new_pos)
-            self.addItem(gg)
         
         if event.key() == Qt.Key_J:
             for item in self.selectedItems():
@@ -261,7 +245,8 @@ class DiagramScene(QGraphicsScene):
             
         self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
         super().keyPressEvent(event)
-        
+        print("hi")
+    
     def add_group(self, vertex_num: int):
         gauge_group_gi = GaugeGroup()
         self.all_gauge_groups.append(gauge_group_gi)
@@ -270,5 +255,40 @@ class DiagramScene(QGraphicsScene):
         gauge_group_gi.set_faces([gauge_group_face])
         gauge_group_face.setPos(200,200)
         self.addItem(gauge_group_face)
+        
+    def combine_group_faces(self, items_to_combine:Set[GaugeGroupFace]):
+        scene_path_tiles = []
+        used_gauge_groups = []
+        for item in items_to_combine:
+            scene_path_tiles.append((item.scenePos(), item.path_tile)) # to give to tessellation to combine tiles
+            used_gauge_groups.append(item.gauge_group) # will need to combine all these GaugeGroups into 1
+            item.gauge_group.remove_faces([item]) # remove item from GaugeGroup
+        
+        # take all other polys from all gauge groups and combine into 1
+        other_faces = []
+        for gg in used_gauge_groups:
+            other_faces += gg.get_faces() # TODO edge case: 2 different multi stabs (combined by other stab bits) share a face shape, how to avoid doubling?
+            self.all_gauge_groups.remove(gg)
+        
+        new_gauge_group = GaugeGroup()
+        self.all_gauge_groups.append(new_gauge_group)
+        new_gauge_group.set_faces(other_faces)
+        
+        new_path_tile, scene_pos = self._tiling.combine_paths_scene(scene_path_tiles) # combine tiles into 1 tile
+        
+        for item in items_to_combine: # remove original tiles from scene
+            self.removeItem(item)
+            
+        gauge_group_face = GaugeGroupFace(new_path_tile)
+        gauge_group_face.setPos(scene_pos)
+        
+        new_gauge_group.add_face(gauge_group_face)
+        
+        self.addItem(gauge_group_face)
+        
+        
+
+
+
 
 
