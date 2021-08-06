@@ -340,7 +340,7 @@ class DiagramScene(QGraphicsScene):
             sgstb.exec()
             pauli = sgstb.pauli_type
             for item in self.selectedItems():
-                if isinstance(item, GaugeGroup):
+                if isinstance(item, GaugeGroupFace):
                     item.set_entire_group_face_pauli(pauli)
             
         if event.key() == Qt.Key_S:
