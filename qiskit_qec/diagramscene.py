@@ -348,20 +348,19 @@ class DiagramScene(QGraphicsScene):
                 QMessageBox(None, None, "Please only select 1 group").exec()
             else:
                 item = self.selectedItems()[0]
-                if isinstance(item, GaugeGroup):
-                    for key_point in item.key_point_from_error_group():
+                if isinstance(item, GaugeGroupFace):
+                    for key_point in item.get_all_qubits_from_face():
                         sgstb = SelectGroupSectionTypeBox()
                         sgstb.set_label_point(key_point)
                         sgstb.exec()
                         pauli = sgstb.pauli_type
-                        item.update_error_group_using_key_point(key_point, pauli)
+                        item.update_face_pauli(key_point, pauli, is_sharded=True)
                     
                     item.update_on_bounding_rect()
             
         self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
         self.update(self._tiling.boundingRect())
         super().keyPressEvent(event)
-        print("hi")
     
     def add_group(self, vertex_num: int):
         gauge_group_gi = self.create_gauge_group()

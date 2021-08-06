@@ -54,7 +54,7 @@ class GroupTile(QPainterPath):
         raise NotImplementedError
 
 
-    def update_pauli_map(self, point: QPointF, value: PauliType):
+    def update_pauli_map(self, point: QPointF, value: PauliType, is_sharded:bool):
         raise NotImplementedError
 
     def get_pauli_for_qubit(self, point):
@@ -74,6 +74,8 @@ class GroupTile(QPainterPath):
         raise NotImplementedError
     
     def set_entire_tile_pauli(self):
+        raise NotImplementedError
+    def get_all_qubits_in_pauli_map(self):
         raise NotImplementedError
 
 
@@ -233,7 +235,9 @@ class Square(Tessellation):
                 self.update_pauli_map(qu, pauli)
         
 
-        def update_pauli_map(self, point: QPointF, value: PauliType):
+        def update_pauli_map(self, point: QPointF, value: PauliType, is_sharded=None):
+            if is_sharded is not None:
+                self.is_sharded = is_sharded
             if isinstance(point, QPointF):
                 key_point = (point.x(), point.y())
             else:
@@ -272,6 +276,9 @@ class Square(Tessellation):
                 
         def get_some_pauli_in_use(self):
             return random.choice(list(self._pauli_map.values()))
+
+        def get_all_qubits_in_pauli_map(self):
+            return self.ordered_qubits
             
             
     def __init__(self, color='grey', square_size=50, grid_height=10, grid_width=10):
@@ -342,7 +349,7 @@ class Square(Tessellation):
             tile = self.SquareGridGroupTile(qubits, tile_type=self.SquareGridGroupTile.ARC ,two_qubit_orientation=two_qubit_orientation)
             return tile
 
-        
+
     
     def create_new_group_material(self, num_vertices: int, two_magnitude=0) -> [QPointF]:
         # returns qubits, painterpath

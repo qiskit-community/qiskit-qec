@@ -161,6 +161,12 @@ class GaugeGroupFace(QGraphicsPathItem):
     
     def set_random_paulis(self):
         self.path_tile.set_random_paulis()
+    
+    def get_all_qubits_from_face(self):
+        return self.path_tile.get_all_qubits_in_pauli_map()
+    
+    def update_face_pauli(self, qubit: QPointF, pauli: PauliType, is_sharded=None):
+        self.path_tile.update_pauli_map(qubit, pauli, is_sharded=is_sharded)
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent) -> None:
         current_path = self.path()
