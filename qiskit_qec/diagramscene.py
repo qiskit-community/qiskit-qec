@@ -53,7 +53,7 @@ from qiskit_qec.grid_tessellations.tessellation import Square
 print(diagramscene_rc)
 
 from qiskit_qec.graphics_library.graphics_ui_library import GaugeGroup, GaugeGroupFace, DiagramTextItem
-from qiskit_qec.graphics_library.graphics_library import PauliType, SelectGroupSectionTypeBox
+from qiskit_qec.graphics_library.graphics_library import PauliType, SelectGroupSectionTypeBox, ChooseSurfaceCode
 
 
 
@@ -215,13 +215,15 @@ class DiagramScene(QGraphicsScene):
                     item.set_random_paulis()
                     
         if event.key() == Qt.Key_A:
+            qd = ChooseSurfaceCode()
+            qd.exec_()
+            width = int(qd.width_box.value())
+            height = int(qd.height_box.value())
             
             
             options = list(PauliType)
             options.remove(PauliType.EMPTY)
             size = self._tiling.square_size
-            width = 7
-            height = 4
             start_w = 2
             start_h = 2
             
