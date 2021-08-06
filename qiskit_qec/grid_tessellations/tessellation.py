@@ -72,6 +72,9 @@ class GroupTile(QPainterPath):
 
     def get_some_pauli_in_use(self):
         raise NotImplementedError
+    
+    def set_entire_tile_pauli(self):
+        raise NotImplementedError
 
 
 class Tessellation(QGraphicsPolygonItem):
@@ -324,31 +327,37 @@ class Square(Tessellation):
             
         return QPointF(closest_x, closest_y)
    
-    def create_tile(self, num_vertices:int=4):
-        vertices = self.create_new_group_material(num_vertices)
-        tile = self.convert_qubits_to_tile(vertices)
+    def create_tile(self, num_vertices:int=4, two_orientation=None, two_magnitude=0):
+        vertices = self.create_new_group_material(num_vertices, two_magnitude=two_magnitude)
+        tile = self.convert_qubits_to_tile(vertices, two_qubit_orientation=two_orientation)
         return tile
        
     def convert_qubits_to_tile(self, qubits: [QPointF], two_qubit_orientation=None, tile_type=None, pauli_map=None, is_sharded=False):
         if len(qubits) > 2:
             if tile_type is None:
                 tile_type = self.SquareGridGroupTile.POLYGON
-            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, two_qubit_orientation=two_qubit_orientation, pauli_map=pauli_map, is_sharded=is_sharded)
+            tile = self.SquareGridGroupTile(qubits, tile_type=tile_type, pauli_map=pauli_map, is_sharded=is_sharded)
             return tile
         else:
-            tile = self.SquareGridGroupTile(qubits, tile_type=self.SquareGridGroupTile.ARC ,two_qubit_orientation=0)
+            tile = self.SquareGridGroupTile(qubits, tile_type=self.SquareGridGroupTile.ARC ,two_qubit_orientation=two_qubit_orientation)
             return tile
 
         
     
-    def create_new_group_material(self, num_vertices: int) -> [QPointF]:
+    def create_new_group_material(self, num_vertices: int, two_magnitude=0) -> [QPointF]:
         # returns qubits, painterpath
     
         # TODO handle < 2
         # TODO GroupTile instead of poly
         # TODO return List, QPainter
         if num_vertices == 2:
-            return [QPointF(0, self.square_size), QPointF(self.square_size, self.square_size)]
+            if two_magnitude == 0:
+                return [QPointF(0, self.square_size), QPointF(self.square_size, self.square_size)]
+            elif two_magnitude == 1:
+                return [QPointF(0, 0), QPointF(0, self.square_size)]
+            else:
+                raise NotImplementedError
+                
         
         elif num_vertices == 3:
             return[
@@ -372,11 +381,21 @@ class Square(Tessellation):
             return group_tile
         
         if len(group_tile.ordered_qubits) == 2:
+            if ninety_mult == 1:
+                # TODO
+                pass
+            
             if ninety_mult == 2:
                 if group_tile.two_qubit_orientation == 0:
-                    return group_tile.ordered_qubits, 1
+                    new_group_tile = self.SquareGridGroupTile(group_tile.ordered_qubits, tile_type=group_tile.tile_type,
+                        pauli_map=group_tile._pauli_map, is_sharded=group_tile.is_sharded, two_qubit_orientation=1)
+                    return new_group_tile
+    
                 else:
-                    return group_tile.ordered_qubits, 0
+                    new_group_tile = self.SquareGridGroupTile(group_tile.ordered_qubits, tile_type=group_tile.tile_type,
+                        pauli_map=group_tile._pauli_map, is_sharded=group_tile.is_sharded, two_qubit_orientation=0)
+                    return new_group_tile
+
             else:
                 raise NotImplementedError
         if ninety_mult == 1:

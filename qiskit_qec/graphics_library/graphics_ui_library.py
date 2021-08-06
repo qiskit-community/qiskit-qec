@@ -85,11 +85,14 @@ class DiagramTextItem(QGraphicsTextItem):
 class GaugeGroupFace(QGraphicsPathItem):
     name = "Gauge Group"
     
-    def __init__(self, group_tile: GroupTile, gauge_group=None, pauli_map: Dict[ QPointF, PauliType ] = None, pauli_def: PauliType = PauliType.EMPTY):
+    def __init__(self, group_tile: GroupTile, gauge_group=None, pauli_map: Dict[ QPointF, PauliType ] = None, pauli_def: PauliType = None):
         
         super().__init__()
         self.gauge_group = gauge_group
         self.path_tile = group_tile
+        if pauli_def is not None:
+            self.set_entire_group_face_pauli(pauli_def)
+            
         # TODO make sure error group and group tile don't go out of sync
         
         self.setPath(group_tile)
@@ -154,7 +157,7 @@ class GaugeGroupFace(QGraphicsPathItem):
  
   
     def set_entire_group_face_pauli(self, pauli: PauliType = PauliType.X):
-        self.path().set_entire_path_pauli(pauli)
+        self.path_tile.set_entire_tile_pauli(pauli)
     
     def set_random_paulis(self):
         self.path_tile.set_random_paulis()

@@ -115,3 +115,48 @@ class SelectGroupSectionTypeBox(QDialog):
         self._pauli_type = PauliType(self._pauli_type_box.currentText())
         print(f"just set type only gt to {self._pauli_type} ")
         self.update()
+
+
+class ChooseSurfaceCode(QDialog):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setWindowTitle("Surface Code Maker")
+        self._pauli_type = PauliType.EMPTY
+        
+        self._type_layout = QVBoxLayout()
+        self.setLayout(self._type_layout)
+        
+        self.label = QLabel()
+        self._type_layout.addWidget(self.label)
+        self.label.setText("Choose color for selected group(s)")
+        
+        self._pauli_type_box = QComboBox()
+        self._type_layout.addWidget(self._pauli_type_box)
+        
+        for gt in PauliType:
+            # Adds an item to the combobox with the given text, and containing the specified userData (stored in the Qt::UserRole). The item is appended to the list of existing items.
+            self._pauli_type_box.addItem(str(gt))
+        self._pauli_type_box.currentTextChanged.connect(
+            self.set_pauli_type
+        )
+        self._pauli_type_box.setCurrentText(str(PauliType.EMPTY))
+        
+        self._choice_layout = QHBoxLayout()
+        self._type_layout.addLayout(self._choice_layout)
+        
+        self._okay_button = QPushButton("Okay")
+        self._choice_layout.addWidget(self._okay_button)
+        self._okay_button.clicked.connect(self.accept)
+    
+    def set_label_point(self, key_point: Tuple[ float, float ]):
+        if key_point is not None:
+            self.label.setText(f"Choosing color for vertex: {key_point}")
+    
+    @property
+    def pauli_type(self):
+        return self._pauli_type
+    
+    def set_pauli_type(self):
+        self._pauli_type = PauliType(self._pauli_type_box.currentText())
+        print(f"just set type only gt to {self._pauli_type} ")
+        self.update()

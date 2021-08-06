@@ -81,6 +81,11 @@ class DiagramScene(QGraphicsScene):
         self.addItem(self._tiling)
         
         self.all_gauge_groups = [] # this is bc some Gauges have multiple faces
+    
+    def create_gauge_group(self):
+        gg = GaugeGroup()
+        self.all_gauge_groups.append(gg)
+        return gg
         
         
     def setup_pauli_type_color_map(self):
@@ -210,16 +215,124 @@ class DiagramScene(QGraphicsScene):
                     item.set_random_paulis()
                     
         if event.key() == Qt.Key_A:
+            
+            
             options = list(PauliType)
             options.remove(PauliType.EMPTY)
             size = self._tiling.square_size
-            for i in range(2, 9):
-                for j in range(2, 6):
+            width = 7
+            height = 4
+            start_w = 2
+            start_h = 2
+            
+            
+            for i in range(start_w, start_w + width):
+                for j in range(start_h + 1, start_h + height + 1):
                     tile = self._tiling.create_tile(4)
-                    gg = GaugeGroup(QPolygonF(tile), pauli_def=random.choice(options))
-                    gg.setPos(size * i, size * j)
-                    self.addItem(gg)
-        
+                    gg = self.create_gauge_group()
+                    
+                    color = None
+                    if j % 2 == 0 and i % 2 == 0:
+                        color = PauliType.X
+                    elif j % 2 == 0 and i %2 == 1:
+                        color = PauliType.Z
+                    elif i %2 == 0:
+                        color = PauliType.Z
+                    else:
+                        color = PauliType.X
+                    
+                    gface = GaugeGroupFace(tile,pauli_def=color)
+                    gg.add_face(gface)
+                    gface.setPos(size * i, size * j)
+                    self.addItem(gface)
+                    
+            # godforsaken semicircles
+            for i in range(start_w, start_w + width):
+    
+                color = None
+                if start_h % 2 == 0 and i % 2 == 0:
+                    color = PauliType.X
+                elif start_h % 2 == 0 and i % 2 == 1:
+                    color = PauliType.Z
+                elif i % 2 == 0:
+                    color = PauliType.Z
+                else:
+                    color = PauliType.X
+                
+                # top
+                if i < start_w + width - 1:
+                    tile = self._tiling.create_tile(2, two_orientation=0)
+                    gg = self.create_gauge_group()
+                    gface = GaugeGroupFace(tile, pauli_def=color)
+                    gg.add_face(gface)
+                    gface.setPos(size * i, size * start_h)
+                    self.addItem(gface)
+                
+                
+                color = None
+                if start_h + height % 2 == 0 and i % 2 == 0:
+                    color = PauliType.X
+                elif start_h + height % 2 == 0 and i % 2 == 1:
+                    color = PauliType.Z
+                elif i % 2 == 0:
+                    color = PauliType.Z
+                else:
+                    color = PauliType.X
+
+                if i > start_w:
+                    tile = self._tiling.create_tile(2, two_orientation=1)
+                    gg = self.create_gauge_group()
+                    gface = GaugeGroupFace(tile, pauli_def=color)
+                    gg.add_face(gface)
+                    gface.setPos(size * i, size * (start_h + height))
+                    self.addItem(gface)
+                
+                
+            for j in range(start_h + 1, start_h + height + 1):
+                
+                color = None
+                if j % 2 == 0 and start_w % 2 == 0:
+                    color = PauliType.Z
+                elif j % 2 == 0 and start_w % 2 == 1:
+                    color = PauliType.X
+                elif start_w % 2 == 0:
+                    color = PauliType.X
+                else:
+                    color = PauliType.Z
+                    
+                if j > start_h + 1:
+                    tile = self._tiling.create_tile(2, two_orientation=0, two_magnitude=1)
+                    gg = self.create_gauge_group()
+                    gface = GaugeGroupFace(tile, pauli_def=color)
+                    gg.add_face(gface)
+                    gface.setPos(size * start_w, size * j)
+                    self.addItem(gface)
+                
+                color = None
+                print(f"currently at j: {j} and start_w + width: {start_w + width}")
+                print(f"currently at j: {j} : j%2: {j%2}, w/ (start_w + width)%2 = {(start_w + width)%2 } ")
+                if j % 2 == 0 and (start_w + width) % 2 == 0:
+                    color = PauliType.Z
+                    print("j-2, s-2")
+                elif j % 2 == 0 and (start_w + width) % 2 == 1:
+                    color = PauliType.Z
+                    print("j-2, s-1")
+                elif (start_w + width) % 2 == 0:
+                    color = PauliType.X
+                    print("j-1, s-2")
+                else:
+                    color = PauliType.X
+                    print("j-1, s-1")
+                
+                if j < start_h + height:
+                    tile = self._tiling.create_tile(2, two_orientation=1, two_magnitude=1)
+                    gg = self.create_gauge_group()
+                    gface = GaugeGroupFace(tile, pauli_def=color)
+                    gg.add_face(gface)
+                    gface.setPos(size * (start_w + width) , size * j)
+                    self.addItem(gface)
+
+
         if event.key() == Qt.Key_P:
             sgstb = SelectGroupSectionTypeBox()
             sgstb.exec()
@@ -249,8 +362,7 @@ class DiagramScene(QGraphicsScene):
         print("hi")
     
     def add_group(self, vertex_num: int):
-        gauge_group_gi = GaugeGroup()
-        self.all_gauge_groups.append(gauge_group_gi)
+        gauge_group_gi = self.create_gauge_group()
         gauge_group_path = self._tiling.create_tile(vertex_num)
         gauge_group_face = GaugeGroupFace(gauge_group_path)
         gauge_group_gi.set_faces([gauge_group_face])
@@ -271,8 +383,7 @@ class DiagramScene(QGraphicsScene):
             other_faces += gg.get_faces() # TODO edge case: 2 different multi stabs (combined by other stab bits) share a face shape, how to avoid doubling?
             self.all_gauge_groups.remove(gg)
         
-        new_gauge_group = GaugeGroup()
-        self.all_gauge_groups.append(new_gauge_group)
+        new_gauge_group = self.create_gauge_group()
         new_gauge_group.set_faces(other_faces)
         
         new_path_tile, scene_pos = self._tiling.combine_paths_scene(scene_path_tiles) # combine tiles into 1 tile
