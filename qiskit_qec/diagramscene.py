@@ -92,7 +92,7 @@ class DiagramScene(QGraphicsScene):
         self.group_type_color_map = {}
         # todo make random if becomes too many
         self.group_type_color_map[PauliType.X] = QColor('beige')
-        self.group_type_color_map[PauliType.Y] = QColor('darkseagreen')
+        self.group_type_color_map[PauliType.Y] = QColor('yellow')
         self.group_type_color_map[ PauliType.Z ] = QColor('darksalmon')
         self.group_type_color_map[PauliType.EMPTY] = QColor('white')
         
@@ -219,120 +219,11 @@ class DiagramScene(QGraphicsScene):
             qd.exec_()
             width = int(qd.width_box.value())
             height = int(qd.height_box.value())
-            
-            
-            options = list(PauliType)
-            options.remove(PauliType.EMPTY)
-            size = self._tiling.square_size
-            start_w = 2
-            start_h = 2
-            
-            
-            for i in range(start_w, start_w + width):
-                for j in range(start_h + 1, start_h + height + 1):
-                    tile = self._tiling.create_tile(4)
-                    gg = self.create_gauge_group()
-                    
-                    color = None
-                    if j % 2 == 0 and i % 2 == 0:
-                        color = PauliType.X
-                    elif j % 2 == 0 and i %2 == 1:
-                        color = PauliType.Z
-                    elif i %2 == 0:
-                        color = PauliType.Z
-                    else:
-                        color = PauliType.X
-                    
-                    gface = GaugeGroupFace(tile,pauli_def=color)
-                    gg.add_face(gface)
-                    gface.setPos(size * i, size * j)
-                    self.addItem(gface)
-                    
-            # godforsaken semicircles
-            for i in range(start_w, start_w + width):
-    
-                color = None
-                if start_h % 2 == 0 and i % 2 == 0:
-                    color = PauliType.X
-                elif start_h % 2 == 0 and i % 2 == 1:
-                    color = PauliType.Z
-                elif i % 2 == 0:
-                    color = PauliType.Z
-                else:
-                    color = PauliType.X
-                
-                # top
-                if i < start_w + width - 1:
-                    tile = self._tiling.create_tile(2, two_orientation=0)
-                    gg = self.create_gauge_group()
-                    gface = GaugeGroupFace(tile, pauli_def=color)
-                    gg.add_face(gface)
-                    gface.setPos(size * i, size * start_h)
-                    self.addItem(gface)
-                
-                
-                color = None
-                if start_h + height % 2 == 0 and i % 2 == 0:
-                    color = PauliType.X
-                elif start_h + height % 2 == 0 and i % 2 == 1:
-                    color = PauliType.Z
-                elif i % 2 == 0:
-                    color = PauliType.Z
-                else:
-                    color = PauliType.X
-
-                if i > start_w:
-                    tile = self._tiling.create_tile(2, two_orientation=1)
-                    gg = self.create_gauge_group()
-                    gface = GaugeGroupFace(tile, pauli_def=color)
-                    gg.add_face(gface)
-                    gface.setPos(size * i, size * (start_h + height))
-                    self.addItem(gface)
-                
-                
-            for j in range(start_h + 1, start_h + height + 1):
-                
-                color = None
-                if j % 2 == 0 and start_w % 2 == 0:
-                    color = PauliType.Z
-                elif j % 2 == 0 and start_w % 2 == 1:
-                    color = PauliType.X
-                elif start_w % 2 == 0:
-                    color = PauliType.X
-                else:
-                    color = PauliType.Z
-                    
-                if j > start_h + 1:
-                    tile = self._tiling.create_tile(2, two_orientation=0, two_magnitude=1)
-                    gg = self.create_gauge_group()
-                    gface = GaugeGroupFace(tile, pauli_def=color)
-                    gg.add_face(gface)
-                    gface.setPos(size * start_w, size * j)
-                    self.addItem(gface)
-                
-                color = None
-                print(f"currently at j: {j} and start_w + width: {start_w + width}")
-                print(f"currently at j: {j} : j%2: {j%2}, w/ (start_w + width)%2 = {(start_w + width)%2 } ")
-                if j % 2 == 0 and (start_w + width) % 2 == 0:
-                    color = PauliType.Z
-                    print("j-2, s-2")
-                elif j % 2 == 0 and (start_w + width) % 2 == 1:
-                    color = PauliType.Z
-                    print("j-2, s-1")
-                elif (start_w + width) % 2 == 0:
-                    color = PauliType.X
-                    print("j-1, s-2")
-                else:
-                    color = PauliType.X
-                    print("j-1, s-1")
-                
-                if j < start_h + height:
-                    tile = self._tiling.create_tile(2, two_orientation=1, two_magnitude=1)
-                    gg = self.create_gauge_group()
-                    gface = GaugeGroupFace(tile, pauli_def=color)
-                    gg.add_face(gface)
-                    gface.setPos(size * (start_w + width) , size * j)
-                    self.addItem(gface)
+          
+            if height % 2 == 0:
+                self.generate_even_surface_code(width, height)
+            else:
+                self.generate_ODD_ODD_surface_code(width, height)
 
 
         if event.key() == Qt.Key_P:
@@ -343,7 +234,7 @@ class DiagramScene(QGraphicsScene):
                 if isinstance(item, GaugeGroupFace):
                     item.set_entire_group_face_pauli(pauli)
             
-        if event.key() == Qt.Key_S:
+        if event.key() == Qt.Key_N:
             if len(self.selectedItems()) >1:
                 QMessageBox(None, None, "Please only select 1 group").exec()
             else:
@@ -357,7 +248,19 @@ class DiagramScene(QGraphicsScene):
                         item.update_face_pauli(key_point, pauli, is_sharded=True)
                     
                     item.update_on_bounding_rect()
-            
+
+        if event.key() == Qt.Key_S:
+            if len(self.selectedItems()) > 1:
+                QMessageBox(None, None, "Please only select 1 group").exec()
+            else:
+                item = self.selectedItems()[ 0 ]
+                if isinstance(item, GaugeGroupFace):
+                    keys = item.get_all_qubits_from_face()
+                    item.update_face_pauli(keys[0], PauliType.X, is_sharded=True)
+                    item.update_face_pauli(keys[1], PauliType.Y, is_sharded=True)
+
+                    item.update_on_bounding_rect()
+
         self._tiling.update(self._tiling.boundingRect()) # TODO cleaner than calling this everywhere
         self.update(self._tiling.boundingRect())
         super().keyPressEvent(event)
@@ -399,9 +302,215 @@ class DiagramScene(QGraphicsScene):
         
         self.addItem(gauge_group_face)
         
+    def generate_even_surface_code(self, width, height):
+        options = list(PauliType)
+        options.remove(PauliType.EMPTY)
+        size = self._tiling.square_size
+        start_w = 2
+        start_h = 2
+    
+        for i in range(start_w, start_w + width):
+            for j in range(start_h + 1, start_h + height + 1):
+                tile = self._tiling.create_tile(4)
+                gg = self.create_gauge_group()
+            
+                color = None
+                if j % 2 == 0 and i % 2 == 0:
+                    color = PauliType.X
+                elif j % 2 == 0 and i % 2 == 1:
+                    color = PauliType.Z
+                elif i % 2 == 0:
+                    color = PauliType.Z
+                else:
+                    color = PauliType.X
+            
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * j)
+                self.addItem(gface)
+    
+        # godforsaken semicircles
+        for i in range(start_w, start_w + width):
         
+            color = None
+            if start_h % 2 == 0 and i % 2 == 0:
+                color = PauliType.X
+            elif start_h % 2 == 0 and i % 2 == 1:
+                color = PauliType.Z
+            elif i % 2 == 0:
+                color = PauliType.Z
+            else:
+                color = PauliType.X
+        
+            # top
+            if i < start_w + width - 1:
+                tile = self._tiling.create_tile(2, two_orientation=0)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * start_h)
+                self.addItem(gface)
+        
+            color = None
+            if start_h + height % 2 == 0 and i % 2 == 0:
+                color = PauliType.X
+            elif start_h + height % 2 == 0 and i % 2 == 1:
+                color = PauliType.Z
+            elif i % 2 == 0:
+                color = PauliType.Z
+            else:
+                color = PauliType.X
+        
+            if i > start_w:
+                tile = self._tiling.create_tile(2, two_orientation=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * (start_h + height))
+                self.addItem(gface)
+    
+        for j in range(start_h + 1, start_h + height + 1):
+        
+            color = None
+            if j % 2 == 0 and start_w % 2 == 0:
+                color = PauliType.Z
+            elif j % 2 == 0 and start_w % 2 == 1:
+                color = PauliType.X
+            elif start_w % 2 == 0:
+                color = PauliType.X
+            else:
+                color = PauliType.Z
+        
+            if j > start_h + 1:
+                tile = self._tiling.create_tile(2, two_orientation=0, two_magnitude=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * start_w, size * j)
+                self.addItem(gface)
+        
+            color = None
+            if j % 2 == 0 and (start_w + width - 1) % 2 == 0:
+                color = PauliType.Z
+            elif j % 2 == 0 and (start_w + width - 1) % 2 == 1:
+                color = PauliType.X
+            elif (start_w + width - 1) % 2 == 0:
+                color = PauliType.X
+            else:
+                color = PauliType.Z
+        
+            if j < start_h + height:
+                tile = self._tiling.create_tile(2, two_orientation=1, two_magnitude=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * (start_w + width), size * j)
+                self.addItem(gface)
 
 
-
+    def generate_ODD_ODD_surface_code(self, width, height):
+        options = list(PauliType)
+        options.remove(PauliType.EMPTY)
+        size = self._tiling.square_size
+        start_w = 2
+        start_h = 2
+    
+        for i in range(start_w, start_w + width):
+            for j in range(start_h + 1, start_h + height + 1):
+                tile = self._tiling.create_tile(4)
+                gg = self.create_gauge_group()
+            
+                color = None
+                if j % 2 == 0 and i % 2 == 0:
+                    color = PauliType.X
+                elif j % 2 == 0 and i % 2 == 1:
+                    color = PauliType.Z
+                elif i % 2 == 0:
+                    color = PauliType.Z
+                else:
+                    color = PauliType.X
+            
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * j)
+                self.addItem(gface)
+    
+        # godforsaken semicircles
+        for i in range(start_w, start_w + width):
+        
+            color = None
+            if start_h % 2 == 0 and i % 2 == 0:
+                color = PauliType.X
+            elif start_h % 2 == 0 and i % 2 == 1:
+                color = PauliType.Z
+            elif i % 2 == 0:
+                color = PauliType.Z
+            else:
+                color = PauliType.X
+        
+            # top
+            if i < start_w + width - 1:
+                tile = self._tiling.create_tile(2, two_orientation=0)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * start_h)
+                self.addItem(gface)
+        
+            color = None
+            if start_h + height % 2 == 0 and i % 2 == 0:
+                color = PauliType.Z
+            elif start_h + height % 2 == 0 and i % 2 == 1:
+                color = PauliType.X
+            elif i % 2 == 0:
+                color = PauliType.X
+            else:
+                color = PauliType.Z
+        
+            if i > start_w:
+                tile = self._tiling.create_tile(2, two_orientation=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * i, size * (start_h + height))
+                self.addItem(gface)
+    
+        for j in range(start_h + 1, start_h + height + 1):
+        
+            color = None
+            if j % 2 == 0 and start_w % 2 == 0:
+                color = PauliType.Z
+            elif j % 2 == 0 and start_w % 2 == 1:
+                color = PauliType.X
+            elif start_w % 2 == 0:
+                color = PauliType.X
+            else:
+                color = PauliType.Z
+        
+            if j > start_h + 1:
+                tile = self._tiling.create_tile(2, two_orientation=0, two_magnitude=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * start_w, size * j)
+                self.addItem(gface)
+        
+            color = None
+            if j % 2 == 0 and (start_w + width - 1) % 2 == 0:
+                color = PauliType.Z
+            elif j % 2 == 0 and (start_w + width - 1) % 2 == 1:
+                color = PauliType.X
+            elif (start_w + width - 1) % 2 == 0:
+                color = PauliType.X
+            else:
+                color = PauliType.Z
+        
+            if j < start_h + height:
+                tile = self._tiling.create_tile(2, two_orientation=1, two_magnitude=1)
+                gg = self.create_gauge_group()
+                gface = GaugeGroupFace(tile, pauli_def=color)
+                gg.add_face(gface)
+                gface.setPos(size * (start_w + width), size * j)
+                self.addItem(gface)
 
 

@@ -140,8 +140,6 @@ class Square(Tessellation):
                     w = qubit1.x() - qubit0.x()
                     h = qubit1.y() - qubit0.y()
                     
-
-                    
                     
                     sz = h if h > w else w
                     
@@ -194,7 +192,49 @@ class Square(Tessellation):
                 return self._sharding
             self._sharding = dict()
             if len(self.ordered_qubits) == 2:
-                pass
+                if self.tile_type == self.ARC:
+                    # closeSubpath?
+                    qubit0 = self.ordered_qubits[ 0 ]
+                    qubit1 = self.ordered_qubits[ 1 ]
+        
+                    w = qubit1.x() - qubit0.x()
+                    h = qubit1.y() - qubit0.y()
+        
+                    sz = h if h > w else w
+        
+                    start_angle = 0
+                    angle = 90
+                    if self.two_qubit_orientation == 1:
+                        angle = angle * -1
+        
+                    start_point = QPointF(qubit0.x(), qubit0.y())
+                    if w == 0:
+                        start_point.setX(start_point.x() - sz / 2)
+                        start_angle = 90
+        
+                    if h == 0:
+                        start_point.setY(start_point.y() - sz / 2)
+                        start_angle = 0
+        
+                    if w != 0 and h != 0:
+                        start_point.setY(start_point.y() - sz / 4)
+                        start_point.setX(start_point.x() - sz / 4)
+                        start_angle = 90 + 45
+                   
+                    q0_shard_key = (qubit0.x(), qubit0.y())
+                    qubit0_arc = QPainterPath(qubit0)
+                    qubit0_arc.arcTo(start_point.x(), start_point.y(), sz, sz, start_angle, angle)
+                    self._sharding[q0_shard_key] = qubit0_arc
+
+                    q1_shard_key = (qubit1.x(), qubit1.y())
+                    qubit1_arc = QPainterPath(qubit1)
+                    qubit1_arc.arcTo(start_point.x(), start_point.y(), sz, sz, angle, angle)
+                    self._sharding[ q1_shard_key ] = qubit1_arc
+
+  
+                    return self._sharding
+    
+    
                 # disgusting
                 # sharding depends on orientation and size of arc which is based off square size
             elif self.tile_type == self.POLYGON:
@@ -217,7 +257,7 @@ class Square(Tessellation):
                     vertex_point = (vertex.x(), vertex.y())
                     tmp_path = QPainterPath()
                     tmp_path.addPolygon([ hp1_p, vertex, hp2_p, centroid ])
-                    self.sharding[ vertex_point ] = tmp_path
+                    self._sharding[ vertex_point ] = tmp_path
                 return self._sharding
             
             else:
