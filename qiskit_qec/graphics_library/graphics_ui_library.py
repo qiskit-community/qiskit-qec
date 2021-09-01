@@ -188,6 +188,10 @@ class GaugeGroupFace(QGraphicsPathItem):
     # on rotation how to push up to gauge group?
 
 
+
+class Qubit(QGraphicsItem):
+
+
 class GaugeGroup():
     
     def __init__(self, faces: [ GaugeGroupFace ] = None):
