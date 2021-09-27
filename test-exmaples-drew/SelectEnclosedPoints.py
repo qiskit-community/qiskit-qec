@@ -31,13 +31,13 @@ def main():
     colors = vtk.vtkNamedColors()
 
     shape_points = [[0,0],[0,-3],[14,-3],[14,8],[16,8],[16,10],[1,10],[1,8],[7,8],[7,3],[2,3],[2,0]]
-    shape_points = [[0,0], [2,0], [2,-2], [0,-2]]
-    shape_points = [[0,0],[0,-3],[14,-3],[14,8.0],[16,8.0],[16,10.0],[0,10]]
-    shape_points = [[0,0],[0,-3],[14,-3],[14,5],[16,5],[16,8],[0,8]]
+    #shape_points = [[0,0], [2,0], [2,-2], [0,-2]]
     shape = polygonPointsToVtkPolyData(shape_points)
 
     points = vtk.vtkPoints()
     points.InsertNextPoint(-1.0,0.0,0)
+    points.InsertNextPoint(0,0,0)
+    points.InsertNextPoint(13,7,0)
 
     polyData = vtk.vtkPolyData()
     polyData.SetPoints(points)
@@ -47,11 +47,19 @@ def main():
     selectEnclosed.SetSurfaceData(shape)
     selectEnclosed.Update()
 
-    print(f'point included: {selectEnclosed.IsInside(0)}')
+    #for i in range(3):
+    #    print(f'point included: {selectEnclosed.IsInside(i)}')
 
+    test = [0,0,0]
+
+    print(f'point included: {selectEnclosed.IsInsideSurface(test)}')
+
+    # in order to render a irregular polygon it needs to be decomposed into triangles
+    filter = vtk.vtkTriangleFilter()
+    filter.SetInputData(shape)
     
     mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputData(shape)
+    mapper.SetInputConnection(filter.GetOutputPort())
 
     actor = vtk.vtkActor()
     actor.SetMapper(mapper)
