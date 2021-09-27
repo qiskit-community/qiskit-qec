@@ -1,40 +1,38 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import vtk
 
-
 def main():
     colors = vtk.vtkNamedColors()
+    reader = vtk.vtkXMLPolyDataReader()
+    reader.SetFileName("/Users/dsvandet/Software/Private/vtk/Testing/Data/cow.vtp")
+    reader.Update()
 
-    diskSource = vtk.vtkDiskSource()
-    diskSource.SetInnerRadius(0)
-    diskSource.SetCircumferentialResolution(100)
-
-    # Create a mapper and actor.
     mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputConnection(diskSource.GetOutputPort())
+    mapper.SetInputData(reader.GetOutput())
 
     actor = vtk.vtkActor()
-    actor.GetProperty().SetColor(colors.GetColor3d("Cornsilk"))
+    actor.GetProperty().SetColor(colors.GetColor3d("Green"))
     actor.SetMapper(mapper)
 
-    # Create a renderer, render window, and interactor
     renderer = vtk.vtkRenderer()
     renderWindow = vtk.vtkRenderWindow()
-    renderWindow.SetWindowName("Disk")
     renderWindow.AddRenderer(renderer)
+    renderWindow.SetWindowName("CellPicking")
+
     renderWindowInteractor = vtk.vtkRenderWindowInteractor()
     renderWindowInteractor.SetRenderWindow(renderWindow)
+    renderWindowInteractor.Initialize()
 
-    # Add the actors to the scene
     renderer.AddActor(actor)
-    renderer.SetBackground(colors.GetColor3d("DarkGreen"))
 
-    # Render and interact
+    renderer.ResetCamera()
+
+    renderer.SetBackground(colors.GetColor3d("Blue"))
+
     renderWindow.Render()
     renderWindowInteractor.Start()
 
-
 if __name__ == '__main__':
     main()
+

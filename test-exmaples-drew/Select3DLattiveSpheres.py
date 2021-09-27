@@ -1,6 +1,20 @@
 import vtk
+import numpy
 
-import numpy, pylab
+# Example: Create a lattice of 3D spheres then allow mouse selection and de-selection. 
+# Change color of sphere that is selected. Selected spheres (actors) are stored in the 
+# gloabl list selected
+
+# Cheap global list to store references of actors selected
+# This would obviously be done via some class etc if done for real. 
+# This works for the demo
+
+# press key 'w' for wireframe mode
+# press key 's' for solid mode
+
+selected = list()
+
+# Create a lattice of spheres in 3D interactor style with ability to select a sphere and change its color
 
 def generate_lattice( #Help me speed up this function, please!
     image_shape, lattice_vectors, center_pix='image', edge_buffer=2):
@@ -33,16 +47,12 @@ def generate_lattice( #Help me speed up this function, please!
 
 
 colors = vtk.vtkNamedColors()
-NUMBER_OF_SPHERES = 10
-
-
 class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
+
+    picked = dict()
 
     def __init__(self, parent=None):
         self.AddObserver("LeftButtonPressEvent", self.leftButtonPressEvent)
-
-        self.LastPickedActor = None
-        self.LastPickedProperty = vtk.vtkProperty()
 
     def leftButtonPressEvent(self, obj, event):
         clickPos = self.GetInteractor().GetEventPosition()
@@ -55,21 +65,21 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 
         # If something was selected
         if self.NewPickedActor:
-            # If we picked something before, reset its property
-            #if self.LastPickedActor:
-            #    self.LastPickedActor.GetProperty().DeepCopy(self.LastPickedProperty)
 
-            # Save the property of the picked actor so that we can
-            # restore it next time
-            self.LastPickedProperty.DeepCopy(self.NewPickedActor.GetProperty())
-            # Highlight the picked actor by changing its properties
-            self.NewPickedActor.GetProperty().SetColor(colors.GetColor3d('Red'))
-            self.NewPickedActor.GetProperty().SetDiffuse(1.0)
-            self.NewPickedActor.GetProperty().SetSpecular(0.0)
-            self.NewPickedActor.GetProperty().EdgeVisibilityOn()
+            if self.NewPickedActor in selected:
+                self.NewPickedActor.GetProperty().SetColor(colors.GetColor3d('Orange'))
+                self.NewPickedActor.GetProperty().SetDiffuse(.8)
+                self.NewPickedActor.GetProperty().SetSpecular(.5)
+                selected.remove(self.NewPickedActor)
+            else:
+                # Highlight the picked actor by changing its properties
+                self.NewPickedActor.GetProperty().SetColor(colors.GetColor3d('Red'))
+                self.NewPickedActor.GetProperty().SetDiffuse(1.0)
+                self.NewPickedActor.GetProperty().SetSpecular(0.0)
+                #self.NewPickedActor.GetProperty().EdgeVisibilityOn()
 
-            # save the last picked actor
-            self.LastPickedActor = self.NewPickedActor
+                selected.append(self.NewPickedActor)
+            
 
         self.OnLeftButtonDown()
         return
@@ -78,7 +88,7 @@ class MouseInteractorHighLightActor(vtk.vtkInteractorStyleTrackballCamera):
 def main():
     # A renderer and render window
     renderer = vtk.vtkRenderer()
-    renderer.SetBackground(colors.GetColor3d('SteelBlue'))
+    renderer.SetBackground(colors.GetColor3d('DimGray'))
 
     renwin = vtk.vtkRenderWindow()
     renwin.AddRenderer(renderer)
@@ -130,6 +140,7 @@ def main():
         actor.GetProperty().SetSpecular(.5)
         actor.GetProperty().SetSpecularColor(colors.GetColor3d('White'))
         actor.GetProperty().SetSpecularPower(30.0)
+        actor.GetProperty().SetColor(colors.GetColor3d('Orange'))
 
         renderer.AddActor(actor)
 

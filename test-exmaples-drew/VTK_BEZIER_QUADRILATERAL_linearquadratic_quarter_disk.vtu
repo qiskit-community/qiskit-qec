@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian" header_type="UInt32" compressor="vtkZLibDataCompressor">
+  <UnstructuredGrid>
+    <Piece NumberOfPoints="6" NumberOfCells="1">
+      <PointData RationalWeights="RationalWeights">
+        <DataArray type="Float64" Name="RationalWeights" format="ascii" RangeMin="0.7071067811865476" RangeMax="1">
+          1 1 1 1 0.7071067811865476 0.7071067811865476
+        </DataArray>
+      </PointData>
+      <CellData HigherOrderDegrees="HigherOrderDegrees">
+        <DataArray type="Float64" Name="HigherOrderDegrees" NumberOfComponents="3" format="ascii" RangeMin="2.23606797749979" RangeMax="2.23606797749979">
+          2 1 0
+          <InformationKey name="L2_NORM_RANGE" location="vtkDataArray" length="2">
+            <Value index="0">
+              2.2360679775
+            </Value>
+            <Value index="1">
+              2.2360679775
+            </Value>
+          </InformationKey>
+        </DataArray>
+      </CellData>
+      <Points>
+        <DataArray type="Float32" Name="Points" NumberOfComponents="3" format="ascii" RangeMin="1" RangeMax="2.8284271247461903">
+          0 1 0 1 0 0
+          2 0 0 0 2 0
+          1 1 0 2 2 0
+          <InformationKey name="L2_NORM_RANGE" location="vtkDataArray" length="2">
+            <Value index="0">
+              1
+            </Value>
+            <Value index="1">
+              2.8284271247
+            </Value>
+          </InformationKey>
+        </DataArray>
+      </Points>
+      <Cells>
+        <DataArray type="Int64" Name="connectivity" format="ascii" RangeMin="0" RangeMax="5">
+          0 1 2 3 4 5
+        </DataArray>
+        <DataArray type="Int64" Name="offsets" format="ascii" RangeMin="6" RangeMax="6">
+          6
+        </DataArray>
+        <DataArray type="UInt8" Name="types" format="ascii" RangeMin="77" RangeMax="77">
+          77
+        </DataArray>
+      </Cells>
+    </Piece>
+  </UnstructuredGrid>
+</VTKFile>

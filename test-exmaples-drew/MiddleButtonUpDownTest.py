@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import vtk
 
+# Custum style for middle button up and down events. Simple printing of events
+
 
 class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 

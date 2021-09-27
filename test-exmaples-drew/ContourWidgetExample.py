@@ -59,7 +59,7 @@ def main():
     vertex_indices = list(range(0, num_pts))
     vertex_indices.append(0)
     lines = vtk.vtkCellArray()
-    lines.InsertNextCell(num_pts + 1, vertex_indices)
+    lines.InsertNextCell(num_pts+  1, vertex_indices)
 
     pd.SetPoints(points)
     pd.SetLines(lines)
