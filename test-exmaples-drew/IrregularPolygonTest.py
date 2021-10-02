@@ -31,10 +31,10 @@ aPolygonGrid.InsertNextCell(aPolygon.GetCellType(), aPolygon.GetPointIds())
 aPolygonGrid.SetPoints(polygonPoints)
 
 # This part is needed for non-convex polygon rendering
-aPolygonGeomFilter = vtk.vtkGeometryFilter()
-aPolygonGeomFilter.SetInput(aPolygonGrid)
+#aPolygonGeomFilter = vtk.vtkGeometryFilter()
+#aPolygonGeomFilter.SetInput(aPolygonGrid)
 aPolygonTriangleFilter = vtk.vtkTriangleFilter()
-aPolygonTriangleFilter.SetInput(aPolygonGeomFilter.GetOutput())
+aPolygonTriangleFilter.SetInput(aPolygonGrid.GetOutput())
 #
 # This one is only to check the triangulation (when factor < 1)
 aPolygonShrinkFilter = vtk.vtkShrinkFilter()
