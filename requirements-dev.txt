@@ -1,0 +1,4 @@
+coverage==6.0.2
+pylint==2.11.1
+tox==3.24.4
+black==21.9b0
