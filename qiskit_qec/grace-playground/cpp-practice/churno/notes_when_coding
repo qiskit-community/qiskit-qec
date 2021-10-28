@@ -1,0 +1,5 @@
+# use const as much as possible
+# ALWAYS use member init lists so as not to make throwaway objects
+# use static funcs & vars (outside of classes/funcs) as much as possible
+# DON'T allocate on the heap unless you have to (bc you gotta free it and it takes longer)
+# DON'T malloc
