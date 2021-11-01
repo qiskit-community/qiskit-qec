@@ -131,9 +131,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-<<<<<<< HEAD
-=======
+
 
 # Intellij PyCharm
 .idea/
->>>>>>> origin/develop
