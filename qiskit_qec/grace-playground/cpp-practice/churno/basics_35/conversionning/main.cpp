@@ -18,7 +18,7 @@ public:
     }
 };
 
-void PrintEntity(const Entity &entity)
+void PrintEntity(Entity &entity)
 {
     std::cout << entity.GetName() << std::endl;
 }
@@ -28,9 +28,11 @@ int main()
     Entity e0("cheeseburger");
     Entity e1(10);
 
-    Entity e3 = std::string("Chernie");
+    //     Entity &refe3 = e1;
+    //     refe3 = e0;
+    //     PrintEntity(e1);
 
-    const std::string name = "Cigarettes";
-
-    PrintEntity(name);
+    Entity e3 = e1;
+    std::cout << &e1 << std::endl;
+    std::cout << &e3 << std::endl;
 }
