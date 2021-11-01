@@ -135,6 +135,7 @@ def main():
     color_array = vtk.vtkFloatArray()
     for item in pts:
         i = color_array.InsertNextTuple((item[4],))
+    #color_array.InsertNextTuple((2,))
 
     points = vtk.vtkPoints()
     for i in range(0, len(x)):
@@ -145,10 +146,11 @@ def main():
     ugrid.Allocate(100)
 
     ugrid.InsertNextCell(vtk.VTK_QUAD, 4, pts[0][:4])
-    ugrid.InsertNextCell(vtk.VTK_QUAD, 4, pts[1][:4])
+    #ugrid.InsertNextCell(vtk.VTK_QUAD, 4, pts[1][:4])
     ugrid.InsertNextCell(vtk.VTK_QUAD, 4, pts[2][:4])
     ugrid.InsertNextCell(vtk.VTK_QUAD, 4, pts[3][:4])
-    ugrid.InsertNextCell(vtk.VTK_POLYGON, )
+
+    ugrid.InsertNextCell(vtk.VTK_TRIANGLE, 3, [0,2,5])
 
     ugrid.SetPoints(points)
 
