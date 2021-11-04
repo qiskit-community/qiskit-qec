@@ -10,16 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for template."""
+"""QEC Exception."""
 
-from unittest import TestCase
-import qiskit_qec.models as qqm
+from qiskit.exceptions import QiskitError
 
 
-class TestWillBeHere(TestCase):
-    """Tests will be here."""
+class QiskitQECError(QiskitError):
+    """Class for errors returned by Qiskit's QEC module."""
 
-    def test_template_class(self):
-        """Tests will start here."""
-        qc = qqm.CodeModel("sample")
-        self.assertTrue(qc.convert())
+    pass

@@ -1,4 +1,9 @@
 # Qiskit QEC
+
+
+
+<!--- long-description-skip-begin -->[QEC](https://github.com/Qiskit/qiskit-qec)<!--- long-description-skip-end -->
+
 [![License](https://img.shields.io/github/license/Qiskit/qiskit-terra.svg?style=popout-square)](https://opensource.org/licenses/Apache-2.0)
 
 **Qiskit Framework for Quantum Error Correction** is an open-source framework for developers, experimentalist and theorists of Quantum Error Correction (QEC). The framework is in the development stage.

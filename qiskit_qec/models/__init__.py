@@ -10,16 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for template."""
+"""
+Models (:mod:`qiskit_qec.models`)
+============================================
 
-from unittest import TestCase
-import qiskit_qec.models as qqm
+.. currentmodule:: qiskit_qec.models
 
+These are code models.
 
-class TestWillBeHere(TestCase):
-    """Tests will be here."""
+.. autosummary::
+   :toctree:
 
-    def test_template_class(self):
-        """Tests will start here."""
-        qc = qqm.CodeModel("sample")
-        self.assertTrue(qc.convert())
+   code_model
+
+"""
+
+from .code_model import CodeModel
+
+__all__ = [
+    "CodeModel",
+]
