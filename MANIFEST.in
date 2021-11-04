@@ -1,0 +1,4 @@
+include LICENSE.txt
+
+# Include the tests files.
+recursive-include test *.py
