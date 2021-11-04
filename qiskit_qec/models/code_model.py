@@ -10,16 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Tests for template."""
-
-from unittest import TestCase
-import qiskit_qec.models as qqm
+"""Code models."""
 
 
-class TestWillBeHere(TestCase):
-    """Tests will be here."""
+class CodeModel:
+    """Code model class.
+    Args:
+        parameter (str): Parameter for code model.
+    Attributes:
+        parameter (str): Parameter for code model.
+    """
 
-    def test_template_class(self):
-        """Tests will start here."""
-        qc = qqm.CodeModel("sample")
-        self.assertTrue(qc.convert())
+    def __init__(self, parameter: str):
+        self.parameter = parameter
+
+    def convert(self) -> bool:
+        """Converts code model."""
+        return True

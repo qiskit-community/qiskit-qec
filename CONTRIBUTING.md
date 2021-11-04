@@ -88,7 +88,7 @@ please ensure that:
 
 
 3. If it makes sense for your change that you have added new tests that
-   cover the changes.
+   cover the changes. **Make sure any new test directories have a `__init__.py` or else they won't be run!**
 
 4. Ensure that if your change has an end user facing impact (new feature,
    deprecation, removal, etc.) that you have added a reno release note for that
