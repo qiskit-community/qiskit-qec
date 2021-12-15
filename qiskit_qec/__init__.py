@@ -25,14 +25,7 @@ Submodules
 ==========
 .. autosummary::
    :toctree:
-   codes
-   info
-   linear
    models
-   modelers
-   operators
-   structures
-   utils
 """
 
 from .exceptions import QiskitQECError
