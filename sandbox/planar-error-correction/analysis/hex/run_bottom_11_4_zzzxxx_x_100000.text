@@ -1,0 +1,26 @@
+d = 11
+rounds = 4
+round_schedule = zzzxxx
+basis = x
+shots = 100000
+p = [0.0001, 0.0002, 0.0003, 0.0004]
+scanning 11 4 zzzxxx x
+construct decoder in 6150.7562 seconds
+running 100000 0.000100
+simulate circuits in 7269.4476 seconds
+decode outcomes in 414.3070 seconds
+pfail = 0.000000 +- 0.000000
+running 100000 0.000200
+simulate circuits in 7444.8740 seconds
+decode outcomes in 641.2282 seconds
+pfail = 0.000000 +- 0.000000
+running 100000 0.000300
+simulate circuits in 7414.1743 seconds
+decode outcomes in 801.5148 seconds
+pfail = 0.000010 +- 0.000010
+running 100000 0.000400
+simulate circuits in 7448.2240 seconds
+decode outcomes in 961.7914 seconds
+pfail = 0.000020 +- 0.000014
+pfails = [0.0, 0.0, 1e-05, 2e-05]
+sigs = [0.0, 0.0, 1e-05, 1.4142064912168937e-05]

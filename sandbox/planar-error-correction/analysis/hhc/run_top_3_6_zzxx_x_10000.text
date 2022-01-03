@@ -1,0 +1,67 @@
+desc = hhc
+d = 3
+rounds = 6
+round_schedule = zzxx
+basis = x
+shots = 10000
+p = [0.0005, 0.0006, 0.0007, 0.0008, 0.0009, 0.00095, 0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+scanning hhc 3 6 zzxx x
+construct decoder in 21.7394 seconds
+running 10000 0.000500
+simulate circuits in 35.6256 seconds
+decode outcomes in 6.9894 seconds
+pfail = 0.009800 +- 0.000985
+running 10000 0.000600
+simulate circuits in 32.5327 seconds
+decode outcomes in 6.5089 seconds
+pfail = 0.014000 +- 0.001175
+running 10000 0.000700
+simulate circuits in 34.0599 seconds
+decode outcomes in 7.0789 seconds
+pfail = 0.017500 +- 0.001311
+running 10000 0.000800
+simulate circuits in 33.5946 seconds
+decode outcomes in 6.7982 seconds
+pfail = 0.022400 +- 0.001480
+running 10000 0.000900
+simulate circuits in 34.2724 seconds
+decode outcomes in 7.2900 seconds
+pfail = 0.027400 +- 0.001633
+running 10000 0.000950
+simulate circuits in 32.8376 seconds
+decode outcomes in 7.4570 seconds
+pfail = 0.031900 +- 0.001757
+running 10000 0.001000
+simulate circuits in 34.4011 seconds
+decode outcomes in 7.5450 seconds
+pfail = 0.036000 +- 0.001863
+running 10000 0.001500
+simulate circuits in 32.7276 seconds
+decode outcomes in 7.9567 seconds
+pfail = 0.071700 +- 0.002580
+running 10000 0.002000
+simulate circuits in 34.8293 seconds
+decode outcomes in 8.3747 seconds
+pfail = 0.120900 +- 0.003260
+running 10000 0.002500
+simulate circuits in 33.4892 seconds
+decode outcomes in 7.5390 seconds
+pfail = 0.169800 +- 0.003755
+running 10000 0.003000
+simulate circuits in 34.7962 seconds
+decode outcomes in 8.7244 seconds
+pfail = 0.220200 +- 0.004144
+running 10000 0.003500
+simulate circuits in 33.6420 seconds
+decode outcomes in 9.4126 seconds
+pfail = 0.272700 +- 0.004454
+running 10000 0.004000
+simulate circuits in 34.8991 seconds
+decode outcomes in 9.7850 seconds
+pfail = 0.307900 +- 0.004616
+running 10000 0.004500
+simulate circuits in 33.4706 seconds
+decode outcomes in 10.0119 seconds
+pfail = 0.352400 +- 0.004777
+pfails = [0.0098, 0.014, 0.0175, 0.0224, 0.0274, 0.0319, 0.036, 0.0717, 0.1209, 0.1698, 0.2202, 0.2727, 0.3079, 0.3524]
+sigs = [0.0009851360562404211, 0.0011749630010367902, 0.0013113149715821403, 0.0014798793884301619, 0.0016325411232345436, 0.0017574264863104453, 0.0018629941155858412, 0.002580034235754589, 0.0032602732919486703, 0.003754757757909564, 0.0041440213912731115, 0.004453701218700526, 0.004616480281450242, 0.004777416286094092]

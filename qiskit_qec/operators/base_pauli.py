@@ -21,8 +21,8 @@ from qiskit_qec.linear.smatrix_api.smatrix import SMatrix
 
 class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     def __init__(self, matrix, phase_exponent=0, stype='numpy'):
-        print(f"matrix={matrix}")
-        print(f"phase_exponent={phase_exponent}")
+        #print(f"matrix={matrix}")
+        #print(f"phase_exponent={phase_exponent}")
         self.sm = SMatrix.get_methods(stype=stype)
         self.matrix = SMatrix(self.sm.atleast_2d(matrix), stype=stype)
         self.stype = stype

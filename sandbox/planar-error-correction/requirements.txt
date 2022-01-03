@@ -1,0 +1,13 @@
+cffi
+matplotlib
+networkx
+numpy
+PyMatching
+qiskit
+retworkx
+sympy
+jupyter
+jupyterlab
+pyvis
+pylatexenc
+pyyaml

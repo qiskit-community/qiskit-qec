@@ -1,0 +1,67 @@
+desc = hhc
+d = 7
+rounds = 4
+round_schedule = zzzxxx
+basis = z
+shots = 10000
+p = [0.0005, 0.0006, 0.0007, 0.0008, 0.0009, 0.00095, 0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+scanning hhc 7 4 zzzxxx z
+construct decoder in 675.9649 seconds
+running 10000 0.000500
+simulate circuits in 178.2548 seconds
+decode outcomes in 24.1142 seconds
+pfail = 0.000300 +- 0.000173
+running 10000 0.000600
+simulate circuits in 174.2667 seconds
+decode outcomes in 24.4110 seconds
+pfail = 0.000500 +- 0.000224
+running 10000 0.000700
+simulate circuits in 175.8218 seconds
+decode outcomes in 26.4130 seconds
+pfail = 0.000600 +- 0.000245
+running 10000 0.000800
+simulate circuits in 173.9657 seconds
+decode outcomes in 26.2410 seconds
+pfail = 0.001700 +- 0.000412
+running 10000 0.000900
+simulate circuits in 177.1407 seconds
+decode outcomes in 28.3767 seconds
+pfail = 0.002800 +- 0.000528
+running 10000 0.000950
+simulate circuits in 173.1558 seconds
+decode outcomes in 27.4199 seconds
+pfail = 0.003200 +- 0.000565
+running 10000 0.001000
+simulate circuits in 176.0846 seconds
+decode outcomes in 29.3571 seconds
+pfail = 0.004700 +- 0.000684
+running 10000 0.001500
+simulate circuits in 172.5483 seconds
+decode outcomes in 32.2048 seconds
+pfail = 0.019800 +- 0.001393
+running 10000 0.002000
+simulate circuits in 177.1978 seconds
+decode outcomes in 38.3676 seconds
+pfail = 0.053700 +- 0.002254
+running 10000 0.002500
+simulate circuits in 171.3564 seconds
+decode outcomes in 39.2728 seconds
+pfail = 0.095400 +- 0.002938
+running 10000 0.003000
+simulate circuits in 176.2060 seconds
+decode outcomes in 44.4446 seconds
+pfail = 0.159400 +- 0.003661
+running 10000 0.003500
+simulate circuits in 167.0854 seconds
+decode outcomes in 45.1203 seconds
+pfail = 0.215800 +- 0.004114
+running 10000 0.004000
+simulate circuits in 173.8808 seconds
+decode outcomes in 48.3654 seconds
+pfail = 0.278600 +- 0.004483
+running 10000 0.004500
+simulate circuits in 170.5449 seconds
+decode outcomes in 46.9696 seconds
+pfail = 0.336300 +- 0.004725
+pfails = [0.0003, 0.0005, 0.0006, 0.0017, 0.0028, 0.0032, 0.0047, 0.0198, 0.0537, 0.0954, 0.1594, 0.2158, 0.2786, 0.3363]
+sigs = [0.00017318775765030273, 0.00022356206744392033, 0.00024488772325231, 0.00041198054905211204, 0.000528435354979622, 0.0005648078441293809, 0.0006839866839189034, 0.0013931942072122972, 0.0022543600453169394, 0.002937813315155929, 0.0036606698909359527, 0.0041139674856332156, 0.0044833262229512305, 0.004724665411044959]

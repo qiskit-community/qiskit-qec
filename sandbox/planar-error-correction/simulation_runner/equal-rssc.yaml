@@ -1,0 +1,1765 @@
+%YAML 1.1
+# RSSC scan with 'equal' error model
+---
+info: RSSC scan with 'equal' error model d=3 12 rounds zx z
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=3 12 rounds zx x
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=3 6 rounds zzxx z
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=3 6 rounds zzxx x
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=3 4 rounds zzzxxx z
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=3 4 rounds zzzxxx x
+code:
+  distance: 3
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+      0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+      0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+      0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035,
+      0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 12 rounds zx z
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 12 rounds zx x
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 6 rounds zzxx z
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 6 rounds zzxx x
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 4 rounds zzzxxx z
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=5 4 rounds zzzxxx x
+code:
+  distance: 5
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0001, 0.00015, 0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 12 rounds zx z
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 12 rounds zx x
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 6 rounds zzxx z
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 6 rounds zzxx x
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 4 rounds zzzxxx z
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=7 4 rounds zzzxxx x
+code:
+  distance: 7
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0002, 0.00025, 0.0003, 0.00035,
+        0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 12 rounds zx z
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 12 rounds zx x
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 6 rounds zzxx z
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 6 rounds zzxx x
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 4 rounds zzzxxx z
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=9 4 rounds zzzxxx x
+code:
+  distance: 9
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0004, 0.00045, 0.0005, 0.00055, 0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 12 rounds zx z
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 12 rounds zx x
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 12
+  round_schedule: zx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 6 rounds zzxx z
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 6 rounds zzxx x
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 6
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 4 rounds zzzxxx z
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: z
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
+...
+---
+info: RSSC scan with 'equal' error model d=11 4 rounds zzzxxx x
+code:
+  distance: 11
+  family: RSSC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    scale: 1
+    chan: {x: 1}
+  measure:
+    scale: 1
+    chan: {x: 1}
+  x:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 4
+  round_schedule: zzzxxx
+  basis: x
+  initial_state: +
+  logical_paulis: ii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0006, 0.00065,
+        0.0007, 0.00075, 0.0008, 0.00085, 0.0009, 0.00095,
+        0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004, 0.0045]
