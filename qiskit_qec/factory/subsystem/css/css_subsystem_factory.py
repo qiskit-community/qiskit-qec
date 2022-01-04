@@ -12,8 +12,8 @@
 
 from qiskit.exceptions import QiskitError
 
-from qiskit_qec.modelers.subsystem.subsystem_modeler import SubSystemModeler
+from qiskit_qec.factory.subsystem.subsystem_factory import SubSystemFactory
 
-class CSSSubSystemModeler(SubSystemModeler):
+class CSSSubSystemFactory(SubSystemFactory):
     def __init__(self) -> None:
         pass

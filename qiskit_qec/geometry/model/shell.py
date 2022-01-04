@@ -27,15 +27,13 @@ class Shell(ShapeObject):
             self.edges += face.edges
             self.vertices += face.vertices
 
-            #for edge in face.wireframe.edges:
-            #    self.edges.append(edge)
-
-        #for face in self.faces:
-        #    for vertex in face.vertices:
-        #        self.vertices.append(vertex)
-
     def union(self, shell):
         self.faces += shell.faces
         self.wireframes += shell.wireframes
         self.edges += shell.edges
         self.vertices += shell.vertices
+
+    def delete_subtree(self, roots):
+        for root in roots:
+            pass
+

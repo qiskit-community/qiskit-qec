@@ -48,16 +48,41 @@ class Tiling:
             for i_vertex in M.vertices[:i_vertices_num]:
                 for u_vertex in M.vertices[i_vertices_num:]:
                     if cls.distance(i_vertex.pos, u_vertex.pos) < epsilon:
+                        #print("\n")
+                        #print(f"u_vertex.pos={u_vertex.pos} i_vertex.pos={i_vertex.pos}")
+
                         # This is a very simple form of snapping
                         # Works only due to the orientations all being
                         # the same for each tile.
                         u_vertex.pos = i_vertex.pos
+
                         # Align the qubits: set the two vertices to use the same qubit
-                        old_qubit_id = qubit_data.qubit[u_vertex.id]
-                        qubit_data.qubit[u_vertex.id]=qubit_data.qubit[i_vertex.id]
+
+                        u_vertex_qubit_id = qubit_data.qubit[u_vertex.id]
+                        old_u_vertex_qubit_id = u_vertex_qubit_id
+                        i_vertex_qubit_id = qubit_data.qubit[i_vertex.id]
+                        
+                        #print(f"u_vertex_qubit_id = {u_vertex_qubit_id}")
+                        #print(f"i_vertex_qubit_id= {i_vertex_qubit_id}")
+
+                        qubit_data.qubit[u_vertex.id] = i_vertex_qubit_id
+                        u_vertex_qubit_id = i_vertex_qubit_id
+
+                        #print("After merge")
+                        #print(f"u_vertex_qubit_id = {u_vertex_qubit_id}")
+                        #print(f"i_vertex_qubit_id = {i_vertex_qubit_id}")
+
+                        #print("qubit counters")
+                        #print(f"Old: {qubit_count.qubits_count[old_u_vertex_qubit_id]}")
+                        #print(f"New: {qubit_count.qubits_count[i_vertex_qubit_id]}")
+
                         # Adjust the qubit_counters
-                        qubit_count.decrement_qubit(old_qubit_id)
-                        qubit_count.increment_qubit(qubit_data.qubit[i_vertex.id])
+                        qubit_count.decrement_qubit(old_u_vertex_qubit_id)
+                        qubit_count.increment_qubit(i_vertex_qubit_id)
+                        
+                        #print("After update")
+                        #print(f"Old: {qubit_count.qubits_count[old_u_vertex_qubit_id]}")
+                        #print(f"New: {qubit_count.qubits_count[i_vertex_qubit_id]}")
         
         return M
 

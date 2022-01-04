@@ -11,8 +11,8 @@
 # that they have been altered from the originals.
 
 
-from qiskit_qec.modelers.subsystem.css.css_subsystem_modeler import CSSSubSystemModeler
+from qiskit_qec.factory.subsystem.css.css_subsystem_factory import CSSSubSystemFactory
 
-class HeavyHexModeler(CSSSubSystemModeler):
+class HeavyHexFactory(CSSSubSystemFactory):
     def __init__(self) -> None:
         super().__init__()

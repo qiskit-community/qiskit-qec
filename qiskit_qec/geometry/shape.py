@@ -12,6 +12,8 @@
 
 # Part of the QEC framework
 
+from math import copysign
+
 import numpy as np
 
 from qiskit_qec.geometry.plane import Plane
@@ -143,34 +145,59 @@ class Shape:
             raise QiskitError(f"Manifold {manifold} not yet supported")
 
     
-    def contains(self, point):
-        """Simple check if inside region using an infinite horizontal line from point
-        point to +infinity
+    def contains(self, point, on_boundary=True, epsilon=0.001):
+        """Check if inside the bounded region using an infinite horizontal line from the point
+        to +infinity
 
-        This simple implementation assumes that the path is given by a sequence of 
+        This implementation assumes that the path is given by a sequence of 
         straight lines.
 
         A more sophisticated verison is required if the path is otherwise.
 
         Args:
             point (point): point to check if in region (including on boundary)
+            on_boundary (bool): True if boundary to be include in "inside". Default is True
+            epsilon (real): Tolerance distance between two points to be equal. Default is 0.001
         """
         x = point[0]
         y = point[1]
-        print(f"Check {[x,y]}")
         count = 0
-        for line in self.lines:
+        k = len(self.lines)
+ 
+        for index, line in enumerate(self.lines):
             [x0, y0] = self.points[line[0]]
             [x1, y1] = self.points[line[1]]
-            if  x <= min(x0, x1) and Shape.is_between(y, y0, y1):
-                count += 1
-                print(f"{[x0, y0]} to {[x1, y1]} : Intersect")
-            else:
-                print(f"{[x0, y0]} to {[x1, y1]} : Not intersect")
+            [_, y2] = self.points[self.lines[(index+1)%k][1]]
+            m = (y0-y1)/(x0-x1)
+            s = copysign(1, m)
+            c = y0 - m*x0
+            yp = m*x + c
+            
+            # Point on line
+            if y == yp and Shape.is_between(x, x0, x1):
+                return (True and on_boundary)
+
+            # Does the ray pass through the middle of a line
+            if Shape.is_between(y, y0, y1, strict=True):
+                if x <= min(x0, x1) or s*y < s*yp:
+                    count += 1
+                else:
+                    continue
+
+            # Does ray pass though a vertex
+
+            if abs(y-y1) < epsilon:
+                if x < x1:
+                    if y1 > max(y0,y2) or y1 < min(y0,y2):
+                        # ray passes through vertex y1 /\ or \/
+                        count += 2
+                    else:
+                        # ray passes through vertex y1 |
+                        count += 1
 
         return bool(count%2)
 
-    def is_between(p, a, b):
+    def is_between(p, a, b, strict=False):
         """is p between a and b: a <= p < =b
 
         Args:
@@ -181,4 +208,7 @@ class Shape:
         Returns:
             bool: True is a is between a and b, False if not
         """
-        return (((a <= b)*a +(b<a)*b) <= p) and (p <= ((a>b)*a + (b>=a)*b))
+        if strict:
+            return (((a <= b)*a +(b<a)*b) < p) and (p < ((a>b)*a + (b>=a)*b)) 
+        else:
+            return (((a <= b)*a +(b<a)*b) <= p) and (p <= ((a>b)*a + (b>=a)*b))

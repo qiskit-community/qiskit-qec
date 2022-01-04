@@ -12,8 +12,8 @@
 
 from qiskit.exceptions import QiskitError
 
-from qiskit_qec.modelers.modeler import Modeler
+from qiskit_qec.factory.factory import Factory
 
-class SubSystemModeler(Modeler):
+class SubSystemFactory(Factory):
     def __init__(self) -> None:
         pass

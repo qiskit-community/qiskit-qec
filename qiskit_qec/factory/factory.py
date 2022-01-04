@@ -12,6 +12,6 @@
 
 from qiskit.exceptions import QiskitError
 
-class Modeler:
+class Factory:
     def __init__(self) -> None:
         pass
