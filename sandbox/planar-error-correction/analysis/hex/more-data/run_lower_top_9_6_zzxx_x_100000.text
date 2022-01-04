@@ -1,0 +1,39 @@
+desc = rssc_hex
+d = 9
+rounds = 6
+round_schedule = zzxx
+basis = x
+shots = 100000
+p = [0.0005, 0.0006, 0.0007, 0.0008, 0.0009, 0.00095, 0.001]
+scanning rssc_hex 9 6 zzxx x
+construct decoder in 2680.6658 seconds
+running 100000 0.000500
+simulate circuits in 4793.5600 seconds
+decode outcomes in 539.6692 seconds
+pfail = 0.000080 +- 0.000028
+running 100000 0.000600
+simulate circuits in 4788.5979 seconds
+decode outcomes in 595.6585 seconds
+pfail = 0.000240 +- 0.000049
+running 100000 0.000700
+simulate circuits in 4700.4063 seconds
+decode outcomes in 651.3053 seconds
+pfail = 0.000540 +- 0.000073
+running 100000 0.000800
+simulate circuits in 4711.8024 seconds
+decode outcomes in 692.5232 seconds
+pfail = 0.001100 +- 0.000105
+running 100000 0.000900
+simulate circuits in 4733.5477 seconds
+decode outcomes in 723.3560 seconds
+pfail = 0.001930 +- 0.000139
+running 100000 0.000950
+simulate circuits in 4742.6411 seconds
+decode outcomes in 736.3385 seconds
+pfail = 0.002410 +- 0.000155
+running 100000 0.001000
+simulate circuits in 4762.6164 seconds
+decode outcomes in 748.5838 seconds
+pfail = 0.003240 +- 0.000180
+pfails = [8e-05, 0.00024, 0.00054, 0.0011, 0.00193, 0.00241, 0.00324]
+sigs = [2.8283281270743577e-05, 4.8984160648927575e-05, 7.346521606433696e-05, 0.00010482370857825439, 0.0001387910070193177, 0.00015505534309269775, 0.00017970906196814208]

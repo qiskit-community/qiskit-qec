@@ -1,0 +1,138 @@
+%YAML 1.1
+---
+# Example file with two single-point simulations.
+# Simulation #1 -- RSSC
+info: RSSC simulation at a single error probability
+code:
+  distance: 3     # int or list of ints
+  family: RSSC    # or HHC
+noise:
+  cx:   # operation name/label
+    p: 0.001      # absolute error probability
+    scale: 1      # scaling factor when scanning a single parameter
+    # chan contains pauli terms and weights to define the channel
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    p: 0.001
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    p: 0.01
+    chan: {x: 1}
+  measure:
+    p: 0.01
+    chan: {x: 1}
+  x:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex     # heavy-hex, higgott-breuckmann, heavy-hex-yoder
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 3               # int or list of ints
+  round_schedule: zx
+  basis: z
+  initial_state: "-"      # '+' or '-'
+  logical_paulis: xx
+
+# Decoder configuration
+decoder:
+  method: matching_pymatching   # or matching_networkx
+  uniform: False
+
+# Simulator configuraton
+simulator:
+  seed: 100
+  shots_max: 1000
+  shots_increment: 1000
+  stopping_threshold: 10
+  # pin: float or list of floats, not used here
+...
+---
+# Simulation #2 -- HHC
+info: HHC simulation at a single error probability
+code:
+  distance: 3
+  family: HHC
+
+# Noise model
+noise:
+  cx:
+    p: 0.001
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    p: 0.001
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    p: 0.01
+    chan: {x: 1}
+  measure:
+    p: 0.01
+    chan: {x: 1}
+  x:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    p: 0.0001
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: 3
+  round_schedule: zx
+  basis: z
+  initial_state: "-"
+  logical_paulis: xx
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_max: 1000
+  shots_increment: 1000
+  stopping_threshold: 10
+

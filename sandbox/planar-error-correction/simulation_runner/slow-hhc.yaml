@@ -1,0 +1,113 @@
+%YAML 1.1
+# HHC scan with 'slow' error model
+---
+info: HHC scan with slow error model d=3 to 11 rounds=1 to 10 z-basis
+code:
+  distance: [3, 5, 7, 9, 11]
+  family: HHC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 0.1  # single-qubit gate is this factor longer than two-qubit gate
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 4  # readout is this factor longer than two-qubit gate
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    p: 0.01
+    chan: {x: 1}
+  measure:
+    p: 0.01
+    chan: {x: 1}
+  x:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  round_schedule: zzxx
+  basis: z
+  initial_state: +
+  logical_paulis: iiii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0008, 0.001, 0.003]
+...
+---
+info: HHC scan with slow error model d=3 to 11 rounds=1 to 10 x-basis
+code:
+  distance: [3, 5, 7, 9, 11]
+  family: HHC
+noise:
+  cx:
+    scale: 1
+    chan: {ix: 1, iy: 1, iz: 1, xi: 1, xx: 1, xy: 1, xz: 1, yi: 1, yx: 1, yy: 1, yz: 1, zi: 1, zx: 1, zy: 1, zz: 1}
+  h:
+    scale: 0.1  # single-qubit gate is this factor longer than two-qubit gate
+    chan: {x: 1, y: 1, z: 1}
+  s:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  id:
+    scale: 1
+    chan: {x: 1, y: 1, z: 1}
+  idm:
+    scale: 4  # readout is this factor longer than two-qubit gate
+    chan: {x: 1, y: 1, z: 1}
+  reset:
+    p: 0.01
+    chan: {x: 1}
+  measure:
+    p: 0.01
+    chan: {x: 1}
+  x:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  y:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+  z:
+    scale: 0.1
+    chan: {x: 1, y: 1, z: 1}
+circuit:
+  schedule: heavy-hex
+  barriers: True
+  idles: True
+  distinct_measurement_idle: True
+  rounds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  round_schedule: zzxx
+  basis: x
+  initial_state: +
+  logical_paulis: iiii
+decoder:
+  method: matching_pymatching
+  uniform: False
+simulator:
+  seed: 100
+  shots_increment: 10000
+  shots_max: 10000000
+  stopping_threshold: 10
+  pin: [0.0008, 0.001, 0.003]

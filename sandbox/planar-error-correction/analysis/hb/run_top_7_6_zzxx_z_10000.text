@@ -1,0 +1,46 @@
+d = 7
+rounds = 6
+round_schedule = zzxx
+basis = z
+shots = 10000
+p = [0.004, 0.005, 0.0055, 0.006, 0.0065, 0.007, 0.0075, 0.008, 0.0085]
+scanning 7 6 zzxx z
+construct decoder in 278.1333 seconds
+running 10000 0.004000
+simulate circuits in 125.1026 seconds
+decode outcomes in 44.9153 seconds
+pfail = 0.005100 +- 0.000712
+running 10000 0.005000
+simulate circuits in 117.7159 seconds
+decode outcomes in 48.2814 seconds
+pfail = 0.013600 +- 0.001158
+running 10000 0.005500
+simulate circuits in 117.4192 seconds
+decode outcomes in 51.0144 seconds
+pfail = 0.020500 +- 0.001417
+running 10000 0.006000
+simulate circuits in 117.4726 seconds
+decode outcomes in 51.2611 seconds
+pfail = 0.027400 +- 0.001633
+running 10000 0.006500
+simulate circuits in 117.4654 seconds
+decode outcomes in 54.1285 seconds
+pfail = 0.040200 +- 0.001964
+running 10000 0.007000
+simulate circuits in 118.6129 seconds
+decode outcomes in 59.0540 seconds
+pfail = 0.050500 +- 0.002190
+running 10000 0.007500
+simulate circuits in 119.0218 seconds
+decode outcomes in 59.2302 seconds
+pfail = 0.061500 +- 0.002403
+running 10000 0.008000
+simulate circuits in 118.9090 seconds
+decode outcomes in 57.2725 seconds
+pfail = 0.081000 +- 0.002728
+running 10000 0.008500
+simulate circuits in 118.7801 seconds
+decode outcomes in 59.1566 seconds
+pfail = 0.094600 +- 0.002927
+pfails = [0.0051, 0.0136, 0.0205, 0.0274, 0.0402, 0.0505, 0.0615, 0.081, 0.0946]
+sigs = [0.0007123550694523746, 0.0011582910531539048, 0.0014171012023076399, 0.0016325411232345436, 0.0019643782421386717, 0.0021898526309901646, 0.0024025720041704313, 0.002728487578210032, 0.0029267628182104897]

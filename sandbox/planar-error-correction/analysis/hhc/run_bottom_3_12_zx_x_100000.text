@@ -1,0 +1,27 @@
+desc = hhc
+d = 3
+rounds = 12
+round_schedule = zx
+basis = x
+shots = 100000
+p = [0.0001, 0.0002, 0.0003, 0.0004]
+scanning hhc 3 12 zx x
+construct decoder in 59.4422 seconds
+running 100000 0.000100
+simulate circuits in 349.3965 seconds
+decode outcomes in 99.8382 seconds
+pfail = 0.000480 +- 0.000069
+running 100000 0.000200
+simulate circuits in 348.7603 seconds
+decode outcomes in 59.2367 seconds
+pfail = 0.001840 +- 0.000136
+running 100000 0.000300
+simulate circuits in 323.5421 seconds
+decode outcomes in 60.5395 seconds
+pfail = 0.004070 +- 0.000201
+running 100000 0.000400
+simulate circuits in 339.7756 seconds
+decode outcomes in 152.0738 seconds
+pfail = 0.007210 +- 0.000268
+pfails = [0.00048, 0.00184, 0.00407, 0.00721]
+sigs = [6.926574894881145e-05, 0.00013552242494611967, 0.0002013324522961052, 0.00026754602372068266]
