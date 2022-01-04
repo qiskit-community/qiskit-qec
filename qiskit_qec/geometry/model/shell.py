@@ -34,6 +34,6 @@ class Shell(ShapeObject):
         self.vertices += shell.vertices
 
     def delete_subtree(self, roots):
-        for root in roots:
-            pass
+        pass
+            
 
