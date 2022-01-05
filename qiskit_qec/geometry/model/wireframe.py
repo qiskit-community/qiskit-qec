@@ -9,14 +9,26 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module of Wireframe"""
+from typing import List
 
+from qiskit_qec.geometry.model.edge import Edge
 from qiskit_qec.geometry.model.shape_object import ShapeObject
 
+
 class WireFrame(ShapeObject):
-    def __init__(self, edges) -> None:
+    """`WireFrame` inherits from `ShapeObject`"""
+
+    def __init__(self, edges: List[Edge]) -> None:
+        """Inits WireFrame
+
+        Args:
+            edges (List[Edge]): Edges that comprise the WireFrame
+        """
+        super().__init__()
+
         self.edges = edges
         self.vertices = []
-        super().__init__(stype=WireFrame, child=self)
 
         # Recording edges and vertices for this wireframe
         for edge in self.edges:

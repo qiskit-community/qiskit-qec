@@ -9,9 +9,15 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+""" This is the main module that defines a Code. """
 
-from qiskit.exceptions import QiskitError
 
 class Code:
+    """`Code` is the core class for all codes and is the
+    central construct from which all codes are derived.
+    A `Code` is essentially a subspace.
+    """
+
     def __init__(self) -> None:
+        """Init method"""
         pass

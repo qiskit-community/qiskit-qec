@@ -9,31 +9,60 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-import numpy as np
+"""Module for Shell"""
+
+from typing import List
+
+# import numpy as np
 
 from qiskit_qec.geometry.model.shape_object import ShapeObject
+from qiskit_qec.geometry.model.face import Face
 
 
 class Shell(ShapeObject):
-    def __init__(self, faces) -> None:
+    """`Shell` inherits from `ShapeObject`"""
+
+    def __init__(self, faces: List[Face]) -> None:
+        """Inits Shell.
+        Each shell keeps track internally of several lists for
+        each type of subcomponent (ex: faces, wireframes, edges, vertices)
+        Args:
+            faces (List[Face]): Faces that make up the `Shell` instance
+        """
+        super().__init__()
+
         self.faces = faces
         self.wireframes = []
         self.edges = []
         self.vertices = []
-        super().__init__(stype=Shell, child=self)
 
         for face in self.faces:
             self.wireframes.append(face.wireframe)
             self.edges += face.edges
             self.vertices += face.vertices
 
-    def union(self, shell):
-        self.faces += shell.faces
-        self.wireframes += shell.wireframes
-        self.edges += shell.edges
-        self.vertices += shell.vertices
+    def union(self, other_shell: "Shell"):
+        # TODO control for overlapping subcomponents of other_shell and self
+        """Add all subcomponents of other_shell to self
 
-    def delete_subtree(self, roots):
+        Args:
+            other_shell (Shell): A different shell
+        """
+        self.faces += other_shell.faces
+        self.wireframes += other_shell.wireframes
+        self.edges += other_shell.edges
+        self.vertices += other_shell.vertices
+
+    def delete_subtree(self, roots: ShapeObject):
+        """Delete subcomponents of self"""
         pass
-            
 
+    # @property
+    # def size(self):
+    #    """Get the size set of vertex
+    #
+    #    Returns:
+    #        [type]: [description]
+    #    """
+    #    vert = np.asarray(self.vertices)
+    #    return np.amax(vert)

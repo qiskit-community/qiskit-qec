@@ -9,33 +9,30 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 # Part of the QEC framework
-
+"""Module for Plane"""
 from math import cos, sin
+
 import numpy as np
-
-from qiskit.exceptions import QiskitError
-
 from qiskit_qec.geometry.two_manifold import TwoManifold
 
+
 class Plane(TwoManifold):
-    def __init__(self):
-        super().__init__()
+    """`Plane` inherits from `TwoManifold`"""
 
     def ison(self, point):
-        # Qick check that point is on the 
-        if point.shape==(2,) and len(point)==2:
-            return True
-        else:
-            return False
+        """Check that point is on the plane"""
+        # Qick check that point is on the
+        return point.shape == (2,) and len(point) == 2
 
     @staticmethod
     def rotate(theta, vector):
+        """Rotate `vector` around `theta`"""
         theta = np.deg2rad(theta)
         rot = Plane.rot_matrix(theta)
         return np.dot(rot, vector)
 
     @staticmethod
     def rot_matrix(theta):
+        """Create rotation matrix that rotates by theta"""
         return np.array([[cos(theta), -sin(theta)], [sin(theta), cos(theta)]])

@@ -9,10 +9,15 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-
+"""Module for HeavyHexFactory
+"""
 from qiskit_qec.factory.subsystem.css.css_subsystem_factory import CSSSubSystemFactory
 
+
 class HeavyHexFactory(CSSSubSystemFactory):
+    """`HeavyHexFactory` inherits from `CSSSubSystemFactory`"""
+
     def __init__(self) -> None:
+        """Inits"""
         super().__init__()
+        pass

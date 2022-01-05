@@ -10,23 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""
-Models (:mod:`qiskit_qec.models`)
-============================================
+"""Models."""
 
-.. currentmodule:: qiskit_qec.models
-
-These are code models.
-
-.. autosummary::
-   :toctree:
-
-   code_model
-
-"""
-
-from .code_model import CodeModel
-
-__all__ = [
-    "CodeModel",
-]
+from . import code_model

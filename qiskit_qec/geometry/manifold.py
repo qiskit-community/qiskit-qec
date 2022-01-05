@@ -9,9 +9,17 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 # Part of the QEC framework
+"""Module for Manifold"""
+
 
 class Manifold:
-    def __init__(self, dim):
-        self.dim=dim
+    """Manifold"""
+
+    def __init__(self, dim: int):
+        """Init Manifold
+
+        Args:
+            dim (int): Dimensions of Manifold
+        """
+        self.dim = dim

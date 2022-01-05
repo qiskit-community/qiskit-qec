@@ -9,9 +9,15 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module for Qubit Data"""
+
 
 class QubitData:
+    """Class for containing qubit information"""
+
     def __init__(self) -> None:
-        self.operator = dict()
-        self.qubit = dict()
-        self.orientation = dict()
+        # TODO do QubitData and QubitCount share a qubit ID?
+        """Init Qubit Data"""
+        self.operator = {}
+        self.qubit = {}
+        self.orientation = {}

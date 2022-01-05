@@ -9,20 +9,16 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
 # Part of the QEC framework
+"""Module for TwoManifold"""
 
-from abc import abstractclassmethod
-from qiskit.exceptions import QiskitError
 
 from qiskit_qec.geometry.manifold import Manifold
 
+
 class TwoManifold(Manifold):
+    """Like Manifold but better"""
+
     def __init__(self):
-        dim=2
+        """Init Manifold"""
         super().__init__(dim=2)
-    
-    @abstractclassmethod
-    def ison(self, point):
-        pass
-    

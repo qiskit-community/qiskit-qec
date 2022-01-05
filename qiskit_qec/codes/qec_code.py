@@ -9,9 +9,16 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+""" This is the main module that defines what a QEC Code. """
 
-from qiskit.exceptions import QiskitError
 
 class QECCode:
+    """`QECCode` is the core class for all QEC codes and is the
+    central construct from which all QEC codes are derived.
+
+    A QEC Code consists of a Code, an Error Model, and a Recovery (Decoder + stuff)
+    """
+
     def __init__(self) -> None:
+        """Init function for QECCode"""
         pass

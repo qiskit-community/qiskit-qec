@@ -9,26 +9,42 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module for keeping track of qubits in a given geometry"""
+
 
 class QubitCount:
-    def __init__(self) -> None:
-        self.num_qubits = 0
-        self.qubits_count = dict()
+    """Each geometry will have a QubitCount class to maintain pointers to all qubits currently in use"""
 
-    def new_qubit(self):
+    def __init__(self) -> None:
+        """QubitCount inits with 0 qubits and an empty qubit:references dictionary"""
+        self.num_qubits = 0
+        self.qubits_count = {}
+
+    def new_qubit(self) -> int:
+        """Creates a new qubits_count dictionary entry.
+        The key is ID of qubit. The value is the reference.
+
+        Returns:
+            int: Qubit ID
+        """
         self.qubits_count[self.num_qubits] = 0
         self.num_qubits += 1
         return self.num_qubits - 1
 
-    def increment_qubit(self, key):
+    def increment_qubit(self, key: int) -> None:
+        """Increment number of references to qubit with ID key
+
+        Args:
+            key (int): Unique ID of qubit
+        """
+
         self.qubits_count[key] += 1
 
-    def decrement_qubit(self, key):
+    def decrement_qubit(self, key: int) -> None:
+        """Decrement number of references to qubit with ID key
+
+        Args:
+            key (int): Unique ID of qubit
+        """
+
         self.qubits_count[key] -= 1
-
-    @property
-    def qubits(self):
-        keys = self.num_qubits.keys()
-        qubits = [item for item in keys if item>0]
-        return qubits
-

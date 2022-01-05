@@ -12,4 +12,4 @@
 
 # Part of the QEC framework
 
-from scipy import sparse
+"""Sparse sm."""

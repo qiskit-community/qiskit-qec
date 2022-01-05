@@ -12,16 +12,18 @@
 
 # Part of the QEC framework
 
+"""Smatrix."""
+
 import sys
 
 import numpy as np
 from scipy import sparse
 
-import qiskit_qec.linear.smatrix_api.sm_numpy as sm_numpy
-import qiskit_qec.linear.smatrix_api.sm_sparse as sm_sparse
 
 class SMatrix:
-    def __new__(cls, matrix, stype='numpy'):
+    """Smatrix."""
+
+    def __new__(cls, matrix, stype="numpy"):
         """Return a matrix of a specific type depending on the value of stype
 
         Args:
@@ -32,31 +34,32 @@ class SMatrix:
             TypeError: An error is raised if an unknown stype is provided.
 
         Returns:
-            stype matrix: a matrix of type stype initialized by the input matrix
+            [stype matrix]: a matrix of type stype initialized by the input matrix
         """
-        if stype == 'numpy':
+        if stype == "numpy":
             return np.asarray(matrix)
         elif stype == "sparse":
             # Note: Need to check that sparse is referencing than copying
             return sparse.csr_matrix(matrix)
         else:
             raise TypeError("Unknown stype")
-            
-    def get_methods(stype='numpy'):
+
+    @classmethod
+    def get_methods(cls, stype="numpy"):
         """Return the module that contains the api methods for a given stype matrix
 
         Args:
             stype (str, optional): type of matrix module api to retrun. Defaults to 'numpy'.
 
         Raises:
-            KeyError: A KeyError will be raised if a needed module that cannot be loaded 
+            KeyError: A KeyError will be raised if a needed module that cannot be loaded
             is not loaded.
 
         Returns:
             module : A module that includes the api for the stype matrices
         """
-        # Assumes that the needed modules are of a specific name sm.stype 
-        # 
+        # Assumes that the needed modules are of a specific name smatrix.stype
+        #
         # numpy -> sm_numpy
         # sparse -> sm_sparse
         #
@@ -64,7 +67,7 @@ class SMatrix:
         module_name = f"qiskit_qec.linear.smatrix_api.sm_{stype}"
         try:
             module = sys.modules[module_name]
-        except KeyError:
+        except KeyError as key_error:
             # TODO: If not loaded -> load via __import__
-            raise KeyError(f"Module {module_name} not loaded.")
+            raise KeyError(f"Module {module_name} not loaded.") from key_error
         return module

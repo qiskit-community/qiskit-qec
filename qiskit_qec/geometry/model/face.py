@@ -9,13 +9,24 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module for Face"""
 
 from qiskit_qec.geometry.model.shape_object import ShapeObject
+from qiskit_qec.geometry.model.wireframe import WireFrame
+
 
 class Face(ShapeObject):
-    def __init__(self, wireframe) -> None:
+    """`Face` inherits from `ShapeObject`"""
+
+    def __init__(self, wireframe: WireFrame) -> None:
+        """Inits Face
+
+        Args:
+            wireframe (WireFrame): Wireframe for face
+        """
+        super().__init__()
         self.wireframe = wireframe
         self.edges = wireframe.edges
         self.vertices = wireframe.vertices
-        super().__init__(stype=Face, child=self)
+
         wireframe.add_parent(self)

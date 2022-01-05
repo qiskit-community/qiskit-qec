@@ -11,10 +11,11 @@
 # that they have been altered from the originals.
 
 
-from qiskit.exceptions import QiskitError
+"""Properties."""
+
 
 class Properties:
+    """Properties."""
+
     def __init__(self):
-        self.properties = dict()
-
-
+        self.properties = {}

@@ -9,11 +9,10 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-from qiskit.exceptions import QiskitError
+"""Module for SubSystemFactory"""
 
 from qiskit_qec.factory.factory import Factory
 
+
 class SubSystemFactory(Factory):
-    def __init__(self) -> None:
-        pass
+    """`SubSystemFactory` inherits from `Factory`"""

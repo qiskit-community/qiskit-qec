@@ -11,7 +11,12 @@
 # that they have been altered from the originals.
 
 # Part of the QEC framework
+"Module for bit"
 
-class Array:
+
+class Bit:
+    """it's a bit"""
+
     def __init__(self, matrix):
+        """init the bit"""
         pass

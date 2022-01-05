@@ -12,25 +12,31 @@
 
 # Part of the QEC framework
 
+"""Sm numpy."""
+
 import numpy as np
 
+
 def asarray(*args, **kargs):
+    """To array."""
     return np.asarray(*args, **kargs)
 
+
 def atleast_2d(*args, **kargs):
+    """View inputs as arrays with at least two dimensions."""
     return np.atleast_2d(*args, **kargs)
 
+
 def concatenate(*args, **kargs):
+    """Concatenate."""
     return np.concatenate(*args, **kargs)
 
-def sum(*args, **kargs):
+
+def sum(*args, **kargs):  # pylint: disable=redefined-builtin
+    """Sum."""
     return np.sum(*args, **kargs)
 
+
 def zeros(*args, **kargs):
+    """Return a new array of given shape and type, filled with zeros."""
     return np.zeros(*args, **kargs)
-
-
-
-
-
-

@@ -9,27 +9,37 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module for ShapeObject"""
 
 
-class ShapeObject:
+class ShapeObject:  # pylint: disable=function-redefined)
+    """ShapeObject is the base class for all geometry objects"""
+
     last_id = 0
-    obj = dict()
-    def __init__(self, stype=None, child=None) -> None:
-        self.stype = stype
-        self.id = self.create_id()
+
+    def __init__(self) -> None:
+        """Init ShapeObject
+
+        Args:
+            children (Union, optional): Defaults to None.
+        """
         self.parents = []
-        if child is not None:
-            ShapeObject.obj[self.id]=child
-    
-    def add_parent(self, parent):
+        self.id = self.create_id()  # pylint: disable=invalid-name
+
+    def add_parent(self, parent: "ShapeObject") -> None:
+        """Adds parent
+
+        Args:
+            parent (ShapeObject): Adds parent
+        """
         self.parents.append(parent)
 
-    def create_id(self):
+    def create_id(self) -> int:
+        """Creates int as unique ID for ShapeObject instance.
+        ShapeObject class tracks which IDs have previously been used and are thus not available.
+
+        Returns:
+            int: Unique ID
+        """
         ShapeObject.last_id += 1
         return ShapeObject.last_id
-
-    def is_null(self):
-        if self.otype is None:
-            return True
-        else:
-            return False

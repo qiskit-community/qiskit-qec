@@ -72,6 +72,7 @@ disable=spelling,       # way too noisy
     no-else-return,     # relax "elif" after a clause with a return
     docstring-first-line-empty, # relax docstring style
     import-outside-toplevel,
+    missing-return-type-doc,missing-return-doc,missing-raises-doc,
     bad-continuation, bad-whitespace # differences of opinion with black
 
 

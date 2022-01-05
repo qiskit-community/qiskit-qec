@@ -11,38 +11,46 @@
 # that they have been altered from the originals.
 
 # Part of the QEC framework
-
-import numpy as np
+"""Module for base pauli"""
 
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
-
 from qiskit_qec.linear.smatrix_api.smatrix import SMatrix
 
+
+# pylint: disable=no-member
 class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
-    def __init__(self, matrix, phase_exponent=0, stype='numpy'):
-        #print(f"matrix={matrix}")
-        #print(f"phase_exponent={phase_exponent}")
-        self.sm = SMatrix.get_methods(stype=stype)
-        self.matrix = SMatrix(self.sm.atleast_2d(matrix), stype=stype)
+    """Base Pauli"""
+
+    def __init__(self, matrix, phase_exponent=0, stype="numpy"):
+        """Generate Base Pauli
+
+        Args:
+            matrix ([type]): Corresponding pauli matrix
+            phase_exponent (int, optional): i**phase_exponent Defaults to 0.
+            stype (str, optional): Type of matrix being used Defaults to "numpy".
+        """
+        self.smatrix = SMatrix.get_methods(stype=stype)
+        self.matrix = SMatrix(self.smatrix.atleast_2d(matrix), stype=stype)
         self.stype = stype
         self.phase_exponent = phase_exponent
-        super().__init__(num_qubits=self.matrix.shape[1]>>1)
-    
+        super().__init__(num_qubits=self.matrix.shape[1] >> 1)
+
     @property
     def num_paulis(self):
+        """Return pauli shape"""
         return self.matrix.shape[0]
 
-    def compose(self):
+    def compose(self, other, qargs=None, front=False):
         pass
 
-    def tensor(self):
+    def tensor(self, other):
         pass
 
-    def expand(self):
+    def expand(self, other):
         pass
 
-    def _multiply(self):
+    def _multiply(self, other):
         pass
 
     def conjugate(self):

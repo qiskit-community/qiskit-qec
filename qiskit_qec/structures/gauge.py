@@ -9,44 +9,38 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-
-import copy
-
-from qiskit.exceptions import QiskitError
+"""Module for Gauge Groups"""
 
 from qiskit_qec.operators.pauli_list import PauliList
-from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.info.properties import Properties
 from qiskit_qec.structures.group import Group
 
+
 class GaugeGroup(Group):
-    def __init__(self, 
-                generators=None, 
-                gauge_group=None, 
-                code_id=None, 
-                code_family=None, 
-                code_parameters=None,
-                deep_copy=False) -> None:
+    """`GaugeGroup` inherits from `Group`"""
+
+    def __init__(
+        self,
+        generators: PauliList = None,
+        gauge_group=None,
+        deep_copy=False,
+    ) -> None:
+        """[summary]
+
+        Args:
+            generators (PauliList, optional): Generator for the GaugeGroup. Defaults to None.
+            gauge_group (GaugeGroup, optional): GaugeGroup to either copy or deep copy depending
+            on `deep_copy` param. Defaults to None.
+            deep_copy (bool, optional): Whether to deep or shallow copy gauge_group. Defaults to False.
+
+        Raises:
+            QiskitError: Something went wrong.
+        """
+        super().__init__()
         if generators is not None:
-            try:
-                self.generators = PauliList(generators)
-            except:
-                raise QiskitError("Error: generators cannot generate PauliList")
+            self.generators = PauliList(generators)
         elif gauge_group is not None:
             if isinstance(gauge_group, GaugeGroup):
-                if deep_copy == False:
+                if deep_copy is False:
                     self.generators = gauge_group.generators
                 else:
                     self.generators = gauge_group.generators.copy()
-                self.properties = Properties.duplicate(gauge_group.properties)
-        elif code_id is not None:
-            raise QiskitError("Note yet implemeneted")
-        elif code_family is not None:
-            raise QiskitError("Note yet implemeneted")
-        super().__init__()
-
-    def from_id(code_id=None):
-        raise QiskitError("from_id not yet implemented")
-
-    def from_family(code_family=None, code_parameters=None):
-        raise QiskitError("from_family not yet implemented")
