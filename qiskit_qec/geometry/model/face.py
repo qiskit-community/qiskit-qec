@@ -10,10 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qiskit.exceptions import QiskitError
+from qiskit_qec.geometry.model.shape_object import ShapeObject
 
-from qiskit_qec.modelers.modeler import Modeler
-
-class CodeModeler(Modeler):
-    def __init__(self) -> None:
-        super().__init__()
+class Face(ShapeObject):
+    def __init__(self, wireframe) -> None:
+        self.wireframe = wireframe
+        self.edges = wireframe.edges
+        self.vertices = wireframe.vertices
+        super().__init__(stype=Face, child=self)
+        wireframe.add_parent(self)

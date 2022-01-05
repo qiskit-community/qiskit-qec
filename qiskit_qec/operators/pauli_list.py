@@ -19,6 +19,8 @@ from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
 from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
 
+import qiskit_qec.utils.pauli_rep as rep
+
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
 
@@ -27,7 +29,7 @@ class PauliList(BasePauli):
     # Set the max number of qubits * paulis before string truncation
     __truncate__ = 2000
 
-    def __init__(self, pdata, stype='numpy', phase_exponent=0):
+    def __init__(self, pdata, stype='numpy', phase_exponent=0, input_qubit_order="right-to-left"):
 
         if isinstance(pdata, BasePauli):
             matrix = pdata.matrix
@@ -44,7 +46,7 @@ class PauliList(BasePauli):
                 matrix = np.atleast_2d(pdata)
                 p_ext = np.asarray(phase_exponent)
             elif isinstance(pdata[0], (list, tuple, np.ndarray)): 
-                # TODO: (conditiona and below) This should be done better (lazy at the moment)
+                # TODO: (conditional part and approach below) This should be done better (lazy at the moment)
                 # TODO: Check for stype setting
                 matrix = np.asarray(pdata)
                 if matrix.shape[0] == 1:
@@ -55,12 +57,12 @@ class PauliList(BasePauli):
                     p_ext = np.asarray(phase_exponent)
             else:
                 # Conversion as iterable of Paulis
-                matrix, p_ext, ex_stype = self._from_paulis(pdata)
+                matrix, p_ext, ex_stype = self._from_paulis(pdata, input_qubit_order)
                 if ex_stype is not None:
                     stype = ex_stype
         else:
             # Conversion as iterable of Paulis
-            matrix, p_ext, ex_stype = self._from_paulis(pdata)
+            matrix, p_ext, ex_stype = self._from_paulis(pdata, input_qubit_order)
         
             if ex_stype is not None:
                 stype = ex_stype
@@ -78,10 +80,8 @@ class PauliList(BasePauli):
             List[Pauli]: List of Paulis that reference the primary symplectic matrix
             representation
         """
-        print("debug")
-        for i in range(self.matrix.shape[0]):
-            print(f"self.matrix[i]={self.matrix[i]}")
-        print("end")
+        #for i in range(self.matrix.shape[0]):
+        #    print(f"self.matrix[i]={self.matrix[i]}")
         paulis = [Pauli(self.sm.atleast_2d(self.matrix[i]),phase_exponent=self.phase_exponent[i]) for i in range(self.matrix.shape[0])]
         return paulis
 
@@ -143,7 +143,7 @@ class PauliList(BasePauli):
         return prefix + list_str[:-1] + suffix
 
 
-    def _from_paulis(self, data, stype=None):
+    def _from_paulis(self, data, stype=None, input_qubit_order="right-to-left"):
         """Construct a PauliList from a list of Pauli data.
 
         Args:
@@ -168,9 +168,9 @@ class PauliList(BasePauli):
                 #TODO: Should check if matrix and then use appropriate tools
                 # Will not work at the moment with non-numpy arrays
                 if isinstance(i, (np.ndarray,list)):
-                    paulis.append(Pauli(np.atleast_2d(i)))
+                    paulis.append(Pauli(np.atleast_2d(i), input_qubit_order=input_qubit_order))
                 else:
-                    paulis.append(Pauli(i))
+                    paulis.append(Pauli(i, input_qubit_order=input_qubit_order))
             else:
                 paulis.append(i)
 
@@ -193,6 +193,6 @@ class PauliList(BasePauli):
                 raise QiskitError("Different stype lists are not yet implemented")
 
             matrix[i][:2*qubit_count[i]] = pauli.matrix
-            print(f"pauli.phase_exponent={pauli.phase_exponent}")
+            #print(f"pauli.phase_exponent={pauli.phase_exponent}")
             phase_exponent[i] = pauli.phase_exponent
         return matrix, phase_exponent, stype

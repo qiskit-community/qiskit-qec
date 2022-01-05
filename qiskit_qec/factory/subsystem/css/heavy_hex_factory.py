@@ -10,8 +10,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from qiskit.exceptions import QiskitError
 
-class Modeler:
+from qiskit_qec.factory.subsystem.css.css_subsystem_factory import CSSSubSystemFactory
+
+class HeavyHexFactory(CSSSubSystemFactory):
     def __init__(self) -> None:
-        pass
+        super().__init__()

@@ -19,6 +19,7 @@ from qiskit.exceptions import QiskitError
 from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 
+import qiskit_qec.utils.pauli_rep as rep
 from qiskit_qec.operators.base_pauli import BasePauli
 
 class Pauli(BasePauli):
@@ -38,22 +39,22 @@ class Pauli(BasePauli):
         label=None, 
         input_qubit_order="right-to-left"):
 
-        print("Pauli")
-        print(f"data={data}")
-        print(f"phase_exponent={phase_exponent}")
+        #print("Pauli")
+        #print(f"data={data}")
+        #print(f"phase_exponent={phase_exponent}")
         # TODO: Update to include other possible smatrix types
         # Should call a SMatrix function rather than list them
         # directly here
         if isinstance(data, np.ndarray):
-            print("Choice 1")
+            #print("Choice 1")
             matrix         = np.atleast_2d(data)
             phase_exponent = phase_exponent
         elif isinstance(data, BasePauli):
-            print("Choice 2")
+            #print("Choice 2")
             matrix         = data.matrix
             phase_exponent = data.phase_exponent
         elif isinstance(data, tuple):
-            print("Choice 3")
+            #print("Choice 3")
             if len(data) not in [1, 2]:
                 if len(data) == 3: # DEPRECATED
                     # Convert (z,x),p) to (matrix, p)
@@ -66,8 +67,7 @@ class Pauli(BasePauli):
             raise QiskitError("Not yet implemented")
             matrix, phase_exponent = self._from_array(*data)
         elif isinstance(data, str):
-            raise QiskitError("Not yet implemented")
-            matrix, phase_exponent = self._from_label(data, qubit_order = input_qubit_order)
+            matrix, phase_exponent = rep.from_label(data, qubit_order = input_qubit_order)
         elif isinstance(data, ScalarOp):
             raise QiskitError("Not yet implemented")
             matrix, phase_exponent = self._from_scalar_op(data)
@@ -75,7 +75,7 @@ class Pauli(BasePauli):
             raise QiskitError("Not yet implemented")
             matrix, phase_exponent = self._from_circuit(data)
         elif x is not None:  
-            print("Choice 4")
+            #print("Choice 4")
             if z is None: # DEPRECATED
                 # Using old Pauli initialization with positional args instead of kwargs
                 z = data
@@ -90,11 +90,11 @@ class Pauli(BasePauli):
             matrix, phase_exponent = self._from_label_deprecated(label)
         else:
             raise QiskitError("Invalid input data for Pauli.")
-        print("End Choice")
-        print("to BasePauli")
-        print(f"matrix={matrix}")
-        print(f"shape={matrix.shape}")
-        print(f"phase_exponent={phase_exponent}")
+        #print("End Choice")
+        #print("to BasePauli")
+        #print(f"matrix={matrix}")
+        #print(f"shape={matrix.shape}")
+        #print(f"phase_exponent={phase_exponent}")
         # Initialize BasePauli
         if matrix.shape[0] != 1:
             raise QiskitError("Input is not a single Pauli")      

@@ -421,7 +421,7 @@ def is_exp_type(phase_exponent, input_phase_format):
     
     return False
         
-def phase2exp(phase, output_phase_format, roundit=True, same_type=True):
+def phase2exp(phase, output_phase_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT, roundit=True, same_type=True):
     """Convert an array of phases to an array of phase exponents"""
     if output_phase_format not in PHASE_REP_FORMATS:
         raise QiskitError(f"Invalid phase exponent format {output_phase_format}")
@@ -440,7 +440,7 @@ def phase2exp(phase, output_phase_format, roundit=True, same_type=True):
     else:
         return r_phase2exp(phase, output_phase_format)
 
-def r_phase2exp(phase, output_phase_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
+def r_phase2exp(phase, output_phase_format):
     """Convert an array of phases to an array of phase exponents"""
     _ENC = {
         'i':{1:0, 1j:1, -1:2, 0-1j:3},
@@ -642,9 +642,8 @@ def _split_pauli(label, syntax):
     pauli = result[0][1]
     return phase, pauli
 
-@staticmethod
 #  Moved from Pauli
-def _from_label(label, qubit_order="right-to-left"):
+def from_label(label, qubit_order="right-to-left"):
     """Return the symplectic representation of Pauli string.
     Args:
         label (str): the Pauli string label.
@@ -656,12 +655,15 @@ def _from_label(label, qubit_order="right-to-left"):
     Raises:
         QiskitError: if Pauli string is not valid.
     """
-    # Determin which syntax is being used and if valid
+    # TODO: This method works on building two seperate arrays, one 
+    # for x and one for z. Then it combines them into one. This can be
+    # done without splitting them.
+    # Determine which syntax is being used and if valid
     syntax = _syntax_type(label)
     # Split string into coefficient and non signed Pauli Operators
-    coeff, pauli = _split_pauli_label(label, syntax=syntax)
+    coeff, pauli = _split_pauli(label, syntax=syntax)
     # Convert coefficient to internal phase exponent
-    phase = 0 if not coeff else _phase_exponent_from_phase_string(coeff)
+    phase = 0 if not coeff else phase2exp(str2phase(coeff))
     if syntax == PRODUCT_SYNTAX:
         num_qubits = len(pauli)
         if qubit_order == "right-to-left":
@@ -688,7 +690,9 @@ def _from_label(label, qubit_order="right-to-left"):
             array_x[0, index] = True
             array_z[0, index] = True
             array_phase += 1
-    return array_z, array_x, array_phase % 4
+
+    array  = np.hstack((array_x,array_z))
+    return array, array_phase % 4
 
 
 
