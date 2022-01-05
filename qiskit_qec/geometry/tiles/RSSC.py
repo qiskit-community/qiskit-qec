@@ -44,6 +44,13 @@ class RSSC(Tile):
          v1    v2 v1    v2
          q5    q6 q6    q7
 
+    Orientations:
+
+    Face: 0 [-1,1]  -> after 45 deg ac rot [-1,0] left
+    Face: 1 [1,1]
+    Face: 2 [-1,-1]
+    Face: 4 [1,-1]
+
     """
     op_dict = {
         "XZXZ": PauliList(["XXX", "ZZZ", "ZZZ", "XXX"]),
@@ -85,9 +92,6 @@ class RSSC(Tile):
 
         if qubit_count is not None and qubit_data is not None:
             qubits = [qubit_count.new_qubit() for i in range(8)]
-
-
-        # ----------- 0 Operator -----------
         
         faces = []
 
@@ -133,5 +137,6 @@ class RSSC(Tile):
             count.increment_qubit(qubits[q_indices[index]])
             # Assign a Pauli operator to vertices
             data.operator[vertex.id] = op[index]
+
 
 

@@ -16,11 +16,11 @@ from qiskit.exceptions import QiskitError
 
 from qiskit_qec.geometry.shape import Shape
 from qiskit_qec.geometry.plane import Plane
-from qiskit_qec.factory.subsystem.css.css_subsystem_factory import CSSCodeFactory
+from qiskit_qec.factory.subsystem.css.css_subsystem_factory import CSSSubSystemFactory
 
 from qiskit_qec.exceptions import QiskitQECError
 
-class RSSCCodeFactory(CSSCodeFactory):
+class RSSCFactory(CSSSubSystemFactory):
     """Rotated subsystem surface code (RSSC) code factory.
 
     The rotated subsystem surace code (RSSC) family consists of codes

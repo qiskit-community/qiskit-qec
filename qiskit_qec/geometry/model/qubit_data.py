@@ -14,3 +14,4 @@ class QubitData:
     def __init__(self) -> None:
         self.operator = dict()
         self.qubit = dict()
+        self.orientation = dict()
