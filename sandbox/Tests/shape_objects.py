@@ -1,3 +1,4 @@
+
 import numpy as np
 
 from qiskit_qec.geometry.model.qubit_count import QubitCount
@@ -67,3 +68,8 @@ f2=Face(wf2)
 
 s=Shell([f1,f2])
 
+v1=Vertex(np.array([0,1])
+qid = qubit_count.new_qubit()
+qubit_data.qubit[qid]
+
+v2=Vertex(np.arry([1,0])
