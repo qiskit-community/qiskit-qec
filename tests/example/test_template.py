@@ -10,6 +10,21 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Models."""
+"""Tests for template."""
 
-from . import code_model
+from unittest import TestCase
+
+
+class TestWillBeHere(TestCase):
+    """Tests will be here."""
+
+    def test_template_class(self):
+        """Tests will start here."""
+        mdrnlv = "MDRN LV"
+        secret_message = "long drive"
+        test_cases = {
+            "MDRN LV": """Late night. Red wine. And you!
+                        Late night, long drive, you can't kill our vibe."""
+        }
+
+        assert secret_message in test_cases[mdrnlv]

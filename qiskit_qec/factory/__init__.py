@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Models."""
+"""Factory."""
 
-from . import code_model
+from . import subsystem
+from . import factory

@@ -9,26 +9,17 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Qiskit QEC."""
 
-r"""
-=============================================
-Qiskit QEC module (:mod:`qiskit_qec`)
-=============================================
-.. currentmodule:: qiskit_qec
-Qiskit Framework for Quantum Error Correction is an open-source framework for developers,
- experimentalist and theorists of Quantum Error Correction (QEC).
-The top-level classes and submodules of qiskit_nature are:
-.. autosummary::
-   :toctree: ../stubs/
-   QiskitQECError
-Submodules
-==========
-.. autosummary::
-   :toctree:
-   models
-"""
-
-from .exceptions import QiskitQECError
-
-__version__ = "0.0.1"
-__all__ = ["__version__", "QiskitQECError"]
+from . import (
+    codes,
+    exceptions,
+    factory,
+    geometry,
+    info,
+    linear,
+    models,
+    operators,
+    structures,
+    utils,
+)

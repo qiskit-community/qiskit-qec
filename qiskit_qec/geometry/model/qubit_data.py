@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2017, 2020
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -9,7 +9,15 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+"""Module for Qubit Data"""
 
-"""Models."""
 
-from . import code_model
+class QubitData:
+    """Class for containing qubit information"""
+
+    def __init__(self) -> None:
+        # TODO do QubitData and QubitCount share a qubit ID?
+        """Init Qubit Data"""
+        self.operator = {}
+        self.qubit = {}
+        self.orientation = {}

@@ -10,6 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Models."""
+"""RSSC."""
 
-from . import code_model
+from . import RSSC

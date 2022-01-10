@@ -10,6 +10,13 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Models."""
+"""Model."""
 
-from . import code_model
+from . import edge
+from . import face
+from . import qubit_count
+from . import qubit_data
+from . import shape_object
+from . import shell
+from . import vertex
+from . import wireframe
