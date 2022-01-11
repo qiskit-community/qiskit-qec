@@ -18,29 +18,32 @@ from qiskit_qec.geometry.model.face import Face
 
 
 class FacePartition:
-    """FacePartition class"""
+    """FacePartition class
+    
+        This is a crappy little class to store data on how the faces
+        that intersect with the region/cutter intersect
+    """
 
     def __init__(self) -> None:
         """A class to hold the date for partitioning faces of a shell
         relative to a give shape
         """
         self.faces = {}
-        self.parts = None
 
     def add(self, face: Face):
         """Add a face to the faces dictionary
 
         Face dictionary : entries [[inside vertices], [outside vertices]]
 
+        Shape.OUTSIDE = 0 -> list of vertices that are outside the region
+        Shape.INSIDE = 1 -> list of vertices that are in the region
+        Shape.INOUT = 2 -> bool list of which vertices in PATH are In=True or Out=False
+        Shape.PATH = 3 ->  list of vertices around face
+
+        self.faces[face][Shape.var] = var list
+
         Args:
             face (Face): Face to add to dictionary
-        """
-        self.faces[face] = [[], []]
 
-    def set_parts(self, parts: List[List]):
-        """Set parts
-
-        Args:
-            parts (List[List]): List of lists of faces with increasing vertex count
         """
-        self.parts = parts
+        self.faces[face] = [[], [], [], []]

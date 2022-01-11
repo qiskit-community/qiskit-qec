@@ -33,6 +33,8 @@ class Shape:
 
     OUTSIDE = 0
     INSIDE = 1
+    INOUT = 2
+    PATH = 3
 
     def __init__(self, points: List, lines: List[List], indices: List = None):
         """Init shape
@@ -243,23 +245,29 @@ class Shape:
 
         for face in tiling.faces:
             face_partition.add(face)
-            for vertex in face.vertices:
-                if self.contains(vertex.pos):
-                    face_partition.faces[face][Shape.INSIDE].append(vertex)
-                else:
-                    face_partition.faces[face][Shape.OUTSIDE].append(vertex)
-            # Add procedure here to detect and store information about
-            # edges that cross the cutter/region boundary. This is needed
-            # to allow the tiling to be mapped to other non-plane surfaces
-            # such as the torus etc.
-
-        # Split faces/operators into intersection level categories
-        parts = [[] for i in range(levels)]
-        for key, vert_lists in face_partition.faces.items():
-            in_vert_count = len(vert_lists[Shape.INSIDE])
-            if in_vert_count < levels:
-                parts[in_vert_count].append(key)
-
-        face_partition.set_parts(parts)
+            edge = face.edges[0]
+            f_vertex = edge.vertices[0]
+            start_vertex = f_vertex
+            parent = edge
+            inout = [self.contains(f_vertex.pos)]
+            path = [f_vertex]
+            n_vertex = edge.vertices[1]
+            while n_vertex != start_vertex:
+                path.append(n_vertex)
+                inout.append(self.contains(n_vertex.pos))
+                parent = list(set(n_vertex.parents)-set([parent]))[0]
+                f_vertex = n_vertex
+                n_vertex = list(set(parent.vertices)-set([f_vertex]))[0]
+            face_partition.faces[face][Shape.PATH]=path
+            face_partition.faces[face][Shape.INOUT]=inout
+            _in = []
+            _out =[]
+            for index in range(len(path)):
+                if inout[index]:
+                    _in.append(path[index])
+                else: 
+                    _out.append(path[index])
+            face_partition.faces[face][Shape.INSIDE] = _in
+            face_partition.faces[face][Shape.OUTSIDE] = _out
 
         return face_partition
