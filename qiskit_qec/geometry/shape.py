@@ -229,22 +229,22 @@ class Shape:
 
         return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
 
-    def intersection(self, tiling: Shell, levels: int = 4) -> FacePartition:
+    def intersection(self, tiling: Shell, levels: List[int]=[2,3]) -> FacePartition:
         """Find the vertex intersection of faces/operators with region defined by
         the cutter/shape (self) on a tiling (Shell)
 
         Args:
             tiling (Shell): A Shell representation a set of faces/operators
-            levels (int, optional): Bound on the number of intersection per face to include.
-                So if levels is 4 then all levels < 4 will be included. Defaults to 4
+            levels (List[int], optional): List of integers taht specifiy the number of intersection per face to include.
+                So if levels is [0,1,2,3] then all levels < 4 will be included. Defaults to [2,3]
 
         Returns:
             FacePartition: Details of faces partitioned by the cutter on the tiling (Shell)
         """
-        face_partition = FacePartition()
+
+        partition = FacePartition()
 
         for face in tiling.faces:
-            face_partition.add(face)
             edge = face.edges[0]
             f_vertex = edge.vertices[0]
             start_vertex = f_vertex
@@ -257,9 +257,7 @@ class Shape:
                 inout.append(self.contains(n_vertex.pos))
                 parent = list(set(n_vertex.parents)-set([parent]))[0]
                 f_vertex = n_vertex
-                n_vertex = list(set(parent.vertices)-set([f_vertex]))[0]
-            face_partition.faces[face][Shape.PATH]=path
-            face_partition.faces[face][Shape.INOUT]=inout
+                n_vertex = list(set(parent.vertices)-set([f_vertex]))[0]    
             _in = []
             _out =[]
             for index in range(len(path)):
@@ -267,7 +265,11 @@ class Shape:
                     _in.append(path[index])
                 else: 
                     _out.append(path[index])
-            face_partition.faces[face][Shape.INSIDE] = _in
-            face_partition.faces[face][Shape.OUTSIDE] = _out
+            if len(_in) in levels:
+                partition.add(face)
+                partition.attr[face].inside = _in
+                partition.attr[face].outside = _out
+                partition.attr[face].path = path
+                partition.attr[face].inout = inout        
 
-        return face_partition
+        return partition
