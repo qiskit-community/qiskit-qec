@@ -11,6 +11,7 @@
 # that they have been altered from the originals.
 """ This is the main module that defines a Subsystem Code. """
 
+from ast import Sub
 from qiskit.exceptions import QiskitError
 from qiskit_qec.codes.code import Code
 from qiskit_qec.structures.gauge import GaugeGroup
@@ -42,3 +43,17 @@ class SubSystemCode(Code):
         self.parameters = parameters
 
         super().__init__()
+
+
+def Func(c: SubSystemCode):
+    s = c.symp_matr()
+    s[6] = 7
+
+    c.update_gauge_group_from_symplectic_matrix(s)
+
+
+def someFunc(c: SubSystemCode):
+    # uses properties
+
+    c.parameters = []
+    c.parameters["hello"] = 5
