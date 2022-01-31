@@ -325,7 +325,7 @@ def change_rep(
 
 def _change_rep(phase_exponent, y_count, input_format, output_format):
     """Convert a phase exponent from input_format representation to output_format
-    representation.
+    representation. This method is vectorized.
 
     Args:
         phase_exponent(numpy.ndarray of int or int tuples): phase exponent to convert
@@ -504,7 +504,21 @@ def r_phase2exp(phase, output_phase_format):
 
 
 def exp2phase(phase_exponent, input_phase_format, same_type=True):
-    """Convert an array of phase exponents to an array of phases"""
+    """Convert an array of phase exponents to an array of phases
+
+    Args:
+        phase_exponent (numpy.ndarray, phase exponet): phase exponent(s), array or scalar
+        input_phase_format (str): phase format of exponents
+        same_type (bool, optional): Controls behaviour when phase_exponent is a single 
+        phase expoent that is not in a list or array. Defaults to True.
+
+    Raises:
+        QiskitError: Invalid phase format provided
+        QiskitError: Input phase_exponent is not in provided phase_format
+
+    Returns:
+        complex: complex global phase of input_exponent
+    """
     if input_phase_format not in PHASE_REP_FORMATS:
         raise QiskitError(f"Invalid phase exponent format {input_phase_format}")
 
