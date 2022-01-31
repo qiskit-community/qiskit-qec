@@ -50,7 +50,6 @@ if __name__ == "__main__":
     print(my_code.parameters)
 
 
-
 #
 # class UUIDEncoder(json.JSONEncoder):
 #     def default(self, obj):
@@ -95,4 +94,3 @@ if __name__ == "__main__":
 #         print(item)
 #     print(used_uuids)
 #
-
