@@ -78,6 +78,15 @@ class GraphDecoder:
         return separated_string
 
     def string2nodes(self, string, logical="0"):
+        """
+        Generate probabilities of single error events from result counts.
+        Args:
+            string (string): Processed results string to convert.
+            logical (string): Logical value whose results are used.
+        Returns:
+            dict: List of nodes corresponding to to the non-trivial
+            elements in the string.
+        """
 
         separated_string = self._separate_string(string)
         nodes = []
@@ -157,7 +166,9 @@ class GraphDecoder:
             for j in range(depth):
                 gate = qc.data[j][0].name
                 qubits = qc.data[j][1]
-                errors = ["x", "y", "z"]*(gate not in ['reset', 'measure']) + ["x_id", "x_x"]*(gate=="measure")
+                errors = ["x", "y", "z"]\
+                * (gate not in ['reset', 'measure'])\
+                + ["x_id", "x_x"]*(gate=="measure")
                 for error in errors:
                     for qubit in qubits:
                         raw_results = {}
@@ -200,16 +211,17 @@ class GraphDecoder:
             results (dict): A results dictionary, as produced by the
             `process_results` method of the code.
             logical (string): Logical value whose results are used.
+            use_old (bool): Whether to use the old calculation method.
         Returns:
             dict: Keys are the edges for specific error
             events, and values are the calculated probabilities
         Additional information:
             Uses `results` to estimate the probability of the errors that
             create the pairs of nodes specified by the edge.
-            Calculation done using the method of Spitz, et al.
+            Default calculation method is that of Spitz, et al.
             https://doi.org/10.1002/qute.201800012
         """
-        
+
         if not use_old:
 
             results = results[logical]
@@ -284,9 +296,9 @@ class GraphDecoder:
 
             for node0 in boundary:
                 error_probs[node0, node0] = 0.5 + (av_v[node0] - 0.5) / prod[node0]
-                
+
         else:
-            
+
             results = results[logical]
             shots = sum(results.values())
 
@@ -308,7 +320,6 @@ class GraphDecoder:
 
             error_probs = {}
             for edge in self.S.edge_list():
-                edge_data = self.S.get_edge_data(edge[0], edge[1])
                 ratios = []
                 for elements in [('00', '11'), ('11', '00'),
                                  ('01', '10'), ('10', '01')]:
@@ -522,10 +533,10 @@ class GraphDecoder:
                     Warning,
                 )
 
-            for string in corrected_results:
-                shots += corrected_results[string]
+            for string, samples in corrected_results.items():
+                shots += samples
                 if string[0] != str(log):
-                    incorrect_shots += corrected_results[string]
+                    incorrect_shots += samples
 
             logical_prob[log] = incorrect_shots / shots
 
