@@ -60,3 +60,65 @@ def _find_hyperbolic_partner(check_matrix, index: int):
     
     return result
 
+
+def _gram_schmidt(in_matrix, start_pos):
+    """Apply the modified GramSchmidt process to the input symplectic matrix. 
+
+    Args:
+        matrix ([type]): Symplectic matrix
+        start_pos (int): position to start the process
+
+    Returns:
+        center, hyper1, hyper2: 
+    
+    # Apply the modified GramSchmidt process to a input matrix G_in
+    # Optional arg enables one to start at a specific position in the process
+    GramSchmidt := function(G_in, arg...)
+    local G, Xe, Ze, center, size, elem, res, start, m, k;
+    G:=StructuralCopy(G_in);
+
+    if Length(arg)=1 then
+        start := arg[1];
+    elif Length(arg)=0 then
+        start := 1;
+    fi;
+
+    m := (start-1)/2;
+
+    Xe:=[];
+    Ze:=[];
+    center := [];
+
+    for k in [1..m] do
+        Xe[k] := G[k];
+        Ze[k] := G[m+k];
+    od;
+
+    for k in [1..2*m] do
+        Remove(G, 1);
+    od;
+
+    size := Size(G);
+
+    while size > 0 do
+        elem := G[1];
+        Remove(G,1);
+        size := size - 1;
+        res := FindNonCommunativePartner(G, elem);
+        if Size(res) = 0 then
+        Add(center, elem);
+        else
+        Add(Xe, elem);
+        Add(Ze, res[1]);
+        Remove(G, res[2]);
+        size := size - 1;
+        G := MakeElementsCommute(G, 1, Size(G), elem, res[1]);
+        fi;
+    od;
+    return rec(center := center, hyperX :=  Xe, hyperZ := Ze);
+    end;
+    """
+
+    matrix = in_matrix.copy()
+
+    
