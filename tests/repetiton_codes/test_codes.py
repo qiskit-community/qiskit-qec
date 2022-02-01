@@ -17,18 +17,19 @@
 """Run codes and decoders."""
 
 import unittest
-import retworkx as rx
 
 import sys
-sys.path.append('../../')
-import qiskit_qec
-from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.decoders.graph_decoder import GraphDecoder
+
+import retworkx as rx
 
 from qiskit import execute, Aer, QuantumCircuit
 from qiskit.providers.aer.noise import NoiseModel
-from qiskit.providers.aer.noise.errors import pauli_error, depolarizing_error
+from qiskit.providers.aer.noise.errors import depolarizing_error
 
+from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.decoders.graph_decoder import GraphDecoder
+
+sys.path.append('../../')
 
 def get_syndrome(code, noise_model, shots=1024):
     """Runs a code to get required results."""
@@ -49,7 +50,6 @@ def get_syndrome(code, noise_model, shots=1024):
 
 def get_noise(p_meas, p_gate):
     """Define a noise model."""
-    error_meas = pauli_error([("X", p_meas), ("I", 1 - p_meas)])
     error_gate1 = depolarizing_error(p_gate, 1)
     error_gate2 = error_gate1.tensor(error_gate1)
 
@@ -140,10 +140,11 @@ class TestCodes(unittest.TestCase):
                 for xbasis in [False, True]:
                     for resets in [False, True]:
                         for delay in [0, 16]:
-                            codes[d,T,xbasis,resets,delay] = RepetitionCode(d, T, xbasis=xbasis, resets=resets, delay=delay)
-        for params in codes:
+                            codes[d,T,xbasis,resets,delay] = RepetitionCode(
+                                d, T, xbasis=xbasis, resets=resets,
+                                delay=delay)
+        for params, code in codes.items():
             d,T = params[0:2]
-            code = codes[params]                
             self.single_error_test(code)
             if len(params)==5:
                 d,T,xbasis,resets,delay = params
@@ -169,8 +170,6 @@ class TestCodes(unittest.TestCase):
     def test_rep_probs(self):
         """Repetition code test."""
         matching_probs = {}
-        lookup_probs = {}
-        post_probs = {}
 
         max_dist = 5
 
@@ -219,7 +218,8 @@ class TestCodes(unittest.TestCase):
         for resets in [True, False]:
             error = (
                 "Error: The analytical SyndromeGraph does not coincide "
-                + "with the brute force SyndromeGraph in d=7, T=2, resets="+str(resets)+" RepetitionCode."
+                + "with the brute force SyndromeGraph in d=7, T=2, resets="\
+                + str(resets)+" RepetitionCode."
             )
             code = RepetitionCode(7, 2, resets=resets)
             graph_new = GraphDecoder(code, brute=False).S
