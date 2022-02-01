@@ -102,3 +102,39 @@ class TestSymplectic(TestCase):
         test_matb=[[[0,1,1,1],[0,0,1,0]]]
         self.assertRaises(QiskitError, symplectic_product(test_mata, test_matb))
 
+    def test_make_element_commute_with_hyper_pair(self):
+        test_matrix = np.array([
+            [1,0,0,0,0,0],
+            [1,1,1,0,0,0],
+            [0,0,1,0,0,0],
+            [0,0,0,0,0,1]], dtype=np.bool_)
+        target_answer = np.array([1,1,0,0,0,0], dtype=np.bool_)
+        answer = make_element_commute_with_hyper_pair(test_matrix[1], test_matrix[2], test_matrix[3])
+        self.assertEqual(target_answer, answer)
+
+    def test_invalid_element_commute_with_hyper_pair(self):
+        test_matrix_bad = np.array([[0,1,0,0,1],[0,0,0,0,1]])
+        test_matrix_good = np.array([0,1,0,0])
+        test_hyper1_bad = np.array([[0,1,0,0,1],[0,0,0,0,1]])
+        test_hyper1_good = np.array([0,1,0,0])
+        test_hyper2_bad = np.array([[0,1,0,0,1],[0,0,0,0,1]])
+        test_hyper2_good = np.array([0,1,0,0])
+        for vector in [test_matrix_bad, test_matrix_good]:
+            for hyper1 in [test_hyper1_bad, test_hyper1_good]:
+                for hyper2 in [test_hyper2_bad, test_hyper2_good]:
+                    if vector != test_matrix_good and hyper1 != test_hyper1_good and hyper2 != test_hyper2_good:
+                        self.assertRaises(QiskitError, make_element_commute_with_hyper_pair(vector, hyper1, hyper2))
+        test_matrix_bad = np.array([0,1,0,0,1])
+        test_hyper1_bad = np.array([0,1,0,0,1])
+        test_hyper2_bad = np.array([0,1,0,0,1])   
+        for vector in [test_matrix_bad, test_matrix_good]:
+            for hyper1 in [test_hyper1_bad, test_hyper1_good]:
+                for hyper2 in [test_hyper2_bad, test_hyper2_good]:
+                    if vector != test_matrix_good and hyper1 != test_hyper1_good and hyper2 != test_hyper2_good:
+                        self.assertRaises(QiskitError, make_element_commute_with_hyper_pair(vector, hyper1, hyper2))              
+
+    def test_make_elements_commute_with_hyper_pair(self):
+        pass
+
+    def test_find_noncommutative_partner(self):
+        pass

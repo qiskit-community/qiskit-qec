@@ -108,8 +108,8 @@ def _symplectic_product_numpy(mat1, mat2):
              [I 0]
 
     Args:
-        mat1 ([type]): Binary symplectic matrix
-        mat2 ([type]): Binary symplectic matrix
+        mat1 (numpy.ndarray): Binary symplectic matrix
+        mat2 (numpy.ndarray): Binary symplectic matrix
 
     Returns:
         [numpy.ndarray (dtype=numpy.int8)]: Symplectic products of the rows of of mat1 and mat2
@@ -117,8 +117,7 @@ def _symplectic_product_numpy(mat1, mat2):
     m1, m2 = np.hsplit(mat1, 2)
     return np.hstack((m2, m1)).dot(mat2.transpose()) % 2
 
-
-def _make_element_commute(vector, hyper1, hyper2):
+def make_element_commute_with_hyper_pair(vector: np.ndarray, hyper1: np.ndarray, hyper2: np.ndarray):
     """Modify the operator given by vector so that it commutes
     with the hyperbolic pair (hyper1,hyper2) such that this new vector
     is in <vector, hyper1, hyper2>
@@ -134,15 +133,46 @@ def _make_element_commute(vector, hyper1, hyper2):
         numpy.ndarray dtype=bool : Symplectic vector encoding a modified vector that commutes
             with the hyperbolic pair and is in <vector, hyper1, hyper2>
     """
-    num_qubits = hyper1.shape[0]
-    if _symplectic_product_vv(vector, hyper1, num_qubits):
-        vector = vector + hyper2
-    if _symplectic_product_vv(vector, hyper2, num_qubits):
-        vector = vector + hyper1
-    return vector
+    assert vector.ndim == 1 and hyper1.ndim == 1 and hyper2.ndim == 1, \
+        QiskitError(f"All inputs must be one dimensional: {vector.ndim},{hyper1.ndim}, {hyper2.ndim}")
+    assert not (vector.shape[0]%2 or hyper1.shape[0]%2 or hyper2.shape[0]%2), \
+        QiskitError(f"All vectors must have an even length: \
+        {vector.shape[0]},{hyper1.shape[0]},{hyper2.shape[0]}")
+    return _make_element_commute_with_hyper_pair(vector, hyper1, hyper2)
 
-    # Make the operator elem commute with the hyperbolic pair Xe, Ze
 
+def _make_element_commute_with_hyper_pair(vector, hyper1, hyper2):
+    """Modify the operator given by vector so that it commutes
+    with the hyperbolic pair (hyper1,hyper2) such that this new vector
+    is in <vector, hyper1, hyper2>
+
+    Args:
+        vector (numpy.ndarray dtype=bool): Symplectic vector encoding a Pauli
+        hyper1 (numpy.ndarray dtype=bool): Symplectic vector encoding one of 
+            the operators in the hyperbolic elements 
+        hyper2 (numpy.ndarray dtype=bool): Symplectic vector encoding other one of 
+            the operators in the hyperbolic elements
+
+    Returns:
+        numpy.ndarray dtype=bool : Symplectic vector encoding a modified vector that commutes
+            with the hyperbolic pair and is in <vector, hyper1, hyper2>
+    """
+    new_vector = vector.copy()
+    num_qubits = hyper1.shape[0]>>1
+    if _symplectic_product_vv(new_vector, hyper1, num_qubits):
+        new_vector = new_vector ^ hyper2
+    if _symplectic_product_vv(new_vector, hyper2, num_qubits):
+        new_vector = new_vector ^ hyper1
+    return new_vector
+
+
+def _make_element_commute_with_hyper_pairs(
+        vector: np.ndarray, 
+        hyper1: np.ndarray, 
+        hyper2: np.ndarray, 
+        range1: np.ndarray, 
+        range2: np.ndarray):
+    """[summary]
 
     # Make the operator elem commute with the hyperbolic pairs Xe(xrange) and Ze(zrange)
     MakeElementCommuteGeneral := function(elem, Xe, xrange, Ze, zrange)
@@ -157,6 +187,64 @@ def _make_element_commute(vector, hyper1, hyper2):
     return elem_mod;
     end;
 
+    Args:
+        vector ([type]): [description]
+        hyper1 ([type]): [description]
+        hyper2 ([type]): [description]
+        range1 ([type]): [description]
+        range2 ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    assert vector.ndim == 1 and hyper1.ndim > 1 and hyper2.ndim > 1, \
+        QiskitError(f"All inputs must be one dimensional: {vector.ndim},{hyper1.ndim}, {hyper2.ndim}")
+    assert vector.shape[0] == hyper1.shape[1] == hyper2.shape[1], \
+        QiskitError("Inputs matrices/vectors must have the same number of columns/length")
+    assert not (vector.shape[0]%2 or hyper1.shape[0]%2 or hyper2.shape[0]%2), \
+        QiskitError(f"All vectors must have an even length: \
+        {vector.shape[0]},{hyper1.shape[0]},{hyper2.shape[0]}")
+    assert set(range1).issubset(range(hyper1.shape[0])) and set(range2).issubset(range(hyper2.shape[0])) 
+
+
+
+def _make_element_commute_with_hyper_pairs(vector, hyper1, hyper2, range1, range2):
+    """[summary]
+
+    # Make the operator elem commute with the hyperbolic pairs Xe(xrange) and Ze(zrange)
+    MakeElementCommuteGeneral := function(elem, Xe, xrange, Ze, zrange)
+    local  i, elem_mod;
+
+    elem_mod := StructuralCopy(elem);
+
+    for i in [1..Size(xrange)] do
+        elem_mod := MakeElementCommute(elem_mod, Xe[xrange[i]], Ze[zrange[i]]);
+    od;
+
+    return elem_mod;
+    end;
+
+    Args:
+        vector ([type]): [description]
+        hyper1 ([type]): [description]
+        hyper2 ([type]): [description]
+        range1 ([type]): [description]
+        range2 ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    new_vector = vector.copy()
+
+    for index_1, index_2 in zip(range1, range2):
+        new_vector = _make_element_commute_with_hyper_pair(new_vector, hyper1, hyper2)
+
+    return new_vector
+    
+
+def _make_elements_commute_with_hyper_pair(matrix, range, hyper1, hyper2):
+    """[summary]
+
     # Make the elements in S(range) commute with the hyperbolic pair Xe, Ze
     MakeElementsCommuteGeneral := function(S, range, Xe, Ze)
     local k;
@@ -167,3 +255,50 @@ def _make_element_commute(vector, hyper1, hyper2):
 
     return S;
     end;
+
+    Args:
+        matrix ([type]): [description]
+        range ([type]): [description]
+        hyper1 ([type]): [description]
+        hyper2 ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
+    new_matrix = matrix.copy()
+
+    for index in range:
+        new_matrix[index] = _make_element_commute_with_hyper_pair(new_matrix[index], hyper1, hyper2)
+
+    return new_matrix
+
+def find_noncommutative_partner(matrix, vector):
+    """[summary]
+
+    Args:
+        matrix ([type]): [description]
+        vector ([type]): [description]
+
+    Returns:
+        [type]: [description]
+
+    # Find generator in S that does not commute with operator el
+    FindNonCommunativePartner := function(S, el)
+    local i;
+
+    for i in [1..Size(S)] do
+        if SymplecticProduct(S[i],el)=1 then
+        return [S[i],i];
+        fi;
+    od;
+    return [];
+    end;
+    """
+
+    for index, item in enumerate(matrix):
+        if _symplectic_product_vv(item, vector) == 1: 
+            return (item, index)
+    return None
+
+    
