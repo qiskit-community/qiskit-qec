@@ -307,7 +307,7 @@ class RepetitionCodeSyndromeGenerator:
         for r in range(self.T):
             self.m_anc[r] = [0] * (self.d - 1)
 
-    def bitflip_readout(self, i):
+    def bitflip_readout(self, i: int):
         """
         Introduces a bitflip error on data qubit i right before the (final) readout.
         Args:
