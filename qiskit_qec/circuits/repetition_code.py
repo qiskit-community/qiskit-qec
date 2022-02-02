@@ -315,7 +315,7 @@ class RepetitionCodeSyndromeGenerator:
         """
         self.m_fin[i] = (self.m_fin[i] + 1) % 2
 
-    def bitflip_ancilla(self, i, r):
+    def bitflip_ancilla(self, i: int, r: int):
         """
         Introduces a bitflip error to ancilla i in round r.
         Args:
