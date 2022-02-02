@@ -292,7 +292,7 @@ class RepetitionCodeSyndromeGenerator:
     Allows the measurement results to be retrieved without the need to run the simulation.
     """
 
-    def __init__(self, code):
+    def __init__(self, code: RepetitionCode):
         """
         Args:
             code (RepetitionCode): Code object under consideration.
