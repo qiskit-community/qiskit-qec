@@ -191,7 +191,10 @@ class TestCodes(unittest.TestCase):
             for log in ["0", "1"]:
                 m_down = matching_probs[(d, log)] > matching_probs[(d + 2, log)]
 
-                m_error = (
+m_error  = f"Error: Matching decoder does not improve logical " \
+      f"error rate between repetition codes of distance {d} and {d + 2}\n." \
+      f"For d={d}: {matching_probs[(d, log)]} \n." \
+      f"For d={d + 2}: {matching_probs[(d + 2, log)]}."
                     "Error: Matching decoder does not improve "
                     + "logical error rate between repetition codes"
                     + " of distance "
