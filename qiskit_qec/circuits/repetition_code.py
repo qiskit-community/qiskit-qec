@@ -177,7 +177,7 @@ class RepetitionCodeCircuit:
             self.circuit[log].add_register(self.code_bit)
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
-    def process_results(self, raw_results):
+    def process_results(self, raw_results: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
         """
         Args:
             raw_results (dict): A dictionary whose keys are logical values,
