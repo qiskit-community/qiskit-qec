@@ -74,7 +74,7 @@ class RepetitionCodeCircuit:
             self.syndrome_measurement(final=True)
             self.readout()
 
-    def get_circuit_list(self):
+    def get_circuit_list(self) -> List[QuantumCircuit]:
         """
         Returns:
             circuit_list: self.circuit as a list, with
