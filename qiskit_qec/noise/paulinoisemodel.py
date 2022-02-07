@@ -71,7 +71,7 @@ class PauliNoiseModel:
         if set(paulistring) > set("ixyz"):
             raise Exception(f'bad paulistring "{paulistring}"')
         if len(paulistring) != self.num_qubits[name]:
-            raise Exception(f'paulistring not on {self.num_qubits[name]} qubits')
+            raise Exception(f"paulistring not on {self.num_qubits[name]} qubits")
         if paulistring not in self.definition[name]:
             return 0
         return self.definition[name][paulistring]
@@ -138,7 +138,7 @@ class PauliNoiseModel:
             if num_qubits == -1:
                 num_qubits = len(k)
             elif len(k) != num_qubits:
-                raise Exception(f'expected paulistring on {num_qubits} qubits')
+                raise Exception(f"expected paulistring on {num_qubits} qubits")
             total_weight += v
         # Add definition
         self.definition[name] = copy.deepcopy(paulichanneldict)

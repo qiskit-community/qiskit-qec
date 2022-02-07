@@ -5,6 +5,7 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 class TestPauliNoiseModel(unittest.TestCase):
     """Test Pauli noise model."""
+
     def test_from_dict(self):
         """Test creating from a dictionary."""
         def_as_dict = {
