@@ -290,14 +290,14 @@ class RepetitionCodeCircuit:
 
 class RepetitionCodeSyndromeGenerator:
     """
-    Allows to construct an error pattern in the circuit of a RepetitionCode object.
+    Allows to construct an error pattern in the circuit of a RepetitionCodeCircuit object.
     Allows the measurement results to be retrieved without the need to run the simulation.
     """
 
-    def __init__(self, code: RepetitionCode):
+    def __init__(self, code: RepetitionCodeCircuit):
         """
         Args:
-            code (RepetitionCode): Code object under consideration.
+            code (RepetitionCodeCircuit): Code object under consideration.
         """
 
         self.d = code.d  # number of qubits
