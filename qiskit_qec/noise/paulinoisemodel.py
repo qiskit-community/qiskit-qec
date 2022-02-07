@@ -42,7 +42,7 @@ class PauliNoiseModel:
 
     def get_operations(self):
         """Return the list of defined names."""
-        return [k for k in self.definition.keys()]
+        return list(self.definition.keys())
 
     def get_pauli_error_types(self):
         """Return a dict of error types for each operation."""
@@ -53,9 +53,9 @@ class PauliNoiseModel:
 
     def get_error_probability(self, name):
         """Get the error probability of an operation."""
-        assert type(name) is str
+        assert isinstance(name, str)
         if name not in self.error_probabilities:
-            raise Exception('no error probability for "%s"' % name)
+            raise Exception(f'no error probability for "{name}"')
         return self.error_probabilities[name]
 
     def get_pauli_weight(self, name, paulistring):
@@ -64,14 +64,14 @@ class PauliNoiseModel:
         name = string label for operation
         paulistring = string containing only "i", "x", "y", and "z".
         """
-        assert type(name) is str
-        assert type(paulistring) is str
+        assert isinstance(name, str)
+        assert isinstance(paulistring, str)
         if name not in self.definition:
-            raise Exception('"%s" is not an operation' % name)
+            raise Exception(f'"{name}" is not an operation')
         if set(paulistring) > set("ixyz"):
-            raise Exception('bad paulistring "%s"' % paulistring)
+            raise Exception(f'bad paulistring "{paulistring}"')
         if len(paulistring) != self.num_qubits[name]:
-            raise Exception("paulistring not on %d qubits" % self.num_qubits[name])
+            raise Exception(f'paulistring not on {self.num_qubits[name]} qubits')
         if paulistring not in self.definition[name]:
             return 0
         return self.definition[name][paulistring]
@@ -87,12 +87,12 @@ class PauliNoiseModel:
 
     def set_scale_factor(self, name, factor):
         """Assign a scaling factor to an operation."""
-        assert type(name) is str
-        assert type(factor) is float or type(factor) is int
+        assert isinstance(name, str)
+        assert isinstance(factor, float) or isinstance(factor, int)
         if type(factor) is int:
             factor = float(factor)
         if name not in self.definition:
-            raise Exception('"%s" is not an operation' % name)
+            raise Exception(f'"{name}" is not an operation')
         if factor < 0:
             raise Exception("expected non-negative factor")
         self.scale_factors[name] = factor
@@ -108,10 +108,10 @@ class PauliNoiseModel:
 
     def set_error_probability(self, name, p):
         """Assign an error probability to an operation."""
-        assert type(name) is str
-        assert type(p) is float
+        assert isinstance(name, str)
+        assert isinstance(p, float)
         if name not in self.definition:
-            raise Exception('"%s" is not an operation' % name)
+            raise Exception(f'"{name}" is not an operation')
         if p < 0 or p > 1:
             raise Exception("expected a probability")
         self.error_probabilities[name] = p
@@ -125,8 +125,8 @@ class PauliNoiseModel:
         Each paulistring contains "i", "x", "y", and "z".
         The weights do not need to be normalized.
         """
-        assert type(name) is str
-        assert type(paulichanneldict) is dict
+        assert isinstance(name, str)
+        assert isinstance(paulichanneldict, dict)
         if len(paulichanneldict) == 0:
             raise Exception("expected non-empty dictionary")
         # Check input and compute total weight
@@ -134,11 +134,11 @@ class PauliNoiseModel:
         num_qubits = -1
         for k, v in paulichanneldict.items():
             if set(k) > set("ixyz"):
-                raise Exception('bad paulistring "%s"' % k)
+                raise Exception(f'bad paulistring "{k}"')
             if num_qubits == -1:
                 num_qubits = len(k)
             elif len(k) != num_qubits:
-                raise Exception("expected paulistring on %d qubits" % num_qubits)
+                raise Exception(f'expected paulistring on {num_qubits} qubits')
             total_weight += v
         # Add definition
         self.definition[name] = copy.deepcopy(paulichanneldict)
@@ -152,7 +152,7 @@ class PauliNoiseModel:
         model = noise.noise_model.NoiseModel()
         for name, paulichanneldict in self.definition.items():
             if name not in self.error_probabilities:
-                raise Exception('no error probability for "%s"' % name)
+                raise Exception(f'no error probability for "{name}"')
             p = self.error_probabilities[name]
             terms = [("I" * self.num_qubits[name], 1.0 - p)]
             for pauli, weight in paulichanneldict.items():

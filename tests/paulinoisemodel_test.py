@@ -1,9 +1,12 @@
+"""Pauli noise model tests."""
 import unittest
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
 class TestPauliNoiseModel(unittest.TestCase):
+    """Test Pauli noise model."""
     def test_from_dict(self):
+        """Test creating from a dictionary."""
         def_as_dict = {
             "cx": {
                 "p": 0.001,
@@ -39,6 +42,7 @@ class TestPauliNoiseModel(unittest.TestCase):
         self.assertAlmostEqual(pnm.get_pauli_weight("cx", "xx"), 1.0 / 15.0)
 
     def test_scale_factor(self):
+        """Test setting a scale factor."""
         pnm = PauliNoiseModel()
         pnm.add_operation("h", {"x": 1, "y": 1, "z": 1})
         pnm.add_operation("s", {"x": 1, "y": 1, "z": 1})
@@ -56,6 +60,7 @@ class TestPauliNoiseModel(unittest.TestCase):
         self.assertAlmostEqual(pnm.get_error_probability("y"), 0.01)
 
     def test_add_operation(self):
+        """Test adding an operation."""
         pnm = PauliNoiseModel()
         pnm.add_operation("cx", {"ix": 1, "xi": 1, "xx": 1})
         pnm.set_error_probability("cx", 0.01)
@@ -67,29 +72,34 @@ class TestPauliNoiseModel(unittest.TestCase):
         self.assertEqual(pnm.get_pauli_error_types(), {"cx": ["ix", "xi", "xx"]})
 
     def test_get_before_add(self):
+        """Get a gate before adding it."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.get_error_probability("cx")
 
     def test_no_error_probability(self):
+        """Get a probability before setting."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
             pnm.get_error_probability("h")
 
     def test_bad_input_1(self):
+        """Pass out of range value."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
             pnm.set_error_probability(5)
 
     def test_bad_input_2(self):
+        """Pass out of range value."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
             pnm.set_error_probability(-0.1)
 
     def test_bad_input_3(self):
+        """Get something that doesn't exist."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
@@ -97,6 +107,7 @@ class TestPauliNoiseModel(unittest.TestCase):
             pnm.get_pauli_weight("cx", "ix")
 
     def test_bad_input_4(self):
+        """Get the wrong term."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
@@ -104,6 +115,7 @@ class TestPauliNoiseModel(unittest.TestCase):
             pnm.get_pauli_weight("h", "ix")
 
     def test_bad_input_5(self):
+        """Get a malformed term."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
