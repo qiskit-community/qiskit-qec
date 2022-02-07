@@ -64,9 +64,7 @@ class GraphDecoder:
         if S:
             self.S = S
         elif not brute and hasattr(code, "_get_all_processed_results"):
-            self.S = self._make_syndrome_graph(
-                results=code._get_all_processed_results()
-            )
+            self.S = self._make_syndrome_graph(results=code._get_all_processed_results())
         else:
             self.S = self._make_syndrome_graph()
 
@@ -94,9 +92,7 @@ class GraphDecoder:
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and element != logical) or (
-                        syn_type != 0 and element == "1"
-                    ):
+                    if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
                         nodes.append((syn_type, syn_round, elem_num))
         return nodes
 
@@ -131,28 +127,28 @@ class GraphDecoder:
             for j in range(depth):
                 gate = qc.data[j][0].name
                 qubits = qc.data[j][1]
-                if gate not in ['measure', 'reset']:
+                if gate not in ["measure", "reset"]:
                     for error in ["x", "y", "z"]:
                         for qubit in qubits:
                             temp_qc = copy.deepcopy(blank_qc)
                             temp_qc.name = str((j, qubit, error))
                             temp_qc.data = qc.data[0:j]
                             getattr(temp_qc, error)(qubit)
-                            temp_qc.data += qc.data[j: depth + 1]
+                            temp_qc.data += qc.data[j : depth + 1]
                             circuit_name[(j, qubit, error)] = temp_qc.name
                             error_circuit[temp_qc.name] = temp_qc
-                elif gate=='measure':
+                elif gate == "measure":
                     pre_error = "x"
-                    for post_error in ["id","x"]:
+                    for post_error in ["id", "x"]:
                         for qubit in qubits:
                             temp_qc = copy.deepcopy(blank_qc)
-                            temp_qc.name = str((j, qubit, pre_error+'_'+post_error))
+                            temp_qc.name = str((j, qubit, pre_error + "_" + post_error))
                             temp_qc.data = qc.data[0:j]
                             getattr(temp_qc, pre_error)(qubit)
                             temp_qc.data.append(qc.data[j])
                             getattr(temp_qc, post_error)(qubit)
-                            temp_qc.data += qc.data[j+1: depth + 1]
-                            circuit_name[(j, qubit, pre_error+'_'+post_error)] = temp_qc.name
+                            temp_qc.data += qc.data[j + 1 : depth + 1]
+                            circuit_name[(j, qubit, pre_error + "_" + post_error)] = temp_qc.name
                             error_circuit[temp_qc.name] = temp_qc
 
             if HAS_AER:
@@ -166,15 +162,13 @@ class GraphDecoder:
             for j in range(depth):
                 gate = qc.data[j][0].name
                 qubits = qc.data[j][1]
-                errors = ["x", "y", "z"]\
-                * (gate not in ['reset', 'measure'])\
-                + ["x_id", "x_x"]*(gate=="measure")
+                errors = ["x", "y", "z"] * (gate not in ["reset", "measure"]) + ["x_id", "x_x"] * (
+                    gate == "measure"
+                )
                 for error in errors:
                     for qubit in qubits:
                         raw_results = {}
-                        raw_results["0"] = job.result().get_counts(
-                            str((j, qubit, error))
-                        )
+                        raw_results["0"] = job.result().get_counts(str((j, qubit, error)))
                         results = self.code.process_results(raw_results)["0"]
 
                         for string in results:
@@ -198,9 +192,7 @@ class GraphDecoder:
                             for source in nodes:
                                 for target in nodes:
                                     if target != source:
-                                        S.add_edge(
-                                            node_map[source], node_map[target], 1
-                                        )
+                                        S.add_edge(node_map[source], node_map[target], 1)
 
         return S
 
@@ -290,9 +282,9 @@ class GraphDecoder:
                         if node0 not in prod:
                             prod[node0] = 1
                         if (node0, node1) in error_probs:
-                            prod[node0] *= (1 - 2*error_probs[node0, node1])
+                            prod[node0] *= 1 - 2 * error_probs[node0, node1]
                         elif (node1, node0) in error_probs:
-                            prod[node0] *= (1 - 2*error_probs[node1, node0])
+                            prod[node0] *= 1 - 2 * error_probs[node1, node0]
 
             for node0 in boundary:
                 error_probs[node0, node0] = 0.5 + (av_v[node0] - 0.5) / prod[node0]
@@ -302,41 +294,42 @@ class GraphDecoder:
             results = results[logical]
             shots = sum(results.values())
 
-            count = {element: {edge: 0 for edge in self.S.edge_list()}
-                     for element in ['00', '01', '10', '11']}
+            count = {
+                element: {edge: 0 for edge in self.S.edge_list()}
+                for element in ["00", "01", "10", "11"]
+            }
 
             for string in results:
 
                 nodes = self.string2nodes(string, logical=logical)
 
                 for edge in self.S.edge_list():
-                    element = ''
+                    element = ""
                     for j in range(2):
                         if self.S[edge[j]] in nodes:
-                            element += '1'
+                            element += "1"
                         else:
-                            element += '0'
+                            element += "0"
                     count[element][edge] += results[string]
 
             error_probs = {}
             for edge in self.S.edge_list():
                 ratios = []
-                for elements in [('00', '11'), ('11', '00'),
-                                 ('01', '10'), ('10', '01')]:
+                for elements in [("00", "11"), ("11", "00"), ("01", "10"), ("10", "01")]:
                     if count[elements[1]][edge] > 0:
-                        ratio = count[elements[0]][edge]/count[elements[1]][edge]
+                        ratio = count[elements[0]][edge] / count[elements[1]][edge]
                         ratios.append(ratio)
                 ratio = min(ratios)
                 e0 = self.S[edge[0]]
                 e1 = self.S[edge[1]]
-                if e1[0]==0:
+                if e1[0] == 0:
                     e1 = e0
-                if e0[0]==0:
+                if e0[0] == 0:
                     e0 = e1
-                if (e0,e1) in error_probs:
-                    error_probs[e0,e1] = max( ratio/(1+ratio), error_probs[e0,e1])
+                if (e0, e1) in error_probs:
+                    error_probs[e0, e1] = max(ratio / (1 + ratio), error_probs[e0, e1])
                 else:
-                    error_probs[e0,e1] = ratio/(1+ratio)
+                    error_probs[e0, e1] = ratio / (1 + ratio)
 
         return error_probs
 
@@ -414,9 +407,7 @@ class GraphDecoder:
                     source = E[subgraph][source_index]
                     target = E[subgraph][target_index]
                     if target != source:
-                        distance = int(
-                            distance_matrix[s_node_map[source]][s_node_map[target]]
-                        )
+                        distance = int(distance_matrix[s_node_map[source]][s_node_map[target]])
                         E[subgraph].add_edge(source_index, target_index, -distance)
         return E
 
@@ -461,9 +452,7 @@ class GraphDecoder:
 
             potential_logical = {}
             for target in logical_nodes:
-                potential_logical[target] = E.get_edge_data(
-                    node_map[source], node_map[target]
-                )
+                potential_logical[target] = E.get_edge_data(node_map[source], node_map[target])
             nearest_logical = max(potential_logical, key=potential_logical.get)
             nl_target = nearest_logical + source
             if nl_target not in node_map:
@@ -481,9 +470,7 @@ class GraphDecoder:
         # do the matching on this
         matches = {
             (E_matching[x[0]], E_matching[x[1]])
-            for x in rx.max_weight_matching(
-                E_matching, max_cardinality=True, weight_fn=lambda x: x
-            )
+            for x in rx.max_weight_matching(E_matching, max_cardinality=True, weight_fn=lambda x: x)
         }
         # use it to construct and return a corrected logical string
         logicals = self._separate_string(string)[0]

@@ -29,7 +29,8 @@ from qiskit.providers.aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.decoders.graph_decoder import GraphDecoder
 
-sys.path.append('../../')
+sys.path.append("../../")
+
 
 def get_syndrome(code, noise_model, shots=1024):
     """Runs a code to get required results."""
@@ -54,7 +55,7 @@ def get_noise(p_meas, p_gate):
     error_gate2 = error_gate1.tensor(error_gate1)
 
     noise_model = NoiseModel()
-    noise_model.add_all_qubit_readout_error([[1-p_meas,p_meas],[p_meas,1-p_meas]])
+    noise_model.add_all_qubit_readout_error([[1 - p_meas, p_meas], [p_meas, 1 - p_meas]])
     noise_model.add_all_qubit_quantum_error(error_gate1, ["h"])
     noise_model.add_all_qubit_quantum_error(error_gate2, ["cx"])
 
@@ -89,7 +90,7 @@ class TestCodes(unittest.TestCase):
                         temp_qc.name = str((j, qubit, error))
                         temp_qc.data = qc.data[0:j]
                         getattr(temp_qc, error)(qubit)
-                        temp_qc.data += qc.data[j: depth + 1]
+                        temp_qc.data += qc.data[j : depth + 1]
                         circuit_name[(j, qubit, error)] = temp_qc.name
                         error_circuit[temp_qc.name] = temp_qc
 
@@ -101,9 +102,7 @@ class TestCodes(unittest.TestCase):
                 for qubit in qubits:
                     for error in ["x", "y", "z"]:
                         raw_results = {}
-                        raw_results[logical] = job.result().get_counts(
-                            str((j, qubit, error))
-                        )
+                        raw_results[logical] = job.result().get_counts(str((j, qubit, error)))
                         results = code.process_results(raw_results)[logical]
                         for string in results:
                             nodes = decoder.string2nodes(string, logical=logical)
@@ -140,19 +139,18 @@ class TestCodes(unittest.TestCase):
                 for xbasis in [False, True]:
                     for resets in [False, True]:
                         for delay in [0, 16]:
-                            codes[d,T,xbasis,resets,delay] = RepetitionCode(
-                                d, T, xbasis=xbasis, resets=resets,
-                                delay=delay)
+                            codes[d, T, xbasis, resets, delay] = RepetitionCode(
+                                d, T, xbasis=xbasis, resets=resets, delay=delay
+                            )
         for params, code in codes.items():
-            d,T = params[0:2]
+            d, T = params[0:2]
             self.single_error_test(code)
-            if len(params)==5:
-                d,T,xbasis,resets,delay = params
+            if len(params) == 5:
+                d, T, xbasis, resets, delay = params
                 if delay > 0 and T > 1:
-                    num_delays = code.circuit['0'].count_ops()['delay']
+                    num_delays = code.circuit["0"].count_ops()["delay"]
                     self.assertTrue(
-                        num_delays == (d-1)*(T-1),
-                        "Error: wrong number of delay gates."
+                        num_delays == (d - 1) * (T - 1), "Error: wrong number of delay gates."
                     )
 
     def test_weight(self):
@@ -191,27 +189,11 @@ class TestCodes(unittest.TestCase):
             for log in ["0", "1"]:
                 m_down = matching_probs[(d, log)] > matching_probs[(d + 2, log)]
 
-m_error  = f"Error: Matching decoder does not improve logical " \
-      f"error rate between repetition codes of distance {d} and {d + 2}\n." \
-      f"For d={d}: {matching_probs[(d, log)]} \n." \
-      f"For d={d + 2}: {matching_probs[(d + 2, log)]}."
-                    "Error: Matching decoder does not improve "
-                    + "logical error rate between repetition codes"
-                    + " of distance "
-                    + str(d)
-                    + " and "
-                    + str(d + 2)
-                    + ".\n"
-                    + "For d="
-                    + str(d)
-                    + ": "
-                    + str(matching_probs[(d, log)])
-                    + ".\n"
-                    + "For d="
-                    + str(d + 2)
-                    + ": "
-                    + str(matching_probs[(d + 2, log)])
-                    + "."
+                m_error = (
+                    f"Error: Matching decoder does not improve logical "
+                    f"error rate between repetition codes of distance {d} and {d + 2}\n."
+                    f"For d={d}: {matching_probs[(d, log)]} \n."
+                    f"For d={d + 2}: {matching_probs[(d + 2, log)]}."
                 )
 
                 self.assertTrue(m_down or matching_probs[(d, log)] == 0.0, m_error)
@@ -221,8 +203,9 @@ m_error  = f"Error: Matching decoder does not improve logical " \
         for resets in [True, False]:
             error = (
                 "Error: The analytical SyndromeGraph does not coincide "
-                + "with the brute force SyndromeGraph in d=7, T=2, resets="\
-                + str(resets)+" RepetitionCode."
+                + "with the brute force SyndromeGraph in d=7, T=2, resets="
+                + str(resets)
+                + " RepetitionCode."
             )
             code = RepetitionCode(7, 2, resets=resets)
             graph_new = GraphDecoder(code, brute=False).S
