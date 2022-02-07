@@ -13,4 +13,3 @@
 """Noise."""
 
 from . import paulinoisemodel
-
