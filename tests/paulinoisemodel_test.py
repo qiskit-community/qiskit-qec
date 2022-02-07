@@ -90,21 +90,21 @@ class TestPauliNoiseModel(unittest.TestCase):
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
-            pnm.set_error_probability(5)
+            pnm.set_error_probability("h", 5)
 
     def test_bad_input_2(self):
         """Pass out of range value."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
-            pnm.set_error_probability(-0.1)
+            pnm.set_error_probability("h", -0.1)
 
     def test_bad_input_3(self):
         """Get something that doesn't exist."""
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
-            pnm.set_error_probability(0.01)
+            pnm.set_error_probability("h", 0.01)
             pnm.get_pauli_weight("cx", "ix")
 
     def test_bad_input_4(self):
@@ -112,7 +112,7 @@ class TestPauliNoiseModel(unittest.TestCase):
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
-            pnm.set_error_probability(0.01)
+            pnm.set_error_probability("h", 0.01)
             pnm.get_pauli_weight("h", "ix")
 
     def test_bad_input_5(self):
@@ -120,7 +120,7 @@ class TestPauliNoiseModel(unittest.TestCase):
         with self.assertRaises(Exception):
             pnm = PauliNoiseModel()
             pnm.add_operation("h", {"x": 1})
-            pnm.set_error_probability(0.01)
+            pnm.set_error_probability("h", 0.01)
             pnm.get_pauli_weight("h", "fx")
 
 

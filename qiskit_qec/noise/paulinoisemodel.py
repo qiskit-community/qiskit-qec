@@ -88,8 +88,8 @@ class PauliNoiseModel:
     def set_scale_factor(self, name, factor):
         """Assign a scaling factor to an operation."""
         assert isinstance(name, str)
-        assert isinstance(factor, float) or isinstance(factor, int)
-        if type(factor) is int:
+        assert isinstance(factor, (float, int))
+        if isinstance(factor, int):
             factor = float(factor)
         if name not in self.definition:
             raise Exception(f'"{name}" is not an operation')
