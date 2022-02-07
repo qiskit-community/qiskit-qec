@@ -1,5 +1,6 @@
 """Pauli circuit-level noise model."""
 import copy
+from typing import Union, Dict
 from qiskit.providers.aer import noise
 
 
@@ -51,21 +52,18 @@ class PauliNoiseModel:
             error_types[k] = list(v.keys())
         return error_types
 
-    def get_error_probability(self, name):
+    def get_error_probability(self, name: str):
         """Get the error probability of an operation."""
-        assert isinstance(name, str)
         if name not in self.error_probabilities:
             raise Exception(f'no error probability for "{name}"')
         return self.error_probabilities[name]
 
-    def get_pauli_weight(self, name, paulistring):
+    def get_pauli_weight(self, name: str, paulistring: str):
         """Get the weight for a particular term.
 
         name = string label for operation
         paulistring = string containing only "i", "x", "y", and "z".
         """
-        assert isinstance(name, str)
-        assert isinstance(paulistring, str)
         if name not in self.definition:
             raise Exception(f'"{name}" is not an operation')
         if set(paulistring) > set("ixyz"):
@@ -76,7 +74,7 @@ class PauliNoiseModel:
             return 0
         return self.definition[name][paulistring]
 
-    def get_pauli_error_probability(self, name, paulistring):
+    def get_pauli_error_probability(self, name: str, paulistring: str):
         """Get the error probability for a particular term.
 
         name = string label for operation
@@ -85,10 +83,8 @@ class PauliNoiseModel:
         p = self.get_error_probability(name)
         return p * self.get_pauli_weight(name, paulistring)
 
-    def set_scale_factor(self, name, factor):
+    def set_scale_factor(self, name: str, factor: Union[int, float]):
         """Assign a scaling factor to an operation."""
-        assert isinstance(name, str)
-        assert isinstance(factor, (float, int))
         if isinstance(factor, int):
             factor = float(factor)
         if name not in self.definition:
@@ -97,7 +93,7 @@ class PauliNoiseModel:
             raise Exception("expected non-negative factor")
         self.scale_factors[name] = factor
 
-    def set_scaled_error_probabilities(self, p):
+    def set_scaled_error_probabilities(self, p: float):
         """Scale and assign error probabilities to operations.
 
         Only operations with a scale factor property will be changed.
@@ -106,17 +102,15 @@ class PauliNoiseModel:
             if name in self.scale_factors:
                 self.set_error_probability(name, self.scale_factors[name] * p)
 
-    def set_error_probability(self, name, p):
+    def set_error_probability(self, name: str, p: float):
         """Assign an error probability to an operation."""
-        assert isinstance(name, str)
-        assert isinstance(p, float)
         if name not in self.definition:
             raise Exception(f'"{name}" is not an operation')
         if p < 0 or p > 1:
             raise Exception("expected a probability")
         self.error_probabilities[name] = p
 
-    def add_operation(self, name, paulichanneldict):
+    def add_operation(self, name: str, paulichanneldict: Dict[str, float]):
         """Add a new faulty operation.
 
         name = string label for operation
@@ -125,8 +119,6 @@ class PauliNoiseModel:
         Each paulistring contains "i", "x", "y", and "z".
         The weights do not need to be normalized.
         """
-        assert isinstance(name, str)
-        assert isinstance(paulichanneldict, dict)
         if len(paulichanneldict) == 0:
             raise Exception("expected non-empty dictionary")
         # Check input and compute total weight
