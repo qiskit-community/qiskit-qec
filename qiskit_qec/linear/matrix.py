@@ -122,7 +122,7 @@ def rref(matrix):
     Returns:
         rref_mat (numpy.ndarray) : Row Reduced Echelon Form of input matrix
     """
-    heads, rref_mat, transform_mat, rank = rref_complete(matrix)
+    heads, rref_mat, transform_mat, rank_ = rref_complete(matrix)
     return rref_mat
 
 def _rref(matrix):
@@ -134,8 +134,25 @@ def _rref(matrix):
     Returns:
         rref_mat (numpy.ndarray) : Row Reduced Echelon Form of input matrix
     """
-    heads, rref_mat, transform_mat, rank = _rref_complete(matrix)
+    heads, rref_mat, transform_mat, rank_ = _rref_complete(matrix)
     return rref_mat
+
+def rank(matrix):
+    """Return the rank of the GF(2) matrix
+
+    Args:
+        matrix ([type]): [description]
+    """
+    return _rank(matrix)
+
+def _rank(matrix):
+    """Return the rank of the GF(2) matrix
+
+    Args:
+        matrix ([type]): [description]
+    """
+    heads, rref_mat, transform_mat, rank_ = rref_complete(matrix)
+    return rank_
 
 def rref_complete(matrix):
     """Compute the Row Reduced Echelon Form for a boolean matrix and associated 
@@ -215,11 +232,12 @@ def _rref_complete(matrix):
     pivots = [i for i in heads if i != -1]
     co_row = [co_row[i] for i in pivots]
     co_row = np.array(co_row, dtype=bool)
-    rank = sum(pivots)
     
     rref_mat = co_row[:,:hncols]
     transform_mat = co_row[:,hncols:]
     heads = [int(bool(x+1)) for x in heads]
+    rank_ = sum(heads)
    
     
-    return heads, rref_mat, transform_mat, rank
+    return heads, rref_mat, transform_mat, rank_
+
