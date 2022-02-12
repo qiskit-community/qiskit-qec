@@ -21,7 +21,7 @@ class Indexer:
     def rlookup(self, key: int):
         """Reverse lookup."""
         if key not in self.reverse_lookup:
-            raise Exception("%s not found" % key)
+            raise Exception(f"{key} not found")
         return self.reverse_lookup[key]
 
     def __str__(self):
