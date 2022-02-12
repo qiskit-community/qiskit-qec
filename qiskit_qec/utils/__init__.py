@@ -13,3 +13,4 @@
 """Utilities."""
 
 from . import pauli_rep
+from . import indexer
