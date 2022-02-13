@@ -53,5 +53,5 @@ setup(
     install_requires=(REQUIREMENTS,),
     packages=find_packages(exclude=["test*", "qiskit_qec/extensions"]),
     cmdclass={"build_ext": build_ext},
-    ext_modules=ext_modules
+    ext_modules=ext_modules,
 )
