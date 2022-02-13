@@ -9,19 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Qiskit QEC."""
 
-from . import (
-    circuits,
-    codes,
-    decoders,
-    exceptions,
-    factory,
-    geometry,
-    info,
-    linear,
-    models,
-    operators,
-    structures,
-    utils,
-)
+"""Noise."""
+
+from . import paulinoisemodel
