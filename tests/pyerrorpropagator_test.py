@@ -1,10 +1,14 @@
+"""Test python error propagator."""
 import unittest
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.pyerrorpropagator import PyErrorPropagator
 
 
 class TestPyErrorPropagator(unittest.TestCase):
+    """Pure python error propagator test."""
+
     def test_error_propagation(self):
+        """Test interaction with python error propagator."""
         ep = PyErrorPropagator(3, 3)
         ep.apply_error([0], "y")
         ep.h(0)
@@ -18,6 +22,7 @@ class TestPyErrorPropagator(unittest.TestCase):
         self.assertEqual(ep.get_error(), "yxx")
 
     def test_load_circuit(self):
+        """Test load and propagator errors."""
         qc = QuantumCircuit(1, 1)
         qc.h(0)
         qc.measure(0, 0)
