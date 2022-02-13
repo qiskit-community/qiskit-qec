@@ -1,0 +1,128 @@
+"""Compiled Pauli error propagator."""
+
+from qiskit.converters import circuit_to_dag
+from qiskit_qec.analysis.errorpropagator import ErrorPropagator
+from qiskit_qec.extensions import compiledextension
+
+
+class CErrorPropagator(ErrorPropagator):
+    """ErrorPropagator object using compiledextensions."""
+
+    def __init__(self, qreg_size=1, creg_size=1):
+        """Create new error propagator."""
+        self.stabilizer_op_names = [
+            "h",
+            "s",
+            "x",
+            "y",
+            "z",
+            "cx",
+            "id",
+            "reset",
+            "measure",
+            "barrier",
+        ]
+        self.stabilizer_op_codes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        self.name_to_code = {
+            k: v for k, v in zip(self.stabilizer_op_names, self.stabilizer_op_codes)
+        }
+        self.encoded_circ = None
+        self.cep = compiledextension.ErrorPropagator(qreg_size, creg_size)
+
+    def apply_error(self, q_idx, err_str):
+        """Apply a single-qubit Pauli error during error propagation.
+
+        q_idx = list of qubits the gate acts on
+        err_str = string of "ixyz" characters describing Pauli error
+
+        Method acts on qubit_array reference.
+        """
+        assert len(q_idx) == len(err_str), "length mismatch"
+        assert set(err_str) <= set("ixyz"), "bad error string"
+        self.cep.apply_error(q_idx, err_str)
+
+    def load_circuit(self, circ):
+        """Express (stabilizer) circuit operations as a list of opcodes.
+
+        circ = QuantumCircuit
+
+        Encoded circuit is a list of tuples (opcode, qubits, clbits, label).
+        The operations are visited in topologically sorted order.
+
+        Return tuple: encoded circuit, qreg size, creg size.
+        """
+        # We expect a single quantum and classical register
+        if circ.qubits[0].register.size != len(circ.qubits):
+            raise Exception("expected only one QuantumRegister")
+        if circ.clbits[0].register.size != len(circ.clbits):
+            raise Exception("expected only one ClassicalRegister")
+        dag = circuit_to_dag(circ)
+        self.encoded_circ = []
+        for node in dag.topological_op_nodes():
+            name = node.name
+            qubits = node.qargs
+            clbits = node.cargs
+            if name not in self.stabilizer_op_names:
+                raise Exception('op "%s" not recognized' % name)
+            opcode = self.name_to_code[name]
+            q_idx = [qubits[j].index for j in range(len(qubits))]
+            c_idx = [clbits[j].index for j in range(len(clbits))]
+            # TODO: conditionals currently ignored, fix later
+            if name in ["h", "s", "x", "y", "z", "id", "reset"]:
+                self.encoded_circ.append([opcode, q_idx[0]])
+            elif name == "barrier":
+                self.encoded_circ.append([opcode])
+            elif name == "cx":
+                self.encoded_circ.append([opcode, q_idx[0], q_idx[1]])
+            elif name == "measure":
+                self.encoded_circ.append([opcode, q_idx[0], c_idx[0]])
+            else:
+                raise Exception("bad opcode")
+        self.cep.load_circuit(len(circ.qubits), len(circ.clbits), self.encoded_circ)
+
+    def cx(self, qc, qt):
+        """Apply CX gate."""
+        self.cep.cx(qc, qt)
+
+    def h(self, q):
+        """Apply Hadamard gate."""
+        self.cep.h(q)
+
+    def s(self, q):
+        """Apply Phase gate."""
+        self.cep.s(q)
+
+    def reset(self, q):
+        """Apply reset operation."""
+        self.cep.reset(q)
+
+    def measure(self, q, c):
+        """Apply measure operation.
+
+        Returns the outcome bit.
+        """
+        return self.cep.measure(q, c)
+
+    def propagate_faults(self, icomb, error):
+        """Insert a set of faults and propagate through a circuit.
+
+        icomb = integer tuple of failed operations' indices
+        error = tuple of pauli strings
+
+        Return: measurement outcome discrepancies.
+        """
+        if self.encoded_circ is None:
+            raise Exception("no circuit loaded")
+        return self.cep.propagate(icomb, error)
+
+    def get_qubit_array(self):
+        """Return the qubit array."""
+        return self.cep.get_qubit_array()
+
+    def get_bit_array(self):
+        """Return the classical bit array."""
+        return self.cep.get_cbits()
+
+    def get_error(self):
+        """Return the qubit error state as a lowercase string."""
+        return self.cep.get_qubits()
