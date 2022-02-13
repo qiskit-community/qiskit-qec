@@ -1,10 +1,10 @@
-"""Test the compiled extensions directly."""
+"""Test the compiled error propagator directly."""
 import unittest
 from qiskit_qec.extensions import compiledextension
 
 
-class Testcompiledextension(unittest.TestCase):
-    """Tests for compiled extensions."""
+class Testcompilederrorpropagator(unittest.TestCase):
+    """Tests for the compiled error propagator."""
 
     def test_errorpropagator_interact(self):
         """Test interaction with error propagator."""
