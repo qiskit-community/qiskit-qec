@@ -10,18 +10,28 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-from typing import List
+"""Tests symplectic."""
+
 from unittest import TestCase
 
 import numpy as np
-
 from qiskit import QiskitError
 
-from qiskit_qec.linear.matrix import *
+from qiskit_qec.linear.matrix import (
+    _create_lambda_matrix,
+    _augment_mat,
+    _rref_complete,
+    create_lambda_matrix,
+    augment_mat,
+    rref_complete,
+)
 
 
 class TestLinearMatrix(TestCase):
-    def test__create_lambda_matrix(self):
+    """Tests matrix."""
+
+    def test_create_lambda_matrix(self):
+        """Tests creation of lambda matrix."""
         lmatrix = _create_lambda_matrix(4)
         correct_lmatrix = np.array(
             [
@@ -34,13 +44,15 @@ class TestLinearMatrix(TestCase):
             ]
         )
         self.assertTrue(isinstance(lmatrix, np.ndarray))
-        self.assertEqual(lmatrix, correct_lmatrix)
+        self.assertTrue(np.equal(lmatrix, correct_lmatrix).all())
 
     def test_invalid_create_lambda_matrix(self):
-        self.assertRaises(QiskitError, create_lambda_matrix(-2))
-        self.assertRaises(QiskitError, create_lambda_matrix(1.1))
+        """Invalid creation."""
+        self.assertRaises(QiskitError, create_lambda_matrix, -2)
+        self.assertRaises(QiskitError, create_lambda_matrix, 1.1)
 
-    def test__augment_mat(self):
+    def test_augment_mat(self):
+        """Tests augment matrix."""
         matrix = np.array(
             [
                 [False, False, False, True, False, False],
@@ -63,7 +75,7 @@ class TestLinearMatrix(TestCase):
             ]
         )
         left_mat = _augment_mat(matrix, "left")
-        self.assertEqual(left_mat, correct_left_mat)
+        self.assertTrue(np.equal(left_mat, correct_left_mat).all())
 
         correct_right_mat = np.array(
             [
@@ -77,7 +89,7 @@ class TestLinearMatrix(TestCase):
         )
 
         right_mat = _augment_mat(matrix, "right")
-        self.assertEqual(right_mat, correct_right_mat)
+        self.assertTrue(np.equal(right_mat, correct_right_mat).all())
 
         correct_top_mat = np.array(
             [
@@ -97,7 +109,7 @@ class TestLinearMatrix(TestCase):
         )
 
         top_mat = _augment_mat(matrix, "top")
-        self.assertEqual(top_mat, correct_top_mat)
+        self.assertTrue(np.equal(top_mat, correct_top_mat).all())
 
         correct_bottom_mat = np.array(
             [
@@ -117,15 +129,17 @@ class TestLinearMatrix(TestCase):
         )
 
         bottom_mat = _augment_mat(matrix, "bottom")
-        self.assertEqual(bottom_mat, correct_bottom_mat)
+        self.assertTrue(np.equal(bottom_mat, correct_bottom_mat).all())
 
     def test_invalid_augment_mat(self):
+        """Tests invalid augment matrix."""
         matrix = np.array([[[1, 1], [1, 2]]])
-        self.assertRaises(QiskitError, augment_mat(matrix, pos="left"))
+        self.assertRaises(QiskitError, augment_mat, {"matrix": matrix, "pos": "left"})
         matrix = np.array([[1, 2, 3], [4, 45, 6]])
-        self.assertRaises(QiskitError, augment_mat(matrix, pos="middle"))
+        self.assertRaises(QiskitError, augment_mat, {"matrix": matrix, "pos": "middle"})
 
-    def test__rref_complete(self):
+    def test_rref_complete(self):
+        """Tests rref complete."""
         matrix = np.array(
             [[1, 0, 0, 1, 1, 0, 1, 1], [1, 1, 1, 0, 0, 1, 1, 0], [1, 0, 0, 0, 0, 0, 0, 0]],
             dtype=bool,
@@ -143,13 +157,14 @@ class TestLinearMatrix(TestCase):
         )
         correct_rank = 3
         heads, rref_mat, transform_mat, rank = _rref_complete(matrix)
-        self.assertEqual(heads, correct_heads)
-        self.assertEqual(rref_mat, correct_rref_mat)
-        self.assertEqual(transform_mat, correct_transform_mat)
-        self.assertEqual(rank, correct_rank)
+        self.assertTrue(np.equal(heads, correct_heads).all())
+        self.assertTrue(np.equal(rref_mat, correct_rref_mat).all())
+        self.assertTrue(np.equal(transform_mat, correct_transform_mat).all())
+        self.assertTrue(np.equal(rank, correct_rank).all())
 
     def test_invalid_rref_complete(self):
+        """Tests invalid rref complete."""
         not_array_obj = np.array
-        self.assertRaises(QiskitError, rref_complete(not_array_obj))
+        self.assertRaises(QiskitError, rref_complete, not_array_obj)
         invalid_array = np.array([[[1, 1], [2, 1]]])
-        self.assertRaises(QiskitError, rref_complete(invalid_array))
+        self.assertRaises(QiskitError, rref_complete, invalid_array)
