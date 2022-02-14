@@ -1,5 +1,6 @@
 """Pauli error propagator."""
 
+from typing import List
 from abc import ABC, abstractmethod
 
 
@@ -7,12 +8,12 @@ class ErrorPropagator(ABC):
     """Circuit error propagator interface."""
 
     @abstractmethod
-    def __init__(self, qreg_size=1, creg_size=1):
+    def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
         pass
 
     @abstractmethod
-    def apply_error(self, q_idx, err_str):
+    def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
 
         q_idx = list of qubits the gate acts on
@@ -35,27 +36,27 @@ class ErrorPropagator(ABC):
         pass
 
     @abstractmethod
-    def cx(self, qc, qt):
+    def cx(self, qc: int, qt: int):
         """Apply CX gate."""
         pass
 
     @abstractmethod
-    def h(self, q):
+    def h(self, q: int):
         """Apply Hadamard gate."""
         pass
 
     @abstractmethod
-    def s(self, q):
+    def s(self, q: int):
         """Apply Phase gate."""
         pass
 
     @abstractmethod
-    def reset(self, q):
+    def reset(self, q: int):
         """Apply reset operation."""
         pass
 
     @abstractmethod
-    def measure(self, q, c):
+    def measure(self, q: int, c: int):
         """Apply measure operation.
 
         Returns the outcome bit.
@@ -63,7 +64,7 @@ class ErrorPropagator(ABC):
         pass
 
     @abstractmethod
-    def propagate_faults(self, icomb, error):
+    def propagate_faults(self, icomb: tuple[int], error: tuple[str]):
         """Insert a set of faults and propagate through a circuit.
 
         icomb = integer tuple of failed operations' indices

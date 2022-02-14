@@ -1,5 +1,6 @@
 """Compiled Pauli error propagator."""
 
+from typing import List
 from qiskit.converters import circuit_to_dag
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 from qiskit_qec.extensions import compiledextension
@@ -8,7 +9,7 @@ from qiskit_qec.extensions import compiledextension
 class CErrorPropagator(ErrorPropagator):
     """ErrorPropagator object using compiledextensions."""
 
-    def __init__(self, qreg_size=1, creg_size=1):
+    def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
         self.stabilizer_op_names = [
             "h",
@@ -29,7 +30,7 @@ class CErrorPropagator(ErrorPropagator):
         self.encoded_circ = None
         self.cep = compiledextension.ErrorPropagator(qreg_size, creg_size)
 
-    def apply_error(self, q_idx, err_str):
+    def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
 
         q_idx = list of qubits the gate acts on
@@ -80,30 +81,30 @@ class CErrorPropagator(ErrorPropagator):
                 raise Exception("bad opcode")
         self.cep.load_circuit(len(circ.qubits), len(circ.clbits), self.encoded_circ)
 
-    def cx(self, qc, qt):
+    def cx(self, qc: int, qt: int):
         """Apply CX gate."""
         self.cep.cx(qc, qt)
 
-    def h(self, q):
+    def h(self, q: int):
         """Apply Hadamard gate."""
         self.cep.h(q)
 
-    def s(self, q):
+    def s(self, q: int):
         """Apply Phase gate."""
         self.cep.s(q)
 
-    def reset(self, q):
+    def reset(self, q: int):
         """Apply reset operation."""
         self.cep.reset(q)
 
-    def measure(self, q, c):
+    def measure(self, q: int, c: int):
         """Apply measure operation.
 
         Returns the outcome bit.
         """
         return self.cep.measure(q, c)
 
-    def propagate_faults(self, icomb, error):
+    def propagate_faults(self, icomb: tuple[int], error: tuple[str]):
         """Insert a set of faults and propagate through a circuit.
 
         icomb = integer tuple of failed operations' indices

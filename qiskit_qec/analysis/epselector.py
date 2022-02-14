@@ -17,7 +17,7 @@ class EPSelector(object):
         else:
             return True
 
-    def get_error_propagator(self, eptype: str="auto", qreg_size: int=1, creg_size: int =1):
+    def get_error_propagator(self, eptype: str = "auto", qreg_size: int = 1, creg_size: int = 1):
         """Return an error propagator.
 
         auto = try to automatically detect extensions

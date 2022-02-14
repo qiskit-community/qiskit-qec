@@ -1,5 +1,6 @@
 """Python Pauli error propagator."""
 
+from typing import List
 from qiskit.converters import circuit_to_dag
 
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
@@ -8,7 +9,7 @@ from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 class PyErrorPropagator(ErrorPropagator):
     """ErrorPropagator object in pure Python."""
 
-    def __init__(self, qreg_size=1, creg_size=1):
+    def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
         self.stabilizer_op_names = [
             "h",
@@ -45,7 +46,7 @@ class PyErrorPropagator(ErrorPropagator):
         self.qubit_array = [0] * (2 * qreg_size)
         self.clbit_array = [0] * creg_size
 
-    def _range_check(self, q):
+    def _range_check(self, q: int):
         """Check that qubit index is in bounds.
 
         Not used, so be careful :)
@@ -53,7 +54,7 @@ class PyErrorPropagator(ErrorPropagator):
         if q >= self.qreg_size or q < 0:
             raise IndexError("qubit index out of range")
 
-    def apply_error(self, q_idx, err_str):
+    def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
 
         q_idx = list of qubits the gate acts on
@@ -116,33 +117,33 @@ class PyErrorPropagator(ErrorPropagator):
         self.qubit_array = [0] * (2 * self.qreg_size)
         self.clbit_array = [0] * self.creg_size
 
-    def cx(self, qc, qt):
+    def cx(self, qc: int, qt: int):
         """Apply CX gate."""
         # self._range_check(qc)
         # self._range_check(qt)
         self.qubit_array[qt] ^= self.qubit_array[qc]
         self.qubit_array[qc + self.qreg_size] ^= self.qubit_array[qt + self.qreg_size]
 
-    def h(self, q):
+    def h(self, q: int):
         """Apply Hadamard gate."""
         # self._range_check(q)
         z = self.qubit_array[q + self.qreg_size]
         self.qubit_array[q + self.qreg_size] = self.qubit_array[q]
         self.qubit_array[q] = z
 
-    def s(self, q):
+    def s(self, q: int):
         """Apply Phase gate."""
         # self._range_check(q)
         if self.qubit_array[q]:
             self.qubit_array[q + self.qreg_size] ^= 1
 
-    def reset(self, q):
+    def reset(self, q: int):
         """Apply reset operation."""
         # self._range_check(q)
         self.qubit_array[q] = 0
         self.qubit_array[q + self.qreg_size] = 0
 
-    def measure(self, q, c):
+    def measure(self, q: int, c: int):
         """Apply measure operation.
 
         Returns the outcome bit.
@@ -153,52 +154,58 @@ class PyErrorPropagator(ErrorPropagator):
         self.clbit_array[c] = self.qubit_array[q]
         return self.clbit_array[c]
 
-    def _faulty_cx(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_cx(self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]):
         """Apply faulty CX gate."""
         self.cx(q_idx[0], q_idx[1])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
-    def _faulty_id(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_id(self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]):
         """Apply faulty Identity gate."""
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
-    def _faulty_h(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_h(self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]):
         """Apply faulty H gate."""
         self.h(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
-    def _faulty_s(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_s(self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]):
         """Apply faulty S gate."""
         self.s(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
-    def _faulty_reset(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_reset(
+        self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]
+    ):
         """Apply faulty reset operation."""
         self.reset(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
-    def _faulty_measure(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_measure(
+        self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]
+    ):
         """Apply faulty measure operation."""
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
         self.measure(q_idx[0], c_idx[0])  # don't return the value
 
-    def _faulty_barrier(self, op_idx, q_idx, c_idx, icomb, error):
+    def _faulty_barrier(
+        self, op_idx: int, q_idx: int, c_idx: int, icomb: tuple[int], error: tuple[str]
+    ):
         """Apply faulty barrier operation."""
         pass  # ignore barriers
 
-    def propagate_faults(self, icomb, error):
+    def propagate_faults(self, icomb: tuple[int], error: tuple[str]):
         """Insert a set of faults and propagate through a circuit.
 
         icomb = integer tuple of failed operations' indices
