@@ -1,6 +1,6 @@
 """Compiled Pauli error propagator."""
 
-from typing import List
+from typing import List, Tuple
 from qiskit.converters import circuit_to_dag
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 from qiskit_qec.extensions import compiledextension
@@ -105,7 +105,7 @@ class CErrorPropagator(ErrorPropagator):
         """
         return self.cep.measure(q, c)
 
-    def propagate_faults(self, icomb: tuple[int], error: tuple[str]):
+    def propagate_faults(self, icomb: Tuple[int], error: Tuple[str]):
         """Insert a set of faults and propagate through a circuit.
 
         icomb = integer tuple of failed operations' indices

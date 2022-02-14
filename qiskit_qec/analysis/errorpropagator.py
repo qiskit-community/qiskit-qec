@@ -1,6 +1,6 @@
 """Pauli error propagator."""
 
-from typing import List
+from typing import List, Tuple
 from abc import ABC, abstractmethod
 
 
@@ -64,7 +64,7 @@ class ErrorPropagator(ABC):
         pass
 
     @abstractmethod
-    def propagate_faults(self, icomb: tuple[int], error: tuple[str]):
+    def propagate_faults(self, icomb: Tuple[int], error: Tuple[str]):
         """Insert a set of faults and propagate through a circuit.
 
         icomb = integer tuple of failed operations' indices
