@@ -27,7 +27,9 @@ class CErrorPropagator(ErrorPropagator):
         self.stabilizer_op_codes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.name_to_code = dict(zip(self.stabilizer_op_names, self.stabilizer_op_codes))
         self.encoded_circ = None
-        self.cep = compiledextension.ErrorPropagator(qreg_size, creg_size)  # pylint: disable-msg=I1101
+        self.cep = compiledextension.ErrorPropagator(
+            qreg_size, creg_size
+        )  # pylint: disable-msg=I1101
 
     def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
