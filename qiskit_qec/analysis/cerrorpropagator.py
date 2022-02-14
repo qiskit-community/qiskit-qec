@@ -11,6 +11,7 @@ class CErrorPropagator(ErrorPropagator):
 
     def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
+        # pylint: disable-msg=W0231
         self.stabilizer_op_names = [
             "h",
             "s",
@@ -24,11 +25,9 @@ class CErrorPropagator(ErrorPropagator):
             "barrier",
         ]
         self.stabilizer_op_codes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        self.name_to_code = {
-            k: v for k, v in zip(self.stabilizer_op_names, self.stabilizer_op_codes)
-        }
+        self.name_to_code = dict(zip(self.stabilizer_op_names, self.stabilizer_op_codes))
         self.encoded_circ = None
-        self.cep = compiledextension.ErrorPropagator(qreg_size, creg_size)
+        self.cep = compiledextension.ErrorPropagator(qreg_size, creg_size)  # pylint: disable-msg=I1101
 
     def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
@@ -64,7 +63,7 @@ class CErrorPropagator(ErrorPropagator):
             qubits = node.qargs
             clbits = node.cargs
             if name not in self.stabilizer_op_names:
-                raise Exception('op "%s" not recognized' % name)
+                raise Exception(f'op "{name}" not recognized')
             opcode = self.name_to_code[name]
             q_idx = [qubits[j].index for j in range(len(qubits))]
             c_idx = [clbits[j].index for j in range(len(clbits))]

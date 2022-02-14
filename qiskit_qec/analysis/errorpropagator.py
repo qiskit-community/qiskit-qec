@@ -36,17 +36,17 @@ class ErrorPropagator(ABC):
         pass
 
     @abstractmethod
-    def cx(self, qc: int, qt: int):
+    def cx(self, qc: int, qt: int):  # pylint: disable-msg=C0103
         """Apply CX gate."""
         pass
 
     @abstractmethod
-    def h(self, q: int):
+    def h(self, q: int):  # pylint: disable-msg=C0103
         """Apply Hadamard gate."""
         pass
 
     @abstractmethod
-    def s(self, q: int):
+    def s(self, q: int):  # pylint: disable-msg=C0103
         """Apply Phase gate."""
         pass
 

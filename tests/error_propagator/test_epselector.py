@@ -1,6 +1,5 @@
 """Test python error propagator selector."""
 import unittest
-from qiskit import QuantumCircuit
 from qiskit_qec.analysis.epselector import EPSelector
 
 
