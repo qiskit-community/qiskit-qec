@@ -1,6 +1,6 @@
 # copied pasted from Qiskit Terra 2021
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "pybind11~=2.6.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.black]
