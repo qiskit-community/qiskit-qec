@@ -11,6 +11,7 @@ class PyErrorPropagator(ErrorPropagator):
 
     def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
+        # pylint: disable=super-init-not-called
         self.stabilizer_op_names = [
             "h",
             "s",
@@ -24,9 +25,7 @@ class PyErrorPropagator(ErrorPropagator):
             "barrier",
         ]
         self.stabilizer_op_codes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        self.name_to_code = {
-            k: v for k, v in zip(self.stabilizer_op_names, self.stabilizer_op_codes)
-        }
+        self.name_to_code = dict(zip(self.stabilizer_op_names, self.stabilizer_op_codes))
         self.gate_dispatch = {
             0: self._faulty_h,
             1: self._faulty_s,
@@ -64,8 +63,7 @@ class PyErrorPropagator(ErrorPropagator):
         """
         assert len(q_idx) == len(err_str), "length mismatch"
         assert set(err_str) <= set("ixyz"), "bad error string"
-        for i in range(len(q_idx)):
-            q = q_idx[i]
+        for i, q in enumerate(q_idx):
             # self._range_check(q)
             if err_str[i] == "x" or err_str[i] == "y":
                 self.qubit_array[q] ^= 1
@@ -106,7 +104,7 @@ class PyErrorPropagator(ErrorPropagator):
             qubits = node.qargs
             clbits = node.cargs
             if name not in self.stabilizer_op_names:
-                raise Exception('op "%s" not recognized' % name)
+                raise Exception(f'op "{name}" not recognized')
             opcode = self.name_to_code[name]
             q_idx = [qubits[j].index for j in range(len(qubits))]
             c_idx = [clbits[j].index for j in range(len(clbits))]

@@ -11,7 +11,7 @@ class CErrorPropagator(ErrorPropagator):
 
     def __init__(self, qreg_size: int = 1, creg_size: int = 1):
         """Create new error propagator."""
-        # pylint: disable-msg=W0231
+        # pylint: disable=super-init-not-called
         self.stabilizer_op_names = [
             "h",
             "s",
@@ -29,7 +29,7 @@ class CErrorPropagator(ErrorPropagator):
         self.encoded_circ = None
         self.cep = compiledextension.ErrorPropagator(
             qreg_size, creg_size
-        )  # pylint: disable-msg=I1101
+        )  # pylint: disable=c-extension-no-member
 
     def apply_error(self, q_idx: List[int], err_str: str):
         """Apply a single-qubit Pauli error during error propagation.
