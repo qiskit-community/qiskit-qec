@@ -1,6 +1,8 @@
 """Compiled Pauli error propagator."""
 
 from typing import List, Tuple
+
+from qiskit import QuantumCircuit
 from qiskit.converters import circuit_to_dag
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 from qiskit_qec.extensions import compiledextension
@@ -42,7 +44,7 @@ class CErrorPropagator(ErrorPropagator):
         assert set(err_str) <= set("ixyz"), "bad error string"
         self.cep.apply_error(q_idx, err_str)
 
-    def load_circuit(self, circ):
+    def load_circuit(self, circ: QuantumCircuit):
         """Express (stabilizer) circuit operations as a list of opcodes.
 
         circ = QuantumCircuit
@@ -53,21 +55,21 @@ class CErrorPropagator(ErrorPropagator):
         Return tuple: encoded circuit, qreg size, creg size.
         """
         # We expect a single quantum and classical register
-        if circ.qubits[0].register.size != len(circ.qubits):
+        if len(circ.qregs) != len(circ.qubits):
             raise Exception("expected only one QuantumRegister")
-        if circ.clbits[0].register.size != len(circ.clbits):
+        if len(circ.cregs) != len(circ.clbits):
             raise Exception("expected only one ClassicalRegister")
         dag = circuit_to_dag(circ)
         self.encoded_circ = []
+        qubit_indices = {bit: index for index, bit in enumerate(circ.qubits)}
+        clbit_indices = {bit: index for index, bit in enumerate(circ.clbits)}
         for node in dag.topological_op_nodes():
             name = node.name
-            qubits = node.qargs
-            clbits = node.cargs
             if name not in self.stabilizer_op_names:
                 raise Exception(f'op "{name}" not recognized')
             opcode = self.name_to_code[name]
-            q_idx = [qubits[j].index for j in range(len(qubits))]
-            c_idx = [clbits[j].index for j in range(len(clbits))]
+            q_idx = [qubit_indices[qarg] for qarg in node.qargs]
+            c_idx = [clbit_indices[carg] for carg in node.cargs]
             # TODO: conditionals currently ignored, fix later
             if name in ["h", "s", "x", "y", "z", "id", "reset"]:
                 self.encoded_circ.append([opcode, q_idx[0]])
