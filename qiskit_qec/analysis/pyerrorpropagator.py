@@ -154,6 +154,7 @@ class PyErrorPropagator(ErrorPropagator):
 
     def _faulty_cx(self, op_idx: int, q_idx: int, c_idx: int, icomb: Tuple[int], error: Tuple[str]):
         """Apply faulty CX gate."""
+        del c_idx  # unused
         self.cx(q_idx[0], q_idx[1])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
@@ -161,12 +162,14 @@ class PyErrorPropagator(ErrorPropagator):
 
     def _faulty_id(self, op_idx: int, q_idx: int, c_idx: int, icomb: Tuple[int], error: Tuple[str]):
         """Apply faulty Identity gate."""
+        del c_idx  # unused
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
             self.apply_error(q_idx, error[j])
 
     def _faulty_h(self, op_idx: int, q_idx: int, c_idx: int, icomb: Tuple[int], error: Tuple[str]):
         """Apply faulty H gate."""
+        del c_idx  # unused
         self.h(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
@@ -174,6 +177,7 @@ class PyErrorPropagator(ErrorPropagator):
 
     def _faulty_s(self, op_idx: int, q_idx: int, c_idx: int, icomb: Tuple[int], error: Tuple[str]):
         """Apply faulty S gate."""
+        del c_idx  # unused
         self.s(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
@@ -183,6 +187,7 @@ class PyErrorPropagator(ErrorPropagator):
         self, op_idx: int, q_idx: int, c_idx: int, icomb: Tuple[int], error: Tuple[str]
     ):
         """Apply faulty reset operation."""
+        del c_idx  # unused
         self.reset(q_idx[0])
         if op_idx in icomb:  # i.e., this operation failed
             j = icomb.index(op_idx)
@@ -215,8 +220,8 @@ class PyErrorPropagator(ErrorPropagator):
             raise Exception("no circuit loaded")
         self.qubit_array = [0] * (2 * self.qreg_size)
         self.clbit_array = [0] * self.creg_size
-        for j in range(len(self.encoded_circ)):
-            opcode, q_idx, c_idx, label = self.encoded_circ[j]
+        for j, enc_circ in enumerate(self.encoded_circ):
+            opcode, q_idx, c_idx, _ = enc_circ
             self.gate_dispatch[opcode](j, q_idx, c_idx, icomb, error)
         return self.clbit_array
 
