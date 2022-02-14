@@ -12,7 +12,9 @@
 """Qiskit QEC."""
 
 from . import (
+    circuits,
     codes,
+    decoders,
     exceptions,
     factory,
     geometry,
