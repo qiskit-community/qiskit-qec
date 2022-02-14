@@ -36,7 +36,6 @@ class TestLinearMatrix(TestCase):
     def test_invalid_create_lambda_matrix(self):
         self.assertRaises(QiskitError, create_lambda_matrix(-2))
         self.assertRaises(QiskitError, create_lambda_matrix(1.1))
-        self.assertRaises(QiskitError, create_lambda_matrix(3))
 
     def test__augment_mat(self):
         matrix = np.array([[False, False, False,  True, False, False],
