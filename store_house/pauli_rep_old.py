@@ -200,10 +200,10 @@ def pauli_formats():
 
 
 def _split_rep(rep):
-    """Split the Pauli representation format into the phase and symplectic representation
+    """Split the Pauli representation frmt into the phase and symplectic representation
     formats
     Args:
-        rep (rep): Pauli representation format
+        rep (rep): Pauli representation frmt
     """
     return PAULI_REP_FORMATS_SPLIT[rep]
 
@@ -213,10 +213,10 @@ def convert_phase_exp(
 ):
     """Convert between the different phase exponents of encoded phase
     Phase Representation/Encodings:
-        a) ['i' format] :math:`i^r` where :math:`r \in \mathbb{Z}_4`
-        b) ['-i' format] :math:`(-i)^r` where :math:`r \in \mathbb{Z}_4`
-        c) ['is' format] :math:`i^r (-1)^s` where :math:`r,s \in \mathbb{Z}_2`
-        d) ['-is' format] :math:`(-i)^r (-1)^s` where :math:`r,s, \in \mathbb{Z}_2`
+        a) ['i' frmt] :math:`i^r` where :math:`r \in \mathbb{Z}_4`
+        b) ['-i' frmt] :math:`(-i)^r` where :math:`r \in \mathbb{Z}_4`
+        c) ['is' frmt] :math:`i^r (-1)^s` where :math:`r,s \in \mathbb{Z}_2`
+        d) ['-is' frmt] :math:`(-i)^r (-1)^s` where :math:`r,s, \in \mathbb{Z}_2`
     Args:
         phase (numpy.ndarray or list): array of phase exponents
         input_format (str, optional): Format that input phase is encoded in.
@@ -224,9 +224,9 @@ def convert_phase_exp(
         output_format (str, optional): Format that output phase will be encoded in.
             Defaults to DEFAULT_EXTERNAL_PHASE_REP_FORMAT
     Returns:
-        np.array: phase exponent encoded into new format
+        np.array: phase exponent encoded into new frmt
     Raises:
-        QiskitError: Phase representation format not supported or invalid
+        QiskitError: Phase representation frmt not supported or invalid
     Examples:
         phase_exp = np.array([1,2,1,3,2])
         convert_phase_exponent(phase_exp,'i','is')
@@ -252,7 +252,7 @@ def convert_phase_exp(
     if input_format == output_format:
         return phase
     if (input_format not in phase_formats()) or (output_format not in phase_formats()):
-        raise QiskitError("Phase representation format not supported or invalid")
+        raise QiskitError("Phase representation frmt not supported or invalid")
     if not isinstance(phase, np.ndarray):
         phase = np.asarray(phase)
     # Binary expansion of an index
@@ -265,16 +265,16 @@ def convert_phase_exp(
     # Index to transformation matrices via (input_format, output_format) pairs
     _TRANS = [[0, 1, 2, 4], [1, 0, 4, 2], [2, 3, 0, 5], [3, 2, 5, 0]]
     # Conversion is done via precalculated tables that are stored in _CN, _DD and _TRANS
-    # with the format encoded into _ENC
+    # with the frmt encoded into _ENC
     input_format = _ENC[input_format]
     output_format = _ENC[output_format]
     # Linearize: Convert pairs to an index if needed
 
     if input_format > 1:
-        # input format is in ['is', '-is']
+        # input frmt is in ['is', '-is']
         linear_phase = 2 * phase.T[0] + phase.T[1]
     else:
-        # input format is in ['i', '-i']
+        # input frmt is in ['i', '-i']
         linear_phase = phase
     # Calculate and then apply the transformation matrix
     trans = _TRANS[input_format][output_format]
@@ -299,8 +299,8 @@ def change_rep(
 
     Args:
         phase_exponent(str): phase exponent to convert
-        input_format(str): Pauli format representation of phase input
-        output_format(str): Pauli format representation of phase output
+        input_format(str): Pauli frmt representation of phase input
+        output_format(str): Pauli frmt representation of phase output
     """
 
     if input_format not in PAULI_REP_FORMATS:
@@ -323,8 +323,8 @@ def _change_rep(phase_exponent, y_count, input_format, output_format):
     Args:
         phase_exponent(numpy.ndarray of int or int tuples): phase exponent to convert
         y_count(numpy.ndarray of int): number of Y (XZ,ZX) factors in Pauli's
-        input_format(str): Pauli format representation of input
-        output_format(str): Pauli format representation of output
+        input_format(str): Pauli frmt representation of input
+        output_format(str): Pauli frmt representation of output
     Method:
     """
     # phases change with changing symplectic formats via a multiple of i. This
@@ -445,7 +445,7 @@ def is_exp_type(phase_exponent, input_phase_format):
     should be [[0,1]]
     """
     if input_phase_format not in PHASE_REP_FORMATS:
-        raise QiskitError(f"Invalid phase exponent format {output_phase_format}")
+        raise QiskitError(f"Invalid phase exponent frmt {output_phase_format}")
     if isinstance(phase_exponent, np.ndarray):
         phase_exponent = phase_exponent.tolist()
     if not isinstance(phase_exponent, list):
@@ -461,7 +461,7 @@ def is_exp_type(phase_exponent, input_phase_format):
 def phase2exp(phase, output_phase_format, roundit=True, same_type=True):
     """Convert an array of phases to an array of phase exponents"""
     if output_phase_format not in PHASE_REP_FORMATS:
-        raise QiskitError(f"Invalid phase exponent format {output_phase_format}")
+        raise QiskitError(f"Invalid phase exponent frmt {output_phase_format}")
 
     if is_scalar(phase) and same_type:
         scalar = True
@@ -495,7 +495,7 @@ def r_phase2exp(phase, output_phase_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
 def exp2phase(phase_exponent, input_phase_format, same_type=True):
     """Convert an array of phase exponents to an array of phases"""
     if input_phase_format not in PHASE_REP_FORMATS:
-        raise QiskitError(f"Invalid phase exponent format {input_phase_format}")
+        raise QiskitError(f"Invalid phase exponent frmt {input_phase_format}")
 
     if is_scalar(phase_exponent) and same_type:
         scalar = True
@@ -504,7 +504,7 @@ def exp2phase(phase_exponent, input_phase_format, same_type=True):
     phase_exponent = np.atleast_1d(phase_exponent)
 
     if not is_exp_type(phase_exponent, input_phase_format):
-        raise QiskitError(f"{phase_exponent} not in {input_format} format")
+        raise QiskitError(f"{phase_exponent} not in {input_format} frmt")
 
     if scalar:
         return squeeze(r_exp2phase(phase_exponent, input_phase_format), scalar=scalar)
@@ -646,7 +646,7 @@ def r_str2exp(phase_string, output_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
 
 
 def _phase_from_complex(coeff):
-    """Return the phase exponent ('-i' format) from a phase - method not array capable"""
+    """Return the phase exponent ('-i' frmt) from a phase - method not array capable"""
     if np.isclose(coeff, 1):
         return 0
     if np.isclose(coeff, -1j):
@@ -678,7 +678,7 @@ def split_pauli(label, syntax=None):
         try:
             syntax = _syntax_type(label)
         except QiskitError:
-            print("Unknown string format for Pauli")
+            print("Unknown string frmt for Pauli")
     return _split_pauli(label, syntax)
 
 

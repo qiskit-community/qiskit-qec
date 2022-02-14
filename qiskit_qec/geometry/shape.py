@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for shape"""
-from typing import List
+from typing import List, Optional
 
 from math import copysign
 
@@ -229,19 +229,20 @@ class Shape:
 
         return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
 
-    def intersection(self, tiling: Shell, levels: List[int]=[2,3]) -> FacePartition:
+    def intersection(self, tiling: Shell, levels: Optional[List[int]] = None) -> FacePartition:
         """Find the vertex intersection of faces/operators with region defined by
         the cutter/shape (self) on a tiling (Shell)
 
         Args:
             tiling (Shell): A Shell representation a set of faces/operators
-            levels (List[int], optional): List of integers taht specifiy the number of intersection per face to include.
+            levels (List[int], optional): List of integers that
+                specifiy the number of intersection per face to include.
                 So if levels is [0,1,2,3] then all levels < 4 will be included. Defaults to [2,3]
 
         Returns:
             FacePartition: Details of faces partitioned by the cutter on the tiling (Shell)
         """
-
+        levels = levels or [2, 3]
         partition = FacePartition()
 
         for face in tiling.faces:
@@ -255,21 +256,21 @@ class Shape:
             while n_vertex != start_vertex:
                 path.append(n_vertex)
                 inout.append(self.contains(n_vertex.pos))
-                parent = list(set(n_vertex.parents)-set([parent]))[0]
+                parent = list(set(n_vertex.parents) - set([parent]))[0]
                 f_vertex = n_vertex
-                n_vertex = list(set(parent.vertices)-set([f_vertex]))[0]    
+                n_vertex = list(set(parent.vertices) - set([f_vertex]))[0]
             _in = []
-            _out =[]
-            for index in range(len(path)):
+            _out = []
+            for index, p in enumerate(path):
                 if inout[index]:
-                    _in.append(path[index])
-                else: 
-                    _out.append(path[index])
+                    _in.append(p)
+                else:
+                    _out.append(p)
             if len(_in) in levels:
                 partition.add(face)
                 partition.attr[face].inside = _in
                 partition.attr[face].outside = _out
                 partition.attr[face].path = path
-                partition.attr[face].inout = inout        
+                partition.attr[face].inout = inout
 
         return partition

@@ -10,9 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""Matrix ops."""
+
+from typing import List
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import List
 from qiskit import QiskitError
 
 
@@ -176,18 +178,20 @@ def _augment_mat(matrix: np.array, pos: str) -> np.ndarray:
     augment_mat
     """
 
+    result = None
     if pos == "top":
         _id = np.identity(matrix.shape[1], dtype=matrix.dtype)
-        return np.vstack((_id, matrix))
+        result = np.vstack((_id, matrix))
     elif pos == "bottom":
         _id = np.identity(matrix.shape[1], dtype=matrix.dtype)
-        return np.vstack((matrix, _id))
+        result = np.vstack((matrix, _id))
     elif pos == "left":
         _id = np.identity(matrix.shape[0], dtype=matrix.dtype)
-        return np.hstack((_id, matrix))
+        result = np.hstack((_id, matrix))
     elif pos == "right":
         _id = np.identity(matrix.shape[0], dtype=matrix.dtype)
-        return np.hstack((matrix, _id))
+        result = np.hstack((matrix, _id))
+    return result
 
 
 def rref(matrix: ArrayLike) -> np.ndarray:
@@ -408,7 +412,7 @@ def _rref_complete(matrix) -> tuple[List[int], np.ndarray, np.ndarray, int]:
 
         for j in range(hncols):
             if heads[j] != -1:
-                if row[j] == True:
+                if row[j] is True:
                     row = row ^ co_row[heads[j]]
 
         # Find next pivot
@@ -423,7 +427,7 @@ def _rref_complete(matrix) -> tuple[List[int], np.ndarray, np.ndarray, int]:
             diff = [item for item in range(heads[j]) if item not in heads[j + 1 :]]
             for i in diff:
                 row = co_row[i]
-                if row[j] == True:
+                if row[j] is True:
                     co_row[i] = co_row[i] ^ co_row[heads[j]]
 
     pivots = [i for i in heads if i != -1]
