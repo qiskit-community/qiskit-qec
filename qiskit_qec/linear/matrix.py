@@ -12,7 +12,7 @@
 
 """Matrix ops."""
 
-from typing import List
+from typing import List, Tuple
 import numpy as np
 from numpy.typing import ArrayLike
 from qiskit import QiskitError
@@ -299,7 +299,7 @@ def _rank(matrix: np.ndarray) -> int:
     return rank_
 
 
-def rref_complete(matrix: ArrayLike) -> tuple[List[int], np.ndarray, np.ndarray, int]:
+def rref_complete(matrix: ArrayLike) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
     """Computes the Row Reduced Echelon Form for a GF(2) matrix as well
     as pivots, transformation matrix and rank.
 
@@ -350,7 +350,7 @@ def rref_complete(matrix: ArrayLike) -> tuple[List[int], np.ndarray, np.ndarray,
     return _rref_complete(matrix)
 
 
-def _rref_complete(matrix) -> tuple[List[int], np.ndarray, np.ndarray, int]:
+def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
     """Computes the Row Reduced Echelon Form for a GF(2) matrix as well
     as pivots, transformation matrix and rank.
 
