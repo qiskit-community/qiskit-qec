@@ -1,7 +1,7 @@
 """Factory for error propagators."""
 
 
-class EPSelector(object):
+class EPSelector:
     """Select and return an ErrorPropagator."""
 
     def __init__(self):
