@@ -1,4 +1,5 @@
 #include "errorpropagator.h"
+#include "faultsampler.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -30,4 +31,11 @@ PYBIND11_MODULE(compiledextension, m)
            {
              return std::string("<ErrorPropagator with ") + std::to_string(a.get_qreg_size()) + std::string(" qubits, ") + std::to_string(a.get_creg_size()) + std::string(" bits, ") + std::to_string(a.get_circuit_size()) + std::string(" instructions>");
            });
+  py::class_<FaultSampler>(m, "FaultSampler")
+      .def(py::init<int, int, std::vector<std::vector<int> >&,
+                    std::vector<int>&, std::vector<std::string>&,
+                    LabelToPauliWeightMap&,
+                    std::map<std::string, double>&,
+                    unsigned int>())
+      .def("sample", &FaultSampler::sample);
 }
