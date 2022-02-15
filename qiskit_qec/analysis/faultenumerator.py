@@ -7,7 +7,7 @@ from qiskit import execute, Aer
 from itertools import combinations, product
 from typing import Tuple
 
-from . import EPSelector
+from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
