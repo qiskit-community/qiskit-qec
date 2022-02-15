@@ -7,7 +7,6 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
 class TestFaultEnumerator(unittest.TestCase):
-
     def test_fault_enumerator_stabilizer(self):
         qc = QuantumCircuit(3, 3)
         qc.h(0)

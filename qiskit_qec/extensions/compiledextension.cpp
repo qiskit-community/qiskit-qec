@@ -1,4 +1,5 @@
 #include "errorpropagator.h"
+#include "faultenumerator.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -30,4 +31,13 @@ PYBIND11_MODULE(compiledextension, m)
            {
              return std::string("<ErrorPropagator with ") + std::to_string(a.get_qreg_size()) + std::string(" qubits, ") + std::to_string(a.get_creg_size()) + std::string(" bits, ") + std::to_string(a.get_circuit_size()) + std::string(" instructions>");
            });
+  py::class_<FaultEnumerator>(m, "FaultEnumerator")
+      .def(py::init<int, int, int, std::vector<std::vector<int>> &,
+                    std::vector<int> &, std::vector<std::string> &,
+                    std::vector<std::vector<std::string>> &>())
+      .def("enumerate", &FaultEnumerator::enumerate)
+      .def("reset", &FaultEnumerator::reset)
+      .def("get_index", &FaultEnumerator::get_index)
+      .def("get_state", &FaultEnumerator::get_state)
+      .def("done", &FaultEnumerator::done);
 }

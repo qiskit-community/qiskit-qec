@@ -14,8 +14,9 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 class FaultEnumerator:
     """Enumerates faults in a circuit according to a noise model."""
 
-    def __init__(self, circ, order: int = 1, method : str = "stabilizer",
-                 model=None, sim_seed : int = 0):
+    def __init__(
+        self, circ, order: int = 1, method: str = "stabilizer", model=None, sim_seed: int = 0
+    ):
         """Construct a fault enumerator object.
 
         circ = QuantumCircuit object
@@ -78,7 +79,9 @@ class FaultEnumerator:
             self.ep = eps.get_error_propagator()
             self.ep.load_circuit(circ)
             try:
-                from qiskit_qec.extensions.compiledextension import FaultEnumerator as compiledFaultEnumerator
+                from qiskit_qec.extensions.compiledextension import (
+                    FaultEnumerator as compiledFaultEnumerator,
+                )
             except ImportError:
                 self.use_compiled = False
             else:
@@ -125,7 +128,7 @@ class FaultEnumerator:
                 self.tagged_nodes.append((node, False, index))
             index += 1
 
-    def _faulty_circuit(self, comb, error : Tuple[str]):
+    def _faulty_circuit(self, comb, error: Tuple[str]):
         """Construct faulty QuantumCircuit with the given faults.
 
         comb = tuple of DAG nodes
@@ -209,7 +212,7 @@ class FaultEnumerator:
                     yield (index, labels, list(error), outcome)
                     index += 1
 
-    def generate_blocks(self, blocksize : int = 10000):
+    def generate_blocks(self, blocksize: int = 10000):
         """Generator to iterate over sequences of faults in a quantum circuit.
 
         blocksize = number of faults to process per call

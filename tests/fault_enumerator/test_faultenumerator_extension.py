@@ -3,7 +3,6 @@ from qiskit_qec.extensions import compiledextension
 
 
 class TestFaultEnumeratorExtension(unittest.TestCase):
-
     def test_faultenumerator(self):
         # R 0, R 1, R 2, H 0, CX 0 1, I 2, CX 1 2, I 0, M 0 0, M 1 1, M 2 2
         circ = [
