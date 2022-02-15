@@ -14,7 +14,6 @@
 
 from typing import List, Tuple
 import numpy as np
-from numpy.typing import ArrayLike
 from qiskit import QiskitError
 
 
@@ -82,7 +81,7 @@ def _create_lambda_matrix(n: int):
     return lambda_matrix
 
 
-def augment_mat(matrix: ArrayLike, pos: str = "right") -> np.ndarray:
+def augment_mat(matrix: np.ndarray, pos: str = "right") -> np.ndarray:
     """Augments a given matrix with the identify matrix. The position of the
     identity matrix is given by the optional position argument
     left    ->  [M | I]
@@ -194,7 +193,7 @@ def _augment_mat(matrix: np.array, pos: str) -> np.ndarray:
     return result
 
 
-def rref(matrix: ArrayLike) -> np.ndarray:
+def rref(matrix: np.ndarray) -> np.ndarray:
     """Computes the Row Reduced Echelon Form for a GF(2) matrix.
 
     Args:
@@ -250,7 +249,7 @@ def _rref(matrix: np.array) -> np.ndarray:
     return rref_mat
 
 
-def rank(matrix: ArrayLike) -> int:
+def rank(matrix: np.ndarray) -> int:
     """Computes the rank of the GF(2) matrix
 
     Args:
@@ -299,7 +298,7 @@ def _rank(matrix: np.ndarray) -> int:
     return rank_
 
 
-def rref_complete(matrix: ArrayLike) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
+def rref_complete(matrix: np.ndarray) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
     """Computes the Row Reduced Echelon Form for a GF(2) matrix as well
     as pivots, transformation matrix and rank.
 

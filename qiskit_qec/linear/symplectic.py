@@ -17,14 +17,13 @@ from typing import List, Any, Tuple
 from typing import Union, Optional
 
 import numpy as np
-from numpy.typing import ArrayLike
 
 from qiskit import QiskitError
 from qiskit_qec.linear import matrix as mt
 
 
 # pylint: disable=invalid-name
-def all_commute(matrix: ArrayLike) -> bool:
+def all_commute(matrix: np.ndarray) -> bool:
     r"""Determines if each possible pair of different rows of the
     GF(2) symplectic matrix have zero symplectic product. If the rows represent
     Pauli operators then the this method deterimes if the operators
@@ -58,7 +57,7 @@ def all_commute(matrix: ArrayLike) -> bool:
 # ---------------------------------------------------------------
 
 
-def symplectic_product(mat1: ArrayLike, mat2: ArrayLike) -> int:
+def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> int:
     r"""Returns the symplectic product of two GF(2) symplectic matrices.
 
     Let math:'A', math:'B' be two GF(2) symplectic matrices of width math:'2m',
@@ -121,7 +120,7 @@ def symplectic_product(mat1: ArrayLike, mat2: ArrayLike) -> int:
         )
 
 
-def _symplectic_product_vv(vec1: ArrayLike, vec2: ArrayLike, n: int) -> int:
+def _symplectic_product_vv(vec1: np.ndarray, vec2: np.ndarray, n: int) -> int:
     r"""Finds the sympletic product or two GF(2) symplectic vectors of
     length 2n: vec1 . Lambda . vec2^T where
 
@@ -192,12 +191,12 @@ def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, 
 
 
 def make_commute_hyper(
-    a: ArrayLike,
-    x: ArrayLike,
-    z: ArrayLike,
-    arange: Optional[ArrayLike] = None,
-    xrange: Optional[ArrayLike] = None,
-    zrange: Optional[ArrayLike] = None,
+    a: np.ndarray,
+    x: np.ndarray,
+    z: np.ndarray,
+    arange: Optional[np.ndarray] = None,
+    xrange: Optional[np.ndarray] = None,
+    zrange: Optional[np.ndarray] = None,
 ) -> np.ndarray:
     r"""Makes an element(s) commute with hyperbolic pair(s)
 
@@ -315,9 +314,9 @@ def _make_commute_hyper(
     a: np.ndarray,
     x: np.ndarray,
     z: np.ndarray,
-    arange: Optional[ArrayLike] = None,
-    xrange: Optional[ArrayLike] = None,
-    zrange: Optional[ArrayLike] = None,
+    arange: Optional[np.ndarray] = None,
+    xrange: Optional[np.ndarray] = None,
+    zrange: Optional[np.ndarray] = None,
     squeeze: bool = True,
 ) -> np.ndarray:
     r"""Makes an element(s) commute with hyperbolic pair(s)
@@ -654,7 +653,7 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
 
 
 def symplectic_gram_schmidt(
-    a: ArrayLike, x: Optional[np.ndarray] = None, z: Optional[np.ndarray] = None
+    a: np.ndarray, x: Optional[np.ndarray] = None, z: Optional[np.ndarray] = None
 ):
     """Applies the sympletic Gram-Schmidt process to the input matrix
 
@@ -808,7 +807,7 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
 
 
 def is_symplectic_matrix_form(
-    matrix: ArrayLike, dtype: Optional[Union[bool, np.bool_, int, np.integer]] = None
+    matrix: np.ndarray, dtype: Optional[Union[bool, np.bool_, int, np.integer]] = None
 ) -> bool:
     """Is the input matrix GF(2) symplectic
 
@@ -855,7 +854,7 @@ def is_symplectic_matrix_form(
 
 
 def is_symplectic_vector_form(
-    vector: ArrayLike, dtype: Optional[Union[bool, np.bool_, int, np.integer]] = None
+    vector: np.ndarray, dtype: Optional[Union[bool, np.bool_, int, np.integer]] = None
 ) -> bool:
     """Is the input vector GF(2) symplectic
 
@@ -941,7 +940,7 @@ def is_symplectic_form(
 # ---------------------------------------------------------------
 
 
-def is_center(center_: ArrayLike, matrix: ArrayLike) -> bool:
+def is_center(center_: np.ndarray, matrix: np.ndarray) -> bool:
     """Does the input center matrix represent the center of the supplied matrix?
 
     Let op(center_) = [op(c_0),op(c_1),...,op(c_(k-1))] be the Pauli operators
@@ -954,8 +953,8 @@ def is_center(center_: ArrayLike, matrix: ArrayLike) -> bool:
     and False otherwise.
 
     Args:
-        center_ (ArrayLike): Generators of center to be checked
-        matrix (ArrayLike): Generators of full group
+        center_ (np.ndarray): Generators of center to be checked
+        matrix (np.ndarray): Generators of full group
 
     Raises:
         QiskitError: Not all inputs are not GF(2) symplectic matrices/vectors
@@ -989,7 +988,7 @@ def is_center(center_: ArrayLike, matrix: ArrayLike) -> bool:
 # ---------------------------------------------------------------
 
 
-def is_same_span(matrix1: ArrayLike, matrix2: ArrayLike) -> bool:
+def is_same_span(matrix1: np.ndarray, matrix2: np.ndarray) -> bool:
     """Does span(rows of matrix1) = span(rows of matrix2)?
 
     Args:
@@ -1033,7 +1032,7 @@ def is_same_span(matrix1: ArrayLike, matrix2: ArrayLike) -> bool:
     return np.array_equal(rref_matrix1, rref_matrix2)
 
 
-def is_hyper_form(x: ArrayLike, z: ArrayLike) -> bool:
+def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
     """Do the input matrices form a hyperbolic/symnplectic basis?
 
     Args:
@@ -1054,7 +1053,7 @@ def is_hyper_form(x: ArrayLike, z: ArrayLike) -> bool:
     return np.array_equal(test, mt._create_lambda_matrix(matrix.shape[0] >> 1))
 
 
-def is_stabilizer_group(matrix: ArrayLike) -> bool:
+def is_stabilizer_group(matrix: np.ndarray) -> bool:
     """Do the rows of the input matrix represent the generators of an
     abelian Pauli subgroup?
 
@@ -1083,7 +1082,7 @@ def is_stabilizer_group(matrix: ArrayLike) -> bool:
 # ---------------------------------------------------------------
 
 
-def center(matrix: ArrayLike, preserve: bool = False) -> np.ndarray:
+def center(matrix: np.ndarray, preserve: bool = False) -> np.ndarray:
     """Find the center of the group with generators given by the symplectic matrix
 
     Args:
@@ -1195,7 +1194,7 @@ def _center_preserve(matrix: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------
 
 
-def basis_for_pauli_group(matrix: ArrayLike) -> np.ndarray:
+def basis_for_pauli_group(matrix: np.ndarray) -> np.ndarray:
     """Given a set of generators (not necessarily independent) find
     a full basis using as many of the provided generators as possible.
 
@@ -1258,7 +1257,7 @@ def _basis_for_pauli_group(matrix: np.ndarray) -> np.ndarray:
 
 
 def make_hyperbolic(
-    center_: ArrayLike, x: ArrayLike, z: ArrayLike
+    center_: np.ndarray, x: np.ndarray, z: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Makes a isotropic hyperbolic basis into an hyperbolic basis
 
@@ -1383,11 +1382,11 @@ def _make_hyperbolic(
     return x, z
 
 
-def make_isotropic_hyperbolic_form(matrix) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def make_isotropic_hyperbolic_form(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Creates a isotrophic hyperbolic basis from a set of generators
 
     Args:
-        matrix (ArrayLike): GF(2) symplectic matrix
+        matrix (np.ndarray): GF(2) symplectic matrix
 
     Returns:
         center_, x, z: An isotrophic hyperbolic basis
@@ -1414,9 +1413,9 @@ def make_isotropic_hyperbolic_form(matrix) -> Tuple[np.ndarray, np.ndarray, np.n
 
 
 def hyperbolic_basis_for_pauli_group(
-    matrix: Optional[ArrayLike] = None,
-    x: Optional[ArrayLike] = None,
-    z: Optional[ArrayLike] = None,
+    matrix: Optional[np.ndarray] = None,
+    x: Optional[np.ndarray] = None,
+    z: Optional[np.ndarray] = None,
     n: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Builds a hyperbolic basis for the associated Pauli group
@@ -1624,7 +1623,7 @@ def _hyperbolic_basis_for_pauli_group(
 
 
 def remove_hyper_elements_from_hyper_form(
-    center_: Optional[ArrayLike], x: ArrayLike, z: ArrayLike, indices: ArrayLike
+    center_: Optional[np.ndarray], x: np.ndarray, z: np.ndarray, indices: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Transfers those elements/vectors from x with an index in indices into center_
     and delete the corresponding hyperbolic partner from z.
@@ -1742,9 +1741,9 @@ def _remove_hyper_elements_from_hyper_form(
 
 
 def normalizer(
-    matrix: Union[None, ArrayLike] = None,
-    x: Union[None, ArrayLike] = None,
-    z: Union[None, ArrayLike] = None,
+    matrix: Optional[np.ndarray] = None,
+    x: Optional[np.ndarray] = None,
+    z: Optional[np.ndarray] = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Returns the normalizer of the group generated by the generators represented in the
     symplectic matrix(s):
