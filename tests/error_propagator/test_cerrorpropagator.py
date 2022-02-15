@@ -37,6 +37,27 @@ class TestCErrorPropagator(unittest.TestCase):
         outcome = ep.propagate_faults([1], ["x"])
         self.assertEqual(outcome, [1])
 
+    def test_load_another_circuit(self):
+        """Test loading another circuit."""
+        qc = QuantumCircuit(3, 3)
+        qc.h(0)
+        qc.cx(0, 1)
+        qc.cx(1, 2)
+        qc.i(0)
+        qc.measure(0, 0)
+        qc.measure(1, 1)
+        qc.measure(2, 2)
+        ep = CErrorPropagator()
+        ep.load_circuit(qc)
+        outcome = ep.propagate_faults([0], ["x"])
+        self.assertEqual(outcome, [1, 1, 1])
+        outcome = ep.propagate_faults([0], ["y"])
+        self.assertEqual(outcome, [1, 1, 1])
+        outcome = ep.propagate_faults([0], ["z"])
+        self.assertEqual(outcome, [0, 0, 0])
+        outcome = ep.propagate_faults([1], ["x"])
+        self.assertEqual(outcome, [0, 1, 1])
+
 
 if __name__ == "__main__":
     unittest.main()
