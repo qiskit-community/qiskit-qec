@@ -10,6 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""Symplectic functions."""
+
 from collections import deque
 from typing import List, Any, Tuple
 from typing import Union, Optional
@@ -21,6 +23,7 @@ from qiskit import QiskitError
 from qiskit_qec.linear import matrix as mt
 
 
+# pylint: disable=invalid-name
 def all_commute(matrix: ArrayLike) -> bool:
     r"""Determines if each possible pair of different rows of the
     GF(2) symplectic matrix have zero symplectic product. If the rows represent
@@ -89,7 +92,7 @@ def symplectic_product(mat1: ArrayLike, mat2: ArrayLike) -> int:
     mat2_np_array = np.array(mat2, dtype=np.int8)
 
     if not is_symplectic_form(mat1) or not is_symplectic_form(mat2):
-        raise QiskitError(f"Input matrices/vectors must be GF(2) symplectic matrices/vectors")
+        raise QiskitError("Input matrices/vectors must be GF(2) symplectic matrices/vectors")
 
     if not mat1_np_array.ndim == mat2_np_array.ndim:
         QiskitError(
@@ -177,7 +180,7 @@ def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, 
     See Also:
     _symplectic_product_vv, _symplectic_product_numpy
     """
-    m1, m2 = np.hsplit(mat1, 2)
+    m1, m2 = np.hsplit(mat1, 2)  # pylint: disable=unbalanced-tuple-unpacking
     result = np.hstack((m2, m1)).dot(mat2.transpose()) % 2
     if result.size == 1:
         return int(result.item())
@@ -222,7 +225,8 @@ def make_commute_hyper(
 
     Args:
         a: Input GF(2) symplectic vectors
-        x,z: GF(2) hyperbolic pair vectors
+        x: GF(2) hyperbolic pair vector
+        z: GF(2) hyperbolic pair vector
         arange (optional): range of indices from a to make commute. Defaults to None.
         xrange (optional): range of indices from x to use. Defaults to None.
         zrange (optional): range of indices from z to use. Defaults to None.
@@ -275,14 +279,14 @@ def make_commute_hyper(
 
     """
     if not (is_symplectic_form(a) and is_symplectic_form(x) and is_symplectic_form(z)):
-        raise QiskitError(f"Input matrices/vectors must be GF(2) symplectic matrices/vectors")
+        raise QiskitError("Input matrices/vectors must be GF(2) symplectic matrices/vectors")
 
     def make_list(srange):
         if srange is not None:
             try:
                 srange = list(srange)
-            except TypeError:
-                raise QiskitError(f"Input range {srange} is not iterable")
+            except TypeError as terror:
+                raise QiskitError(f"Input range {srange} is not iterable") from terror
 
         return srange
 
@@ -298,8 +302,8 @@ def make_commute_hyper(
     x = np.atleast_2d(np.array(x))
     z = np.atleast_2d(np.array(z))
 
-    if not (a.shape[1] == x.shape[1] == z.shape[1]):
-        raise QiskitError(f"Input matrices/vectors must have the same number of columns/length")
+    if not a.shape[1] == x.shape[1] == z.shape[1]:
+        raise QiskitError("Input matrices/vectors must have the same number of columns/length")
 
     return _make_commute_hyper(a, x, z, arange, xrange, zrange, squeeze)
 
@@ -529,7 +533,7 @@ def build_hyper_partner(matrix, index: int) -> np.ndarray:
     operator that is represented by v.
 
     Args:
-        matrix: GF(2) symplectic matrix representing a set of independent
+        matrix (np.array, SimplecticMatrix): GF(2) symplectic matrix representing a set of independent
             commuting generators
         index: index of generator to build a hyperbolic partner for
 
@@ -567,7 +571,7 @@ def build_hyper_partner(matrix, index: int) -> np.ndarray:
         raise QiskitError(f"Input {matrix} must be a GF(2) symplectic matrix")
 
     # matrix -> all associated operators must commute
-    if not all_commute(matrix) == True:
+    if not all_commute(matrix):
         raise QiskitError("Input matrix must represent a set of commuting operators")
 
     rank_ = mt.rank(matrix)
@@ -629,7 +633,7 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
     _lambda = mt.create_lambda_matrix(ncols >> 1)
     slambda = np.matmul(matrix, _lambda)
 
-    heads, rref_mat, transform_mat, rank = mt._rref_complete(slambda)
+    heads, _, transform_mat, _ = mt._rref_complete(slambda)
 
     e_index = np.zeros(nrows, dtype=bool)
     e_index[index] = True
@@ -660,7 +664,8 @@ def symplectic_gram_schmidt(
 
     Args:
         a: Symplectic matrix
-        x, z (optional): GF(2) Symplectic matrices representing hyperbolic pairs to
+        x (optional): GF(2) Symplectic matrices representing hyperbolic pairs to
+        z (optional): GF(2) Symplectic matrices representing hyperbolic pairs to
         build upon. Default is None.
 
     Raises:
@@ -695,29 +700,29 @@ def symplectic_gram_schmidt(
 
     a = np.atleast_2d(np.array(a))
     if not is_symplectic_matrix_form(a):
-        raise QiskitError(f"Input matrix not a GF(2) symplectic matrix")
+        raise QiskitError("Input matrix not a GF(2) symplectic matrix")
     try:
-        x = [item for item in x]
+        x = list(x)
         if not is_symplectic_vector_form(x[0]):
-            raise QiskitError(f"Input hyperbolic array x is not a GF(2) sympletic matrix")
+            raise QiskitError("Input hyperbolic array x is not a GF(2) sympletic matrix")
     except TypeError:
         x = []
 
     try:
-        z = [item for item in z]
+        z = list(z)
         if not is_symplectic_vector_form(z[0]):
-            raise QiskitError(f"Input hyperbolic array z is not a GF(2) sympletic matrix")
+            raise QiskitError("Input hyperbolic array z is not a GF(2) sympletic matrix")
     except TypeError:
         z = []
 
     if not len(x) == len(z):
-        raise QiskitError(f"Input hyperbolic arrays have different dimensions")
+        raise QiskitError("Input hyperbolic arrays have different dimensions")
 
     if len(x) > 0 and x[0].shape[0] != z[0].shape[0]:
-        raise QiskitError(f"Input hyperbolic arrays have different dimensions")
+        raise QiskitError("Input hyperbolic arrays have different dimensions")
 
     if not is_hyper_form(x, z):
-        raise QiskitError(f"Input hyperbolic matrices do not represent a hyperbolic basis")
+        raise QiskitError("Input hyperbolic matrices do not represent a hyperbolic basis")
 
     return _symplectic_gram_schmidt(a, x, z)
 
@@ -975,7 +980,7 @@ def is_center(center_: ArrayLike, matrix: ArrayLike) -> bool:
     matrix = np.atleast_2d(np.array(matrix))
     center_ = np.atleast_2d(np.array(center_))
     if not (is_symplectic_matrix_form(center_) and is_symplectic_matrix_form(matrix)):
-        QiskitError(f"Not all inputs are not GF(2) symplectic matrices")
+        QiskitError("Not all inputs are not GF(2) symplectic matrices")
     cal_center = center(matrix)
 
     return is_same_span(center_, cal_center)
@@ -1012,7 +1017,7 @@ def is_same_span(matrix1: ArrayLike, matrix2: ArrayLike) -> bool:
     matrix2 = np.atleast_2d(np.array(matrix2))
 
     if not (is_symplectic_form(matrix1) and is_symplectic_form(matrix2)):
-        raise QiskitError(f"Inpiut matrices must by GF(2) symplectic matrices")
+        raise QiskitError("Inpiut matrices must by GF(2) symplectic matrices")
 
     if matrix1.shape[1] != matrix2.shape[1]:
         return False
@@ -1071,7 +1076,7 @@ def is_stabilizer_group(matrix: ArrayLike) -> bool:
     """
     matrix = np.atleast_2d(np.array(matrix))
     if not is_symplectic_matrix_form(matrix):
-        raise QiskitError(f"Input matrix not a GF(2) symplectic matrix")
+        raise QiskitError("Input matrix not a GF(2) symplectic matrix")
     return all_commute(matrix)
 
 
@@ -1140,8 +1145,7 @@ def _center(matrix: np.ndarray) -> bool:
 
     TODO: Add in example with preserve=True is useful
     """
-    center, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, [], [])
-    return center
+    return _symplectic_gram_schmidt(matrix, [], [])[0]
 
 
 def _center_preserve(matrix: np.ndarray) -> np.ndarray:
@@ -1173,9 +1177,9 @@ def _center_preserve(matrix: np.ndarray) -> np.ndarray:
     # First move any generator that is in the center to the front of the list
     rematrix = deque()
     num = matrix.shape[1] >> 1
-    for i, opi in enumerate(reversed(matrix)):
+    for opi in reversed(matrix):
         break_flag = False
-        for j, opj in enumerate(matrix):
+        for opj in matrix:
             if _symplectic_product_vv(opi, opj, num) == 1:
                 break_flag = True
                 break

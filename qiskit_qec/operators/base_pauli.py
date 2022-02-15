@@ -55,51 +55,60 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @property
     def symp_format(self):
-        """Return the external symplectic matrix format"""
+        """Return the external symplectic matrix frmt"""
         return BasePauli.EXTERNAL_SYMP_FORMAT
 
     @symp_format.setter
-    def symp_format(self, format=pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT):
+    def symp_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT):
         """Set the external symplectic matrix format
 
         Args:
-            format (str, optional): Symplectic matrix format. Defaults to pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT.
+            frmt (str, optional): Symplectic matrix format.
+            Defaults to pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT.
         """
-        assert format in pauli_rep.symp_formats(), QiskitError(f"Invalid symplectic matrix format: {format}. Must be one of {pauli_rep.symp_formats()}")
-        BasePauli.EXTERNAL_SYMP_FORMAT = format
+        assert frmt in pauli_rep.symp_formats(), QiskitError(
+            f"Invalid symplectic matrix frmt: {frmt}. Must be one of {pauli_rep.symp_formats()}"
+        )
+        BasePauli.EXTERNAL_SYMP_FORMAT = frmt
 
     @property
     def phase_format(self):
-        """Return the phase format"""
+        """Return the phase frmt"""
         return BasePauli.EXTERNAL_PHASE_REP_FORMAT
 
     @phase_format.setter
-    def phase_format(self, format=pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
-        """Set the phase format
+    def phase_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
+        """Set the phase frmt
 
         Args:
-            format (str, optional): phase format. Defaults to pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT.
+            frmt (str, optional): phase frmt.
+            Defaults to pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT.
         """
-        assert format in pauli_rep.phase_formats(), QiskitError(f"Invalid phase format: {format}. Must be one of {pauli_rep.phase_formats()}")
-        BasePauli.EXTERNAL_PHASE_REP_FORMAT = format
+        assert frmt in pauli_rep.phase_formats(), QiskitError(
+            f"Invalid phase frmt: {frmt}. Must be one of {pauli_rep.phase_formats()}"
+        )
+        BasePauli.EXTERNAL_PHASE_REP_FORMAT = frmt
 
     @property
     def pauli_format(self):
+        """Pauli format."""
         return BasePauli.EXTERNAL_PAULI_REP_FORMAT
 
     @pauli_format.setter
-    def pauli_format(self, format=pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT):
-        """Set the Pauli format
+    def pauli_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT):
+        """Set the Pauli frmt
 
         Args:
-            format (str, optional): Pauli format. Defaults to pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.
+            frmt (str, optional): Pauli frmt.
+            Defaults to pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.
         """
-        assert format in pauli_rep.pauli_formats(), QiskitError(f"Invalid pauli format: {format}. Must be one of {pauli_rep.pauli_formats()}")
-        phase_format, symp_format = pauli_rep._split_rep(format)
+        assert frmt in pauli_rep.pauli_formats(), QiskitError(
+            f"Invalid pauli frmt: {frmt}. Must be one of {pauli_rep.pauli_formats()}"
+        )
+        phase_format, symp_format = pauli_rep._split_rep(frmt)
         BasePauli.EXTERNAL_PHASE_REP_FORMAT = phase_format
         BasePauli.EXTERNAL_SYMP_FORMAT = symp_format
         BasePauli.EXTERNAL_PAULI_REP_FORMAT = phase_format + symp_format
-
 
     def compose(self, other, qargs=None, front=False):
         pass

@@ -37,7 +37,7 @@ class SubSystemCode(Code):
         if gauge_group is not None:
             self.gauge_group = GaugeGroup(gauge_group=gauge_group)
         else:
-            raise QiskitError("Error: Input format not supported")
+            raise QiskitError("Error: Input frmt not supported")
 
         self.parameters = parameters
 

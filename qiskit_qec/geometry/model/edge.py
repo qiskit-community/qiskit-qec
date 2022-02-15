@@ -11,7 +11,6 @@
 # that they have been altered from the originals.
 """Edge Module"""
 from typing import List
-from ctypes import c_long
 
 from qiskit_qec.geometry.model.shape_object import ShapeObject
 from qiskit_qec.geometry.model.vertex import Vertex
@@ -29,6 +28,5 @@ class Edge(ShapeObject):
         """
         super().__init__()
         self.vertices = vertices
-        for item in self.vertices: 
+        for item in self.vertices:
             item.add_parent(self)
-

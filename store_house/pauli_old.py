@@ -884,13 +884,13 @@ class Pauli(BasePauli):
     )
     def to_spmatrix(self):
         r"""
-        DEPRECATED Convert Pauli to a sparse matrix representation (CSR format).
+        DEPRECATED Convert Pauli to a sparse matrix representation (CSR frmt).
 
         This function is deprecated. Use :meth:`to_matrix` with kwarg
         ``sparse=True`` instead.
 
         Returns:
-            scipy.sparse.csr_matrix: a sparse matrix with CSR format that
+            scipy.sparse.csr_matrix: a sparse matrix with CSR frmt that
             represents the pauli.
         """
         return self.to_matrix(sparse=True)

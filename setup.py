@@ -10,9 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# currently used for backwards compatibility and to allow for editable code for development mode
+# currently used for backwards compatibility
+# and to allow for editable code for development mode
+import os
+import re
+from glob import glob
 from setuptools import find_packages, setup
-import os, re
+from pybind11.setup_helpers import Pybind11Extension, build_ext
+
+ext_modules = [
+    Pybind11Extension(
+        "qiskit_qec.extensions.compiledextension",
+        sorted(glob("qiskit_qec/extensions/*.cpp")),
+    ),
+]
 
 with open("requirements.txt") as f:
     REQUIREMENTS = f.read().splitlines()
@@ -27,7 +38,6 @@ with open(README_PATH) as readme_file:
         flags=re.S | re.M,
     )
 
-
 setup(
     name="qiskit_qec",
     version="1.0.0",
@@ -41,5 +51,7 @@ setup(
     python_requires=">=3.6",
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
-    packages=find_packages(exclude=["test*"]),
+    packages=find_packages(exclude=["test*", "qiskit_qec/extensions"]),
+    cmdclass={"build_ext": build_ext},
+    ext_modules=ext_modules,
 )

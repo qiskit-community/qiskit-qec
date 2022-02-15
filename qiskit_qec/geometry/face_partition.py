@@ -12,17 +12,16 @@
 # Part of the QEC framework
 """Module for FacePartition"""
 
-from typing import List
-
 from qiskit_qec.geometry.model.face import Face
 
 
 class FacePartition:
     """FacePartition class
-    
-        This is a crappy little class to store data on how the faces
-        that intersect with the region/cutter intersect
+
+    This is a crappy little class to store data on how the faces
+    that intersect with the region/cutter intersect
     """
+
     class _PartitionAttribute:
         def __init__(self):
             self.outside = []
