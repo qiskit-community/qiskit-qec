@@ -76,8 +76,8 @@ def symplectic_product(mat1: ArrayLike, mat2: ArrayLike) -> int:
         QiskitError: Input matrices must be 1 or 2 dimensional
 
     Examples:
-        >>> mat1 = numpy.array([[1,0,1,1],[0,1,1,0]], dtype=np.bool_)
-        >>> mat2 = numpy.array([[0,1,1,1],[0,0,1,0]], dtype=np.bool_)
+        >>> mat1 = numpy.array([[1,0,1,1],[0,1,1,0]], dtype=numpy.bool_)
+        >>> mat2 = numpy.array([[0,1,1,1],[0,0,1,0]], dtype=numpy.bool_)
         >>> p = symplectic_product(mat1, mat2)
         >>> p.astype(int)
         array([[0, 1], [1, 0]]
@@ -168,8 +168,8 @@ def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, 
         int: Symplectic product of mat1 and mat2
 
     Examples:
-        >>> mat1 = numpy.array([[1,0,1,1],[0,1,1,0]], dtype=np.bool_)
-        >>> mat2 = numpy.array([[0,1,1,1],[0,0,1,0]], dtype=np.bool_)
+        >>> mat1 = numpy.array([[1,0,1,1],[0,1,1,0]], dtype=numpy.bool_)
+        >>> mat2 = numpy.array([[0,1,1,1],[0,0,1,0]], dtype=numpy.bool_)
         >>> p = _symplectic_product_dense(mat1, mat2)
         >>> p.astype(int)
         array([[0, 1], [1, 0]]
@@ -236,34 +236,34 @@ def make_commute_hyper(
         out: GF(2) symplectic vectors that commute with the given hyperbolic pairs
 
     Examples:
-        >>> a = np.array([1,1,1,0,0,0],dtype=np.bool_)
-        >>> x = np.array([0,0,1,0,0,0],dtype=np.bool_)
-        >>> z = np.array([0,0,0,0,0,1],dtype=np.bool_)
+        >>> a = numpy.array([1,1,1,0,0,0],dtype=numpy.bool_)
+        >>> x = numpy.array([0,0,1,0,0,0],dtype=numpy.bool_)
+        >>> z = numpy.array([0,0,0,0,0,1],dtype=numpy.bool_)
         >>> a = make_commute_hyper(a, x, z)
         >>> a.astype(int)
         array([1, 1, 0, 0, 0, 0])
 
-        >>> a = np.array([1,1,1,0,0,0,0,0], dtype=np.bool_)
-        >>> x = np.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=np.bool_)
+        >>> a = numpy.array([1,1,1,0,0,0,0,0], dtype=numpy.bool_)
+        >>> x = numpy.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=numpy.bool_)
         >>> xrange = [0,1]
         >>> zrange = [0,1]
         >>> a = make_commute_hyper(a, x, z, xrange = xrange, zrange=zrange)
         >>> a.astype(int)
         array([1, 0, 0, 0, 0, 0, 0, 0])
 
-        >>> a = np.array([[1,1,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=np.bool_) # X1X2X3, X2X3
-        >>> x = np.array([0,1,0,0,0,0,0,0], dtype=np.bool_) # X2
-        >>> z = np.array([0,0,0,0,0,1,0,0], dtype=np.bool_) # Z2
+        >>> a = numpy.array([[1,1,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=numpy.bool_) # X1X2X3, X2X3
+        >>> x = numpy.array([0,1,0,0,0,0,0,0], dtype=numpy.bool_) # X2
+        >>> z = numpy.array([0,0,0,0,0,1,0,0], dtype=numpy.bool_) # Z2
         >>> arange = [0,1]
         >>> a = make_commute_hyper(a, x, z, arange)
         >>> a.astype(int)
         array([[1, 0, 1, 0, 0, 0, 0, 0],
                [0, 0, 1, 0, 0, 0, 0, 0]])
 
-        >>> a = np.array([[1,1,1,0,0,0,0,0],[0,1,1,1,0,0,0,0]], dtype=np.bool_)
-        >>> x = np.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1,0,0], [0,0,0,0,0,0,1,0]], dtype=np.bool_)
+        >>> a = numpy.array([[1,1,1,0,0,0,0,0],[0,1,1,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1,0,0], [0,0,0,0,0,0,1,0]], dtype=numpy.bool_)
         >>> arange = [0,1]
         >>> a = make_commute_hyper(a, x, z, arange)
         >>> a.astype(int)
@@ -352,34 +352,34 @@ def _make_commute_hyper(
         out: GF(2) symplectic vectors that commute with the given hyperbolic pairs
 
     Examples:
-        >>> a = np.array([[1,1,1,0,0,0]],dtype=np.bool_)
-        >>> x = np.array([[0,0,1,0,0,0]],dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1]],dtype=np.bool_)
+        >>> a = numpy.array([[1,1,1,0,0,0]],dtype=numpy.bool_)
+        >>> x = numpy.array([[0,0,1,0,0,0]],dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1]],dtype=numpy.bool_)
         >>> a = _make_commute_hyper(a, x, z, squeeze=True)
         >>> a.astype(int)
         array([1, 1, 0, 0, 0, 0])
 
-        >>> a = np.array([[1,1,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> x = np.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=np.bool_)
+        >>> a = numpy.array([[1,1,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=numpy.bool_)
         >>> xrange = [0,1]
         >>> zrange = [0,1]
         >>> a = _make_commute_hyper(a, x, z, xrange = xrange, zrange=zrange, squeeze=False)
         >>> a.astype(int)
         array([[1, 0, 0, 0, 0, 0, 0, 0]])
 
-        >>> a = np.array([[1,1,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> x = np.array([[0,1,0,0,0,0,0,0]], dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1,0,0]], dtype=np.bool_)
+        >>> a = numpy.array([[1,1,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0,1,0,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1,0,0]], dtype=numpy.bool_)
         >>> arange = [0,1]
         >>> a = _make_commute_hyper(a, x, z, arange)
         >>> a.astype(int)
         array([[1, 0, 1, 0, 0, 0, 0, 0],
                [0, 0, 1, 0, 0, 0, 0, 0]])
 
-        >>> a = np.array([[1,1,1,0,0,0,0,0],[0,1,1,1,0,0,0,0]], dtype=np.bool_)
-        >>> x = np.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> z = np.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=np.bool_)
+        >>> a = numpy.array([[1,1,1,0,0,0,0,0],[0,1,1,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0]], dtype=numpy.bool_)
         >>> arange = [0,1]
         >>> a = _make_commute_hyper(a, x, z, arange)
         >>> a.astype(int)
@@ -444,8 +444,8 @@ def locate_hyper_partner(
             search matrix. 'None' if no hyperbolic partner is found.
 
     Examples:
-        >>> matrix = np.array([[1,0,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> vector = np.array([0,0,0,0,0,1,0,0], dtype=np.bool_)
+        >>> matrix = numpy.array([[1,0,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> vector = numpy.array([0,0,0,0,0,1,0,0], dtype=numpy.bool_)
         >>> av, index = locate_hyper_partner(matrix, vector)
         >>> av.astype(int)
         array([0, 1, 1, 0, 0, 0, 0, 0])
@@ -494,9 +494,9 @@ def _locate_hyper_partner(matrix: np.ndarray, vector: np.ndarray) -> Union[None,
             search matrix. 'None' if no hyperbolic partner is found.
 
     Examples:
-        >>> matrix = np.array([[1,0,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=np.bool_)
-        >>> vector = np.array([0,0,0,0,0,1,0,0], dtype=np.bool_)
-        >>> av, index = locate_hyper_partner(matrix, vector)
+        >>> matrix = numpy.array([[1,0,1,0,0,0,0,0],[0,1,1,0,0,0,0,0]], dtype=numpy.bool_)
+        >>> vector = numpy.array([0,0,0,0,0,1,0,0], dtype=numpy.bool_)
+        >>> av, index = _locate_hyper_partner(matrix, vector)
         >>> av.astype(int)
         array([0, 1, 1, 0, 0, 0, 0, 0])
         >>> index
@@ -545,11 +545,11 @@ def build_hyper_partner(matrix, index: int) -> np.ndarray:
             generators
 
     Examples:
-        >>> matrix = np.array(
+        >>> matrix = numpy.array(
             [[1,0,0,0,0,0,0,0],
              [0,1,0,0,0,0,0,0],
              [0,0,1,0,0,0,0,0],
-             [0,0,0,1,0,0,0,0]], dtype=np.bool_)
+             [0,0,0,1,0,0,0,0]], dtype=numpy.bool_)
         >>> av = build_hyper_partner(matrix, 0)
         >>> av.astype(int)
         array([0, 0, 0, 0, 1, 0, 0, 0])
@@ -606,11 +606,11 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
             generators
 
     Examples:
-        >>> matrix = np.array(
+        >>> matrix = numpy.array(
             [[1,0,0,0,0,0,0,0],
              [0,1,0,0,0,0,0,0],
              [0,0,1,0,0,0,0,0],
-             [0,0,0,1,0,0,0,0]], dtype=np.bool_)
+             [0,0,0,1,0,0,0,0]], dtype=numpy.bool_)
         >>> av = _build_hyper_partner(matrix, 0)
         >>> av.astype(int)
         array([0, 0, 0, 0, 1, 0, 0, 0])
@@ -674,10 +674,10 @@ def symplectic_gram_schmidt(
         center, x, z: Center array and hyperbolic pairs split accross x and z
 
     Examples:
-        >>> a = np.array([[0,1,0,0,1,0,1,0],
+        >>> a = numpy.array([[0,1,0,0,1,0,1,0],
                           [0,0,0,0,1,1,0,1],
                           [1,1,1,0,0,1,0,0],
-                          [1,1,0,1,0,0,0,0]], dtype=np.bool_)
+                          [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
         >>> center_, x, z = symplectic_gram_schmidt(a)
         >>> center_.astype(int)
         array([[1, 1, 1, 0, 1, 0, 0, 1],
@@ -744,10 +744,10 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
         center, x, z: Center array and hyperbolic pairs split accross x and z
 
     Examples:
-        >>> a = np.array([[0,1,0,0,1,0,1,0],
+        >>> a = numpy.array([[0,1,0,0,1,0,1,0],
                           [0,0,0,0,1,1,0,1],
                           [1,1,1,0,0,1,0,0],
-                          [1,1,0,1,0,0,0,0]], dtype=np.bool_)
+                          [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
         >>> center_, x, z = _symplectic_gram_schmidt(a, [], [])
         >>> center_.astype(int)
         array([[1, 1, 1, 0, 1, 0, 0, 1],
@@ -959,13 +959,13 @@ def is_center(center_: ArrayLike, matrix: ArrayLike) -> bool:
         out: True if <op(center_)> = Z(<op(matrix)>), False otherwise
 
     Examples:
-        >>> matrix = np.array(
+        >>> matrix = numpy.array(
             [[0,1,0,0,1,0,1,0],
             [0,0,0,0,1,1,0,1],
             [1,1,1,0,0,1,0,0],
-            [1,1,0,1,0,0,0,0]], dtype=np.bool_)
-        >>> center_ = np.array([[1, 1, 1, 0, 1, 0, 0, 1],
-                                [1, 0, 0, 1, 0, 1, 1, 1]], dtype=np.bool_)
+            [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> center_ = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
+                                [1, 0, 0, 1, 0, 1, 1, 1]], dtype=numpy.bool_)
         >>> is_center(center_, matrix)
         True
 
@@ -1065,7 +1065,7 @@ def is_stabilizer_group(matrix: ArrayLike) -> bool:
     Examples:
         >>> matrix = numpy.array([[1,0,0,0,0,0],
                                [0,1,0,0,0,0],
-                               [1,0,0,0,0,1]], dtype=np.bool_)
+                               [1,0,0,0,0,1]], dtype=numpy.bool_)
         >>> is_stabilizer_group(matrix)
         True
     """
@@ -1144,7 +1144,7 @@ def _center(matrix: np.ndarray) -> bool:
     return center
 
 
-def _center_preserve(matrix: np.ndarray):
+def _center_preserve(matrix: np.ndarray) -> np.ndarray:
     """Find the center of the group with generators given by the symplectic matrix
 
     Args:
@@ -1156,11 +1156,11 @@ def _center_preserve(matrix: np.ndarray):
 
     Examples:
         >>> matrix = numpy.array([[1,1,0,0,1,0],
-                               [0,0,0,1,1,0],
-                               [0,1,0,1,0,1]], dtype=numpy.bool_)
-       >>> center_ = _center_preserve(matrix)
-       >>> center_.astype(int)
-       array([[1, 1, 0, 0, 1, 0]])
+                                  [0,0,0,1,1,0],
+                                  [0,1,0,1,0,1]], dtype=numpy.bool_)
+        >>> center_ = _center_preserve(matrix)
+        >>> center_.astype(int)
+        array([[1, 1, 0, 0, 1, 0]])
 
     Notes:
     This method attempots to preserve any input vectors
@@ -1191,34 +1191,60 @@ def _center_preserve(matrix: np.ndarray):
 # ---------------------------------------------------------------
 
 
-def extend_basis_to_pauli_group(matrix: ArrayLike) -> np.ndarray:
+def basis_for_pauli_group(matrix: ArrayLike) -> np.ndarray:
     """Given a set of generators (not necessarily independent) find
-    a full basis using as many of the provided generators.
+    a full basis using as many of the provided generators as possible.
 
     Args:
-        matrix (ArrayLike): Set of generators (symplectic vectors)
+        matrix: Set of generators (in GF(2) symplectic form)
+
+    Raises:
+        QiskitError: Input matrix not in a GF(2) symplectic matrix
 
     Returns:
-        np.ndarray: A maximal independant set
+        out: A maximal independant set
+
+    Examples:
+        >>> matrix = numpy.array([[1,1,0,0,1,0],[0,0,0,1,1,0],[0,1,0,1,0,1]], dtype=numpy.bool_)
+        >>> basis = basis_for_pauli_group(matrix)
+        >>> basis.astype(int)
+        array([[1, 1, 0, 0, 1, 0],
+                [0, 0, 0, 1, 1, 0],
+                [0, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0]])
     """
     matrix = np.atleast_2d(np.asarray(matrix))
-    assert is_symplectic_matrix_form(matrix), QiskitError(f"Input matrix not in a symplectic form")
-    return _extend_basis_to_pauli_group(matrix)
+    if not is_symplectic_matrix_form(matrix):
+        QiskitError(f"Input matrix not in a GF(2) symplectic matrix")
+
+    return _basis_for_pauli_group(matrix)
 
 
-def _extend_basis_to_pauli_group(matrix: np.ndarray) -> np.ndarray:
+def _basis_for_pauli_group(matrix: np.ndarray) -> np.ndarray:
     """Given a set of generators (not necessarily independent) find
-    a full basis using as many of the provided generators.
+    a full basis using as many of the provided generators as possible.
 
     Args:
-        matrix (np.ndarray): Set of genera*tors (symplectic vectors)
+        matrix: Set of generators (in GF(2) symplectic form)
 
     Returns:
-        np.ndarray: A maximal independant set
+        out: A maximal independant set
 
+    Examples:
+        >>> matrix = numpy.array([[1,1,0,0,1,0],[0,0,0,1,1,0],[0,1,0,1,0,1]], dtype=numpy.bool_)
+        >>> basis = _basis_for_pauli_group(matrix)
+        >>> basis.astype(int)
+        array([[1, 1, 0, 0, 1, 0],
+                [0, 0, 0, 1, 1, 0],
+                [0, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0]])
     """
     aug_matrix = mt.augment_mat(matrix, "bottom")
-    heads, rref_mat, transform_mat, rank = mt._rref_complete(aug_matrix.T)
+    heads, _, _, rank = mt._rref_complete(aug_matrix.T)
     shape = (rank, aug_matrix.shape[1])
     ext_matrix = np.zeros(shape, dtype=np.bool_)
     posns = np.flatnonzero(heads)
@@ -1227,214 +1253,476 @@ def _extend_basis_to_pauli_group(matrix: np.ndarray) -> np.ndarray:
     return ext_matrix
 
 
-def extend_center_into_hyper_form(in_hyper1, in_hyper2, in_center):
-    """Given a basis for a group in the form of center, hyper1 and hyper2 find hyperbolic partners for
-    each element of the center (acenter) such that hyper1 = <hyper1, center> and hyper2 = <hyper2, acenter>
-    are hyperbolic pairs. Thus <hyper1, hyper2> will be isomorphic some P_m
+def make_hyperbolic(
+    center_: ArrayLike, x: ArrayLike, z: ArrayLike
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Makes a isotropic hyperbolic basis into an hyperbolic basis
+
+    Let center, x and z (where x, z and center are represented by GF(2)
+    symplectic matrices/vectors) be a isotropic-hyperbolic basis with
+    2m+k total generators. This method makes/extends this basis into
+    a hyperbolic basis for the (m+k)-th Pauli group by constructing hyperbolic
+    partners (acenter) for each element in the center such that
+
+    P_(n+k) = <iI, x_new, z_new>
+
+    where x_new = <x, center>  and z_new = <z, acenter>
 
     Args:
-        in_hyper1 ([type]): [description]
-        in_hyper2 ([type]): [description]
-        in_center ([type]): [description]
+        center_: isotropic part of basis (center)
+        x, z: hyperbolic part of basis
+
+    Raises:
+        QiskitError: Input center is not center of group generated by vectors from center, x and z
+        QiskitError: Input matrices x, z are not in hyperbolic pairs
+
+    Examples:
+        >>> center_ = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
+                                [1, 0, 0, 1, 0, 1, 1, 1]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0, 1, 0, 0, 1, 0, 1, 0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0, 0, 0, 0, 1, 1, 0, 1]], dtype=numpy.bool_)
+        >>> center_, x, z = symplectic_gram_schmidt(a, x, z)
+        >>> x, z = make_hyperbolic(center_, x, z)
+        >>> x
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1]])
+        >>> z
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0]])
+
+    See Also:
+    _make_hyperbolic
+
     """
-    if in_center is None:
-        in_center = []
+    if center_ is None:
+        return x, z
 
-    in_center = np.atleast_2d(np.array(in_center))
-    hyper1 = np.atleast_2d(in_hyper1)
-    hyper2 = np.atleast_2d(in_hyper2)
+    center_ = np.atleast_2d(np.array(center_))
+    x = np.atleast_2d(np.array(x))
+    z = np.atleast_2d(np.array(z))
 
-    if in_center.shape[1] == 0:
-        in_center = np.zeros((0, in_hyper1.shape[1]))
+    if not is_center(center_, np.vstack((x, z, center_))):
+        raise QiskitError(
+            f"Input center is not center of group generated by vectors from center, x and z"
+        )
 
-    assert is_center(center, np.vstack((hyper1, hyper2, center))), QiskitError(
-        f"Input center is not center"
-    )
-    assert is_hyper_form(hyper1, hyper2), QiskitError(
-        f"Inpur hyper1,hyper2 are not in hyperbolic pairs"
-    )
+    if not is_hyper_form(x, z):
+        raise QiskitError(f"Input matrices x, z are not in hyperbolic pairs")
 
-    return _extend_center_into_hyper_form(in_hyper1, in_hyper2, in_center)
+    return _make_hyperbolic(center_, x, z)
 
 
-def _extend_center_into_hyper_form(in_hyper1, in_hyper2, in_center):
-    """Given a basis for a group in the form of center, hyper1 and hyper2 find hyperbolic partners for
-    each element of the center (acenter) such that hyper1 = <hyper1, center> and hyper2 = <hyper2, acenter>
-    are hyperbolic pairs. Thus <hyper1, hyper2> will be isomorphic some P_m
+def _make_hyperbolic(
+    center_: np.ndarray, x: np.ndarray, z: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Makes a isotropic hyperbolic basis into an hyperbolic basis
 
-    # Change the name to something like _extend_iso_hyper_form_to_hyper_form
+    Let center, x and z (where x, z and center are represented by GF(2)
+    symplectic matrices/vectors) be a isotropic-hyperbolic basis with
+    2m+k total generators. This method makes/extends this basis into
+    a hyperbolic basis for the (m+k)-th Pauli group by constructing hyperbolic
+    partners (acenter) for each element in the center such that
+
+    P_(n+k) = <iI, x_new, z_new>
+
+    where x_new = <x, center>  and z_new = <z, acenter>
 
     Args:
-        in_hyper1 ([type]): [description]
-        in_hyper2 ([type]): [description]
-        in_center ([type]): [description]
+        center_: isotropic part of basis (center)
+        x, z: hyperbolic part of basis
 
-    Returns:
-        hyper1 (numpy.ndarray), hyper2 (numpy.ndarray)
+    Examples:
+        >>> center_ = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
+                                [1, 0, 0, 1, 0, 1, 1, 1]], dtype=numpy.bool_)
+        >>> x = numpy.array([[0, 1, 0, 0, 1, 0, 1, 0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0, 0, 0, 0, 1, 1, 0, 1]], dtype=numpy.bool_)
+        >>> center_, x, z = symplectic_gram_schmidt(a, x, z)
+        >>> x, z = _make_hyperbolic(center_, x, z)
+        >>> x
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1]])
+        >>> z
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0]])
+
+    See Also:
+    make_hyperbolic
+
     """
 
-    center_size = in_center.shape[0]
-    hyper_size = in_hyper1.shape[0]
-    shape = (center_size, in_hyper1.shape[1])
+    center_size = center_.shape[0]
+    hyper_size = x.shape[0]
+    shape = (center_size, x.shape[1])
     spacer = np.zeros(shape, dtype=np.bool_)
-    hyper1 = np.vstack((in_hyper1, spacer))
-    hyper2 = np.vstack((in_hyper2, spacer))
-    center_ = in_center.copy()
+    x = np.vstack((x, spacer))
+    z = np.vstack((z, spacer))
+    center_ = center_.copy()
 
     while center_size > 0:
         hop = _build_hyper_partner(center_[:center_size], center_size - 1)
-        hop = _make_element_commute_with_hyper_pairs(
-            hop, hyper1, hyper2, range(hyper_size), range(hyper_size)
-        )
+        # TODO: Change the use of make_commute_hyper to _make_commute_hyper
+        hop = make_commute_hyper(hop, x, z, xrange=range(hyper_size), zrange=range(hyper_size))
+        # hop = _make_element_commute_with_hyper_pairs(
+        #    hop, x, z, range(hyper_size), range(hyper_size)
+        # )
 
         center_size -= 1
-        hyper1[hyper_size] = center_[center_size]
-        hyper2[hyper_size] = hop
+        x[hyper_size] = center_[center_size]
+        z[hyper_size] = hop
         hyper_size += 1
 
-    return hyper1, hyper2
+    return x, z
 
 
-def isotropic_hyperbolic_form(matrix):
+def make_isotropic_hyperbolic_form(matrix) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Creates a isotrophic hyperbolic basis from a set of generators
+
+    Args:
+        matrix: GF(2) symplectic matrix
+
+    Returns:
+        center_, x, z: An isotrophic hyperbolic basis
+
+    Examples:
+        >>> matrix = np.array([[0,1,0,0,1,0,1,0],
+                               [0,0,0,0,1,1,0,1],
+                               [1,1,1,0,0,1,0,0],
+                               [1,1,0,1,0,0,0,0]], dtype=np.bool_)
+        >>> center_, x, z = make_isotropic_hyperbolic_form(matrix)
+        >>> center_.astype(int)
+        array([[1, 1, 1, 0, 1, 0, 0, 1],
+               [1, 0, 0, 1, 0, 1, 1, 1]])
+        >>> x.astype(int)
+        array([[0, 1, 0, 0, 1, 0, 1, 0]])
+        >>> z.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1]])
+
+    See Also:
+    symplectic_gram_schmidt, _symplectic_gram_schmidt
+
+    """
     return _symplectic_gram_schmidt(matrix, [], [])
 
 
-def isotropic_hyperbolic_basis(
-    matrix: Union[None, ArrayLike], hyper1: Union[None, ArrayLike], hyper2: Union[None, ArrayLike]
-):
+def hyperbolic_basis_for_pauli_group(
+    matrix: Optional[ArrayLike] = None,
+    x: Optional[ArrayLike] = None,
+    z: Optional[ArrayLike] = None,
+    n: Optional[int] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Builds a hyperbolic basis for the associated Pauli group
 
-    if (hyper1 is None) ^ (hyper2 is None):
-        raise QiskitError(f"hyper1 and hyper2 must be both be None or both be array like")
+    Args:
+        matrix (Optional): Input GF(2) symplectic matrix
+        x, z (Optional): Input GF(2) hyperbolic pairs
+        n: Size of standard Pauli group basis to create (if matrix,x,z are None)
 
-    if hyper1 is not None:
-        hyper1 = np.array(hyper1)
-        hyper2 = np.array(hyper2)
-        assert is_symplectic_matrix_form(hyper1), QiskitError(f"{hyper1} not a symplectic matrix")
-        assert is_symplectic_matrix_form(hyper2), QiskitError(f"{hyper2} not a symplectic matrix")
+    Raises:
+        QiskitError: x and z must be both be None or both be array like
+        QiskitError: x not a GF(2) symplectic matrix
+        QiskitError: z not a symplectic matrix
+        QiskitError: matrix not a GF(2) symplectic matrix
+        QiskitError: When providing an input hyperbolic set the input matrix
+            must be the center of the full set of generators
+        QiskitError: If matrix, x and z are None then n must be provided
+
+    Returns:
+        new_x, new_z: Hyperbolic basis for the associated Pauli group
+
+    Examples:
+        >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
+                               [0,0,0,0,1,1,0,1],
+                               [1,1,1,0,0,1,0,0],
+                               [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> center_, x, z = smake_isotropic_hyperbolic_form(matrix)
+        >>> nx, nz = sysp.hyperbolic_basis_for_pauli_group(center_, x, z)
+        >>> nx.astype(int)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1],
+               [1, 0, 1, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 1, 0]])
+
+        >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
+                               [0,0,0,0,1,1,0,1],
+                               [1,1,1,0,0,1,0,0],
+                               [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> nx, nz = hyperbolic_basis_for_pauli_group(matrix)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1],
+               [1, 0, 1, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 1, 0]])
+
+        >>> x = numpy.array([[0, 1, 0, 0, 1, 0, 1, 0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0, 0, 0, 0, 1, 1, 0, 1]], dtype=numpy.bool_)
+        >>> nx, nz = hyperbolic_basis_for_pauli_group(x=x, z=z)
+        >>> nx.astype(int)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 1, 0, 0, 0, 1, 1, 1],
+               [1, 1, 1, 0, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 0, 1]])
+
+        >>> x, z = hyperbolic_basis_for_pauli_group(n=5)
+        >>> x.astype(int)
+        array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]])
+        >>> z.astype(int)
+        array([[0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+               [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
+
+    See Also:
+    _hyperbolic_basis_for_pauli_group
+    """
+
+    if (x is None) ^ (z is None):
+        raise QiskitError(f"x and z must be both be None or both be array like")
+
+    if x is not None:
+        x = np.atleast_2d(np.array(x))
+        z = np.atleast_2d(np.array(z))
+        if not is_symplectic_matrix_form(x):
+            raise QiskitError(f"{x} not a GF(2) symplectic matrix")
+        if not is_symplectic_matrix_form(z):
+            raise QiskitError(f"{z} not a symplectic matrix")
 
         if matrix is not None:
-            matrix = np.array(matrix)
-            assert is_symplectic_matrix_form(matrix), QiskitError(
-                f"{matrix} not a symplectic matrix"
-            )
-            assert is_center(matrix, np.vstack(matrix, hyper1, hyper2))
+            matrix = np.atleast_2d(np.array(matrix))
+            if not is_symplectic_matrix_form(matrix):
+                raise QiskitError(f"{matrix} not a GF(2) symplectic matrix")
+            if not is_center(matrix, np.vstack((matrix, x, z))):
+                raise QiskitError(
+                    f"When providing an input hyperbolic set \
+                    the input matrix must be the center of the full set of \
+                        generators"
+                )
         else:
             matrix = None
     else:
-        assert matrix is not None, QiskitError(
-            "At one of matrix, hyper1 and hyper2 cannot all be None"
-        )
-        matrix = np.array(matrix)
-        assert is_symplectic_matrix_form(matrix), QiskitError(f"{matrix} not a symplectic matrix")
-        hyper1 = []
-        hyper2 = []
+        if matrix is None:
+            if n is None:
+                raise QiskitError(f"If matrix, x and z are None then n must be provided")
+            zero = np.zeros(shape=(n, n), dtype=np.bool_)
+            x = mt.augment_mat(zero, "left")
+            z = mt.augment_mat(zero, "right")
+            return x, z
+        matrix = np.atleast_2d(np.array(matrix))
+        if not is_symplectic_matrix_form(matrix):
+            raise QiskitError(f"{matrix} not a GF(2) symplectic matrix")
+        x = []
+        z = []
 
-    return _isotropic_hyperbolic_basis(matrix, hyper1, hyper2)
+    return _hyperbolic_basis_for_pauli_group(matrix, x, z)
 
 
-def _isotropic_hyperbolic_basis(
-    matrix: Union[None, np.ndarray], hyper1: List[np.ndarray], hyper2: List[np.ndarray]
-):
-    """[summary]
+def _hyperbolic_basis_for_pauli_group(
+    matrix: Optional[np.ndarray], x: Optional[np.ndarray], z: Optional[np.ndarray]
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Builds a hyperbolic basis for the associated Pauli group
 
     Args:
-        matrix (np.ndarray): matrix if hyper1 and hyper2 are None, center otherwise
-        hyper1 (List[np.ndarray]): [description]
-        hyper2 (List[np.ndarray]): [description]
+        matrix (Optional): Input GF(2) symplectic matrix
+        x, z (Optional): Input GF(2) hyperbolic pairs
 
     Returns:
+        new_x, new_z: Hyperbolic basis for the associated Pauli group
+
+    Examples:
+        >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
+                               [0,0,0,0,1,1,0,1],
+                               [1,1,1,0,0,1,0,0],
+                               [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> center_, x, z = make_isotropic_hyperbolic_form(matrix)
+        >>> nx, nz = _hyperbolic_basis_for_pauli_group(center_, x, z)
+        >>> nx.astype(int)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1],
+               [1, 0, 1, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 1, 0]])
+
+        >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
+                               [0,0,0,0,1,1,0,1],
+                               [1,1,1,0,0,1,0,0],
+                               [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
+        >>> nx, nz = _hyperbolic_basis_for_pauli_group(matrix)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 0, 0, 1, 0, 1, 1, 1],
+               [1, 1, 1, 0, 1, 0, 0, 1],
+               [1, 0, 1, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 1, 0]])
+
+        >>> x = numpy.array([[0, 1, 0, 0, 1, 0, 1, 0]], dtype=numpy.bool_)
+        >>> z = numpy.array([[0, 0, 0, 0, 1, 1, 0, 1]], dtype=numpy.bool_)
+        >>> nx, nz = _hyperbolic_basis_for_pauli_group(x=x, z=z)
+        >>> nx.astype(int)
+        array([[0, 1, 0, 0, 1, 0, 1, 0],
+               [1, 1, 0, 0, 0, 1, 1, 1],
+               [1, 1, 1, 0, 0, 0, 0, 0],
+               [0, 1, 0, 1, 0, 0, 0, 0]])
+        >>> nz.astype(int)
+        array([[0, 0, 0, 0, 1, 1, 0, 1],
+               [0, 0, 0, 0, 1, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 1, 0],
+               [0, 0, 0, 0, 0, 0, 0, 1]])
+
+    See Also:
+    hyperbolic_basis_for_pauli_group
     """
 
-    if len(hyper1) == 0:
-        center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, [], [])
+    if len(x) == 0:
+        center_, x, z = _symplectic_gram_schmidt(matrix, [], [])
     else:
         center_ = matrix
 
     if center_ is not None:
-        hyper1, hyper2 = _extend_center_into_hyper_form(hyper1, hyper2, center_)
+        x, z = _make_hyperbolic(center_, x, z)
 
-    basis = _extend_basis_to_pauli_group(np.vstack((hyper1, hyper2)))
+    basis = _basis_for_pauli_group(np.vstack((x, z)))
+    added = x.shape[1] - 2 * x.shape[0]
+    basis_com = _make_commute_hyper(basis[-added:], x, z)
+    _, x_new, z_new = symplectic_gram_schmidt(basis_com, x, z)
 
-    added = hyper1.shape[1] - 2 * hyper1.shape[0]
-
-    basis_com = _make_elements_commute_with_hyper_pairs(
-        basis[0:added],
-        range(2 * hyper1.shape[0], basis.shape[0]),
-        hyper1,
-        range(hyper1.shape[0]),
-        hyper2,
-        range(hyper1.shape[0]),
-    )
-
-    _, hyper1_ans, hyper2_ans = symplectic_gram_schmidt(basis_com, hyper1, hyper2)
-
-    return hyper1_ans, hyper2_ans
+    return x_new, z_new
 
 
 def remove_hyper_elements_from_hyper_form(
-    hyper1: ArrayLike, hyper2: ArrayLike, center_: ArrayLike, indices: ArrayLike
-):
-    """Transfer those elements/vectors from hyper1 with an index in indices into center_
-    and delete the corresponding hyperbolic partner from hyper2.
+    center_: Optional[ArrayLike], x: ArrayLike, z: ArrayLike, indices: ArrayLike
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Transfers those elements/vectors from x with an index in indices into center_
+    and delete the corresponding hyperbolic partner from z.
 
     Args:
-        hyper1 (ArrayLike): First array of hyperbolic pairs and source
-        hyper2 (ArrayLike): Second array of hyperbolic pairs
-        center_ (ArrayLike): center array and sink
-        indices (ArrayLike): indices indicating which rows to transfer from source to sink
+        center_: center array
+        x, z: Hyperbolic pairs, x being the source
+        indices: indices indicating which rows to transfer from source to sink
+
+    Raises:
+        QiskitError: x and z must be GF(2) symplectic matrices/vectors
+        QiskitError: x and z must have the same shape
+        QiskitError: x and z must have the same size in the second
+                dimension as the center
 
     Returns:
-        Returns: hyper1, hyper2, center_
+        center_, x, z : isotropic hyperbolic basis
+
+    Examples:
+        >>> x, z = sysp.hyperbolic_basis_for_pauli_group(n=5)
+        >>> center_, x_new, z_new = remove_hyper_elements_from_hyper_form(None,x,z,[0,1])
+        >>> center_.astype(int)
+        array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
+        >>> x_new.astype(int)
+        array([[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+              [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+              [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+        >>> z_new.astype(int)
+        array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]])
     """
-    hyper1 = np.array(hyper1)
-    hyper2 = np.array(hyper2)
+    x = np.atleast_2d(np.array(x))
+    z = np.atleast_2d(np.array(z))
     indices = list(indices)
 
-    assert hyper1.ndim > 1, QiskitError(f"hyper1, hyper2 must have the same number of dimensions")
-    assert hyper1.shape == hyper2.shape, QiskitError(
-        f"hyper1 (shape={hyper1.shape})and hyper2 (shape={hyper2.shape}) \
+    if not (is_symplectic_matrix_form(x) and is_symplectic_matrix_form(z)):
+        raise QiskitError(f"x and z must be GF(2) symplectic matrices/vectors")
+
+    if not (x.shape == z.shape):
+        QiskitError(
+            f"x (shape={x.shape})and z (shape={z.shape}) \
             must have the same shape"
-    )
-    if center_ is not None:
-        center_ = np.atleast_2d(np.array(center_))
-        assert hyper1.ndim == center_.ndim, QiskitError(
-            f"center must have the same number of dimensions as hyper1 and hyper2"
-        )
-        assert hyper1.shape[1] == center_.shape[1], QiskitError(
-            f"hyper1 and hyper2 must have the same size in the second dimension as the center_"
         )
 
-    return _remove_hyper_elements_from_hyper_form(hyper1, hyper2, center_, indices)
+    if center_ is not None:
+        center_ = np.atleast_2d(np.array(center_))
+        if not is_symplectic_matrix_form(center_):
+            raise QiskitError(f"Input center is not a GF(2) symplectiv matrix/vector")
+        if not (x.shape[1] == center_.shape[1]):
+            QiskitError(
+                f"x and z must have the same size in the second \
+                dimension as the center"
+            )
+
+    return _remove_hyper_elements_from_hyper_form(center_, x, z, indices)
 
 
 def _remove_hyper_elements_from_hyper_form(
-    hyper1: np.ndarray, hyper2: np.ndarray, center_: np.ndarray, indices: List[int]
-):
-    """Transfer those elements/vectors from hyper1 with an index in indices into center_
-    and delete the corresponding hyperbolic partner from hyper2.
+    center_: np.ndarray, x: np.ndarray, z: np.ndarray, indices: List[int]
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Transfers those elements/vectors from x with an index in indices into center_
+    and delete the corresponding hyperbolic partner from z.
 
     Args:
-        hyper1 (np.ndarray): First array of hyperbolic pairs and source
-        hyper2 (np.ndarray): Second array of hyperbolic pairs
-        center_ (np.ndarray): center array and sink
-        indices (List[int]): indices indicating which rows to transfer from source to sink
+        center_: center array
+        x, z: Hyperbolic pairs, x being the source
+        indices: indices indicating which rows to transfer from source to sink
 
-    Returns: hyper1, hyper2, center_
+    Returns:
+        center_, x, z : isotropic hyperbolic basis
+
+    Examples:
+        >>> x, z = sysp.hyperbolic_basis_for_pauli_group(n=5)
+        >>> center_, x_new, z_new = _remove_hyper_elements_from_hyper_form(None,x,z,[0,1])
+        >>> center_.astype(int)
+        array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+               [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]])
+        >>> x_new.astype(int)
+        array([[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+              [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+              [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+        >>> z_new.astype(int)
+        array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]])
     """
 
     rm_size = len(indices)
-    size = hyper1.shape[0] - rm_size
-    shape = (size, hyper1.shape[1])
-    new_hyper1 = np.zeros(shape, dtype=np.bool_)
-    new_hyper2 = np.zeros(shape, dtype=np.bool_)
+    if rm_size == 0:
+        return np.zeros(shape=(0, x.shape[1]), dtype=np.bool_), x, z
+    size = x.shape[0] - rm_size
+    shape = (size, x.shape[1])
+    new_x = np.zeros(shape, dtype=np.bool_)
+    new_z = np.zeros(shape, dtype=np.bool_)
     pos = 0
     part_center = deque()
-    for i in range(hyper1.shape[0]):
+    for i in reversed(range(x.shape[0])):
         if i in indices:
-            part_center.appendleft(hyper1[i].copy())
+            part_center.appendleft(x[i].copy())
         else:
-            new_hyper1[pos] = hyper1[i].copy()
-            new_hyper2[pos] = hyper2[i].copy()
+            new_x[pos] = x[i].copy()
+            new_z[pos] = z[i].copy()
             pos += 1
 
     part_center = np.array(part_center)
@@ -1443,403 +1731,157 @@ def _remove_hyper_elements_from_hyper_form(
     else:
         new_center = np.vstack((center_, part_center))
 
-    return new_center, new_hyper1, new_hyper2
+    return new_center, new_x, new_z
 
 
 def normalizer(
     matrix: Union[None, ArrayLike] = None,
-    hyper1: Union[None, ArrayLike] = None,
-    hyper2: Union[None, ArrayLike] = None,
-):
-    """Return the normalizer of the group generated by the generators represented in the
+    x: Union[None, ArrayLike] = None,
+    z: Union[None, ArrayLike] = None,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Returns the normalizer of the group generated by the generators represented in the
     symplectic matrix(s):
 
     Args:
-        matrix (Union[None, ArrayLike], optional): [description]. Defaults to None.
-        hyper1 (Union[None, ArrayLike], optional): [description]. Defaults to None.
-        hyper2 (Union[None, ArrayLike], optional): [description]. Defaults to None.
+        matrix (optional): GF(2) symplectic matrix. Defaults to None.
+        x, z  (optional): Hyperbolic pairs. Defaults to None.
 
     Raises:
-        QiskitError: [description]
+        QiskitError: All inputs should not be None
+        QiskitError: matrix must be a GF(2) symplectic matrix
+        QiskitError: x and z must be both be None or both be array like
+        QiskitError: x and z must be GF(2) symplectic matrices/vectors
+        QiskitError: x and z must have the same shape
+        QiskitError: All inputs must have the same number of columns/length
 
     Returns:
-        [type]: [description]
+        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+
+    Examples:
+        >>> a = np.array([[1, 1, 1, 0, 1, 0, 0, 1]], dtype=np.bool_)
+        >>> x = np.array([[0, 1, 0, 0, 1, 0, 1, 0]], dtype=np.bool_)
+        >>> z = np.array([[0, 0, 0, 0, 1, 1, 0, 1]], dtype=np.bool_)
+        >>> center_, x_new, z_new = sysp.normalizer(a, x, z)
+        >>> center_.astype(int)
+        array([[1, 1, 1, 0, 1, 0, 0, 1]])
+        >>> x_new.astype(int)
+        array([[1, 0, 1, 1, 0, 0, 0, 0],
+               [1, 1, 1, 0, 0, 0, 1, 1],
+               [0, 1, 0, 0, 1, 0, 1, 0]])
+        >>> z_new.astype(int)
+        array([[1, 1, 1, 0, 1, 0, 0, 0],
+               [1, 1, 0, 0, 0, 1, 0, 0],
+               [0, 0, 0, 0, 1, 1, 0, 1]])
     """
 
-    assert not (matrix is None and hyper1 is None and hyper2 is None), QiskitError(
-        "All inputs should not be None"
-    )
+    if matrix is None and x is None and z is None:
+        raise QiskitError("All inputs should not be None")
     if matrix is not None:
-        matrix = np.array(matrix)
-        assert is_symplectic_matrix_form(matrix), QiskitError(
-            f"{matrix} must be a symplectic matrix"
-        )
+        matrix = np.atleast_2d(np.array(matrix))
+        if not is_symplectic_matrix_form(matrix):
+            raise QiskitError(f"{matrix} must be a GF(2) symplectic matrix")
 
-    if (hyper1 is None) ^ (hyper2 is None):
-        raise QiskitError(f"hyper1 and hyper2 must be both be None or both be array like")
+    if (x is None) ^ (z is None):
+        raise QiskitError(f"x and z must be both be None or both be array like")
 
-    if matrix is not None and hyper1 is None:
+    if matrix is not None and x is None:
         if is_stabilizer_group(matrix):
-            return _normalizer_stabilizer_group(matrix)
+            return _normalizer_abelian_group(matrix)
         else:
-            return _normalizer_gauge_group(matrix)
+            return _normailzer_group(matrix)
+
+    x = np.atleast_2d(np.array(x))
+    z = np.atleast_2d(np.array(z))
+    if not (is_symplectic_matrix_form(x) and is_symplectic_matrix_form(z)):
+        raise QiskitError(f"x and z must be GF(2) symplectic matrices/vectors")
 
     if matrix is None:
-        matrix = np.zeros(shape=(0, hyper1.shape[1]), dtype=np.bool_)
+        matrix = np.zeros(shape=(0, x.shape[1]), dtype=np.bool_)
 
-    hyper1 = np.array(hyper1)
-    hyper2 = np.array(hyper2)
-    assert is_symplectic_matrix_form(hyper1) and is_symplectic_matrix_form(hyper2)
-    assert hyper1.shape == hyper2.shape, QiskitError(f"hyper1 and hyper2 must have the same shape")
-    assert matrix.shape[1] == hyper1.shape[1], QiskitError(
-        f"All inputs must have the same number of columns/length"
-    )
-    return _normalizer_gauge_group_preserve(matrix, hyper1, hyper2)
+    if not (x.shape == z.shape):
+        raise QiskitError(f"x and z must have the same shape")
+
+    if not (matrix.shape[1] == x.shape[1]):
+        raise QiskitError(f"All inputs must have the same number of columns/length")
+
+    if not is_center(matrix, np.vstack((matrix, x, z))):
+        raise QiskitError(
+            f"When a matrix and hyperbolic parts are provided the matrix must represent the center of the union"
+        )
+
+    return _normalizer_group_preserve(matrix, x, z)
 
 
-def _normalizer_stabilizer_group(matrix):
-    """[summary]
+def _normalizer_abelian_group(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Returns the normalizer of the abelian group generated by the generators represented in the
+    symplectic matrix(s):
 
     Args:
-        matrix ([type]): [description]
+        matrix (optional): GF(2) symplectic matrix. Defaults to None.
+        x, z  (optional): Hyperbolic pairs. Defaults to None.
 
     Returns:
-        [type]: [description]
-    """
+        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
 
+    TODO: Add examples
+    """
     dist_center = mt.rank(matrix)
 
-    matrix_ext = _extend_basis_to_pauli_group(matrix)
-    center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix_ext, [], [])
-    center_, hyper1, hyper2 = _remove_hyper_elements_from_hyper_form(
-        hyper1, hyper2, center_, list(range(dist_center))
-    )
-    return center_, hyper1, hyper2
+    matrix_ext = _basis_for_pauli_group(matrix)
+    center_, x, z = _symplectic_gram_schmidt(matrix_ext, [], [])
+    center_, x, z = _remove_hyper_elements_from_hyper_form(center_, x, z, list(range(dist_center)))
+    return center_, x, z
 
 
-def _normalizer_gauge_group_preserve(center_: np.ndarray, hyper1: np.ndarray, hyper2: np.ndarray):
-    """[summary]
+def _normalizer_group_preserve(
+    center_: np.ndarray, x: np.ndarray, z: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Returns the normalizer of the group generated by the generators represented in the
+    symplectic matrix(s) and trys to preserve elements:
 
     Args:
-        center_ (np.ndarray): [description]
-        hyper1 (np.ndarray): [description]
-        hyper2 (np.ndarray): [description]
+        matrix (optional): GF(2) symplectic matrix. Defaults to None.
+        x, z  (optional): Hyperbolic pairs. Defaults to None.
 
     Returns:
-        [type]: [description]
+        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+
+    TODO: Add examples
     """
     center_size = center_.shape[0]
-    gauge_degree = hyper1.shape[0]
+    gauge_degree = x.shape[0]
 
-    hyper1, hyper2 = _extend_center_into_hyper_form(hyper1, hyper2, center_)
-    matrix_ext = _extend_basis_to_pauli_group(np.vstack((hyper1, hyper2)))
-    matrix_ext = _make_elements_commute_with_hyper_pairs(
-        matrix_ext,
-        range(hyper1.shape[0] << 1, matrix_ext.shape[0]),
-        hyper1,
-        range(hyper1.shape[0]),
-        hyper2,
-        range(hyper2.shape[0]),
-    )
-    matrix = matrix_ext[hyper1.shape[0] << 1 :]
-    lhyper1 = [item.copy() for item in matrix_ext[: hyper1.shape[0]]]
-    lhyper2 = [item.copy() for item in matrix_ext[hyper1.shape[0] : hyper1.shape[0] << 1]]
-    center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, lhyper1, lhyper2)
+    x, z = _make_hyperbolic(center_, x, z)
+    matrix_ext = _basis_for_pauli_group(np.vstack((x, z)))
+    matrix_ext = make_commute_hyper(matrix_ext, x, z, range(x.shape[0] << 1, matrix_ext.shape[0]))
+    # matrix_ext = _make_elements_commute_with_hyper_pairs(
+    #    matrix_ext,
+    #    range(x.shape[0] << 1, matrix_ext.shape[0]),
+    #    x,
+    #    range(x.shape[0]),
+    #    z,
+    #    range(z.shape[0]),
+    # )
+    matrix = matrix_ext[x.shape[0] << 1 :]
+    lx = [item.copy() for item in matrix_ext[: x.shape[0]]]
+    lz = [item.copy() for item in matrix_ext[x.shape[0] : x.shape[0] << 1]]
+    center_, x, z = _symplectic_gram_schmidt(matrix, lx, lz)
     indices = list(range(gauge_degree, gauge_degree + center_size))
-    return _remove_hyper_elements_from_hyper_form(hyper1, hyper2, center_, indices)
+    return _remove_hyper_elements_from_hyper_form(center_, x, z, indices)
 
 
-def _normalizer_gauge_group(matrix):
-    """[summary]
+def _normailzer_group(matrix):
+    """Returns the normalizer of the group generated by the generators represented in the
+    symplectic matrix(s):
 
     Args:
-        matrix ([type]): [description]
+        matrix: GF(2) Sympletic matrix
 
     Returns:
-        [type]: [description]
+        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+
+    TODO: Add examples
     """
     center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, [], [])
 
-    return _normalizer_gauge_group_preserve(center_, hyper1, hyper2)
-
-
-# ---------------------------------------------------------------
-# ---------------------------------------------------------------
-#
-# Methods below have been replaced with
-#
-# make_commute_hyper and _make_commute_hyper
-#
-# TODO: Change code to reflect these changes
-# ---------------------------------------------------------------
-# ---------------------------------------------------------------
-
-
-def make_element_commute_with_hyper_pair(
-    vector: ArrayLike, hyper1: ArrayLike, hyper2: ArrayLike
-) -> np.ndarray:
-    """Makes an element commute with a hyperbolic pair
-
-    A new vector new_vector is formed from the input vector such that
-    this new vector has a zero symplectic inner product with the two
-    input hyperbolic vectors such that
-
-    span(vector hyper1, hyper2) = span(new_vector, hyper1, hyper2)
-
-    In terms of Pauli operators, a new Pauli operator is created such
-    that it commutes with the input hyperbolic operator pair such that
-
-    <op_vector, op_hyper1, op_hyper2> = <op_new_vector, op_hyper1, op_hyper2>
-
-    Args:
-        vector: Symplectic vector encoding a Pauli
-        hyper1, hyper2: Symplectic vectors encoding a hyperbolic pair of vectors
-
-    Returns:
-        out : A vector that has zero symplectic product with the given hyperbolic pair
-
-    Raises:
-        QiskitError: All inputs must be one dimensional
-        QiskitError: Input vectors must be GF(2) symplectic vectors
-
-    Examples:
-        >>> m = np.array([1,1,1,0,0,1], dtype=np.bool_)
-        >>> h1 = np.array([0,0,1,0,0,0], dtype=np.bool_)
-        >>> h2 = np.array([0,0,0,0,0,1], dtype=np.bool_)
-        >>> x = make_element_commute_with_hyper_pair(test_matrix[1], test_matrix[2], test_matrix[3])
-        >>> x.astype(int)
-        array([1,1,0,0,0,0])
-
-    See Also:
-    _make_element_commute_with_hyper_pair, make_element_commute_with_hyper_pairs,
-    _make_element_commute_with_hyper_pairs, make_elements_commute_with_hyper_pair,
-    _make_elements_commute_with_hyper_pair, make_elements_commute_with_hyper_pairs,
-    _make_elements_commute_with_hyper_pairs
-
-    Notes:
-    The this and the associated other functions should be made into a single functon
-    list make_commute_hyper(matrix, hyper1, hyper2, mrange=None, h1range=None, h2range=None)
-    or something like this
-    """
-    vector = np.array(vector)
-    hyper1 = np.array(hyper1)
-    hyper2 = np.array(hyper2)
-    if not (
-        is_symplectic_vector_form(vector)
-        and is_symplectic_vector_form(hyper1)
-        and is_symplectic_vector_form(hyper2)
-    ):
-        raise QiskitError(f"Input vectors must be GF(2) symplectic vectors")
-
-    return _make_element_commute_with_hyper_pair(vector, hyper1, hyper2)
-
-
-def _make_element_commute_with_hyper_pair(
-    vector: np.ndarray, hyper1: np.ndarray, hyper2: np.ndarray
-) -> np.ndarray:
-    """Modify the operator given by vector so that it commutes
-    with the hyperbolic pair (hyper1,hyper2) such that this new vector
-    is in <op(vector), op(hyper1), op(hyper2)>
-
-    Args:
-        vector (numpy.ndarray dtype=bool): Symplectic vector encoding a Pauli operator
-        hyper1 (numpy.ndarray dtype=bool): Symplectic vector encoding one of
-            the operators in the hyperbolic elements
-        hyper2 (numpy.ndarray dtype=bool): Symplectic vector encoding other one of
-            the operators in the hyperbolic elements
-
-    Returns:
-        numpy.ndarray dtype=bool : Symplectic vector encoding a Pauli operator that commutes
-            with the hyperbolic pair and is in <op(vector), op(hyper1), op(hyper2)>
-    """
-    new_vector = vector.copy()
-    num_qubits = hyper1.shape[0] >> 1
-    if _symplectic_product_vv(new_vector, hyper1, num_qubits):
-        new_vector = new_vector ^ hyper2
-    if _symplectic_product_vv(new_vector, hyper2, num_qubits):
-        new_vector = new_vector ^ hyper1
-    return new_vector
-
-
-def make_element_commute_with_hyper_pairs(
-    vector: ArrayLike, hyper1: ArrayLike, hyper2: ArrayLike, range1: ArrayLike, range2: ArrayLike
-) -> np.ndarray:
-    """Modify the operator elem so that it commutes with all the hyperbolic pairs given.
-
-    Args:
-        vector (numpy.ndarray dtype=bool): Symplectic vector encoding a Pauli operator
-        hyper1 (numpy.ndarray dtype=bool): Array of symplectic vectors encoding one element of
-            the operators in the hyperbolic pairs. Vectors to be used will be in range1
-        hyper2 (numpy.ndarray dtype=bool): Array of symplectic vectors encoding the other element of
-            the operators in the hyperbolic pairs. Vectors to be used will be in range2
-        range1 (list,...): Indices for hyper1 to use
-        range2 (list,...): Indices for hyper2 to use
-
-    Returns:
-        numpy.ndarray dtype=bool: Operator that commutes with provided hyperbolic pairs that
-        is derived from input operator/vector
-    """
-    # Note: This may better be called to_isotropic(op, hyper1, hyper2)
-    vector = np.array(vector)
-    hyper1 = np.array(hyper1)
-    hyper2 = np.array(hyper2)
-    assert vector.ndim == 1 and hyper1.ndim > 1 and hyper2.ndim > 1, QiskitError(
-        f"All inputs must be one dimensional: {vector.ndim},{hyper1.ndim}, {hyper2.ndim}"
-    )
-    assert vector.shape[0] == hyper1.shape[1] == hyper2.shape[1], QiskitError(
-        "Inputs matrices/vectors must have the same number of columns/length"
-    )
-    assert not (vector.shape[0] % 2 or hyper1.shape[1] % 2 or hyper2.shape[1] % 2), QiskitError(
-        f"All vectors must have an even length: \
-        {vector.shape[0]},{hyper1.shape[0]},{hyper2.shape[0]}"
-    )
-    try:
-        range1 = list(range1)
-    except TypeError:
-        QiskitError("Input range1 not iterable")
-    try:
-        range2 = list(range2)
-    except TypeError:
-        QiskitError("Input range2 not iterable")
-
-    assert set(range1).issubset(range(hyper1.shape[0])) and set(range2).issubset(
-        range(hyper2.shape[0])
-    ), QiskitError(f"Input ranges not valid per hyper1 and hyper2 inputs ranges")
-
-    return _make_element_commute_with_hyper_pairs(vector, hyper1, hyper2, range1, range2)
-
-
-def _make_element_commute_with_hyper_pairs(
-    vector: np.ndarray, hyper1: np.ndarray, hyper2: np.ndarray, range1: List, range2: List
-) -> np.ndarray:
-    """Modify the operator elem so that it commutes with all the hyperbolic pairs given.
-
-    Args:
-        vector (numpy.ndarray dtype=bool): Symplectic vector encoding a Pauli operator
-        hyper1 (numpy.ndarray dtype=bool): Array of symplectic vectors encoding one element of
-            the operators in the hyperbolic pairs. Vectors to be used will be in range1
-        hyper2 (numpy.ndarray dtype=bool): Array of symplectic vectors encoding the other element of
-            the operators in the hyperbolic pairs. Vectors to be used will be in range2
-        range1 (list): Indices for hyper1 to use
-        range2 (list): Indices for hyper2 to use
-
-    Returns:
-        numpy.ndarray dtype=bool: Operator that commutes with provided hyperbolic pairs that
-        is derived from input operator/vector
-    """
-    new_vector = vector.copy()
-
-    for index_1, index_2 in zip(range1, range2):
-        new_vector = _make_element_commute_with_hyper_pair(
-            new_vector, hyper1[index_1], hyper2[index_2]
-        )
-
-    return new_vector
-
-
-# ---------------------------------------------------------------
-
-
-def make_elements_commute_with_hyper_pair(
-    matrix: ArrayLike,
-    mrange: Union[range, List[int], np.ndarray],
-    hyper1: ArrayLike,
-    hyper2: ArrayLike,
-):
-    """Make the operators given by the range in the input matrix commute
-    with the hyperbolic pair (hyper1, hyper2).
-
-    Args:
-        matrix (ArrayLike): Symplectic matrix (check). Source of operators to make commute
-        mrange (Union[range, List[int], np.ndarray]): Range inicating which operators (rows) of the
-            input matrix to make commute with hyperbolic pair
-        hyper1 (ArrayLike): First part of hyperbolic pair
-        hyper2 (ArrayLike): Second part of hyperbolic pair
-
-    Returns:
-        matrix: Modifed inoput matrix with operatiors (rows) given in range now computing with provided
-        hyperbolic pair.
-    """
-
-    matrix = np.array(matrix, dtype=np.bool_)
-    try:
-        mrange = list(mrange)
-    except TypeError:
-        QiskitError("Input range1 not iterable")
-
-    hyper1 = np.array(hyper1)
-    hyper2 = np.array(hyper2)
-
-    assert matrix.ndim == 2 and hyper1.ndim == 1 and hyper2.ndim == 1, QiskitError(
-        f"input matrix must be 2 dimensional and hyper1, \
-        hyper2 must be one dimernsional: {matrix.ndim}(2), {hyper1.ndim}(1), {hyper2.ndim}(1)"
-    )
-    assert not (matrix.shape[1] % 2 or hyper1.shape[0] % 2 or hyper2.shape[0] % 2), QiskitError(
-        f"Inputs must have an even number of columns/length:\
-        {matrix.shape[1]},{hyper1.shape[0]},{hyper2.shape[0]}"
-    )
-    assert matrix.shape[1] == hyper1.shape[0] == hyper2.shape[0], QiskitError(
-        f"Input matices/vectors must have the same number of columns/length"
-    )
-
-    assert set(mrange).issubset(range(matrix.shape[1])), QiskitError(
-        f"Input range not a valid range for input matrix: {mrange}"
-    )
-
-    return _make_elements_commute_with_hyper_pair(matrix, mrange, hyper1, hyper2)
-
-
-def _make_elements_commute_with_hyper_pair(
-    matrix: np.ndarray, mrange: List, hyper1: np.ndarray, hyper2: np.ndarray
-):
-    """Make the operators given by the range in the input matrix commute
-    with the hyperbolic pair (hyper1, hyper2).
-
-    Args:
-        matrix (np.ndarray): Symplectic matrix (check). Source of operators to make commute
-        range (List): Range inicating which operators (rows) of the
-            input matrix to make commute with hyperbolic pair
-        hyper1 (np.ndarray): First part of hyperbolic pair
-        hyper2 (np.ndarray): Second part of hyperbolic pair
-
-    Returns:
-        matrix: Modifed inoput matrix with operatiors (rows) given in range now computing with provided
-        hyperbolic pair.
-    """
-
-    new_matrix = matrix.copy()
-
-    for index in mrange:
-        new_matrix[index] = _make_element_commute_with_hyper_pair(new_matrix[index], hyper1, hyper2)
-
-    return new_matrix
-
-
-def make_elements_commute_with_hyper_pairs(in_matrix, mrange, hyper1, h1range, hyper2, h2range):
-    """[summary]
-
-    Args:
-        matrix ([type]): [description]
-        mrange ([type]): [description]
-        hyper1 ([type]): [description]
-        h1range ([type]): [description]
-        hyper2 ([type]): [description]
-        h2range ([type]): [description]
-
-    Returns:
-        [type]: [description]
-
-    """
-
-    return _make_elements_commute_with_hyper_pairs(
-        in_matrix, mrange, hyper1, h1range, hyper2, h2range
-    )
-
-
-def _make_elements_commute_with_hyper_pairs(in_matrix, mrange, hyper1, h1range, hyper2, h2range):
-    matrix = in_matrix.copy()
-
-    for i, j in zip(h1range, h2range):
-        matrix = _make_elements_commute_with_hyper_pair(matrix, mrange, hyper1[i], hyper2[j])
-
-    return matrix
+    return _normalizer_group_preserve(center_, hyper1, hyper2)
