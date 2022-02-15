@@ -12,35 +12,46 @@
 # Part of the QEC framework
 """Module for FacePartition"""
 
-from typing import List
-
 from qiskit_qec.geometry.model.face import Face
 
 
 class FacePartition:
-    """FacePartition class"""
+    """FacePartition class
+
+    This is a crappy little class to store data on how the faces
+    that intersect with the region/cutter intersect
+    """
+
+    class _PartitionAttribute:
+        def __init__(self):
+            self.outside = []
+            self.inside = []
+            self.inout = []
+            self.path = []
 
     def __init__(self) -> None:
-        """A class to hold the date for partitioning faces of a shell
+        """A class to hold the data for partitioning faces of a shell
         relative to a give shape
         """
-        self.faces = {}
-        self.parts = None
+        self.attr = {}
 
     def add(self, face: Face):
-        """Add a face to the faces dictionary
+        """Add a face to the attribute dictionary
 
-        Face dictionary : entries [[inside vertices], [outside vertices]]
+        Attribute dictionary : entries -> _PartitionAttribute()
+
+        Shape.OUTSIDE = 0 -> list of vertices that are outside the region
+        Shape.INSIDE = 1 -> list of vertices that are in the region
+        Shape.INOUT = 2 -> bool list of which vertices in PATH are In=True or Out=False
+        Shape.PATH = 3 ->  list of vertices around face
+
+        self.attr[face].outside
+        self.attr[face].inside
+        self.attr[face].inout
+        self.attr[face].path
 
         Args:
             face (Face): Face to add to dictionary
-        """
-        self.faces[face] = [[], []]
 
-    def set_parts(self, parts: List[List]):
-        """Set parts
-
-        Args:
-            parts (List[List]): List of lists of faces with increasing vertex count
         """
-        self.parts = parts
+        self.attr[face] = FacePartition._PartitionAttribute()

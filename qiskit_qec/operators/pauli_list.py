@@ -18,6 +18,7 @@ from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
 from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
+from qiskit_qec.utils import pauli_rep
 
 
 class PauliList(BasePauli):
@@ -84,15 +85,13 @@ class PauliList(BasePauli):
     def init_paulis(self):
         """Create the initial list of Pauli objects that
         reference the primary symplectic matrix. This is used
-        as a time memory tradeoff to significantly speed of access
+        as a time memory tradeoff to significantly speed up the access
         of individual Pauli operators.
 
         Returns:
             List[Pauli]: List of Paulis that reference the primary symplectic matrix
             representation
         """
-        # for i in range(self.matrix.shape[0]):
-        #    print(f"self.matrix[i]={self.matrix[i]}")
         paulis = [
             Pauli(
                 np.atleast_2d(self.matrix[i]), phase_exponent=self.phase_exponent[i]
@@ -211,3 +210,86 @@ class PauliList(BasePauli):
             # print(f"pauli.phase_exponent={pauli.phase_exponent}")
             phase_exponent[i] = pauli.phase_exponent
         return matrix, phase_exponent, stype
+
+    # ---------------------------------------------------------------------
+    # Direct array access
+    # ---------------------------------------------------------------------
+    @property
+    def phase(self):
+        """Return the phase vector of the PauliList.
+
+        Note: This is different from the quantum_info phase property which
+        instead returns the phase_exponent
+        """
+        # Convert internal exponent frmt to complex number representation
+        return pauli_rep.exp2phase(self.phase_exponent, pauli_rep.INTERNAL_PAULI_REP_FORMAT)
+
+    @phase.setter
+    def phase(self, phase):
+        """Set the phase vector of the PauliList
+
+        Args:
+            phase (numpy.ndarray or complex numbers): Array of phases,
+                phases must be one of [1,-1, 1j, -1j]
+        """
+        phase_exp = pauli_rep.phase2exp(
+            phase, output_phase_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT
+        )
+        self.phase_exponent[:] = phase_exp
+
+    @property
+    def phase_exp(self):
+        """Return the phase exponent vector of the PauliList"""
+        return pauli_rep._change_rep(
+            self.phase_exp,
+            self.num_y,
+            pauli_rep.INTERNAL_PHASE_REP_FORMAT,
+            BasePauli.EXTERNAL_PHASE_REP_FORMAT,
+        )
+
+    @phase_exp.setter
+    def phase_exp(self, phase_exp, frmt=BasePauli.EXTERNAL_PHASE_REP_FORMAT):
+        """Set the phase exponent vector of the PauliList. Note that this method
+        converts the phase exponents directly and does not take into account the
+        number of Y paulis in the representation.
+
+        Args:
+            phase_exp (numpy.ndarray): Array of phase exponent
+            frmt (str, optional): Format that phase exponent vector is provided in.
+                Default: BasePauli.EXTERNAL_PHASE_REP_FORMAT
+        """
+        self.phase_exponent[:] = pauli_rep.convert_phase_exp(
+            phase_exp, input_format=frmt, output_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT
+        )
+
+    @property
+    def x(self):
+        """The x array for the symplectic representation."""
+        # TODO: Only designed for numpy arrays at the moment
+        return self.matrix[:, : self.num_qubits]
+
+    @x.setter
+    def x(self, val):
+        """[summary]
+
+        Args:
+            val ([type]): [description]
+        """
+        # TODO: Only designed for numpy arrays at the moment
+        self.matrix[:, : self.num_qubits] = val
+
+    @property
+    def z(self):
+        """The z array for the symplectic representation."""
+        # TODO: Only designed for numpy arrays at the moment
+        return self.matrix[:, self.num_qubits :]
+
+    @z.setter
+    def z(self, val):
+        """Set the Z part of the symplectic matrix
+
+        Args:
+            val (): [description]
+        """
+        # TODO: Only designed for numpy arrays at the moment
+        self.matrix[:, self.num_qubits :] = val

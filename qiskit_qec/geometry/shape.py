@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for shape"""
-from typing import List
+from typing import List, Optional
 
 from math import copysign
 
@@ -33,6 +33,8 @@ class Shape:
 
     OUTSIDE = 0
     INSIDE = 1
+    INOUT = 2
+    PATH = 3
 
     def __init__(self, points: List, lines: List[List], indices: List = None):
         """Init shape
@@ -227,39 +229,48 @@ class Shape:
 
         return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
 
-    def intersection(self, tiling: Shell, levels: int = 4) -> FacePartition:
+    def intersection(self, tiling: Shell, levels: Optional[List[int]] = None) -> FacePartition:
         """Find the vertex intersection of faces/operators with region defined by
         the cutter/shape (self) on a tiling (Shell)
 
         Args:
             tiling (Shell): A Shell representation a set of faces/operators
-            levels (int, optional): Bound on the number of intersection per face to include.
-                So if levels is 4 then all levels < 4 will be included. Defaults to 4
+            levels (List[int], optional): List of integers that
+                specifiy the number of intersection per face to include.
+                So if levels is [0,1,2,3] then all levels < 4 will be included. Defaults to [2,3]
 
         Returns:
             FacePartition: Details of faces partitioned by the cutter on the tiling (Shell)
         """
-        face_partition = FacePartition()
+        levels = levels or [2, 3]
+        partition = FacePartition()
 
         for face in tiling.faces:
-            face_partition.add(face)
-            for vertex in face.vertices:
-                if self.contains(vertex.pos):
-                    face_partition.faces[face][Shape.INSIDE].append(vertex)
+            edge = face.edges[0]
+            f_vertex = edge.vertices[0]
+            start_vertex = f_vertex
+            parent = edge
+            inout = [self.contains(f_vertex.pos)]
+            path = [f_vertex]
+            n_vertex = edge.vertices[1]
+            while n_vertex != start_vertex:
+                path.append(n_vertex)
+                inout.append(self.contains(n_vertex.pos))
+                parent = list(set(n_vertex.parents) - set([parent]))[0]
+                f_vertex = n_vertex
+                n_vertex = list(set(parent.vertices) - set([f_vertex]))[0]
+            _in = []
+            _out = []
+            for index, p in enumerate(path):
+                if inout[index]:
+                    _in.append(p)
                 else:
-                    face_partition.faces[face][Shape.OUTSIDE].append(vertex)
-            # Add procedure here to detect and store information about
-            # edges that cross the cutter/region boundary. This is needed
-            # to allow the tiling to be mapped to other non-plane surfaces
-            # such as the torus etc.
+                    _out.append(p)
+            if len(_in) in levels:
+                partition.add(face)
+                partition.attr[face].inside = _in
+                partition.attr[face].outside = _out
+                partition.attr[face].path = path
+                partition.attr[face].inout = inout
 
-        # Split faces/operators into intersection level categories
-        parts = [[] for i in range(levels)]
-        for key, vert_lists in face_partition.faces.items():
-            in_vert_count = len(vert_lists[Shape.INSIDE])
-            if in_vert_count < levels:
-                parts[in_vert_count].append(key)
-
-        face_partition.set_parts(parts)
-
-        return face_partition
+        return partition
