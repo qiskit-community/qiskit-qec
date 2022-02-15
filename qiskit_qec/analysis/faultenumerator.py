@@ -151,7 +151,6 @@ class FaultEnumerator:
                     for i in range(len(errs)):
                         circ._append(errs[i], [orig_node.qargs[i]], orig_node.cargs)
             inst = orig_node.op.copy()
-            inst.condition = orig_node.condition
             circ._append(inst, orig_node.qargs, orig_node.cargs)
             if orig_node in comb:
                 if orig_node.name != "measure":
@@ -169,7 +168,7 @@ class FaultEnumerator:
         """
         result = execute(
             circ,
-            Aer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             method="stabilizer",
             shots=1,
             optimization_level=0,
