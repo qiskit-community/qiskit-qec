@@ -1,9 +1,13 @@
+"""Test the compiled fault enumerator."""
 import unittest
 from qiskit_qec.extensions import compiledextension
 
 
 class TestFaultEnumeratorExtension(unittest.TestCase):
+    """Tests for compiled fault enumerator."""
+
     def test_faultenumerator(self):
+        """Test example inputs/outputs for compiled fault enumerator."""
         # R 0, R 1, R 2, H 0, CX 0 1, I 2, CX 1 2, I 0, M 0 0, M 1 1, M 2 2
         circ = [
             [7, 0],
@@ -28,6 +32,7 @@ class TestFaultEnumeratorExtension(unittest.TestCase):
             ["ix", "xi", "xx", "iz", "zi", "zz"],
             ["x"],
         ]
+        # pylint: disable=c-extension-no-member
         fe = compiledextension.FaultEnumerator(
             1,
             3,

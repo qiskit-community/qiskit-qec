@@ -148,14 +148,14 @@ class FaultEnumerator:
                 index = comb.index(orig_node)
                 errs = [error_to_gate[x] for x in error[index]]
                 if orig_node.name == "measure":
-                    for i, error in enumerate(errs):
-                        circ._append(error, [orig_node.qargs[i]], orig_node.cargs)
+                    for i, err in enumerate(errs):
+                        circ._append(err, [orig_node.qargs[i]], orig_node.cargs)
             inst = orig_node.op.copy()
             circ._append(inst, orig_node.qargs, orig_node.cargs)
             if orig_node in comb:
                 if orig_node.name != "measure":
-                    for i, error in enumerate(errs):
-                        circ._append(error, [orig_node.qargs[i]], orig_node.cargs)
+                    for i, err in enumerate(errs):
+                        circ._append(err, [orig_node.qargs[i]], orig_node.cargs)
         circ.duration = self.dag.duration
         circ.unit = self.dag.unit
         return circ
@@ -203,7 +203,7 @@ class FaultEnumerator:
             for comb in combinations(faulty_nodes, self.order):
                 nodes = [x[0] for x in comb]
                 labels = [self._node_name_label(x) for x in nodes]
-                indices = tuple([x[2] for x in comb])
+                indices = [x[2] for x in comb]
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
                     outcome = self.propagator.propagate_faults(indices, error)
