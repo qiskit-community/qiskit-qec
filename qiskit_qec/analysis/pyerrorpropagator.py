@@ -91,11 +91,6 @@ class PyErrorPropagator(ErrorPropagator):
         The operations are visited in topologically sorted order.
         Return tuple: encoded circuit, qreg size, creg size.
         """
-        # We expect a single quantum and classical register
-        if len(circ.qregs) != len(circ.qubits):
-            raise Exception("expected only one QuantumRegister")
-        if len(circ.cregs) != len(circ.clbits):
-            raise Exception("expected only one ClassicalRegister")
         dag = circuit_to_dag(circ)
         self.encoded_circ = []
         qubit_indices = {bit: index for index, bit in enumerate(circ.qubits)}
