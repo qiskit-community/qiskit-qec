@@ -1,13 +1,17 @@
+"""Test fault enumerator."""
 import unittest
+import itertools
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import IGate
-import itertools
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
 class TestFaultEnumerator(unittest.TestCase):
+    """Tests of fault enumerator class."""
+
     def test_fault_enumerator_stabilizer(self):
+        """Test an example using the stabilizer simulator."""
         qc = QuantumCircuit(3, 3)
         qc.h(0)
         qc.cx(0, 1)
@@ -22,7 +26,7 @@ class TestFaultEnumerator(unittest.TestCase):
         pnm.add_operation("special", {"y": 1})
         pnm.add_operation("measure", {"x": 1})
         fe = FaultEnumerator(qc, order=1, method="stabilizer", model=pnm, sim_seed=0)
-        fault_paths = [x for x in fe.generate()]
+        fault_paths = list(fe.generate())
         self.assertEqual(
             fault_paths,
             [
@@ -43,6 +47,7 @@ class TestFaultEnumerator(unittest.TestCase):
         )
 
     def test_fault_enumerator_propagator(self):
+        """Test an example using the error propagator."""
         qc = QuantumCircuit(3, 3)
         qc.h(0)
         qc.cx(0, 1)
@@ -57,7 +62,7 @@ class TestFaultEnumerator(unittest.TestCase):
         pnm.add_operation("special", {"y": 1})
         pnm.add_operation("measure", {"x": 1})
         fe = FaultEnumerator(qc, order=1, method="propagator", model=pnm, sim_seed=0)
-        fault_paths = [x for x in fe.generate()]
+        fault_paths = list(fe.generate())
         self.assertEqual(
             fault_paths,
             [
@@ -78,6 +83,7 @@ class TestFaultEnumerator(unittest.TestCase):
         )
 
     def test_fault_enumerator_stabilizer_blocks(self):
+        """Test an example using stabilizer simulator and returning blocks."""
         qc = QuantumCircuit(3, 3)
         qc.h(0)
         qc.cx(0, 1)
@@ -92,7 +98,7 @@ class TestFaultEnumerator(unittest.TestCase):
         pnm.add_operation("special", {"y": 1})
         pnm.add_operation("measure", {"x": 1})
         fe = FaultEnumerator(qc, order=1, method="stabilizer", model=pnm, sim_seed=0)
-        blocks = [x for x in fe.generate_blocks(3)]
+        blocks = list(fe.generate_blocks(3))
         fault_paths = list(itertools.chain(*blocks))
         self.assertEqual(
             fault_paths,
@@ -114,6 +120,7 @@ class TestFaultEnumerator(unittest.TestCase):
         )
 
     def test_fault_enumerator_propagator_blocks(self):
+        """Test an example with the error propagator and returning blocks."""
         qc = QuantumCircuit(3, 3)
         qc.h(0)
         qc.cx(0, 1)
@@ -128,7 +135,7 @@ class TestFaultEnumerator(unittest.TestCase):
         pnm.add_operation("special", {"y": 1})
         pnm.add_operation("measure", {"x": 1})
         fe = FaultEnumerator(qc, order=1, method="propagator", model=pnm, sim_seed=0)
-        blocks = [x for x in fe.generate_blocks(3)]
+        blocks = list(fe.generate_blocks(3))
         fault_paths = list(itertools.chain(*blocks))
         self.assertEqual(
             fault_paths,

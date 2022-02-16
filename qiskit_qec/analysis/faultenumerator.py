@@ -1,11 +1,11 @@
 """Quantum circuit fault path enumerator."""
+from itertools import combinations, product
+from typing import Tuple
 
 from qiskit import QuantumCircuit
 from qiskit.converters import circuit_to_dag
 from qiskit.circuit.library import IGate, XGate, YGate, ZGate
 from qiskit import execute, Aer
-from itertools import combinations, product
-from typing import Tuple
 
 from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
@@ -71,13 +71,13 @@ class FaultEnumerator:
         self.pauli_error_types = self.model.get_pauli_error_types()
         self.sim_seed = sim_seed
         self._process_circuit(circ)
-        self.ep = None
+        self.propagator = None
         self.use_compiled = False
-        self.fe = None
+        self.faultenum = None
         if method == "propagator":
             eps = EPSelector()
-            self.ep = eps.get_error_propagator()
-            self.ep.load_circuit(circ)
+            self.propagator = eps.get_error_propagator()
+            self.propagator.load_circuit(circ)
             try:
                 from qiskit_qec.extensions.compiledextension import (
                     FaultEnumerator as compiledFaultEnumerator,
@@ -92,11 +92,11 @@ class FaultEnumerator:
                 faulty_ops_labels = [self._node_name_label(x[0]) for x in faulty_nodes]
                 faulty_ops_pauli_errors = [self.pauli_error_types[x] for x in faulty_ops_labels]
 
-                self.fe = compiledFaultEnumerator(
+                self.faultenum = compiledFaultEnumerator(
                     self.order,
-                    len(self.ep.get_error()),
-                    len(self.ep.get_bit_array()),
-                    self.ep.encoded_circ,
+                    len(self.propagator.get_error()),
+                    len(self.propagator.get_bit_array()),
+                    self.propagator.encoded_circ,
                     faulty_ops_indices,
                     faulty_ops_labels,
                     faulty_ops_pauli_errors,
@@ -148,14 +148,14 @@ class FaultEnumerator:
                 index = comb.index(orig_node)
                 errs = [error_to_gate[x] for x in error[index]]
                 if orig_node.name == "measure":
-                    for i in range(len(errs)):
-                        circ._append(errs[i], [orig_node.qargs[i]], orig_node.cargs)
+                    for i, error in enumerate(errs):
+                        circ._append(error, [orig_node.qargs[i]], orig_node.cargs)
             inst = orig_node.op.copy()
             circ._append(inst, orig_node.qargs, orig_node.cargs)
             if orig_node in comb:
                 if orig_node.name != "measure":
-                    for i in range(len(errs)):
-                        circ._append(errs[i], [orig_node.qargs[i]], orig_node.cargs)
+                    for i, error in enumerate(errs):
+                        circ._append(error, [orig_node.qargs[i]], orig_node.cargs)
         circ.duration = self.dag.duration
         circ.unit = self.dag.unit
         return circ
@@ -190,9 +190,8 @@ class FaultEnumerator:
         if self.method == "stabilizer":
             faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
             for comb in combinations(faulty_nodes, self.order):
-                nodes = tuple([x[0] for x in comb])
+                nodes = [x[0] for x in comb]
                 labels = [self._node_name_label(x) for x in nodes]
-                indices = tuple([x[2] for x in comb])
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
                     fcirc = self._faulty_circuit(nodes, error)
@@ -202,12 +201,12 @@ class FaultEnumerator:
         elif self.method == "propagator":
             faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
             for comb in combinations(faulty_nodes, self.order):
-                nodes = tuple([x[0] for x in comb])
+                nodes = [x[0] for x in comb]
                 labels = [self._node_name_label(x) for x in nodes]
                 indices = tuple([x[2] for x in comb])
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
-                    outcome = self.ep.propagate_faults(indices, error)
+                    outcome = self.propagator.propagate_faults(indices, error)
                     yield (index, labels, list(error), outcome)
                     index += 1
 
@@ -223,8 +222,8 @@ class FaultEnumerator:
         final call.
         """
         if self.use_compiled:
-            while not self.fe.done():
-                block = self.fe.enumerate(blocksize)
+            while not self.faultenum.done():
+                block = self.faultenum.enumerate(blocksize)
                 yield block
         else:
             # Fall back to calling the generate() method repeatedly
