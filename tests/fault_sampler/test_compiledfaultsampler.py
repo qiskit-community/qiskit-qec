@@ -51,7 +51,7 @@ class TestCompiledFaultSampler(unittest.TestCase):
                 num_faults[failures] = 1
             else:
                 num_faults[failures] += 1
-        for key in num_faults.keys():
+        for key in num_faults:
             num_faults[key] /= 100000
         limit = {
             0: (1 - 0.1) ** 5,
@@ -61,8 +61,8 @@ class TestCompiledFaultSampler(unittest.TestCase):
             4: 5 * 0.1 ** 4 * (1 - 0.1),
             5: 0.1 ** 5,
         }
-        for key in num_faults.keys():
-            self.assertAlmostEqual(num_faults[key], limit[key], 2)
+        for key, value in num_faults.items():
+            self.assertAlmostEqual(value, limit[key], 2)
 
     def test_faultsampler_2(self):
         """Test sampling in a circuit with one faulty location."""
