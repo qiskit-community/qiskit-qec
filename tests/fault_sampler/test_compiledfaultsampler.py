@@ -1,9 +1,13 @@
+"""Test the compiled fault sampler."""
 import unittest
 from qiskit_qec.extensions import compiledextension
 
 
 class TestCompiledFaultSampler(unittest.TestCase):
+    """Tests of the compiled fault sampler."""
+
     def test_faultsampler(self):
+        """Test sampling multiple faults in a circuit."""
         # R 0, R 1, R 2, H 0, CX 0 1, I 2, CX 1 2, I 0, M 0 0, M 1 1, M 2 2
         circ = [
             [7, 0],
@@ -28,6 +32,7 @@ class TestCompiledFaultSampler(unittest.TestCase):
             "cx2": [("ix", 1), ("xi", 1), ("xx", 1), ("iz", 1), ("zi", 1), ("zz", 1)],
         }
         label_to_error_probability = {"h": 0.1, "cx": 0.1, "id": 0.1, "cx2": 0.1}
+        # pylint: disable=c-extension-no-member
         fe = compiledextension.FaultSampler(
             3,
             3,
@@ -60,12 +65,14 @@ class TestCompiledFaultSampler(unittest.TestCase):
             self.assertAlmostEqual(num_faults[key], limit[key], 2)
 
     def test_faultsampler_2(self):
+        """Test sampling in a circuit with one faulty location."""
         # R 0, H 0, M 0 0
         circ = [[7, 0], [0, 0], [8, 0, 0]]
         faulty_ops_indices = [1]
         faulty_ops_labels = ["h"]
         label_to_pauli_weight = {"h": [("x", 1), ("y", 1), ("z", 1)]}
         label_to_error_probability = {"h": 0.2}
+        # pylint: disable=c-extension-no-member
         fe = compiledextension.FaultSampler(
             1,
             1,
