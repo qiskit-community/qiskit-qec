@@ -23,11 +23,10 @@ from qiskit_qec.linear.symplectic import (
     locate_hyper_partner,
     make_commute_hyper,
     build_hyper_partner,
+    symplectic_gram_schmidt,
 )
 
 
-# TODO: remove when all tests are fixed
-# pylint: disable=unused-variable
 class TestSymplectic(TestCase):
     """Tests simplectic."""
 
@@ -247,13 +246,9 @@ class TestSymplectic(TestCase):
             ],
             dtype=np.bool_,
         )
-        # TODO: fix tests
-        # center, x, z = symplectic_gram_schmidt(a)
-        # self.assertTrue(
-        #     np.array_equal(
-        #         center.astype(int),
-        #         [[1, 1, 1, 0, 1, 0, 0, 1], [1, 0, 0, 1, 0, 1, 1, 1]]
-        #     )
-        # )
-        # self.assertTrue(np.array_equal(x.astype(int), [[0, 1, 0, 0, 1, 0, 1, 0]]))
-        # self.assertTrue(np.array_equal(z.astype(int), [[0, 0, 0, 0, 1, 1, 0, 1]]))
+        center, x, z = symplectic_gram_schmidt(a)
+        self.assertTrue(
+            np.array_equal(center.astype(int), [[1, 1, 1, 0, 1, 0, 0, 1], [1, 0, 0, 1, 0, 1, 1, 1]])
+        )
+        self.assertTrue(np.array_equal(x.astype(int), [[0, 1, 0, 0, 1, 0, 1, 0]]))
+        self.assertTrue(np.array_equal(z.astype(int), [[0, 0, 0, 0, 1, 1, 0, 1]]))
