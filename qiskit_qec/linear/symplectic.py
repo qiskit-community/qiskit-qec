@@ -1051,6 +1051,10 @@ def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
         True
     """
 
+    # Check for empty x and z: Null comdition -> True
+    if x.shape[0] == 0 and z.shape[0] == 0:
+        return True
+
     matrix = np.vstack((x, z))
     test = symplectic_product(matrix, matrix)
     return np.array_equal(test, mt._create_lambda_matrix(matrix.shape[0] >> 1))
