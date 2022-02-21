@@ -411,7 +411,7 @@ def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
 
         for j in range(hncols):
             if heads[j] != -1:
-                if row[j] is True:
+                if row[j]:
                     row = row ^ co_row[heads[j]]
 
         # Find next pivot
@@ -426,7 +426,7 @@ def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
             diff = [item for item in range(heads[j]) if item not in heads[j + 1 :]]
             for i in diff:
                 row = co_row[i]
-                if row[j] is True:
+                if row[j]:
                     co_row[i] = co_row[i] ^ co_row[heads[j]]
 
     pivots = [i for i in heads if i != -1]

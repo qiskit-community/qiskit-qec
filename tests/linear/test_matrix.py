@@ -23,11 +23,10 @@ from qiskit_qec.linear.matrix import (
     create_lambda_matrix,
     augment_mat,
     rref_complete,
+    rank,
 )
 
 
-# TODO: remove when all tests are fixed
-# pylint: disable=unused-variable
 class TestLinearMatrix(TestCase):
     """Tests matrix."""
 
@@ -153,11 +152,10 @@ class TestLinearMatrix(TestCase):
         )
         expected_transform_mat = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [1, 1, 1, 0], [1, 0, 0, 1]])
         expected_rank = 4
-        # TODO: fix tests
-        # self.assertTrue(np.array_equal(heads, expected_heads))
-        # self.assertTrue(np.array_equal(expected_rref_mat, rref_mat.astype(int)))
-        # self.assertTrue(np.array_equal(expected_transform_mat, transform_mat.astype(int)))
-        # self.assertEqual(rank_, expected_rank)
+        self.assertTrue(np.array_equal(heads, expected_heads))
+        self.assertTrue(np.array_equal(expected_rref_mat, rref_mat.astype(int)))
+        self.assertTrue(np.array_equal(expected_transform_mat, transform_mat.astype(int)))
+        self.assertEqual(rank_, expected_rank)
 
     def test_invalid_rref_complete(self):
         """Tests invalid rref complete."""
@@ -177,4 +175,4 @@ class TestLinearMatrix(TestCase):
             ],
             dtype=np.bool_,
         )
-        # self.assertEqual(rank(matrix), 4) TODO: fix test
+        self.assertEqual(rank(matrix), 4)

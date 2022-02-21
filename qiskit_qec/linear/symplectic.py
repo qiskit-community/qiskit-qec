@@ -700,19 +700,21 @@ def symplectic_gram_schmidt(
     a = np.atleast_2d(np.array(a))
     if not is_symplectic_matrix_form(a):
         raise QiskitError("Input matrix not a GF(2) symplectic matrix")
-    try:
+    if x is None:
+        x = []
+    else:
+        x = np.atleast_2d(x)
         x = list(x)
         if not is_symplectic_vector_form(x[0]):
             raise QiskitError("Input hyperbolic array x is not a GF(2) sympletic matrix")
-    except TypeError:
-        x = []
 
-    try:
+    if z is None:
+        z = []
+    else:
+        z = np.atleast_2d(z)
         z = list(z)
         if not is_symplectic_vector_form(z[0]):
             raise QiskitError("Input hyperbolic array z is not a GF(2) sympletic matrix")
-    except TypeError:
-        z = []
 
     if not len(x) == len(z):
         raise QiskitError("Input hyperbolic arrays have different dimensions")
@@ -720,8 +722,9 @@ def symplectic_gram_schmidt(
     if len(x) > 0 and x[0].shape[0] != z[0].shape[0]:
         raise QiskitError("Input hyperbolic arrays have different dimensions")
 
-    if not is_hyper_form(x, z):
-        raise QiskitError("Input hyperbolic matrices do not represent a hyperbolic basis")
+    if x != []:
+        if not is_hyper_form(x, z):
+            raise QiskitError("Input hyperbolic matrices do not represent a hyperbolic basis")
 
     return _symplectic_gram_schmidt(a, x, z)
 
@@ -1047,6 +1050,10 @@ def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
         >>> is_hyper_form(x,z)
         True
     """
+
+    # Check for empty x and z: Null comdition -> True
+    if x.shape[0] == 0 and z.shape[0] == 0:
+        return True
 
     matrix = np.vstack((x, z))
     test = symplectic_product(matrix, matrix)
