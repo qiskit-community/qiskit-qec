@@ -87,15 +87,15 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
         """Initialize the PaulisBase.
 
         This is an array of k N-qubit Paulis represented in the '-iZX'
-        format:
+        frmt:
         P = (-i)^phase Z^z X^x.
         This representation is chosen to simplify various operations and to be consistent
-        with other aspects within Qiskit. This format only changes
+        with other aspects within Qiskit. This frmt only changes
         the interpretation of the phase which is recorded as an exponent of -i.
 
         Args:
             xz_matrix: input symplectic matrix
-            phase_exponent (np.ndarray): input phase exponent vector in '-i' representation format
+            phase_exponent (np.ndarray): input phase exponent vector in '-i' representation frmt
             stype (int):  Specifies which interal representation type to use for symplectic matrices. The
             possibles types are returned by SymplecticMatrixBase.stypes(). By default the Dense NumPy
             sympletic matrix module is used. If using a different symplectic matrix module from the default
@@ -135,8 +135,8 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
         Calling with no parameters will reset to the default external
         representations
         Args:
-            phase_format (str) : Phase format string from pauli_rep.PHASE_REP_FORMATS. Default = '-i'
-            symp_format (str): Symplectic format string from pauli_rep.SYMP_REP_FORMATS. Default = 'YZX'
+            phase_format (str) : Phase frmt string from pauli_rep.PHASE_REP_FORMATS. Default = '-i'
+            symp_format (str): Symplectic frmt string from pauli_rep.SYMP_REP_FORMATS. Default = 'YZX'
         Raiss:
             QiskitError: If formats are not implemented
         """
@@ -145,13 +145,13 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
             if phase_format in pauli_rep.PHASE_REP_FORMATS:
                 cls.external_phase_rep_format = phase_format
             else:
-                raise QiskitError("Invalid phase format")
+                raise QiskitError("Invalid phase frmt")
 
         if symp_format is not None:
             if symp_format in pauli_rep.SYMP_REP_FORMATS:
                 cls.external_symp_rep_format = symp_format
             else:
-                raise QiskitError("Invalid symplectic format")
+                raise QiskitError("Invalid symplectic frmt")
 
         if phase_format is None:
             phase_format = pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT
@@ -173,8 +173,8 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
         Calling with no parameters will reset to the default external
         representations
         Args:
-            phase_format (str) : Phase format string from PHASE_REP_FORMATS. Default = '-i'
-            symp_format (str): Symplectic format string from SYMP_REP_FORMATS. Default = 'YZX'
+            phase_format (str) : Phase frmt string from PHASE_REP_FORMATS. Default = '-i'
+            symp_format (str): Symplectic frmt string from SYMP_REP_FORMATS. Default = 'YZX'
         Raiss:
             QiskitError: If formats are not implemented
         """
@@ -184,9 +184,9 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @staticmethod
     def external_pauli_format():
-        """Display the external representation format for Pauli's
+        """Display the external representation frmt for Pauli's
         Returns:
-            str: Representation format for Pauli operator
+            str: Representation frmt for Pauli operator
         """
         return PaulisBase.external_pauli_rep_format
 
@@ -203,13 +203,13 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
 
             PaulisBase.set_formats(phase_format=phase_format, symp_format=symp_format)
         else:
-            raise QiskitError("Invalid Pauli representation format or unsupported format")
+            raise QiskitError("Invalid Pauli representation frmt or unsupported frmt")
 
     @staticmethod
     def external_phase_format():
-        """Display the external phase representation format for Pauli's
+        """Display the external phase representation frmt for Pauli's
         Returns:
-            str: Phase representation format for Pauli operator
+            str: Phase representation frmt for Pauli operator
         """
         return PaulisBase.external_phase_rep_format
 
@@ -223,9 +223,9 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @staticmethod
     def external_symp_format():
-        """Display the external symplectic representation format for Pauli's
+        """Display the external symplectic representation frmt for Pauli's
         Returns:
-            str: Symplectic representation format for Pauli operator
+            str: Symplectic representation frmt for Pauli operator
         """
         return PaulisBase.external_symp_rep_format
 
@@ -276,7 +276,6 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
     def num_y(self):
         """Count the number of Y Pauli's"""
         return self._matrix.num_y()
-
     def copy(self):
         """Make a deep copy of current operator."""
         # Deepcopy has terrible performance on objects with Numpy arrays
@@ -463,7 +462,7 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
     def conjugate(self, inplace=False):
         """Return the conjugate of each Pauli in the list.
 
-        Converts internal '-i' format into 'i' format
+        Converts internal '-i' frmt into 'i' frmt
 
         Args:
             inplace (boolean) : Default: False, If True will modify inplace

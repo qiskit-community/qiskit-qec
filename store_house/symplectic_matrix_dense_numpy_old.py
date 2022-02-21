@@ -242,8 +242,8 @@ class SymplecticMatrixDenseNumPy(SymplecticMatrixBase):
             raise QiskitError("z and x vectors are different size.")
 
         # Convert group phase convention to internal ZX-phase conversion.
-        # Internal Pauli representation is '-iZX' format
-        # External Pauli representation is '-iYZX' format and is assumed as input
+        # Internal Pauli representation is '-iZX' frmt
+        # External Pauli representation is '-iYZX' frmt and is assumed as input
         # when referencing is not possible for the phase.
         base_phase = pauli_rep.change_rep(
             phase,
@@ -264,8 +264,8 @@ class SymplecticMatrixDenseNumPy(SymplecticMatrixBase):
             raise QiskitError("Invalid matrix shape")
 
         # Convert group phase convention to internal ZX-phase conversion.
-        # Internal Pauli representation is '-iZX' format
-        # External Pauli representation is '-iYZX' format and is assumed as input
+        # Internal Pauli representation is '-iZX' frmt
+        # External Pauli representation is '-iYZX' frmt and is assumed as input
         # when referencing is not possible for the phase.
         base_phase = pauli_rep.change_rep(
             phase,
@@ -317,7 +317,7 @@ class SymplecticMatrixDenseNumPy(SymplecticMatrixBase):
             from scipy.sparse import csr_matrix
 
             return csr_matrix((data, indices, indptr), shape=(dim, dim), dtype=complex)
-        # Build dense matrix using csr format
+        # Build dense matrix using csr frmt
         mat = np.zeros((dim, dim), dtype=complex)
         for i in range(dim):
             mat[i][indices[indptr[i] : indptr[i + 1]]] = data[indptr[i] : indptr[i + 1]]
