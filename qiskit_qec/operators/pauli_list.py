@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
-"""Module fo Pauli Lists"""
+"""Module for Pauli Lists"""
 
 import numpy as np
 from qiskit.exceptions import QiskitError
@@ -27,13 +27,11 @@ class PauliList(BasePauli):
     # Set the max number of qubits * paulis before string truncation
     __truncate__ = 2000
 
-    def __init__(
-        self, pdata: str, stype="numpy", phase_exponent=0, input_qubit_order="right-to-left"
-    ):
+    def __init__(self, pdata, stype="numpy", phase_exponent=0, input_qubit_order="right-to-left"):
         """Inits a PauliList
 
         Args:
-            pdata (str): List of Pauli Operators. Ex: 'IIXXZ'
+            pdata: List of Pauli Operators. Ex: 'IIXXZ'
             stype (str, optional): Class type of matrix. Defaults to "numpy".
             phase_exponent (int, optional): i**phase_exponent. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".

@@ -276,6 +276,7 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
     def num_y(self):
         """Count the number of Y Pauli's"""
         return self._matrix.num_y()
+
     def copy(self):
         """Make a deep copy of current operator."""
         # Deepcopy has terrible performance on objects with Numpy arrays
