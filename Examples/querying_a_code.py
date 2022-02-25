@@ -22,3 +22,5 @@ if __name__ == "__main__":
     print(the1975_codes)
     print(glass_animals_codes)
     
+    print(derulo_codes[0].gauge_group.generators)
+    print(derulo_codes[0].parameters)
