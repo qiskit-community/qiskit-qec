@@ -60,7 +60,7 @@ class QECCodeBase:
     def _convert_json_to_subsystem_codes(self, qec_code_jsons):
         qec_code_list = []
         for cur_code_json in qec_code_jsons.values():
-            a_gottesman_pauli = cur_code_json["gottesman_form"][0].upper()
+            a_gottesman_pauli = cur_code_json["stabilizer"][0].upper()
             cur_code = SubSystemCode(
                 GaugeGroup(PauliList(a_gottesman_pauli)), parameters=cur_code_json
             )
