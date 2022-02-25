@@ -3,7 +3,7 @@ from qiskit_qec.codes.subsystemcodes import SubSystemCode
 
 from qiskit_qec.structures.gauge import GaugeGroup
 from qiskit_qec.operators.pauli_list import PauliList
-from typing import List, Dict
+from typing import List, Dict, Union
 
 
 class QECCodeBase:
@@ -17,13 +17,21 @@ class QECCodeBase:
 
     def get_subsystem_code(
         self,
-        n_len,
-        k_dim,
-        addtl_params_that_neednt_exist=None,
+        n_len: Union[List[int], int],
+        k_dim: Union[List[int], int],
+        addtl_params_that_neednt_exist: set = None,
         **additional_params,
     ) -> (List[SubSystemCode]):
+        # housekeeping for a cleaner interface
+        if isinstance(n_len, int):
+            n_len = [n_len]
+        if isinstance(k_dim, int):
+            k_dim = [k_dim]
 
-        qec_code_jsons = self._load_code_jsons_from_n_k(n_len, k_dim)
+        qec_code_jsons = {}
+        for n in n_len:
+            for k in k_dim:
+                qec_code_jsons = {**qec_code_jsons, **self._load_code_jsons_from_n_k(n, k)}
 
         if len(additional_params) > 0:
             print(

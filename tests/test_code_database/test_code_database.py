@@ -94,6 +94,59 @@ class TestCodeBase(unittest.TestCase):
                     ]
                 ),
             ),
+            (
+                ([6, 1], [0]),
+                set(
+                    [
+                        "b8ad169a-2d48-454e-80bc-957f7d45b807",
+                        "dd40352d-7e6b-465c-bcec-4a28ef8b46b3",
+                        "debd6be2-c623-4bfd-80a3-f77a4a337456",
+                        "439ed374-3d68-43ec-8fc4-d629952b4648",
+                        "438114b1-44d0-4105-90b8-e38458cc9654",
+                        "67eca164-5071-4cc6-abb3-4470f4a1afae",
+                        "391ab6bf-6bac-4881-9320-30428ea225eb",
+                        "16527a8a-d824-4b7d-a933-4175b4d87919",
+                        "8f04b1c2-03ab-44a2-9f43-bafeca57de13",
+                        "c4a9ef5f-331c-4f67-afe7-7a23dfa26b7f",
+                        "64f371c7-0fe9-48b6-ba61-fcb435668fe5",
+                        "707bd7b0-c034-4633-b43d-9db20fa9aafa",
+                        "6ee5a0ef-5b61-48c6-94e5-fd4147f317c7",
+                        "2fa2df4f-9b1d-41dc-9229-dc500866b30d",
+                        "f85849f0-52fa-4ebe-88a7-da7bd72c945a",
+                        "bb3c6e57-0913-4fa6-bac8-baa67d7fb8f0",
+                        "1a4fe6ef-23c2-4f19-a344-ed5d940413ea",
+                        "f1877244-e620-4906-8b60-eb01c72a8e86",
+                        "8d9abcf9-82e2-4f36-aae7-842426eab115",
+                        "3bba9f88-527a-4c61-aac3-bcfa4df64466",
+                        "63c53914-031d-4040-a6a6-182dac147074",
+                        "6a8d7438-1683-498d-a17e-2022a053d3a6",
+                        "e8d45e4c-4a85-4ff9-b441-5a4f0f016545",
+                        "02568544-a737-4084-b9ed-2942deb92b9b",
+                        "28a10c13-6ee2-4aff-860b-87f58d633734",
+                        "7f752ebc-cedc-4af4-92a7-05c9992a3764",
+                        "70838bd3-dda1-498d-9138-cd5626e6eef9",
+                    ]
+                ),
+            ),
+            (
+                ([3, 2], [0, 1]),
+                set(
+                    [
+                        "a7753bb2-01f8-461b-aedd-24d42a7322da",
+                        "d340c69c-0310-4ce9-af44-1fd83c3ce67b",
+                        "103f7c5b-8601-4175-844d-695eee247b71",
+                        "d6ade957-fdac-45d5-814c-d386c3f4604a",
+                        "0a80b836-3c62-47ec-9efa-a417b8b01b12",
+                        "a02d2b58-79c0-4c9e-8122-90cd57a57e6a",
+                        "a814c308-296f-4ec3-91d6-9509408e56da",
+                        "12d90740-cd73-44c1-8f33-79c6cad4596a",
+                        "6b47540a-46a3-4e6f-bc97-886fe08caf44",
+                        "9f95c997-4048-4001-b2fd-aa919be5866f",
+                        "8ce0c4f9-135f-41b1-8609-ffcd9bc49362",
+                        "b5dfa20f-8d48-4fd1-aa6f-0556f3021558",
+                    ]
+                ),
+            ),
         ]
 
         for code_test in small_code_sets:
@@ -101,7 +154,9 @@ class TestCodeBase(unittest.TestCase):
             soln = code_test[1]
 
             queried_codes = qec_db.get_subsystem_code(*search_input)
-            assert len(soln) == len(queried_codes)
+            assert len(soln) == len(
+                queried_codes
+            ), f"soln len: {len(soln)}, queried len: {len(queried_codes)}"
             for q_code in queried_codes:
                 assert (
                     q_code.parameters["uuid"] in soln
