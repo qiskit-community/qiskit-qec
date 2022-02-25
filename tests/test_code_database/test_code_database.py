@@ -117,10 +117,26 @@ class TestCodeBase(unittest.TestCase):
         qec_db = QECCodeBase()
 
         addtl_param_tests = [
-            (((1, 0), {"gottesman_form": "y"}), []),
+            (((1, 0), {"gottesman_form": "y"}, {}), []),
             (
-                ((3, 2), {"css_logicals": "ixi"}),
+                ((3, 2), {"css_logicals": "ixi"}, {}),
                 ["8adffac4-a07a-4f07-ad14-a936d73b0d8e", "d9fbf163-c283-49d2-a326-caa304c3de21"],
+            ),
+            (
+                (
+                    (2, 1),
+                    {"definitely_not_a_real_param": 7},
+                    {"definitely_not_a_real_param"},
+                ),
+                ["9f95c997-4048-4001-b2fd-aa919be5866f", "6b47540a-46a3-4e6f-bc97-886fe08caf44"],
+            ),
+            (
+                (
+                    (2, 1),
+                    {"definitely_not_a_real_param": 7},
+                    {},
+                ),
+                [],
             ),
         ]
 
@@ -128,17 +144,21 @@ class TestCodeBase(unittest.TestCase):
             search_input = code_test[0]
             n_k_input = search_input[0]
             addtl_params = search_input[1]
+            addtl_params_that_neednt_exist = search_input[2]
             soln = code_test[1]
-            queried_codes = qec_db.get_subsystem_code(*n_k_input, **addtl_params)
+            queried_codes = qec_db.get_subsystem_code(
+                *n_k_input, addtl_params_that_neednt_exist, **addtl_params
+            )
             assert len(soln) == len(queried_codes)
             for q_code in queried_codes:
                 assert (
                     q_code.parameters["uuid"] in soln
                 ), f" q_code_uuid: {q_code.parameters[ 'uuid' ]} not in soln {soln}"
                 for key, value in addtl_params.items():
-                    assert (
-                        value in q_code.parameters[key] or q_code.parameters[key] == value
-                    ), f"q_code.parameters[{key}]: {q_code.parameters[key]} fails for value: {value}"
+                    if key not in addtl_params_that_neednt_exist:
+                        assert (
+                            value in q_code.parameters[key] or q_code.parameters[key] == value
+                        ), f"q_code.parameters[{key}]: {q_code.parameters[key]} fails for value: {value}"
 
 
 if __name__ == "__main__":

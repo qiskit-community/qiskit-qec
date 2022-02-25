@@ -15,14 +15,26 @@ class QECCodeBase:
     def __init__(self):
         pass
 
-    def get_subsystem_code(self, n_len, k_dim, **additional_params) -> List[SubSystemCode]:
+    def get_subsystem_code(
+        self,
+        n_len,
+        k_dim,
+        addtl_params_that_neednt_exist=None,
+        **additional_params,
+    ) -> (List[SubSystemCode]):
 
         qec_code_jsons = self._load_code_jsons_from_n_k(n_len, k_dim)
+
         if len(additional_params) > 0:
             print(
                 f"WARNING. You have {len(additional_params)} additional params. Additional params may cause really slow results"
             )
-            qec_code_jsons = self._additional_param_query(qec_code_jsons, **additional_params)
+
+            if addtl_params_that_neednt_exist is None:
+                addtl_params_that_neednt_exist = set()
+            qec_code_jsons = self._additional_param_query(
+                qec_code_jsons, addtl_params_that_neednt_exist, **additional_params
+            )
 
         qec_code_list = self._convert_json_to_subsystem_codes(qec_code_jsons)
         return qec_code_list
@@ -30,10 +42,11 @@ class QECCodeBase:
     def _evaluate_codepath(self, n_len, k_dim):
         return os.path.join(self.codebase_path, self.code_path_format).format(n_len, n_len, k_dim)
 
-    def _load_code_jsons_from_n_k(self, n_len, k_dim) -> Dict:
+    def _load_code_jsons_from_n_k(self, n_len, k_dim) -> (Dict):
         code_path = self._evaluate_codepath(n_len, k_dim)
         with open(code_path, "r") as f:  # should except if invalid
             qec_code_jsons = json.load(f)
+
         return qec_code_jsons
 
     def _convert_json_to_subsystem_codes(self, qec_code_jsons):
@@ -46,16 +59,29 @@ class QECCodeBase:
             qec_code_list.append(cur_code)
         return qec_code_list
 
-    def _additional_param_query(self, json_codes, **additional_params):
+    def _additional_param_query(
+        self, json_codes, addtl_params_that_neednt_exist, **additional_params
+    ):
         results = {}
         for k, cur_code_dict in json_codes.items():
-            if self._is_valid(cur_code_dict, additional_params):
+            if self._is_valid(cur_code_dict, addtl_params_that_neednt_exist, additional_params):
                 results[k] = json_codes[cur_code_dict["uuid"]]
 
         return results
 
-    def _is_valid(self, code_info_dict, additional_params):
+    def _is_valid(
+        self, code_info_dict, addtl_params_that_neednt_exist, additional_params
+    ) -> (bool):
+        """Only return warning if code is valid"""
         for param, value in additional_params.items():
-            if not (code_info_dict[param] == value or value in code_info_dict[param]):
-                return False
+            if param in code_info_dict:
+                if not (
+                    code_info_dict[param] == value or value in code_info_dict[param]
+                ):  # if it's in the dictionary but invalid
+                    return False
+            else:
+                if (
+                    param not in addtl_params_that_neednt_exist
+                ):  # if it's not in the dictionary but needs to be
+                    return False
         return True
