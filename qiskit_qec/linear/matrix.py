@@ -41,8 +41,7 @@ def create_lambda_matrix(n: int) -> np.ndarray:
                [1, 0, 0, 0],
                [0, 1, 0, 0]])
 
-    See Also:
-    _create_lambda_matrix
+    See Also: _create_lambda_matrix
     """
     if not n > 0:
         raise QiskitError("n must be a positive integer")
@@ -93,6 +92,7 @@ def augment_mat(matrix: np.ndarray, pos: str = "right") -> np.ndarray:
 
     bottom  ->  [M]
                 [I]
+
     Args:
         matrix : Matrix to agument
         pos : Position of augmentation. One of "top", "bottom"

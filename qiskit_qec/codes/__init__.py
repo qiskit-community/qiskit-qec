@@ -10,6 +10,24 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Codes."""
+"""
+======================================
+Codes module (:mod:`qiskit_qec.codes`)
+======================================
 
-from . import code, qec_code, subsystemcodes
+.. currentmodule:: qiskit_qec.codes
+
+Code Class
+==========
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Code
+    QECCode
+    SubSystemCode
+"""
+
+from .code import Code
+from .qec_code import QECCode
+from .subsystemcodes import SubSystemCode

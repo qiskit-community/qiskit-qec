@@ -10,6 +10,25 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Operators."""
+"""
+==============================================
+Operators module (:mod:`qiskit_qec.operators`)
+==============================================
 
-from . import base_pauli, pauli, pauli_list
+.. currentmodule:: qiskit_qec.operators
+
+
+Operators classes
+=================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    PauliList
+    Pauli
+    BasePauli
+"""
+
+from .base_pauli import BasePauli
+from .pauli import Pauli
+from .pauli_list import PauliList

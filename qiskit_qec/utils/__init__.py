@@ -10,7 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Utilities."""
+"""
+======================================
+Utils module (:mod:`qiskit_qec.utils`)
+======================================
 
+.. currentmodule:: qiskit_qec.utils
+
+
+Utils classes
+=============
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Indexer
+    pauli_rep
+"""
+
+from .indexer import Indexer
 from . import pauli_rep
-from . import indexer

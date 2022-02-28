@@ -10,7 +10,26 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Factory."""
+"""
+==========================================
+Factory module (:mod:`qiskit_qec.factory`)
+==========================================
 
-from . import subsystem
-from . import factory
+.. currentmodule:: qiskit_qec.factory
+
+Factory
+=======
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Factory
+    SubSystemFactory
+    CSSSubSystemFactory
+    HeavyHexFactory
+"""
+
+from .subsystem.subsystem_factory import SubSystemFactory
+from .subsystem.css.css_subsystem_factory import CSSSubSystemFactory
+from .subsystem.css.heavy_hex_factory import HeavyHexFactory
+from .factory import Factory

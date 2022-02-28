@@ -10,6 +10,47 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Geometry."""
+"""
+============================================
+Geometry module (:mod:`qiskit_qec.geometry`)
+============================================
 
-from . import bounds, lattice, manifold, model, plane, shape, tiles, two_manifold
+.. currentmodule:: qiskit_qec.geometry
+
+Geometry
+========
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Shape
+    GeometryBounds
+    Lattice
+    Tile
+    Manifold
+    TwoManifold
+    Plane
+    Edge
+    Face
+    QubitCount
+    QubitData
+    ShapeObject
+    Shell
+    Vertex
+    WireFrame
+"""
+
+from .shape import Shape
+from .bounds import GeometryBounds
+from .lattice import Lattice, Tile
+from .manifold import Manifold
+from .plane import Plane
+from .two_manifold import TwoManifold
+from .model.edge import Edge
+from .model.face import Face
+from .model.qubit_count import QubitCount
+from .model.qubit_data import QubitData
+from .model.shape_object import ShapeObject
+from .model.shell import Shell
+from .model.vertex import Vertex
+from .model.wireframe import WireFrame

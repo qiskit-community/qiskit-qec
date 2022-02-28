@@ -943,27 +943,23 @@ def is_symplectic_form(
 # ---------------------------------------------------------------
 
 
-def is_center(center_: np.ndarray, matrix: np.ndarray) -> bool:
+def is_center(cntr: np.ndarray, matrix: np.ndarray) -> bool:
     """Does the input center matrix represent the center of the supplied matrix?
 
-    Let op(center_) = [op(c_0),op(c_1),...,op(c_(k-1))] be the Pauli operators
-    represented by the input center_matrix. Let op(matrix_) = [op(m_0),op(m_1),...,op(m_(t-1))]
+    Let op(cntr) = [op(c_0),op(c_1),...,op(c_(k-1))] be the Pauli operators
+    represented by the input center_matrix. Let op(matrix) = [op(m_0),op(m_1),...,op(m_(t-1))]
     be the Pauli operators represented by the input matrix. This method
-    returns True if
-
-    <op(center_)> = Z(<op(matrix)>)
-
-    and False otherwise.
+    returns True if <op(cntr)> = Z(<op(matrix)>) and False otherwise.
 
     Args:
-        center_ (np.ndarray): Generators of center to be checked
+        cntr (np.ndarray): Generators of center to be checked
         matrix (np.ndarray): Generators of full group
 
     Raises:
         QiskitError: Not all inputs are not GF(2) symplectic matrices/vectors
 
     Returns:
-        out: True if <op(center_)> = Z(<op(matrix)>), False otherwise
+        out: True if <op(cntr)> = Z(<op(matrix)>), False otherwise
 
     Examples:
         >>> matrix = numpy.array(
@@ -971,21 +967,18 @@ def is_center(center_: np.ndarray, matrix: np.ndarray) -> bool:
             [0,0,0,0,1,1,0,1],
             [1,1,1,0,0,1,0,0],
             [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
-        >>> center_ = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
+        >>> cntr = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
                                 [1, 0, 0, 1, 0, 1, 1, 1]], dtype=numpy.bool_)
-        >>> is_center(center_, matrix)
+        >>> is_center(cntr, matrix)
         True
-
-    See Also:
-    center
     """
     matrix = np.atleast_2d(np.array(matrix))
-    center_ = np.atleast_2d(np.array(center_))
-    if not (is_symplectic_matrix_form(center_) and is_symplectic_matrix_form(matrix)):
+    cntr = np.atleast_2d(np.array(cntr))
+    if not (is_symplectic_matrix_form(cntr) and is_symplectic_matrix_form(matrix)):
         QiskitError("Not all inputs are not GF(2) symplectic matrices")
     cal_center = center(matrix)
 
-    return is_same_span(center_, cal_center)
+    return is_same_span(cntr, cal_center)
 
 
 # ---------------------------------------------------------------

@@ -10,6 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Circuits."""
+"""
+============================================
+Decoders module (:mod:`qiskit_qec.decoders`)
+============================================
 
-from . import graph_decoder
+.. currentmodule:: qiskit_qec.decoders
+
+GraphDecoder Class
+===================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    GraphDecoder
+"""
+
+from .graph_decoder import GraphDecoder
