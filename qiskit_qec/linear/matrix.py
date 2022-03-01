@@ -27,7 +27,7 @@ def create_lambda_matrix(n: int) -> np.ndarray:
         n : Size of identity matrix to use
 
     Returns:
-        out: GF(2) Lambda matrix used in the GF(2) symplectic product
+        GF(2) Lambda matrix used in the GF(2) symplectic product
 
     Raises:
         QiskitError: n must be a positive integer
@@ -61,7 +61,7 @@ def _create_lambda_matrix(n: int):
         n : Size of identity matrix to use
 
     Returns:
-        out: GF(2) Lambda matrix used in the GF(2) symplectic product
+        GF(2) Lambda matrix used in the GF(2) symplectic product
 
     Examples:
         >>> x = _create_lambda_matrix(2)
@@ -103,7 +103,7 @@ def augment_mat(matrix: np.ndarray, pos: str = "right") -> np.ndarray:
         QiskitError: Unknown position
 
     Returns:
-        out : Matrix augmented with identity
+        Matrix augmented with identity
 
     Examples:
         >>> matrix = numpy.array([[0,1,0],[0,0,1],[1,1,0]], dtype=numpy.bool_)
@@ -153,7 +153,7 @@ def _augment_mat(matrix: np.array, pos: str) -> np.ndarray:
             "left" or "right"
 
     Returns:
-        out : Matrix augmented with identity
+        Matrix augmented with identity
 
     Examples:
         >>> matrix = np.array([[0,1,0],[0,0,1],[1,1,0]], dtype=numpy.bool_)
@@ -200,7 +200,7 @@ def rref(matrix: np.ndarray) -> np.ndarray:
         matrix : Input GF(2) matrix
 
     Returns:
-        out : Row Reduced Echelon Form of input matrix
+        Row Reduced Echelon Form of input matrix
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -228,7 +228,7 @@ def _rref(matrix: np.array) -> np.ndarray:
         matrix : Input GF(2) matrix
 
     Returns:
-        out : Row Reduced Echelon Form of input matrix
+        Row Reduced Echelon Form of input matrix
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -256,7 +256,7 @@ def rank(matrix: np.ndarray) -> int:
         matrix: Input GF(2) matrix
 
     Returns:
-        out: Rank of input matrix
+        Rank of input matrix
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -281,7 +281,7 @@ def _rank(matrix: np.ndarray) -> int:
         matrix: Input GF(2) matrix
 
     Returns:
-        out: Rank of input matrix
+        Rank of input matrix
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -306,10 +306,14 @@ def rref_complete(matrix: np.ndarray) -> Tuple[List[int], np.ndarray, np.ndarray
         matrix : Input GF(2) matrix.
 
     Returns:
-        heads : A 0-1 list with value of position k being 1 if the kth column is a pivot
-        rref_mat : Row Reduced Echelon Form of input matrix
-        transform_mat : Transform used to tranform input matrix into RREF form
-        rank :  rank of input matrix
+        heads
+            A 0-1 list with value of position k being 1 if the kth column is a pivot
+        rref_mat
+            Row Reduced Echelon Form of input matrix
+        transform_mat
+            Transform used to tranform input matrix into RREF form
+        rank
+            rank of input matrix
 
     Raises:
         QiskitError: Not a suitable matrix input")
@@ -357,10 +361,14 @@ def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
         matrix : Input GF(2) matrix.
 
     Returns:
-        heads : A 0-1 list with value of position k being 1 if the kth column is a pivot
-        rref_mat : Row Reduced Echelon Form of input matrix
-        transform_mat : Transform used to tranform input matrix into RREF form
-        rank :  rank of input matrix
+        heads
+            A 0-1 list with value of position k being 1 if the kth column is a pivot
+        rref_mat
+            Row Reduced Echelon Form of input matrix
+        transform_mat
+            Transform used to tranform input matrix into RREF form
+        rank
+            rank of input matrix
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -393,7 +401,6 @@ def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
     general, a series of methods should be inplemented to handle different needs.
     As a start, the heirachy of algorithms found in arXiv:1111.6549 should be
     implemented.
-
     """
 
     matrix = augment_mat(matrix, "right")

@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-====================================
-Info module (:mod:`qiskit_qec.info`)
-====================================
+=============================
+Info (:mod:`qiskit_qec.info`)
+=============================
 
 .. currentmodule:: qiskit_qec.info
 
-Info
-========
+Info module classes and functions
+=================================
 
 .. autosummary::
     :toctree: ../stubs/

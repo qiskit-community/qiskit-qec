@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-==========================================
-Factory module (:mod:`qiskit_qec.factory`)
-==========================================
+===================================
+Factory (:mod:`qiskit_qec.factory`)
+===================================
 
 .. currentmodule:: qiskit_qec.factory
 
-Factory
-=======
+Factory module classes and functions
+====================================
 
 .. autosummary::
     :toctree: ../stubs/

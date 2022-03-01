@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-============================================
-Circuits module (:mod:`qiskit_qec.circuits`)
-============================================
+=====================================
+Circuits (:mod:`qiskit_qec.circuits`)
+=====================================
 
 .. currentmodule:: qiskit_qec.circuits
 
-RepetitionCodeCircuit Class
-===========================
+Circuits module classes and functions
+=====================================
 
 .. autosummary::
     :toctree: ../stubs/

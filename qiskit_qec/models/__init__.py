@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-========================================
-Models module (:mod:`qiskit_qec.models`)
-========================================
+=================================
+Models (:mod:`qiskit_qec.models`)
+=================================
 
 .. currentmodule:: qiskit_qec.models
 
 
-Models classes
-==============
+Models module classes and functions
+===================================
 
 .. autosummary::
     :toctree: ../stubs/

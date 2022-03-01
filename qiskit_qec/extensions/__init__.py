@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-================================================
-Extensions module (:mod:`qiskit_qec.extensions`)
-================================================
+=========================================
+Extensions (:mod:`qiskit_qec.extensions`)
+=========================================
 
 .. currentmodule:: qiskit_qec.extensions
 
-Extensions
-===================
+Extensions module classes and functions
+=======================================
 
 .. autosummary::
     :toctree: ../stubs/

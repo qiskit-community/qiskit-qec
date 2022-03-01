@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-============================================
-Decoders module (:mod:`qiskit_qec.decoders`)
-============================================
+=====================================
+Decoders (:mod:`qiskit_qec.decoders`)
+=====================================
 
 .. currentmodule:: qiskit_qec.decoders
 
-GraphDecoder Class
-===================
+Decoders module classes and functions
+=====================================
 
 .. autosummary::
     :toctree: ../stubs/

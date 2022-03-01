@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-======================================
-Noise module (:mod:`qiskit_qec.noise`)
-======================================
+===============================
+Noise (:mod:`qiskit_qec.noise`)
+===============================
 
 .. currentmodule:: qiskit_qec.noise
 
 
-Noise classes
-=============
+Noise module classes and functions
+==================================
 
 .. autosummary::
     :toctree: ../stubs/

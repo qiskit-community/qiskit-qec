@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-========================================
-Linear module (:mod:`qiskit_qec.linear`)
-========================================
+=================================
+Linear (:mod:`qiskit_qec.linear`)
+=================================
 
 .. currentmodule:: qiskit_qec.linear
 
 
-Linear classes
-==============
+Linear module classes and functions
+===================================
 
 .. autosummary::
     :toctree: ../stubs/
@@ -27,8 +27,8 @@ Linear classes
     Bit
     SMatrix
 
-Linear functions
-================
+Linear matrix functions
+=======================
 
 .. autosummary::
     :toctree: ../stubs/
@@ -38,6 +38,13 @@ Linear functions
     rref
     rank
     rref_complete
+
+Linear symplectic functions
+===========================
+
+.. autosummary::
+    :toctree: ../stubs/
+
     all_commute
     symplectic_product
     make_commute_hyper
@@ -55,13 +62,7 @@ Linear functions
 
 from .bit.bit import Bit
 from .smatrix_api.smatrix import SMatrix
-from .matrix import (
-    create_lambda_matrix,
-    augment_mat,
-    rref,
-    rank,
-    rref_complete
-)
+from .matrix import create_lambda_matrix, augment_mat, rref, rank, rref_complete
 from .symplectic import (
     all_commute,
     symplectic_product,
@@ -75,5 +76,5 @@ from .symplectic import (
     is_hyper_form,
     is_center,
     is_same_span,
-    is_stabilizer_group
+    is_stabilizer_group,
 )

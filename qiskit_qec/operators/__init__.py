@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-==============================================
-Operators module (:mod:`qiskit_qec.operators`)
-==============================================
+=======================================
+Operators (:mod:`qiskit_qec.operators`)
+=======================================
 
 .. currentmodule:: qiskit_qec.operators
 
 
-Operators classes
-=================
+Operators module classes and functions
+======================================
 
 .. autosummary::
     :toctree: ../stubs/

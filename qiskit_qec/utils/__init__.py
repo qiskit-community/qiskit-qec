@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-======================================
-Utils module (:mod:`qiskit_qec.utils`)
-======================================
+===============================
+Utils (:mod:`qiskit_qec.utils`)
+===============================
 
 .. currentmodule:: qiskit_qec.utils
 
 
-Utils classes
-=============
+Utils module classes and functions
+==================================
 
 .. autosummary::
     :toctree: ../stubs/

@@ -11,15 +11,15 @@
 # that they have been altered from the originals.
 
 """
-================================================
-Structures module (:mod:`qiskit_qec.structures`)
-================================================
+=========================================
+Structures (:mod:`qiskit_qec.structures`)
+=========================================
 
 .. currentmodule:: qiskit_qec.structures
 
 
-Structures classes
-==================
+Structures module classes and functions
+=======================================
 
 .. autosummary::
     :toctree: ../stubs/

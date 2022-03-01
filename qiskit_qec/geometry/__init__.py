@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-============================================
-Geometry module (:mod:`qiskit_qec.geometry`)
-============================================
+=====================================
+Geometry (:mod:`qiskit_qec.geometry`)
+=====================================
 
 .. currentmodule:: qiskit_qec.geometry
 
-Geometry
-========
+Geometry module classes and functions
+=====================================
 
 .. autosummary::
     :toctree: ../stubs/

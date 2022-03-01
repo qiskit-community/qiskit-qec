@@ -7,7 +7,7 @@ Qiskit QEC API Reference
 =============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    analysis
    circuits

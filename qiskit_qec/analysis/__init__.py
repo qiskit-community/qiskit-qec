@@ -11,16 +11,16 @@
 # that they have been altered from the originals.
 
 """
-============================================
-Analysis module (:mod:`qiskit_qec.analysis`)
-============================================
+=====================================
+Analysis (:mod:`qiskit_qec.analysis`)
+=====================================
 
 .. currentmodule:: qiskit_qec.analysis
 
 This module contains an :class:`ErrorPropagator` a circuit error propagator interface.
 
-Analysis Class
-==============
+Analysis module classes and functions
+=====================================
 
 .. autosummary::
     :toctree: ../stubs/

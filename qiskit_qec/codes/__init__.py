@@ -11,14 +11,14 @@
 # that they have been altered from the originals.
 
 """
-======================================
-Codes module (:mod:`qiskit_qec.codes`)
-======================================
+===============================
+Codes (:mod:`qiskit_qec.codes`)
+===============================
 
 .. currentmodule:: qiskit_qec.codes
 
-Code Class
-==========
+Codes module classes and functions
+==================================
 
 .. autosummary::
     :toctree: ../stubs/
