@@ -5,9 +5,7 @@ from qiskit import execute, QuantumCircuit, Aer
 
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.circuit_matching_decoder import (
-    CircuitModelMatchingDecoder,
-)
+from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder, temp_syndrome
 
 
 # Bit-flip circuit noise model
@@ -121,7 +119,7 @@ class TestCircuitMatcher(unittest.TestCase):
         )
         result = execute(
             qc,
-            Aer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             method="stabilizer",
             shots=shots,
             optimization_level=0,
@@ -133,7 +131,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for (outcome, num) in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
-            fail = code.logical_x_error(corrected_outcomes)
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             failures += fail[0]
         self.assertEqual(failures, 0)
 
@@ -157,7 +155,7 @@ class TestCircuitMatcher(unittest.TestCase):
         )
         result = execute(
             qc,
-            Aer.get_backend("qasm_simulator"),
+            Aer.get_backend("aer_simulator"),
             method="stabilizer",
             shots=shots,
             optimization_level=0,
@@ -169,7 +167,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for (outcome, num) in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
-            fail = code.logical_x_error(corrected_outcomes)
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             failures += fail[0]
         self.assertEqual(failures, 0)
 
@@ -194,7 +192,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for faultpath in fe.generate():
             outcome = faultpath[3]
             corrected_outcomes = dec.process(outcome)
-            fail = code.logical_x_error(corrected_outcomes)  # TODO fix
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             self.assertEqual(fail[0], 0)
 
     def test_correct_single_errors_pymatching(self):
@@ -218,7 +216,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for faultpath in fe.generate():
             outcome = faultpath[3]
             corrected_outcomes = dec.process(outcome)
-            fail = code.logical_x_error(corrected_outcomes)  # TODO fix
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             self.assertEqual(fail[0], 0)
 
     def test_error_pairs(self):
@@ -243,7 +241,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for faultpath in fe.generate():
             outcome = faultpath[3]
             corrected_outcomes = dec.process(outcome)
-            fail = code.logical_x_error(corrected_outcomes)  # TODO fix
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             failures += fail[0]
         self.assertEqual(failures, 128)
 
@@ -269,7 +267,7 @@ class TestCircuitMatcher(unittest.TestCase):
         for faultpath in fe.generate():
             outcome = faultpath[3]
             corrected_outcomes = dec.process(outcome)
-            fail = code.logical_x_error(corrected_outcomes)  # TODO fix
+            fail = temp_syndrome(corrected_outcomes, Z_logical)
             failures += fail[0]
         self.assertEqual(failures, 128)
 

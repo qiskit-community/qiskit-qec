@@ -16,6 +16,8 @@ from qiskit_qec.utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
+from qiskit_qec.decoders.temp_code_util import temp_syndrome
+
 
 class CircuitModelMatchingDecoder(ABC):
     """Matching decoder for circuit noise."""
@@ -467,9 +469,9 @@ class CircuitModelMatchingDecoder(ABC):
                 corrected_outcomes[i] = (corrected_outcomes[i] + 1) % 2
         logging.info("process: corrected_outcomes = %s" % corrected_outcomes)
         if self.basis == "z":
-            test = self.code.z_syndrome(corrected_outcomes)  # TODO FIX
+            test = temp_syndrome(corrected_outcomes, self.css_z_stabilizer_ops)
         elif self.basis == "x":
-            test = self.code.x_syndrome(corrected_outcomes)  # TODO FIX
+            test = temp_syndrome(corrected_outcomes, self.css_x_stabilizer_ops)
         logging.debug("process: test syndrome = %s" % test)
         if sum(test) != 0:
             raise Exception("decoder failure: syndrome should be trivial!")
