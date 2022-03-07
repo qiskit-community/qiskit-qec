@@ -3,7 +3,7 @@
 from copy import deepcopy, copy
 from math import log
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Set
 import logging
 
 import json
@@ -114,8 +114,14 @@ class CircuitModelMatchingDecoder(ABC):
         if not self.uniform:
             fe = FaultEnumerator(circuit, order=1, method="propagator", model=self.model)
             self.event_map = self._enumerate_events(
+                self.css_x_gauge_ops,
+                self.css_x_stabilizer_ops,
                 self.css_x_boundary,
-                self.css_z_boundary,
+                self.x_gauge_products,
+                self.css_x_gauge_ops,
+                self.css_x_stabilizer_ops,
+                self.css_x_boundary,
+                self.x_gauge_products,
                 self.blocks,
                 self.round_schedule,
                 self.basis,
@@ -123,7 +129,7 @@ class CircuitModelMatchingDecoder(ABC):
                 fe,
             )
             self.symbols, self.edge_weight_polynomials = self._edge_weight_polynomials(
-                self.event_map
+                self.model, self.event_map
             )
             logging.debug("init symbols %s" % self.symbols)
             logging.debug("init edge_weight_polynomials %s" % self.edge_weight_polynomials)
@@ -157,9 +163,7 @@ class CircuitModelMatchingDecoder(ABC):
         self,
         idxmap: Dict[Tuple[int, List[int]], int],
         g: nx.Graph,
-        edge_weight_polynomials: Dict[
-            Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]
-        ],
+        edge_weight_polynomials: Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]],
     ):
         """Add edge weight polynomials to the decoding graph g and prune it.
 
@@ -255,9 +259,14 @@ class CircuitModelMatchingDecoder(ABC):
 
     def _enumerate_events(
         self,
-        # TODO code info
+        css_x_gauge_ops: List[Tuple[int]],
+        css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
+        x_gauge_products: List[int],
+        css_z_gauge_ops: List[Tuple[int]],
+        css_z_stabilizer_ops: List[Tuple[int]],
         css_z_boundary: List[int],
+        z_gauge_products: List[int],
         blocks: int,
         round_schedule: str,
         basis: str,
@@ -298,7 +307,14 @@ class CircuitModelMatchingDecoder(ABC):
             # Note that this only depends on the stabilizers at each
             # time and does not require an explicit decoding graph
             gauge_outcomes, highlighted = self._highlighted_vertices(
-                #TODO code info
+                css_x_gauge_ops,
+                css_x_stabilizer_ops,
+                css_x_boundary,
+                x_gauge_products,
+                css_z_gauge_ops,
+                css_z_stabilizer_ops,
+                css_z_boundary,
+                z_gauge_products,
                 blocks,
                 round_schedule,
                 basis,
@@ -331,7 +347,6 @@ class CircuitModelMatchingDecoder(ABC):
                         if len(u) > 0:
                             v1 = (v0[0], tuple(b))
                             break
-                # Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Dict[List[str], int]]]
                 submap1 = event_map.setdefault(v0, {})
                 submap2 = submap1.setdefault(v1, {})
                 submap3 = submap2.setdefault(comb, {})
@@ -402,8 +417,15 @@ class CircuitModelMatchingDecoder(ABC):
         )
 
         gauge_outcomes, highlighted = self._highlighted_vertices(
-# TODO fix
-            self.rounds,
+            self.css_x_gauge_ops,
+            self.css_x_stabilizer_ops,
+            self.css_x_boundary,
+            self.x_gauge_products,
+            self.css_z_gauge_ops,
+            self.css_z_stabilizer_ops,
+            self.css_z_boundary,
+            self.z_gauge_products,
+            self.blocks,
             self.round_schedule,
             self.basis,
             self.layer_types,
@@ -416,10 +438,10 @@ class CircuitModelMatchingDecoder(ABC):
         logging.info("process: highlighted = %s" % highlighted)
 
         if not self.usepymatching:
-            matching = self._compute_matching(highlighted)
+            matching = self._compute_matching(self.idxmap, self.length, highlighted)
             logging.info("process: matching = %s" % matching)
             qubit_errors, measurement_errors = self._compute_error_correction(
-                matching, highlighted, export, filename
+                self.g, self.idxmap, self.path, matching, highlighted, export, filename
             )
             logging.info("process: qubit_errors = %s" % qubit_errors)
             logging.debug("process: measurement_errors = %s" % measurement_errors)
@@ -683,16 +705,18 @@ class CircuitModelMatchingDecoder(ABC):
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
+        x_gauge_products: List[int],
         css_z_gauge_ops: List[Tuple[int]],
         css_z_stabilizer_ops: List[Tuple[int]],
         css_z_boundary: List[int],
-        blocks : int,
-        round_schedule : str,
-        basis : str,
-        layer_types : List[str],
-        x_gauge_outcomes : List[List[int]],
-        z_gauge_outcomes : List[List[int]],
-        final_outcomes : List[int],
+        z_gauge_products: List[int],
+        blocks: int,
+        round_schedule: str,
+        basis: str,
+        layer_types: List[str],
+        x_gauge_outcomes: List[List[int]],
+        z_gauge_outcomes: List[List[int]],
+        final_outcomes: List[int],
     ) -> Tuple[List[List[int]], List[Tuple[int, Tuple[int]]]]:
         """Identify highlighted vertices in the decoding graph for an outcome.
 
@@ -703,13 +727,13 @@ class CircuitModelMatchingDecoder(ABC):
             gauges = css_z_gauge_ops
             stabilizers = css_z_stabilizer_ops
             boundary = css_z_boundary
-            gauge_products = self.z_gauge_products # FIX
+            gauge_products = z_gauge_products
         elif basis == "x":
             gauge_outcomes = x_gauge_outcomes
             gauges = css_x_gauge_ops
             stabilizers = css_x_stabilizer_ops
             boundary = css_x_boundary
-            gauge_products = self.x_gauge_products # FIX
+            gauge_products = x_gauge_products
         final_gauges = []
         for g in gauges:
             parity = 0
@@ -751,7 +775,12 @@ class CircuitModelMatchingDecoder(ABC):
             highlighted.append((0, tuple(boundary[0])))
         return gauge_outcomes, highlighted
 
-    def _compute_matching(self, highlighted: List[Tuple[int, Tuple[int]]]):
+    def _compute_matching(
+        self,
+        idxmap: Dict[Tuple[int, List[int]], int],
+        length: Dict[int, Dict[int, int]],
+        highlighted: List[Tuple[int, Tuple[int]]],
+    ) -> Set[Tuple[int, int]]:
         """Compute a min. weight perfect matching of highlighted vertices.
 
         highlighted is a list of highlighted vertices given as tuples
@@ -769,13 +798,15 @@ class CircuitModelMatchingDecoder(ABC):
             for j in range(i + 1, len(highlighted)):
                 vi = midxmap[highlighted[i]]
                 vj = midxmap[highlighted[j]]
-                vip = self.idxmap[highlighted[i]]
-                vjp = self.idxmap[highlighted[j]]
-                gm.add_edge(vi, vj, weight=-self.length[vip][vjp])
+                vip = idxmap[highlighted[i]]
+                vjp = idxmap[highlighted[j]]
+                gm.add_edge(vi, vj, weight=-length[vip][vjp])
         matching = nx.max_weight_matching(gm, maxcardinality=True, weight="weight")
-        return matching  # TODO type
+        return matching
 
-    def _error_chain_for_vertex_path(self, g: nx.Graph, vertex_path):  # TODO type
+    def _error_chain_for_vertex_path(
+        self, g: nx.Graph, vertex_path: List[int]
+    ) -> Tuple[Set[int], Set[int]]:
         """Return a chain of qubit and measurement errors for a vertex path.
 
         Examine the edges along the path to extract the error chain.
@@ -794,13 +825,23 @@ class CircuitModelMatchingDecoder(ABC):
             logging.debug(
                 "_error_chain_for_vertex_path q = %s, m = %s" % (qubit_errors, measurement_errors)
             )
-        return qubit_errors, measurement_errors  # TODO type
+        return qubit_errors, measurement_errors
 
     def _compute_error_correction(
-        self, matching, highlighted, export: bool = False, filename: str = "graphFile.json"
-    ):
+        self,
+        gin: nx.Graph,
+        idxmap: Dict[Tuple[int, List[int]], int],
+        paths: Dict[int, Dict[int, List[int]]],
+        matching,
+        highlighted,
+        export: bool = False,
+        filename: str = "graphFile.json",
+    ) -> Tuple[Set[int], Set[int]]:
         """Compute the qubit and measurement corrections.
 
+        gin is the decoding graph.
+        idxmap maps (t, qubit_idx) to vertex index.
+        paths is all pairs shortest paths between vertices.
         matching is the perfect matching computed by _compute_matching.
         highlighted is the list of highlighted vertices computed by
         _highlighted_vertices.
@@ -811,24 +852,24 @@ class CircuitModelMatchingDecoder(ABC):
         measurement_errors contains tuples (t, qubit_set) indicating the
         failed measurement.
         """
-        paths = []
+        used_paths = []
         qubit_errors = set([])
         measurement_errors = set([])
         for p in matching:
-            v0 = self.idxmap[highlighted[p[0]]]  # TODO pass in idxmap
-            v1 = self.idxmap[highlighted[p[1]]]
+            v0 = idxmap[highlighted[p[0]]]
+            v1 = idxmap[highlighted[p[1]]]
             # Use the shortest paths between the matched vertices to
             # identify all of the qubits in the error chains
-            path = self.path[v0][v1]  # TODO pass in path
-            q, m = self._error_chain_for_vertex_path(path)
+            path = paths[v0][v1]
+            q, m = self._error_chain_for_vertex_path(gin, path)
             # Add the error chains modulo two to get the total correction
             # (uses set symmetric difference)
             qubit_errors ^= q
             measurement_errors ^= m
-            paths.append(path)
+            used_paths.append(path)
         if export:
-            self._highlight_vertex_paths_export_json(self.g, paths, filename)  # TODO pass g
-        return qubit_errors, measurement_errors  # TODO types
+            self._highlight_vertex_paths_export_json(gin, used_paths, filename)
+        return qubit_errors, measurement_errors
 
     def _highlight_vertex_paths_export_json(
         self, gin: nx.Graph, paths: List[List[int]], filename: str
