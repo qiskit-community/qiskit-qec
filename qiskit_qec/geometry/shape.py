@@ -100,18 +100,22 @@ class Shape:
 
     @classmethod
     def rect(cls, origin, direction, length1, length2, manifold, dtype=int):
-        """Create a rectangle on a manifold
-            #             r2
-            #             o
-            #         /      \
-            #  r3  o          \
-            #       \          o r1
-            #        \       /
-            #           o
-            #       r0=origin
-            # direction (r0 to r1)
-            # length1 = length(r0,r1)
-            # length2 = length(r1,r2)
+        r"""Create a rectangle on a manifold
+
+        .. parsed-literal::
+            ```
+                      r2
+                      o
+                  /       \
+            r3  o          \
+                 \          o r1
+                  \       /
+                      o
+                     r0=origin
+            direction (r0 to r1)
+            length1 = length(r0,r1)
+            length2 = length(r1,r2)
+            ```
 
         Args:
             origin ([]): [description]
