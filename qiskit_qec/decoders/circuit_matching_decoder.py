@@ -168,7 +168,7 @@ class CircuitModelMatchingDecoder(ABC):
     def _revise_decoding_graph(
         self,
         idxmap: Dict[Tuple[int, List[int]], int],
-        g: nx.Graph,
+        graph: nx.Graph,
         edge_weight_polynomials: Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]],
     ) -> nx.Graph:
         """Add edge weight polynomials to the decoding graph g and prune it.
@@ -180,22 +180,22 @@ class CircuitModelMatchingDecoder(ABC):
         for s1, sub in edge_weight_polynomials.items():
             for s2, wpoly in sub.items():
                 if s1 not in idxmap:
-                    raise Exception("vertex %s not in decoding graph" % s1)
+                    raise Exception(f"vertex {s1} not in decoding graph")
                 if s2 not in idxmap:
-                    raise Exception("vertex %s not in decoding graph" % s2)
-                if not g.has_edge(idxmap[s1], idxmap[s2]):
-                    raise Exception("edge %s - %s not in decoding graph" % (s1, s2))
+                    raise Exception(f"vertex {s2} not in decoding graph")
+                if not graph.has_edge(idxmap[s1], idxmap[s2]):
+                    raise Exception("edge {s1} - {s2} not in decoding graph")
                     # TODO: new edges may be needed for hooks, but raise exception if we're surprised
-                g.edges[idxmap[s1], idxmap[s2]]["weight_poly"] = wpoly
+                graph.edges[idxmap[s1], idxmap[s2]]["weight_poly"] = wpoly
         remove_list = []
-        for e in g.edges(data=True):
-            if "weight_poly" not in e[2] and e[2]["weight"] != 0:
+        for edge in graph.edges(data=True):
+            if "weight_poly" not in edge[2] and edge[2]["weight"] != 0:
                 if (
-                    "is_boundary" in g.nodes(data=True)[e[0]]
-                    and g.nodes(data=True)[e[0]]["is_boundary"]
+                    "is_boundary" in graph.nodes(data=True)[edge[0]]
+                    and graph.nodes(data=True)[edge[0]]["is_boundary"]
                 ) or (
-                    "is_boundary" in g.nodes(data=True)[e[1]]
-                    and g.nodes(data=True)[e[1]]["is_boundary"]
+                    "is_boundary" in graph.nodes(data=True)[edge[1]]
+                    and graph.nodes(data=True)[edge[1]]["is_boundary"]
                 ):
                     # pymatching requires all qubit_ids from 0 to
                     # n-1 to appear as edge properties. If we
@@ -203,14 +203,14 @@ class CircuitModelMatchingDecoder(ABC):
                     # be present. We solve this by keeping unweighted
                     # that are edges connected to the boundary. Instead
                     # we increase their weight to a large value.
-                    e[2]["weight"] = 1000000
-                    logging.info("increase edge weight (%d, %d)", e[0], e[1])
+                    edge[2]["weight"] = 1000000
+                    logging.info("increase edge weight (%d, %d)", edge[0], edge[1])
                 else:
                     # Otherwise, remove the edge
-                    remove_list.append((e[0], e[1]))
-                    logging.info("remove edge (%d, %d)", e[0], e[1])
-        g.remove_edges_from(remove_list)
-        return g
+                    remove_list.append((edge[0], edge[1]))
+                    logging.info("remove edge (%d, %d)", edge[0], edge[1])
+        graph.remove_edges_from(remove_list)
+        return graph
 
     def update_edge_weights(self, model: PauliNoiseModel):
         """Evaluate the numerical edge weights and update graph data.
