@@ -103,8 +103,6 @@ class CircuitModelMatchingDecoder(ABC):
             self.css_z_stabilizer_ops,
             self.css_z_boundary,
             self.layer_types,
-            self.blocks,
-            self.round_schedule,
             self.basis,
         )
         self.ridxmap = {v: k for k, v in self.idxmap.items()}
@@ -239,23 +237,26 @@ class CircuitModelMatchingDecoder(ABC):
             if len(parameter_values) != len(self.parameters):
                 raise Exception("wrong number of error rate parameters")
             symbol_list = [self.symbols[s] for s in self.parameters]
-            assignment = {k: v for (k, v) in zip(symbol_list, parameter_values)}
+            assignment = dict(zip(symbol_list, parameter_values))
             logging.info("update_edge_weights %s", str(assignment))
             # P(chain) = \prod_i (1-p_i)^{1-l(i)}*p_i^{l(i)}
             #          \propto \prod_i ((1-p_i)/p_i)^{l(i)}
             # -log P(chain) \propto \sum_i -log[((1-p_i)/p_i)^{l(i)}]
             # p_i is the probability that edge i carries an error
             # l(i) is 1 if the link belongs to the chain and 0 otherwise
-            for e in self.graph.edges(data=True):
-                if "weight_poly" in e[2]:
+            for edge in self.graph.edges(data=True):
+                if "weight_poly" in edge[2]:
                     logging.info(
-                        "update_edge_weights (%d, %d) %s", e[0], e[1], str(e[2]["weight_poly"])
+                        "update_edge_weights (%d, %d) %s",
+                        edge[0],
+                        edge[1],
+                        str(edge[2]["weight_poly"]),
                     )
-                    restriction = {x: assignment[x] for x in e[2]["weight_poly"].gens}
-                    p = e[2]["weight_poly"].eval(restriction).evalf()
+                    restriction = {x: assignment[x] for x in edge[2]["weight_poly"].gens}
+                    p = edge[2]["weight_poly"].eval(restriction).evalf()
                     assert p < 0.5, "edge flip probability too large"
-                    e[2]["weight"] = log((1 - p) / p)
-                    e[2]["error_probability"] = p
+                    edge[2]["weight"] = log((1 - p) / p)
+                    edge[2]["error_probability"] = p
         if not self.usepymatching:
             # Recompute the shortest paths between pairs of vertices
             # in the decoding graph.
@@ -322,8 +323,6 @@ class CircuitModelMatchingDecoder(ABC):
                 css_z_stabilizer_ops,
                 css_z_boundary,
                 z_gauge_products,
-                blocks,
-                round_schedule,
                 basis,
                 layer_types,
                 x_gauge_outcomes,
@@ -336,9 +335,9 @@ class CircuitModelMatchingDecoder(ABC):
             # decoding graph that corresponds with this fault event
             if len(highlighted) > 2:
                 raise Exception("too many highlighted vertices for a " + "single fault event")
-            elif len(highlighted) == 1:  # _highlighted_vertices highlights the boundary
+            if len(highlighted) == 1:  # _highlighted_vertices highlights the boundary
                 raise Exception("only one highlighted vertex for a " + "single fault event")
-            elif len(highlighted) == 2:
+            if len(highlighted) == 2:
                 v0 = highlighted[0]
                 v1 = highlighted[1]
                 if basis == "z":
@@ -350,8 +349,8 @@ class CircuitModelMatchingDecoder(ABC):
                     # Replace it with an adjacent vertex
                     for b in boundary:
                         assert len(b) == 1  # Assume each b has one element
-                        u = set(b).intersection(set(v0[1]))
-                        if len(u) > 0:
+                        isect = set(b).intersection(set(v0[1]))
+                        if len(isect) > 0:
                             v1 = (v0[0], tuple(b))
                             break
                 submap1 = event_map.setdefault(v0, {})
@@ -432,8 +431,6 @@ class CircuitModelMatchingDecoder(ABC):
             self.css_z_stabilizer_ops,
             self.css_z_boundary,
             self.z_gauge_products,
-            self.blocks,
-            self.round_schedule,
             self.basis,
             self.layer_types,
             x_gauge_outcomes,
@@ -460,11 +457,11 @@ class CircuitModelMatchingDecoder(ABC):
                 syndrome[self.idxmap[vertex]] = 1
             try:
                 correction = self.pymatching.decode(syndrome)
-            except AttributeError:
-                raise Exception("Did you call update_edge_weights?")
+            except AttributeError as attrib_error:
+                raise Exception("Did you call update_edge_weights?") from attrib_error
             qubit_errors = []
-            for i in range(len(correction)):
-                if correction[i] == 1:
+            for i, corr in enumerate(correction):
+                if corr == 1:
                     qubit_errors.append(self.pymatching_indexer.rlookup(i))
             logging.info("process: qubit_errors = %s", qubit_errors)
 
@@ -493,7 +490,7 @@ class CircuitModelMatchingDecoder(ABC):
         """
         layer_types = []
         last_step = basis
-        for r in range(blocks):
+        for _ in range(blocks):
             for step in round_schedule:
                 if basis == "z" and step == "z" and last_step == "z":
                     layer_types.append("g")
@@ -519,8 +516,6 @@ class CircuitModelMatchingDecoder(ABC):
         css_z_stabilizer_ops: List[Tuple[int]],
         css_z_boundary: List[Tuple[int]],
         layer_types: List[str],
-        blocks: int,
-        round_schedule: str,
         basis: str,
     ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], nx.Graph, Indexer]:
         """Construct the decoding graph for the given basis.
@@ -553,8 +548,7 @@ class CircuitModelMatchingDecoder(ABC):
         idx = 0  # vertex index counter
         idxmap = {}  # map from vertex data (t, qubits) to vertex index
         node_layers = []
-        for t in range(len(layer_types)):
-            layer = layer_types[t]
+        for t, layer in enumerate(layer_types):
             # Add vertices at time t
             node_layer = []
             if layer == "g":
@@ -588,9 +582,8 @@ class CircuitModelMatchingDecoder(ABC):
             # qubit operator modulo the gauge group.
             # Space-like edges do not correspond to syndrome errors, so the
             # syndrome property is an empty list.
-            for i in range(len(all_z)):
+            for i, g in enumerate(all_z):
                 for j in range(i + 1, len(all_z)):
-                    g = all_z[i]
                     h = all_z[j]
                     u = list(set(g).intersection(set(h)))
                     if -1 in u:
@@ -719,8 +712,6 @@ class CircuitModelMatchingDecoder(ABC):
         css_z_stabilizer_ops: List[Tuple[int]],
         css_z_boundary: List[int],
         z_gauge_products: List[int],
-        blocks: int,
-        round_schedule: str,
         basis: str,
         layer_types: List[str],
         x_gauge_outcomes: List[List[int]],
