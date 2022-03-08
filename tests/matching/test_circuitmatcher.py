@@ -1,6 +1,6 @@
+"""Tests for the subsystem CSS circuit-level matching decoder."""
 import unittest
-from typing import List, Dict, Tuple
-import logging
+from typing import List, Tuple
 
 from qiskit import execute, QuantumCircuit, Aer
 
@@ -8,9 +8,6 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder, temp_syndrome
 
-
-# Logging
-# logging.basicConfig(filename='test_circuitmatcher.log', encoding='utf-8', level=logging.DEBUG)
 
 # Bit-flip circuit noise model
 p = 0.05
@@ -103,7 +100,10 @@ class ThreeBitDecoder(CircuitModelMatchingDecoder):
 
 
 class TestCircuitMatcher(unittest.TestCase):
+    """Tests for the three bit decoder example."""
+
     def test_no_errors(self):
+        """Test the case with no errors using networkx."""
         shots = 100
         seed = 100
         dec = ThreeBitDecoder(
@@ -132,7 +132,7 @@ class TestCircuitMatcher(unittest.TestCase):
         counts = result.get_counts(qc)
         dec.update_edge_weights(pnm)
         failures = 0
-        for (outcome, num) in counts.items():
+        for (outcome, _) in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
             fail = temp_syndrome(corrected_outcomes, Z_logical)
@@ -140,6 +140,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.assertEqual(failures, 0)
 
     def test_no_errors_pymatching(self):
+        """Test the case with no errors using pymatching."""
         shots = 100
         seed = 100
         dec = ThreeBitDecoder(
@@ -168,7 +169,7 @@ class TestCircuitMatcher(unittest.TestCase):
         counts = result.get_counts(qc)
         dec.update_edge_weights(pnm)
         failures = 0
-        for (outcome, num) in counts.items():
+        for (outcome, _) in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
             fail = temp_syndrome(corrected_outcomes, Z_logical)
@@ -176,6 +177,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.assertEqual(failures, 0)
 
     def test_correct_single_errors(self):
+        """Test the case with single faults using networkx."""
         dec = ThreeBitDecoder(
             X_stabilizers,
             X_stabilizers,
@@ -200,6 +202,7 @@ class TestCircuitMatcher(unittest.TestCase):
             self.assertEqual(fail[0], 0)
 
     def test_correct_single_errors_pymatching(self):
+        """Test the case with single faults using pymatching."""
         dec = ThreeBitDecoder(
             X_stabilizers,
             X_stabilizers,
@@ -224,6 +227,7 @@ class TestCircuitMatcher(unittest.TestCase):
             self.assertEqual(fail[0], 0)
 
     def test_error_pairs(self):
+        """Test the case with two faults using networkx."""
         dec = ThreeBitDecoder(
             X_stabilizers,
             X_stabilizers,
@@ -250,6 +254,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.assertEqual(failures, 128)
 
     def test_error_pairs_propagator_pymatching(self):
+        """Test the case with two faults using error propagator and pymatching."""
         dec = ThreeBitDecoder(
             X_stabilizers,
             X_stabilizers,

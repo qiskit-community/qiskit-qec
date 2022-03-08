@@ -8,9 +8,9 @@ def temp_syndrome(bitstring: List[int], operators: List[List[int]]) -> List[int]
     The operators are given as lists of supports. Negative values ignored.
     """
     syndrome = []
-    for s in operators:
+    for supp in operators:
         value = 0
-        for i in s:
+        for i in supp:
             if i >= 0:
                 value += bitstring[i]
         syndrome.append(value % 2)
