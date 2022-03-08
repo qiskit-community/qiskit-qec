@@ -93,6 +93,7 @@ class CircuitModelMatchingDecoder(ABC):
             self.css_x_stabilizer_ops, self.css_x_gauge_ops
         )
         self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
+        logging.debug("layer_types = %s" % self.layer_types)
 
         self.idxmap, self.node_layers, self.g, self.pymatching_indexer = self._decoding_graph(
             self.css_x_gauge_ops,
@@ -120,22 +121,23 @@ class CircuitModelMatchingDecoder(ABC):
                 self.css_x_stabilizer_ops,
                 self.css_x_boundary,
                 self.x_gauge_products,
-                self.css_x_gauge_ops,
-                self.css_x_stabilizer_ops,
-                self.css_x_boundary,
-                self.x_gauge_products,
+                self.css_z_gauge_ops,
+                self.css_z_stabilizer_ops,
+                self.css_z_boundary,
+                self.z_gauge_products,
                 self.blocks,
                 self.round_schedule,
                 self.basis,
                 self.layer_types,
                 fe,
             )
+            logging.debug("event_map = %s" % self.event_map)
             self.symbols, self.edge_weight_polynomials = self._edge_weight_polynomials(
                 self.model, self.event_map
             )
-            logging.debug("init symbols %s" % self.symbols)
-            logging.debug("init edge_weight_polynomials %s" % self.edge_weight_polynomials)
-            self._revise_decoding_graph(self.idxmap, self.g, self.edge_weight_polynomials)
+            logging.debug("symbols = %s" % self.symbols)
+            logging.debug("edge_weight_polynomials = %s" % self.edge_weight_polynomials)
+            self.g = self._revise_decoding_graph(self.idxmap, self.g, self.edge_weight_polynomials)
 
         self.length = {}  # recomputed in update_edge_weights
         self.path = {}  # recomputed in update_edge_weights
@@ -166,7 +168,7 @@ class CircuitModelMatchingDecoder(ABC):
         idxmap: Dict[Tuple[int, List[int]], int],
         g: nx.Graph,
         edge_weight_polynomials: Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]],
-    ):
+    ) -> nx.Graph:
         """Add edge weight polynomials to the decoding graph g and prune it.
 
         Update attribute "weight_poly" on decoding graph edges contained in
@@ -206,6 +208,7 @@ class CircuitModelMatchingDecoder(ABC):
                     remove_list.append((e[0], e[1]))
                     logging.info("remove edge (%d, %d)" % (e[0], e[1]))
         g.remove_edges_from(remove_list)
+        return g
 
     def update_edge_weights(self, model: PauliNoiseModel):
         """Evaluate the numerical edge weights and update graph data.
@@ -326,7 +329,7 @@ class CircuitModelMatchingDecoder(ABC):
                 final_outcomes,
             )
             logging.debug("gauge_outcomes %s" % gauge_outcomes)
-            logging.debug("syndrome %s" % highlighted)
+            logging.debug("highlighted %s" % highlighted)
             # Examine the highlighted vertices to find the edge of the
             # decoding graph that corresponds with this fault event
             if len(highlighted) > 2:
@@ -606,6 +609,7 @@ class CircuitModelMatchingDecoder(ABC):
                             error_probability=0.01,
                         )
                         logging.debug("spacelike t=%d (%s, %s)" % (t, g, h))
+                        logging.debug(" qubits %s qubit_id %s" % ([u[0]], pymatching_indexer[u[0]]))
 
             # Add boundary space-like edges
             for i in range(len(boundary) - 1):
@@ -686,6 +690,7 @@ class CircuitModelMatchingDecoder(ABC):
                                     error_probability=0.01,
                                 )
                                 logging.debug("spacetime hook t=%d (%s, %s)" % (t, g, h))
+                                logging.debug(" qubits %s qubit_id %s" % ([u[0]], q_idx))
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
                 G.add_edge(
@@ -771,10 +776,12 @@ class CircuitModelMatchingDecoder(ABC):
                     prior_outcome %= 2
                     if outcome != prior_outcome:
                         highlighted.append((i, tuple(stabilizers[j])))
+        logging.debug("num. highlighted = %d" % len(highlighted))
         # If the total number of highlighted vertices is odd,
         # add a single special highlighted vertex at the boundary
         if len(highlighted) % 2 == 1:
             highlighted.append((0, tuple(boundary[0])))
+        logging.debug("highlighted = %s" % highlighted)
         return gauge_outcomes, highlighted
 
     def _compute_matching(

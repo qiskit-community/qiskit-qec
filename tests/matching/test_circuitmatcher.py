@@ -1,5 +1,6 @@
 import unittest
 from typing import List, Dict, Tuple
+import logging
 
 from qiskit import execute, QuantumCircuit, Aer
 
@@ -7,6 +8,9 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder, temp_syndrome
 
+
+# Logging
+# logging.basicConfig(filename='test_circuitmatcher.log', encoding='utf-8', level=logging.DEBUG)
 
 # Bit-flip circuit noise model
 p = 0.05
