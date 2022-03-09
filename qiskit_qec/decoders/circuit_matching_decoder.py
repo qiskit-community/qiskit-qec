@@ -4,6 +4,7 @@ from copy import deepcopy, copy
 from math import log
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Set
+from functools import partial
 import logging
 
 import json
@@ -156,8 +157,8 @@ class CircuitModelMatchingDecoder(ABC):
         """
         gauge_products = []
         for stab in stabilizers:
-            is_contained = lambda x: set(x).intersection(set(stab)) == set(x)
-            products = filter(is_contained, gauges)
+            is_contained = lambda x, y: set(y).intersection(set(x)) == set(y)
+            products = filter(partial(is_contained, stab), gauges)
             gauge_products.append(list(products))
         return gauge_products
 
@@ -546,7 +547,7 @@ class CircuitModelMatchingDecoder(ABC):
         idx = 0  # vertex index counter
         idxmap = {}  # map from vertex data (t, qubits) to vertex index
         node_layers = []
-        for t, layer in enumerate(layer_types):
+        for time, layer in enumerate(layer_types):
             # Add vertices at time t
             node_layer = []
             if layer == "g":
@@ -554,16 +555,16 @@ class CircuitModelMatchingDecoder(ABC):
             elif layer == "s":
                 all_z = stabilizers
             for g in all_z:
-                graph.add_node(idx, time=t, qubits=g, highlighted=False)
-                logging.debug("node %d t=%d %s", idx, t, g)
-                idxmap[(t, tuple(g))] = idx
+                graph.add_node(idx, time=time, qubits=g, highlighted=False)
+                logging.debug("node %d t=%d %s", idx, time, g)
+                idxmap[(time, tuple(g))] = idx
                 node_layer.append(idx)
                 idx += 1
             for g in boundary:
                 # Add optional is_boundary property for pymatching
-                graph.add_node(idx, time=t, qubits=g, highlighted=False, is_boundary=True)
-                logging.debug("boundary %d t=%d %s", idx, t, g)
-                idxmap[(t, tuple(g))] = idx
+                graph.add_node(idx, time=time, qubits=g, highlighted=False, is_boundary=True)
+                logging.debug("boundary %d t=%d %s", idx, time, g)
+                idxmap[(time, tuple(g))] = idx
                 node_layer.append(idx)
                 idx += 1
             node_layers.append(node_layer)
@@ -592,8 +593,8 @@ class CircuitModelMatchingDecoder(ABC):
                         # weight is a floating point number
                         # error_probability is a floating point number
                         graph.add_edge(
-                            idxmap[(t, tuple(g))],
-                            idxmap[(t, tuple(h))],
+                            idxmap[(time, tuple(g))],
+                            idxmap[(time, tuple(h))],
                             qubits=[u[0]],
                             measurement_error=0,
                             weight=1,
@@ -601,7 +602,7 @@ class CircuitModelMatchingDecoder(ABC):
                             qubit_id=pymatching_indexer[u[0]],
                             error_probability=0.01,
                         )
-                        logging.debug("spacelike t=%d (%s, %s)", t, g, h)
+                        logging.debug("spacelike t=%d (%s, %s)", time, g, h)
                         logging.debug(" qubits %s qubit_id %s", [u[0]], pymatching_indexer[u[0]])
 
             # Add boundary space-like edges
@@ -613,8 +614,8 @@ class CircuitModelMatchingDecoder(ABC):
                 # weight is a floating point number
                 # error_probability is a floating point number
                 graph.add_edge(
-                    idxmap[(t, tuple(g))],
-                    idxmap[(t, tuple(h))],
+                    idxmap[(time, tuple(g))],
+                    idxmap[(time, tuple(h))],
                     qubits=[],
                     measurement_error=0,
                     weight=0,
@@ -622,7 +623,7 @@ class CircuitModelMatchingDecoder(ABC):
                     qubit_id=-1,
                     error_probability=0.0,
                 )
-                logging.debug("spacelike boundary t=%d (%s, %s)", t, g, h)
+                logging.debug("spacelike boundary t=%d (%s, %s)", time, g, h)
 
             # Add (space)time-like edges from t to t-1
             # By construction, the qubit sets of pairs of vertices at S and T
@@ -640,12 +641,12 @@ class CircuitModelMatchingDecoder(ABC):
             # Important: some space-like hooks are not accounted for.
             # They can have longer paths between non-intersecting operators.
             # We will account for these in _revise_decoding_graph if needed.
-            if t > 0:
+            if time > 0:
                 current_sets = gauges
                 prior_sets = gauges
-                if layer_types[t] == "s":
+                if layer_types[time] == "s":
                     current_sets = stabilizers
-                if layer_types[t - 1] == "s":
+                if layer_types[time - 1] == "s":
                     prior_sets = stabilizers
                 for g in current_sets:
                     for h in prior_sets:
@@ -660,8 +661,8 @@ class CircuitModelMatchingDecoder(ABC):
                             # Case (a)
                             if set(u) == set(h) or set(u) == set(g):
                                 graph.add_edge(
-                                    idxmap[(t - 1, tuple(h))],
-                                    idxmap[(t, tuple(g))],
+                                    idxmap[(time - 1, tuple(h))],
+                                    idxmap[(time, tuple(g))],
                                     qubits=[],
                                     measurement_error=1,
                                     weight=1,
@@ -669,12 +670,12 @@ class CircuitModelMatchingDecoder(ABC):
                                     qubit_id=-1,
                                     error_probability=0.01,
                                 )
-                                logging.debug("timelike t=%d (%s, %s)", t, g, h)
+                                logging.debug("timelike t=%d (%s, %s)", time, g, h)
                             else:  # Case (b)
                                 q_idx = pymatching_indexer[u[0]]
                                 graph.add_edge(
-                                    idxmap[(t - 1, tuple(h))],
-                                    idxmap[(t, tuple(g))],
+                                    idxmap[(time - 1, tuple(h))],
+                                    idxmap[(time, tuple(g))],
                                     qubits=[u[0]],
                                     measurement_error=1,
                                     weight=1,
@@ -682,13 +683,13 @@ class CircuitModelMatchingDecoder(ABC):
                                     qubit_id=q_idx,
                                     error_probability=0.01,
                                 )
-                                logging.debug("spacetime hook t=%d (%s, %s)", t, g, h)
+                                logging.debug("spacetime hook t=%d (%s, %s)", time, g, h)
                                 logging.debug(" qubits %s qubit_id %s", [u[0]], q_idx)
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
                 graph.add_edge(
-                    idxmap[(t - 1, tuple(boundary[0]))],
-                    idxmap[(t, tuple(boundary[0]))],
+                    idxmap[(time - 1, tuple(boundary[0]))],
+                    idxmap[(time, tuple(boundary[0]))],
                     qubits=[],
                     measurement_error=0,
                     weight=0,
@@ -696,7 +697,7 @@ class CircuitModelMatchingDecoder(ABC):
                     qubit_id=-1,
                     error_probability=0.0,
                 )
-                logging.debug("boundarylink t=%d (%s, %s)", t, g, h)
+                logging.debug("boundarylink t=%d (%s, %s)", time, g, h)
         logging.debug("indexer %s", pymatching_indexer)
         return idxmap, node_layers, graph, pymatching_indexer
 
