@@ -155,11 +155,9 @@ class CircuitModelMatchingDecoder(ABC):
         Return the list of indices.
         """
         gauge_products = []
-        for i in range(len(stabilizers)):
-            products = filter(
-                lambda x: set(gauges[x]).intersection(set(stabilizers[i])) == set(gauges[x]),
-                range(len(gauges)),
-            )
+        for stab in stabilizers:
+            is_contained = lambda x: set(x).intersection(set(stab)) == set(x)
+            products = filter(is_contained, gauges)
             gauge_products.append(list(products))
         return gauge_products
 
@@ -529,7 +527,7 @@ class CircuitModelMatchingDecoder(ABC):
         decoding graph G. The list node_layers contains lists of nodes
         for each time step.
         """
-        G = nx.Graph()
+        graph = nx.Graph()
         gauges = []
         stabilizers = []
         boundary = []
@@ -556,14 +554,14 @@ class CircuitModelMatchingDecoder(ABC):
             elif layer == "s":
                 all_z = stabilizers
             for g in all_z:
-                G.add_node(idx, time=t, qubits=g, highlighted=False)
+                graph.add_node(idx, time=t, qubits=g, highlighted=False)
                 logging.debug("node %d t=%d %s", idx, t, g)
                 idxmap[(t, tuple(g))] = idx
                 node_layer.append(idx)
                 idx += 1
             for g in boundary:
                 # Add optional is_boundary property for pymatching
-                G.add_node(idx, time=t, qubits=g, highlighted=False, is_boundary=True)
+                graph.add_node(idx, time=t, qubits=g, highlighted=False, is_boundary=True)
                 logging.debug("boundary %d t=%d %s", idx, t, g)
                 idxmap[(t, tuple(g))] = idx
                 node_layer.append(idx)
@@ -593,7 +591,7 @@ class CircuitModelMatchingDecoder(ABC):
                         # qubit_id is an integer or set of integers
                         # weight is a floating point number
                         # error_probability is a floating point number
-                        G.add_edge(
+                        graph.add_edge(
                             idxmap[(t, tuple(g))],
                             idxmap[(t, tuple(h))],
                             qubits=[u[0]],
@@ -614,7 +612,7 @@ class CircuitModelMatchingDecoder(ABC):
                 # qubit_id is an integer or set of integers
                 # weight is a floating point number
                 # error_probability is a floating point number
-                G.add_edge(
+                graph.add_edge(
                     idxmap[(t, tuple(g))],
                     idxmap[(t, tuple(h))],
                     qubits=[],
@@ -661,7 +659,7 @@ class CircuitModelMatchingDecoder(ABC):
                             # error_probability is a floating point number
                             # Case (a)
                             if set(u) == set(h) or set(u) == set(g):
-                                G.add_edge(
+                                graph.add_edge(
                                     idxmap[(t - 1, tuple(h))],
                                     idxmap[(t, tuple(g))],
                                     qubits=[],
@@ -674,7 +672,7 @@ class CircuitModelMatchingDecoder(ABC):
                                 logging.debug("timelike t=%d (%s, %s)", t, g, h)
                             else:  # Case (b)
                                 q_idx = pymatching_indexer[u[0]]
-                                G.add_edge(
+                                graph.add_edge(
                                     idxmap[(t - 1, tuple(h))],
                                     idxmap[(t, tuple(g))],
                                     qubits=[u[0]],
@@ -688,7 +686,7 @@ class CircuitModelMatchingDecoder(ABC):
                                 logging.debug(" qubits %s qubit_id %s", [u[0]], q_idx)
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
-                G.add_edge(
+                graph.add_edge(
                     idxmap[(t - 1, tuple(boundary[0]))],
                     idxmap[(t, tuple(boundary[0]))],
                     qubits=[],
@@ -700,7 +698,7 @@ class CircuitModelMatchingDecoder(ABC):
                 )
                 logging.debug("boundarylink t=%d (%s, %s)", t, g, h)
         logging.debug("indexer %s", pymatching_indexer)
-        return idxmap, node_layers, G, pymatching_indexer
+        return idxmap, node_layers, graph, pymatching_indexer
 
     def _highlighted_vertices(
         self,
@@ -896,8 +894,8 @@ class CircuitModelMatchingDecoder(ABC):
 
     def _export_json(self, g: nx.Graph, filename: str):
         """Export a JSON formatted file with the graph data."""
-        with open(filename, "w") as fp:
+        with open(filename, "w", encoding="utf-8") as fp:
             # The sympy fields are not serializable, so we
             # include the default function that casts to a string
-            json.dump(nx.node_link_data(g), fp, indent=4, default=lambda x: str(x))
+            json.dump(nx.node_link_data(g), fp, indent=4, default=str)
         fp.close()
