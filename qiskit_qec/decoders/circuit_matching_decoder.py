@@ -746,19 +746,19 @@ class CircuitModelMatchingDecoder(ABC):
         highlighted = []
         # Now iterate over the layers and look at appropriate
         # syndrome differences
-        for i in range(len(layer_types)):
-            if layer_types[i] == "g":
+        for i, ltype in enumerate(layer_types):
+            if ltype == "g":
                 # compare current and past gauge measurements
                 # if a bit differs, the vertex (i, g) is highlighted
-                for j in range(len(gauges)):
+                for j, gauge_op in enumerate(gauges):
                     if (i == 0 and gauge_outcomes[i][j] == 1) or (
                         i > 0 and gauge_outcomes[i][j] != gauge_outcomes[i - 1][j]
                     ):
-                        highlighted.append((i, tuple(gauges[j])))
-            elif layer_types[i] == "s":
+                        highlighted.append((i, tuple(gauge_op)))
+            elif ltype == "s":
                 # compare current and past stabilizer measurements
                 # if a bit differs, the vertex (i, s) is highlighted
-                for j in range(len(stabilizers)):
+                for j, stab_op in enumerate(stabilizers):
                     outcome = 0
                     prior_outcome = 0
                     for k in gauge_products[j]:
@@ -768,7 +768,7 @@ class CircuitModelMatchingDecoder(ABC):
                     outcome %= 2
                     prior_outcome %= 2
                     if outcome != prior_outcome:
-                        highlighted.append((i, tuple(stabilizers[j])))
+                        highlighted.append((i, tuple(stab_op)))
         logging.debug("|highlighted| = %d", len(highlighted))
         # If the total number of highlighted vertices is odd,
         # add a single special highlighted vertex at the boundary
@@ -796,18 +796,18 @@ class CircuitModelMatchingDecoder(ABC):
             gm.add_node(idx, dvertex=v)
             midxmap[v] = idx
             idx += 1
-        for i in range(len(highlighted)):
+        for i, high_i in enumerate(highlighted):
             for j in range(i + 1, len(highlighted)):
-                vi = midxmap[highlighted[i]]
+                vi = midxmap[high_i]
                 vj = midxmap[highlighted[j]]
-                vip = idxmap[highlighted[i]]
+                vip = idxmap[high_i]
                 vjp = idxmap[highlighted[j]]
                 gm.add_edge(vi, vj, weight=-length[vip][vjp])
         matching = nx.max_weight_matching(gm, maxcardinality=True, weight="weight")
         return matching
 
     def _error_chain_for_vertex_path(
-        self, g: nx.Graph, vertex_path: List[int]
+        self, graph: nx.Graph, vertex_path: List[int]
     ) -> Tuple[Set[int], Set[int]]:
         """Return a chain of qubit and measurement errors for a vertex path.
 
@@ -821,9 +821,11 @@ class CircuitModelMatchingDecoder(ABC):
         for i in range(len(vertex_path) - 1):
             v0 = vertex_path[i]
             v1 = vertex_path[i + 1]
-            if g[v0][v1]["measurement_error"] == 1:
-                measurement_errors ^= set([(g.nodes[v0]["time"], tuple(g.nodes[v0]["qubits"]))])
-            qubit_errors ^= set(g[v0][v1]["qubits"])
+            if graph[v0][v1]["measurement_error"] == 1:
+                measurement_errors ^= set(
+                    [(graph.nodes[v0]["time"], tuple(graph.nodes[v0]["qubits"]))]
+                )
+            qubit_errors ^= set(graph[v0][v1]["qubits"])
             logging.debug(
                 "_error_chain_for_vertex_path q = %s, m = %s", qubit_errors, measurement_errors
             )
