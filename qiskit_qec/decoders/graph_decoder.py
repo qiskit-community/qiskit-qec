@@ -369,59 +369,41 @@ class GraphDecoder:
                 w = -np.log(p / (1 - p))
             self.S.update_edge(edge[0], edge[1], w)
 
-    def make_error_graph(self, string, subgraphs=None):
+    def make_error_graph(self, string):
         """
         Args:
             string (str): A string describing the output from the code.
-            subgraphs (list): Used when multiple, semi-independent graphs need
-            need to created.
 
         Returns:
-            E: The subgraph(s) of S which corresponds to the non-trivial
+            E: The subgraph of S which corresponds to the non-trivial
             syndrome elements in the given string.
         """
 
-        if subgraphs is None:
-            subgraphs = []
-            for syndrome_type in string.split("  "):
-                subgraphs.append(["0"])
-
-        set_subgraphs = [subgraph for subs4type in subgraphs for subgraph in subs4type]
-
-        E = {}
-        node_sets = {}
-        for subgraph in set_subgraphs:
-            E[subgraph] = rx.PyGraph(multigraph=False)
-            node_sets[subgraph] = set()
-
-        E = {subgraph: rx.PyGraph(multigraph=False) for subgraph in set_subgraphs}
+        E = rx.PyGraph(multigraph=False)
+        node_set = set()
         separated_string = self._separate_string(string)
         for syndrome_type, _ in enumerate(separated_string):
             for syndrome_round in range(len(separated_string[syndrome_type])):
                 elements = separated_string[syndrome_type][syndrome_round]
                 for elem_num, element in enumerate(elements):
                     if element == "1" or syndrome_type == 0:
-                        for subgraph in subgraphs[syndrome_type]:
-                            node = Node(
-                                time=syndrome_round, operator=elem_num, subset=syndrome_type
-                            )
-                            if node not in node_sets[subgraph]:
-                                E[subgraph].add_node(node)
-                                node_sets[subgraph].add(node)
+                        node = Node(time=syndrome_round, operator=elem_num, subset=syndrome_type)
+                        if node not in node_set:
+                            E.add_node(node)
+                            node_set.add(node)
 
         # for each pair of nodes in error create an edge and weight with the
         # distance
         distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=float)
         s_node_map = {self.S[index]: index for index in self.S.node_indexes()}
 
-        for subgraph in set_subgraphs:
-            for source_index in E[subgraph].node_indexes():
-                for target_index in E[subgraph].node_indexes():
-                    source = E[subgraph][source_index]
-                    target = E[subgraph][target_index]
-                    if target != source:
-                        distance = int(distance_matrix[s_node_map[source]][s_node_map[target]])
-                        E[subgraph].add_edge(source_index, target_index, -distance)
+        for source_index in E.node_indexes():
+            for target_index in E.node_indexes():
+                source = E[source_index]
+                target = E[target_index]
+                if target != source:
+                    distance = int(distance_matrix[s_node_map[source]][s_node_map[target]])
+                    E.add_edge(source_index, target_index, -distance)
         return E
 
     def matching(self, string):
@@ -438,8 +420,7 @@ class GraphDecoder:
             calculate a logical error probability with `get_logical_prob`
         """
 
-        # this matching algorithm is designed for a single graph
-        E = self.make_error_graph(string)["0"]
+        E = self.make_error_graph(string)
 
         # set up graph that is like E, but each syndrome node is connected to a
         # separate copy of the nearest logical node
