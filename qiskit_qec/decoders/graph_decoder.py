@@ -387,7 +387,9 @@ class GraphDecoder:
                 elements = separated_string[syndrome_type][syndrome_round]
                 for elem_num, element in enumerate(elements):
                     if element == "1" or syndrome_type == 0:
-                        node = Node(time=syndrome_round, operator=elem_num, subset=syndrome_type)
+                        node = Node(
+                            time=syndrome_round, operator=elem_num, is_boundary=(syndrome_type == 0)
+                        )
                         if node not in node_set:
                             E.add_node(node)
                             node_set.add(node)
@@ -431,7 +433,7 @@ class GraphDecoder:
         node_map = {}
         for node in E.nodes():
             node_map[node] = E_matching.add_node(node)
-            if node[0] == 0:
+            if node.is_boundary:
                 logical_nodes.append(node)
             else:
                 syndrome_nodes.append(node)
