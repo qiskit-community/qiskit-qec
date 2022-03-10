@@ -35,12 +35,16 @@ except ImportError:
 
     HAS_AER = False
 
-    
-class Node():
+
+class Node:
+    """
+    Class to contain user-defined attributes for nodes of a graph.
+    """
+
     def __init__(self, **arg):
-        for key,value in arg.items():
-            setattr(self,key,value)
-    
+        for key, value in arg.items():
+            setattr(self, key, value)
+
 
 class GraphDecoder:
     """
@@ -398,7 +402,9 @@ class GraphDecoder:
                 for elem_num, element in enumerate(elements):
                     if element == "1" or syndrome_type == 0:
                         for subgraph in subgraphs[syndrome_type]:
-                            node = Node(time=syn_round, operator=elem_num, subset=syn_type)
+                            node = Node(
+                                time=syndrome_round, operator=elem_num, subset=syndrome_type
+                            )
                             if node not in node_sets[subgraph]:
                                 E[subgraph].add_node(node)
                                 node_sets[subgraph].add(node)
