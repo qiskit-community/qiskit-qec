@@ -35,6 +35,12 @@ except ImportError:
 
     HAS_AER = False
 
+    
+class Node():
+    def __init__(self, **arg):
+        for key,value in arg.items():
+            setattr(self,key,value)
+    
 
 class GraphDecoder:
     """
@@ -93,7 +99,8 @@ class GraphDecoder:
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
                     if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
-                        nodes.append((syn_type, syn_round, elem_num))
+                        node = Node(time=syn_round, operator=elem_num, subset=syn_type)
+                        nodes.append(node)
         return nodes
 
     def _make_syndrome_graph(self, results=None):
@@ -391,10 +398,10 @@ class GraphDecoder:
                 for elem_num, element in enumerate(elements):
                     if element == "1" or syndrome_type == 0:
                         for subgraph in subgraphs[syndrome_type]:
-                            node_data = (syndrome_type, syndrome_round, elem_num)
-                            if node_data not in node_sets[subgraph]:
-                                E[subgraph].add_node(node_data)
-                                node_sets[subgraph].add(node_data)
+                            node = Node(time=syn_round, operator=elem_num, subset=syn_type)
+                            if node not in node_sets[subgraph]:
+                                E[subgraph].add_node(node)
+                                node_sets[subgraph].add(node)
 
         # for each pair of nodes in error create an edge and weight with the
         # distance
