@@ -163,8 +163,8 @@ class TestCodes(unittest.TestCase):
         dec = GraphDecoder(code)
         test_results = {"0": {"0 0  00 00": 1024, "0 0  11 00": 512}}
         p = dec.get_error_probs(test_results)
-        n0 = dec.S.nodes().index({'time':0, 'is_logical':False, 'element':0})
-        n1 = dec.S.nodes().index({'time':0, 'is_logical':False, 'element':1})
+        n0 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 0})
+        n1 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 1})
         self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
 
     def test_rep_probs(self):
