@@ -4,7 +4,6 @@ from copy import deepcopy, copy
 from math import log
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Set
-from functools import partial
 import logging
 
 import json
@@ -17,7 +16,7 @@ from qiskit_qec.utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
-from qiskit_qec.decoders.temp_code_util import temp_syndrome
+from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
 
 
 class CircuitModelMatchingDecoder(ABC):
@@ -87,12 +86,8 @@ class CircuitModelMatchingDecoder(ABC):
         else:
             self.usepymatching = False
 
-        self.z_gauge_products = self._gauge_products(
-            self.css_z_stabilizer_ops, self.css_z_gauge_ops
-        )
-        self.x_gauge_products = self._gauge_products(
-            self.css_x_stabilizer_ops, self.css_x_gauge_ops
-        )
+        self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
+        self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
         self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
         logging.debug("layer_types = %s", self.layer_types)
 
@@ -143,26 +138,6 @@ class CircuitModelMatchingDecoder(ABC):
         self.length = {}  # recomputed in update_edge_weights
         self.path = {}  # recomputed in update_edge_weights
         self.pymatching = None  # constructed in update_edge_weights
-
-    def _gauge_products(
-        self, stabilizers: List[List[int]], gauges: List[List[int]]
-    ) -> List[List[int]]:
-        """Record gauge products for each stabilizer.
-
-        stabilizers = list of stabilizer operator supports
-        gauges = list of gauge operator supports
-
-        For each stabilizer operator, record the indices of the
-        gauge operators in 'gauges' whose product is that stabilizer operator.
-
-        Return the list of indices.
-        """
-        gauge_products = []
-        for _, stab in enumerate(stabilizers):
-            is_contained = lambda x, j: set(gauges[j]).intersection(set(x)) == set(gauges[j])
-            products = filter(partial(is_contained, stab), range(len(gauges)))
-            gauge_products.append(list(products))
-        return gauge_products
 
     def _revise_decoding_graph(
         self,
