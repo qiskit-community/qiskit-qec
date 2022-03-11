@@ -24,14 +24,14 @@
 
 Contributors to the framework are welcome. The following describes how the framework is being designed and built. The current approach is designed to enable a wide range of disciplines to contribute earlier and to enable better computer engineering earlier on. This approach has a development process and a scope control. The Development process is based on increasing details of requirements and code details. The basic process is outlined in the following figure:
 
-![Development Process](docs/images/DevelopmentProcessv1.png?raw=true "Development Process")
+![Development Process](./docs/_static/images/DevelopmentProcessv1.png?raw=true "Development Process")
 
 
 QEC requirements, both general and specific, are first written down. Each requirement must then me given a detailed precise mathematical description. These descriptions are then use to develop various solution approaches and associated pseudo code. From here prototype code is developed. Once the code has been tested and fits within the agreed upon architectural framework it becomes framework code. A similar process occurs for the architectural side of the project.
 
 Scope control is used initially to establish a good foundation.  The basic process is outlined in the following figure:
 
-![Scope Control](docs/images/ScopeControlv1.png?raw=true "Scope Control")
+![Scope Control](./docs/_static/images/ScopeControlv1.png?raw=true "Scope Control")
 
 Scope control is done by prioritizing which requirements get worked on first. The priorities are determined by selected core QEC or architecure requirements or via requirements required by a few selected projects.
 

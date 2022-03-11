@@ -10,6 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Info."""
+"""
+=============================
+Info (:mod:`qiskit_qec.info`)
+=============================
 
-from . import properties
+.. currentmodule:: qiskit_qec.info
+
+Info module classes and functions
+=================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Properties
+"""
+
+from .properties import Properties
