@@ -38,7 +38,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks: int,
         method: str,
         uniform: bool,
-    ):  # TODO defaults?
+    ):
         """Create a matching decoder.
 
         Specialized to (subsystem) CSS codes encoding one logical qubit,
