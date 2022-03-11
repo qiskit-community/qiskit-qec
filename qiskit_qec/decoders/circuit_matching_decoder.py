@@ -144,7 +144,9 @@ class CircuitModelMatchingDecoder(ABC):
         self.path = {}  # recomputed in update_edge_weights
         self.pymatching = None  # constructed in update_edge_weights
 
-    def _gauge_products(self, stabilizers: List[List[int]], gauges: List[List[int]]):
+    def _gauge_products(
+        self, stabilizers: List[List[int]], gauges: List[List[int]]
+    ) -> List[List[int]]:
         """Record gauge products for each stabilizer.
 
         stabilizers = list of stabilizer operator supports
@@ -156,9 +158,9 @@ class CircuitModelMatchingDecoder(ABC):
         Return the list of indices.
         """
         gauge_products = []
-        for stab in stabilizers:
-            is_contained = lambda x, y: set(y).intersection(set(x)) == set(y)
-            products = filter(partial(is_contained, stab), gauges)
+        for i, stab in enumerate(stabilizers):
+            is_contained = lambda x, j: set(gauges[j]).intersection(set(x)) == set(gauges[j])
+            products = filter(partial(is_contained, stab), range(len(gauges)))
             gauge_products.append(list(products))
         return gauge_products
 
