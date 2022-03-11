@@ -158,7 +158,7 @@ class CircuitModelMatchingDecoder(ABC):
         Return the list of indices.
         """
         gauge_products = []
-        for i, stab in enumerate(stabilizers):
+        for _, stab in enumerate(stabilizers):
             is_contained = lambda x, j: set(gauges[j]).intersection(set(x)) == set(gauges[j])
             products = filter(partial(is_contained, stab), range(len(gauges)))
             gauge_products.append(list(products))
