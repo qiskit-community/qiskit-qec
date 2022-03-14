@@ -47,16 +47,7 @@ class DecodingGraph:
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoder
                 will be used.
-            S (retworkx.PyGraph): Graph describing connectivity between syndrome
-                elements. Will be generated automatically if not supplied.
             brute (bool): If False, attempt to use custom method from code class.
-
-        Additional information:
-            The decoder for the supplied ``code`` is initialized by running
-            ``_make_syndrome_graph()``. Since this process can take some
-            time, it is also possible to load in a premade ``S``. However,
-            if this was created for a differently defined ``code``, it won't
-            work properly.
         """
 
         self.code = code
@@ -409,7 +400,7 @@ class DecodingGraph:
                     E.add_edge(source_index, target_index, -distance)
         return E
 
-    
+
 class GraphDecoder:
     """
     Class to construct the graph corresponding to the possible syndromes
