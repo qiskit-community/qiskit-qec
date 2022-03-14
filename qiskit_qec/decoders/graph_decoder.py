@@ -36,7 +36,7 @@ except ImportError:
     HAS_AER = False
 
 
-class GraphDecoder:
+class DecodingGraph:
     """
     Class to construct the graph corresponding to the possible syndromes
     of a quantum error correction code, and then run suitable decoders.
@@ -45,18 +45,9 @@ class GraphDecoder:
     def __init__(self, code, S=None, brute=False):
         """
         Args:
-            code (RepitionCode): The QEC Code object for which this decoder
+            code (CodeCircuit): The QEC code circuit object for which this decoder
                 will be used.
-            S (retworkx.PyGraph): Graph describing connectivity between syndrome
-                elements. Will be generated automatically if not supplied.
             brute (bool): If False, attempt to use custom method from code class.
-
-        Additional information:
-            The decoder for the supplied ``code`` is initialized by running
-            ``_make_syndrome_graph()``. Since this process can take some
-            time, it is also possible to load in a premade ``S``. However,
-            if this was created for a differently defined ``code``, it won't
-            work properly.
         """
 
         self.code = code
@@ -409,6 +400,21 @@ class GraphDecoder:
                     E.add_edge(source_index, target_index, -distance)
         return E
 
+
+class GraphDecoder:
+    """
+    Class to construct the graph corresponding to the possible syndromes
+    of a quantum error correction code, and then run suitable decoders.
+    """
+
+    def __init__(self, graph):
+        """
+        Args:
+            graph (GraphDecoder): The decoder graph on which decoding is performed.
+        """
+
+        self.graph = graph
+
     def matching(self, string):
         """
         Args:
@@ -424,7 +430,7 @@ class GraphDecoder:
         """
 
         # this matching algorithm is designed for a single graph
-        E = self.make_error_graph(string)
+        E = self.graph.make_error_graph(string)
 
         # set up graph that is like E, but each syndrome node is connected to a
         # separate copy of the nearest logical node
@@ -473,7 +479,7 @@ class GraphDecoder:
         # do the matching on this
         matches = rx.max_weight_matching(E_matching, max_cardinality=True, weight_fn=lambda x: x)
         # use it to construct and return a corrected logical string
-        logicals = self._separate_string(string)[0]
+        logicals = self.graph._separate_string(string)[0]
         for (n0, n1) in matches:
             source = E_matching[n0]
             target = E_matching[n1]
