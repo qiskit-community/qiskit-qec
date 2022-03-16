@@ -36,7 +36,7 @@ except ImportError:
     HAS_AER = False
 
 
-class GraphDecoder:
+class DecodingGraph:
     """
     Class to construct the graph corresponding to the possible syndromes
     of a quantum error correction code, and then run suitable decoders.
@@ -45,18 +45,9 @@ class GraphDecoder:
     def __init__(self, code, S=None, brute=False):
         """
         Args:
-            code (RepitionCode): The QEC Code object for which this decoder
+            code (CodeCircuit): The QEC code circuit object for which this decoder
                 will be used.
-            S (retworkx.PyGraph): Graph describing connectivity between syndrome
-                elements. Will be generated automatically if not supplied.
             brute (bool): If False, attempt to use custom method from code class.
-
-        Additional information:
-            The decoder for the supplied ``code`` is initialized by running
-            ``_make_syndrome_graph()``. Since this process can take some
-            time, it is also possible to load in a premade ``S``. However,
-            if this was created for a differently defined ``code``, it won't
-            work properly.
         """
 
         self.code = code
@@ -93,7 +84,11 @@ class GraphDecoder:
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
                     if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
-                        nodes.append((syn_type, syn_round, elem_num))
+                        if syn_type == 0:
+                            elem_num = syn_round
+                            syn_round = 0
+                        node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
+                        nodes.append(node)
         return nodes
 
     def _make_syndrome_graph(self, results=None):
@@ -101,16 +96,17 @@ class GraphDecoder:
         S = rx.PyGraph(multigraph=False)
         if results:
 
-            node_map = {}
             for string in results:
                 nodes = self.string2nodes(string)
                 for node in nodes:
-                    if node not in node_map:
-                        node_map[node] = S.add_node(node)
+                    if node not in S.nodes():
+                        S.add_node(node)
                 for source in nodes:
                     for target in nodes:
                         if target != source:
-                            S.add_edge(node_map[source], node_map[target], 1)
+                            n0 = S.nodes().index(source)
+                            n1 = S.nodes().index(target)
+                            S.add_edge(n0, n1, 1)
 
         else:
             qc = self.code.circuit["0"]
@@ -187,12 +183,18 @@ class GraphDecoder:
                                 + " nodes in syndrome graph, instead of 2."
                             )
                             for node in nodes:
-                                if node not in node_map:
-                                    node_map[node] = S.add_node(node)
+                                if node not in node_map.values():
+                                    node_map[S.add_node(node)] = node
                             for source in nodes:
                                 for target in nodes:
                                     if target != source:
-                                        S.add_edge(node_map[source], node_map[target], 1)
+                                        ns = list(node_map.keys())[
+                                            list(node_map.values()).index(source)
+                                        ]
+                                        nt = list(node_map.keys())[
+                                            list(node_map.values()).index(target)
+                                        ]
+                                        S.add_edge(ns, nt, 1)
 
         return S
 
@@ -221,73 +223,70 @@ class GraphDecoder:
 
             neighbours = {}
             av_v = {}
-            for node in self.S.nodes():
-                av_v[node] = 0
-                neighbours[node] = []
+            for n in self.S.node_indexes():
+                av_v[n] = 0
+                neighbours[n] = []
 
             av_vv = {}
             av_xor = {}
-            for edge in self.S.edge_list():
-                node0, node1 = self.S[edge[0]], self.S[edge[1]]
-                av_vv[node0, node1] = 0
-                av_xor[node0, node1] = 0
-                neighbours[node0].append(node1)
-                neighbours[node1].append(node0)
+            for n0, n1 in self.S.edge_list():
+                av_vv[n0, n1] = 0
+                av_xor[n0, n1] = 0
+                neighbours[n0].append(n1)
+                neighbours[n1].append(n0)
 
-            error_probs = {}
             for string in results:
 
                 # list of i for which v_i=1
                 error_nodes = self.string2nodes(string, logical=logical)
 
                 for node0 in error_nodes:
-                    av_v[node0] += results[string]
-                    for node1 in neighbours[node0]:
-                        if node1 in error_nodes and (node0, node1) in av_vv:
-                            av_vv[node0, node1] += results[string]
+                    n0 = self.S.nodes().index(node0)
+                    av_v[n0] += results[string]
+                    for n1 in neighbours[n0]:
+                        node1 = self.S[n1]
+                        if node1 in error_nodes and (n0, n1) in av_vv:
+                            av_vv[n0, n1] += results[string]
                         if node1 not in error_nodes:
-                            if (node0, node1) in av_xor:
-                                av_xor[node0, node1] += results[string]
+                            if (n0, n1) in av_xor:
+                                av_xor[n0, n1] += results[string]
                             else:
-                                av_xor[node1, node0] += results[string]
+                                av_xor[n1, n0] += results[string]
 
-            for node in self.S.nodes():
-                av_v[node] /= shots
-            for edge in self.S.edge_list():
-                node0, node1 = self.S[edge[0]], self.S[edge[1]]
-                av_vv[node0, node1] /= shots
-                av_xor[node0, node1] /= shots
+            for n in self.S.node_indexes():
+                av_v[n] /= shots
+            for n0, n1 in self.S.edge_list():
+                av_vv[n0, n1] /= shots
+                av_xor[n0, n1] /= shots
 
             boundary = []
-            for edge in self.S.edge_list():
-                node0, node1 = self.S[edge[0]], self.S[edge[1]]
+            error_probs = {}
+            for n0, n1 in self.S.edge_list():
 
-                if node0[0] == 0:
-                    boundary.append(node1)
-                elif node1[0] == 0:
-                    boundary.append(node0)
+                if self.S[n0]["is_logical"]:
+                    boundary.append(n1)
+                elif self.S[n1]["is_logical"]:
+                    boundary.append(n0)
                 else:
-                    if (1 - 2 * av_xor[node0, node1]) != 0:
-                        x = (av_vv[node0, node1] - av_v[node0] * av_v[node1]) / (
-                            1 - 2 * av_xor[node0, node1]
-                        )
-                        error_probs[node0, node1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                    if (1 - 2 * av_xor[n0, n1]) != 0:
+                        x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
+                        error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
                     else:
-                        error_probs[node0, node1] = np.nan
+                        error_probs[n0, n1] = np.nan
 
             prod = {}
-            for node0 in boundary:
-                for node1 in self.S.nodes():
-                    if node0 != node1:
-                        if node0 not in prod:
-                            prod[node0] = 1
-                        if (node0, node1) in error_probs:
-                            prod[node0] *= 1 - 2 * error_probs[node0, node1]
-                        elif (node1, node0) in error_probs:
-                            prod[node0] *= 1 - 2 * error_probs[node1, node0]
+            for n0 in boundary:
+                for n1 in self.S.node_indexes():
+                    if n0 != n1:
+                        if n0 not in prod:
+                            prod[n0] = 1
+                        if (n0, n1) in error_probs:
+                            prod[n0] *= 1 - 2 * error_probs[n0, n1]
+                        elif (n1, n0) in error_probs:
+                            prod[n0] *= 1 - 2 * error_probs[n1, n0]
 
-            for node0 in boundary:
-                error_probs[node0, node0] = 0.5 + (av_v[node0] - 0.5) / prod[node0]
+            for n0 in boundary:
+                error_probs[n0, n0] = 0.5 + (av_v[n0] - 0.5) / prod[n0]
 
         else:
 
@@ -358,58 +357,63 @@ class GraphDecoder:
                 w = -np.log(p / (1 - p))
             self.S.update_edge(edge[0], edge[1], w)
 
-    def make_error_graph(self, string, subgraphs=None):
+    def make_error_graph(self, string):
         """
         Args:
             string (str): A string describing the output from the code.
-            subgraphs (list): Used when multiple, semi-independent graphs need
-            need to created.
 
         Returns:
-            E: The subgraph(s) of S which corresponds to the non-trivial
+            E: The subgraph of S which corresponds to the non-trivial
             syndrome elements in the given string.
         """
 
-        if subgraphs is None:
-            subgraphs = []
-            for syndrome_type in string.split("  "):
-                subgraphs.append(["0"])
-
-        set_subgraphs = [subgraph for subs4type in subgraphs for subgraph in subs4type]
-
-        E = {}
-        node_sets = {}
-        for subgraph in set_subgraphs:
-            E[subgraph] = rx.PyGraph(multigraph=False)
-            node_sets[subgraph] = set()
-
-        E = {subgraph: rx.PyGraph(multigraph=False) for subgraph in set_subgraphs}
+        E = rx.PyGraph(multigraph=False)
         separated_string = self._separate_string(string)
         for syndrome_type, _ in enumerate(separated_string):
             for syndrome_round in range(len(separated_string[syndrome_type])):
                 elements = separated_string[syndrome_type][syndrome_round]
                 for elem_num, element in enumerate(elements):
                     if element == "1" or syndrome_type == 0:
-                        for subgraph in subgraphs[syndrome_type]:
-                            node_data = (syndrome_type, syndrome_round, elem_num)
-                            if node_data not in node_sets[subgraph]:
-                                E[subgraph].add_node(node_data)
-                                node_sets[subgraph].add(node_data)
+                        if syndrome_type == 0:
+                            elem_num = syndrome_round
+                            syndrome_round = 0
+                        node = {
+                            "time": syndrome_round,
+                            "is_logical": syndrome_type == 0,
+                            "element": elem_num,
+                        }
+                        if node not in E.nodes():
+                            E.add_node(node)
 
         # for each pair of nodes in error create an edge and weight with the
         # distance
         distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=float)
-        s_node_map = {self.S[index]: index for index in self.S.node_indexes()}
 
-        for subgraph in set_subgraphs:
-            for source_index in E[subgraph].node_indexes():
-                for target_index in E[subgraph].node_indexes():
-                    source = E[subgraph][source_index]
-                    target = E[subgraph][target_index]
-                    if target != source:
-                        distance = int(distance_matrix[s_node_map[source]][s_node_map[target]])
-                        E[subgraph].add_edge(source_index, target_index, -distance)
+        for source_index in E.node_indexes():
+            for target_index in E.node_indexes():
+                source = E[source_index]
+                target = E[target_index]
+                if target != source:
+                    distance = int(
+                        distance_matrix[self.S.nodes().index(source)][self.S.nodes().index(target)]
+                    )
+                    E.add_edge(source_index, target_index, -distance)
         return E
+
+
+class GraphDecoder:
+    """
+    Class to construct the graph corresponding to the possible syndromes
+    of a quantum error correction code, and then run suitable decoders.
+    """
+
+    def __init__(self, graph):
+        """
+        Args:
+            graph (GraphDecoder): The decoder graph on which decoding is performed.
+        """
+
+        self.graph = graph
 
     def matching(self, string):
         """
@@ -426,7 +430,7 @@ class GraphDecoder:
         """
 
         # this matching algorithm is designed for a single graph
-        E = self.make_error_graph(string)["0"]
+        E = self.graph.make_error_graph(string)
 
         # set up graph that is like E, but each syndrome node is connected to a
         # separate copy of the nearest logical node
@@ -434,51 +438,59 @@ class GraphDecoder:
         syndrome_nodes = []
         logical_nodes = []
         logical_neighbours = []
-        node_map = {}
         for node in E.nodes():
-            node_map[node] = E_matching.add_node(node)
-            if node[0] == 0:
+            E_matching.add_node(node)
+            if node["is_logical"]:
                 logical_nodes.append(node)
             else:
                 syndrome_nodes.append(node)
         for source in syndrome_nodes:
+            n0 = E.nodes().index(source)
             for target in syndrome_nodes:
-                if target != (source):
+                n1 = E.nodes().index(target)
+                if target != source:
                     E_matching.add_edge(
-                        node_map[source],
-                        node_map[target],
-                        E.get_edge_data(node_map[source], node_map[target]),
+                        n0,
+                        n1,
+                        E.get_edge_data(n0, n1),
                     )
 
             potential_logical = {}
             for target in logical_nodes:
-                potential_logical[target] = E.get_edge_data(node_map[source], node_map[target])
+                n1 = E.nodes().index(target)
+                potential_logical[n1] = E.get_edge_data(n0, n1)
             nearest_logical = max(potential_logical, key=potential_logical.get)
-            nl_target = nearest_logical + source
-            if nl_target not in node_map:
-                node_map[nl_target] = E_matching.add_node(nl_target)
+            nl_target = E[nearest_logical].copy()
+            nl_target["connected_to"] = source.copy()
+            if nl_target not in E_matching.nodes():
+                E_matching.add_node(nl_target)
             E_matching.add_edge(
-                node_map[source],
-                node_map[nl_target],
+                n0,
+                E_matching.nodes().index(nl_target),
                 potential_logical[nearest_logical],
             )
             logical_neighbours.append(nl_target)
         for source in logical_neighbours:
             for target in logical_neighbours:
-                if target != (source):
-                    E_matching.add_edge(node_map[source], node_map[target], 0)
+                if target != source:
+                    n0 = E_matching.nodes().index(source)
+                    n1 = E_matching.nodes().index(target)
+                    E_matching.add_edge(n0, n1, 0)
         # do the matching on this
-        matches = {
-            (E_matching[x[0]], E_matching[x[1]])
-            for x in rx.max_weight_matching(E_matching, max_cardinality=True, weight_fn=lambda x: x)
-        }
+        matches = rx.max_weight_matching(E_matching, max_cardinality=True, weight_fn=lambda x: x)
         # use it to construct and return a corrected logical string
-        logicals = self._separate_string(string)[0]
-        for (source, target) in matches:
-            if source[0] == 0 and target[0] != 0:
-                logicals[source[1]] = str((int(logicals[source[1]]) + 1) % 2)
-            if target[0] == 0 and source[0] != 0:
-                logicals[target[1]] = str((int(logicals[target[1]]) + 1) % 2)
+        logicals = self.graph._separate_string(string)[0]
+        for (n0, n1) in matches:
+            source = E_matching[n0]
+            target = E_matching[n1]
+            sil = E_matching[n0]["is_logical"]
+            til = E_matching[n1]["is_logical"]
+            if sil and not til:
+                elem = E_matching[n0]["element"]
+                logicals[elem] = str((int(logicals[elem]) + 1) % 2)
+            if til and not sil:
+                elem = E_matching[n1]["element"]
+                logicals[elem] = str((int(logicals[elem]) + 1) % 2)
 
         logical_string = ""
         for logical in logicals:

@@ -27,7 +27,7 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
 
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.decoders.graph_decoder import GraphDecoder
+from qiskit_qec.decoders.graph_decoder import DecodingGraph, GraphDecoder
 
 sys.path.append("../../")
 
@@ -70,7 +70,7 @@ class TestCodes(unittest.TestCase):
         Insert all possible single qubit errors into the given code,
         and check that each creates a pair of syndrome nodes.
         """
-        decoder = GraphDecoder(code)
+        dec = DecodingGraph(code)
 
         for logical in ["0", "1"]:
             qc = code.circuit[logical]
@@ -105,7 +105,7 @@ class TestCodes(unittest.TestCase):
                         raw_results[logical] = job.result().get_counts(str((j, qubit, error)))
                         results = code.process_results(raw_results)[logical]
                         for string in results:
-                            nodes = decoder.string2nodes(string, logical=logical)
+                            nodes = dec.string2nodes(string, logical=logical)
                             self.assertIn(
                                 len(nodes),
                                 [0, 2],
@@ -123,7 +123,7 @@ class TestCodes(unittest.TestCase):
     def test_string2nodes(self):
         """Test string2nodes with different logical values."""
         code = RepetitionCode(3, 2)
-        dec = GraphDecoder(code)
+        dec = DecodingGraph(code)
         s0 = "0 0  01 00 01"
         s1 = "1 1  01 00 01"
         self.assertTrue(
@@ -160,10 +160,12 @@ class TestCodes(unittest.TestCase):
             + "test result '0 0  11 00' in d=3, T=1 repetition code."
         )
         code = RepetitionCode(3, 1)
-        dec = GraphDecoder(code)
+        dec = DecodingGraph(code)
         test_results = {"0": {"0 0  00 00": 1024, "0 0  11 00": 512}}
         p = dec.get_error_probs(test_results)
-        self.assertTrue(round(p[(1, 0, 0), (1, 0, 1)], 2) == 0.33, error)
+        n0 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 0})
+        n1 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 1})
+        self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
 
     def test_rep_probs(self):
         """Repetition code test."""
@@ -179,9 +181,10 @@ class TestCodes(unittest.TestCase):
 
             results = get_syndrome(code, noise_model=noise_model, shots=8192)
 
-            dec = GraphDecoder(code)
+            dec = DecodingGraph(code)
+            decode = GraphDecoder(dec)
 
-            logical_prob_match = dec.get_logical_prob(results)
+            logical_prob_match = decode.get_logical_prob(results)
             for log in ["0", "1"]:
                 matching_probs[(d, log)] = logical_prob_match[log]
 
@@ -208,8 +211,8 @@ class TestCodes(unittest.TestCase):
                 + " RepetitionCode."
             )
             code = RepetitionCode(7, 2, resets=resets)
-            graph_new = GraphDecoder(code, brute=False).S
-            graph_old = GraphDecoder(code, brute=True).S
+            graph_new = DecodingGraph(code, brute=False).S
+            graph_old = DecodingGraph(code, brute=True).S
             test_passed = True
             for node in graph_new.nodes():
                 test_passed &= node in graph_old.nodes()
