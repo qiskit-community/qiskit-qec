@@ -398,7 +398,7 @@ class GraphDecoder:
         Args:
             results (dict): A results dictionary from running a circuit
             of the code.
-            logical: Encoded logical value at readout.
+            logical (str): Encoded logical value at readout.
             algorithm (str): Choice of which decoder to use.
 
         Returns:

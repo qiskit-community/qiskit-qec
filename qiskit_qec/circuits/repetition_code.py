@@ -15,7 +15,7 @@
 # pylint: disable=invalid-name
 
 """Generates circuits for quantum error correction."""
-from typing import Optional, List, Dict
+from typing import Optional, List
 
 from qiskit import QuantumRegister, ClassicalRegister
 from qiskit import QuantumCircuit
@@ -253,10 +253,8 @@ class RepetitionCodeCircuit:
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (
-                        (syn_type == 0 and element != logical)
-                        or (syn_type == 0 and all_logicals)
-                        or (syn_type != 0 and element == "1")
+                    if (syn_type == 0 and (all_logicals or element != logical)) or (
+                        syn_type != 0 and element == "1"
                     ):
                         if syn_type == 0:
                             elem_num = syn_round
@@ -274,38 +272,3 @@ class RepetitionCodeCircuit:
             list: Raw values for logical operators that correspond to nodes.
         """
         return self._separate_string(self._process_string(string))[0]
-
-    def _get_all_processed_results(self):
-        """
-        Returns:
-            results: list of all processed results stemming from single qubit bitflip errors,
-                which is used to create the decoder graph.
-        """
-
-        syn = RepetitionCodeSyndromeGenerator(self)
-
-        T = syn.T  # number of rounds of stabilizer measurements
-        d = syn.d  # number of data qubits
-
-        results = []
-        for r in range(T):
-            for i in range(d - 1):
-                # flip before measurement
-                syn.bitflip_ancilla(i, r)
-                results.append(syn.get_processed_results())
-                if not self._resets and r + 1 < T:
-                    syn.bitflip_ancilla(i, r + 1)
-                    results.append(syn.get_processed_results())
-                    syn.bitflip_ancilla(i, r + 1)
-                syn.bitflip_ancilla(i, r)  # undo the error
-            for i in range(d):
-                for middle in [False, True]:
-                    syn.bitflip_data(i, r, middle)
-                    results.append(syn.get_processed_results())
-                    syn.bitflip_data(i, r, middle)  # undo the error
-        for i in range(d):
-            syn.bitflip_readout(i)
-            results.append(syn.get_processed_results())
-            syn.bitflip_readout(i)  # undo the error
-
-        return results

@@ -20,8 +20,6 @@ import unittest
 
 import sys
 
-import retworkx as rx
-
 from qiskit import execute, Aer, QuantumCircuit
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
