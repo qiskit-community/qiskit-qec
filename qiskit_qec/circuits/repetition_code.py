@@ -188,7 +188,53 @@ class RepetitionCodeCircuit:
         for syndrome_type_string in string.split("  "):
             separated_string.append(syndrome_type_string.split(" "))
         return separated_string 
-            
+        
+    def _process_string(self, string):
+        
+        # logical readout taken from
+        measured_log = string[0] + " " + string[self.d - 1]
+
+        # final syndrome deduced from final code qubit readout
+        full_syndrome = ""
+        for j in range(self.d - 1):
+            full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (
+                string[j] != string[j + 1]
+            )
+        # results from all other syndrome measurements then added
+        full_syndrome = full_syndrome + string[self.d :]
+
+        # changes between one syndrome and the next then calculated
+        syndrome_list = full_syndrome.split(" ")
+        syndrome_changes = ""
+        for t in range(self.T + 1):
+            for j in range(self.d - 1):
+                if self._resets:
+                    if t == 0:
+                        change = syndrome_list[-1][j] != "0"
+                    else:
+                        change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
+                else:
+                    if t <= 1:
+                        if t != self.T:
+                            change = syndrome_list[-t - 1][j] != "0"
+                        else:
+                            change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
+                    elif t == self.T:
+                        last3 = ""
+                        for dt in range(3):
+                            last3 += syndrome_list[-t - 1 + dt][j]
+                        change = last3.count("1") % 2 == 1
+                    else:
+                        change = syndrome_list[-t - 1][j] != syndrome_list[-t + 1][j]
+                syndrome_changes += "0" * (not change) + "1" * change
+            syndrome_changes += " "
+
+        # the space separated string of syndrome changes then gets a
+        # double space separated logical value on the end
+        new_string = measured_log + "  " + syndrome_changes[:-1]
+        
+        return new_string
+        
     def string2nodes(self, string, logical="0"):
         """
         Convert output string from circuits into a set of nodes.
@@ -237,49 +283,7 @@ class RepetitionCodeCircuit:
         for log in raw_results:
             results[log] = {}
             for string in raw_results[log]:
-
-                # logical readout taken from
-                measured_log = string[0] + " " + string[self.d - 1]
-
-                # final syndrome deduced from final code qubit readout
-                full_syndrome = ""
-                for j in range(self.d - 1):
-                    full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (
-                        string[j] != string[j + 1]
-                    )
-                # results from all other syndrome measurements then added
-                full_syndrome = full_syndrome + string[self.d :]
-
-                # changes between one syndrome and the next then calculated
-                syndrome_list = full_syndrome.split(" ")
-                syndrome_changes = ""
-                for t in range(self.T + 1):
-                    for j in range(self.d - 1):
-                        if self._resets:
-                            if t == 0:
-                                change = syndrome_list[-1][j] != "0"
-                            else:
-                                change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
-                        else:
-                            if t <= 1:
-                                if t != self.T:
-                                    change = syndrome_list[-t - 1][j] != "0"
-                                else:
-                                    change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
-                            elif t == self.T:
-                                last3 = ""
-                                for dt in range(3):
-                                    last3 += syndrome_list[-t - 1 + dt][j]
-                                change = last3.count("1") % 2 == 1
-                            else:
-                                change = syndrome_list[-t - 1][j] != syndrome_list[-t + 1][j]
-                        syndrome_changes += "0" * (not change) + "1" * change
-                    syndrome_changes += " "
-
-                # the space separated string of syndrome changes then gets a
-                # double space separated logical value on the end
-                new_string = measured_log + "  " + syndrome_changes[:-1]
-
+                new_string = self._process_string(string)
                 results[log][new_string] = raw_results[log][string]
 
         return results
