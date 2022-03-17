@@ -182,6 +182,38 @@ class RepetitionCodeCircuit:
             self.circuit[log].add_register(self.code_bit)
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
+    def _separate_string(self, string):
+
+        separated_string = []
+        for syndrome_type_string in string.split("  "):
+            separated_string.append(syndrome_type_string.split(" "))
+        return separated_string 
+            
+    def string2nodes(self, string, logical="0"):
+        """
+        Convert output string from circuits into a set of nodes.
+        Args:
+            string (string): Processed results string to convert.
+            logical (string): Logical value whose results are used.
+        Returns:
+            dict: List of nodes corresponding to to the non-trivial
+            elements in the string.
+        """
+
+        separated_string = self._separate_string(string)
+        nodes = []
+        for syn_type, _ in enumerate(separated_string):
+            for syn_round in range(len(separated_string[syn_type])):
+                elements = separated_string[syn_type][syn_round]
+                for elem_num, element in enumerate(elements):
+                    if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
+                        if syn_type == 0:
+                            elem_num = syn_round
+                            syn_round = 0
+                        node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
+                        nodes.append(node)
+        return nodes
+            
     def process_results(self, raw_results: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
         """
         Args:

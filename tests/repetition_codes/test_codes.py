@@ -70,7 +70,6 @@ class TestCodes(unittest.TestCase):
         Insert all possible single qubit errors into the given code,
         and check that each creates a pair of syndrome nodes.
         """
-        dec = DecodingGraph(code)
 
         for logical in ["0", "1"]:
             qc = code.circuit[logical]
@@ -105,7 +104,7 @@ class TestCodes(unittest.TestCase):
                         raw_results[logical] = job.result().get_counts(str((j, qubit, error)))
                         results = code.process_results(raw_results)[logical]
                         for string in results:
-                            nodes = dec.string2nodes(string, logical=logical)
+                            nodes = code.string2nodes(string, logical=logical)
                             self.assertIn(
                                 len(nodes),
                                 [0, 2],
@@ -123,11 +122,10 @@ class TestCodes(unittest.TestCase):
     def test_string2nodes(self):
         """Test string2nodes with different logical values."""
         code = RepetitionCode(3, 2)
-        dec = DecodingGraph(code)
         s0 = "0 0  01 00 01"
         s1 = "1 1  01 00 01"
         self.assertTrue(
-            dec.string2nodes(s0, logical="0") == dec.string2nodes(s1, logical="1"),
+            code.string2nodes(s0, logical="0") == code.string2nodes(s1, logical="1"),
             "Error: Incorrect nodes from results string",
         )
 

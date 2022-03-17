@@ -57,45 +57,13 @@ class DecodingGraph:
         else:
             self.S = self._make_syndrome_graph()
 
-    def _separate_string(self, string):
-
-        separated_string = []
-        for syndrome_type_string in string.split("  "):
-            separated_string.append(syndrome_type_string.split(" "))
-        return separated_string
-
-    def string2nodes(self, string, logical="0"):
-        """
-        Generate probabilities of single error events from result counts.
-        Args:
-            string (string): Processed results string to convert.
-            logical (string): Logical value whose results are used.
-        Returns:
-            dict: List of nodes corresponding to to the non-trivial
-            elements in the string.
-        """
-
-        separated_string = self._separate_string(string)
-        nodes = []
-        for syn_type, _ in enumerate(separated_string):
-            for syn_round in range(len(separated_string[syn_type])):
-                elements = separated_string[syn_type][syn_round]
-                for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
-                        if syn_type == 0:
-                            elem_num = syn_round
-                            syn_round = 0
-                        node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
-                        nodes.append(node)
-        return nodes
-
     def _make_syndrome_graph(self, results=None):
 
         S = rx.PyGraph(multigraph=False)
         if results:
 
             for string in results:
-                nodes = self.string2nodes(string)
+                nodes = self.code.string2nodes(string)
                 for node in nodes:
                     if node not in S.nodes():
                         S.add_node(node)
@@ -167,7 +135,7 @@ class DecodingGraph:
 
                         for string in results:
 
-                            nodes = self.string2nodes(string)
+                            nodes = self.code.string2nodes(string)
 
                             assert len(nodes) in [0, 2], (
                                 "Error of type "
@@ -236,7 +204,7 @@ class DecodingGraph:
             for string in results:
 
                 # list of i for which v_i=1
-                error_nodes = self.string2nodes(string, logical=logical)
+                error_nodes = self.code.string2nodes(string, logical=logical)
 
                 for node0 in error_nodes:
                     n0 = self.S.nodes().index(node0)
@@ -298,7 +266,7 @@ class DecodingGraph:
 
             for string in results:
 
-                nodes = self.string2nodes(string, logical=logical)
+                nodes = self.code.string2nodes(string, logical=logical)
 
                 for edge in self.S.edge_list():
                     element = ""
@@ -366,7 +334,7 @@ class DecodingGraph:
         """
 
         E = rx.PyGraph(multigraph=False)
-        separated_string = self._separate_string(string)
+        separated_string = self.code._separate_string(string)
         for syndrome_type, _ in enumerate(separated_string):
             for syndrome_round in range(len(separated_string[syndrome_type])):
                 elements = separated_string[syndrome_type][syndrome_round]
@@ -477,7 +445,7 @@ class GraphDecoder:
         # do the matching on this
         matches = rx.max_weight_matching(E_matching, max_cardinality=True, weight_fn=lambda x: x)
         # use it to construct and return a corrected logical string
-        logicals = self.graph._separate_string(string)[0]
+        logicals = self.graph.code._separate_string(string)[0]
         for (n0, n1) in matches:
             source = E_matching[n0]
             target = E_matching[n1]
