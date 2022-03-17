@@ -235,58 +235,45 @@ class RepetitionCodeCircuit:
         
         return new_string
         
-    def string2nodes(self, string, logical="0"):
+    def string2nodes(self, string, logical="0", all_logicals=False):
         """
         Convert output string from circuits into a set of nodes.
         Args:
-            string (string): Processed results string to convert.
+            string (string): Results string to convert.
             logical (string): Logical value whose results are used.
+            all_logicals (bool): Whether to include logical nodes
+            irrespective of value.
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
         """
 
+        string = self._process_string(string)
         separated_string = self._separate_string(string)
         nodes = []
         for syn_type, _ in enumerate(separated_string):
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and element != logical) or (syn_type != 0 and element == "1"):
+                    if (syn_type == 0 and element != logical)\
+                    or (syn_type == 0 and all_logicals)\
+                    or (syn_type != 0 and element == "1"):
                         if syn_type == 0:
                             elem_num = syn_round
                             syn_round = 0
                         node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
                         nodes.append(node)
         return nodes
-            
-    def process_results(self, raw_results: Dict[str, Dict[str, int]]) -> Dict[str, Dict[str, int]]:
+    
+    def string2raw_logicals(self, string):
         """
+        Extracts raw logicals from output string.
         Args:
-            raw_results (dict): A dictionary whose keys are logical values,
-                and whose values are standard counts dictionaries, (as
-                obtained from the `get_counts` method of a ``qiskit.Result``
-                object).
-
+            string (string): Results string from which to extract logicals
         Returns:
-            results: Dictionary with the same structure as the input, but with
-                the bit strings used as keys in the counts dictionaries
-                converted to the form required by the decoder.
-
-        Additional information:
-            The circuits must be executed outside of this class, so that
-            their is full freedom to compile, choose a backend, use a
-            noise model, etc. The results from these executions should then
-            be used to create the input for this method.
-        """
-        results = {}
-        for log in raw_results:
-            results[log] = {}
-            for string in raw_results[log]:
-                new_string = self._process_string(string)
-                results[log][new_string] = raw_results[log][string]
-
-        return results
+            list: Raw values for logical operators that correspond to nodes.
+        """ 
+        return self._separate_string(self._process_string(string))[0]
 
     def _get_all_processed_results(self):
         """
@@ -322,142 +309,3 @@ class RepetitionCodeCircuit:
             syn.bitflip_readout(i)  # undo the error
 
         return results
-
-
-class RepetitionCodeSyndromeGenerator:
-    """
-    Allows to construct an error pattern in the circuit of a RepetitionCodeCircuit object.
-    Allows the measurement results to be retrieved without the need to run the simulation.
-    """
-
-    def __init__(self, code: RepetitionCodeCircuit):
-        """
-        Args:
-            code (RepetitionCodeCircuit): Code object under consideration.
-        """
-
-        self.d = code.d  # number of qubits
-        self.T = code.T  # number of rounds (of stabilizer measurements)
-
-        # List of measurement results
-        self.m_anc = {}
-        self.m_fin = [0] * self.d
-        for r in range(self.T):
-            self.m_anc[r] = [0] * (self.d - 1)
-
-    def bitflip_readout(self, i: int):
-        """
-        Introduces a bitflip error on data qubit i right before the (final) readout.
-        Args:
-            i (int): Qubit label.
-        """
-        self.m_fin[i] = (self.m_fin[i] + 1) % 2
-
-    def bitflip_ancilla(self, i: int, r: int):
-        """
-        Introduces a bitflip error to ancilla i in round r.
-        Args:
-            i (int): Qubit label.
-            r (int): Label of round of syndrome extraction.
-        """
-        self.m_anc[r][i] = (self.m_anc[r][i] + 1) % 2
-
-    def bitflip_data(self, i, r0, middle=False):
-        """
-        Introduces a bitflip error to data qubit i in round r0.
-        Args:
-            i (int): Qubit label.
-            r0 (int): Label of round of syndrome extraction.
-            middle (bool): If False, the error is introduced before the first sequence of CNOTs.
-                If True, the error is introduced in between the two CNOT sequences.
-        """
-        self.m_fin[i] = (self.m_fin[i] + 1) % 2
-
-        # Check for "boundary" code qubits
-        if i > 0:  # q[i] is not at the upper(left) boundary
-            for r in range(r0, self.T):
-                self.m_anc[r][i - 1] = (
-                    self.m_anc[r][i - 1] + 1
-                ) % 2  # error propagates across 2nd CNOT sequence
-
-        if i < self.d - 1:  # q[i] is not at the lower(right) boundary
-            for r in range(r0 + 1, self.T):
-                self.m_anc[r][i] = (
-                    self.m_anc[r][i] + 1
-                ) % 2  # error propagates across 1st CNOT sequence
-
-            self.m_anc[r0][i] = (
-                self.m_anc[r0][i] + middle + 1
-            ) % 2  # no error induced if it occurs in the middle
-
-    def get_m_ancilla(self, i, r):
-        """
-        Args:
-            i (int): Qubit label.
-            r (int): Label of round of syndrome extraction.
-
-        Returns:
-            measurement_val: Measurement result of ancilla i in round r for current set of errors.
-        """
-        measurement_val = self.m_anc[r][i]
-        return measurement_val
-
-    def get_m_data(self, i, encoded=0):
-        """
-        Args:
-            i (int): Qubit label.
-            encoded (int): Initial logical value of the data qubits.
-        Returns:
-            measurement_val: Final measurement result of data qubit i for current set of errors.
-
-        """
-        measurement_val = (self.m_fin[i] + encoded) % 2
-        return measurement_val
-
-    def get_raw_results(self, encoded=0):
-        """
-        Args:
-        Returns:
-            raw_result: String of unprocessed results for current set of errors.
-        """
-        raw_result = ""
-        for i in range(self.d - 1, -1, -1):  # qiskit's qubit ordering
-            raw_result += str(self.get_m_data(i, encoded))
-        for r in range(self.T - 1, -1, -1):  # qiskit's qubit register ordering
-            raw_result += " "
-            for i in range(self.d - 2, -1, -1):
-                raw_result += str(self.get_m_ancilla(i, r))
-        return raw_result
-
-    def get_processed_results(self, encoded=0):
-        """
-        Args:
-            encoded (int): Initial logical value of the data qubits.
-        Returns:
-            processed_result: String of processed results for current set of errors.
-        """
-        processed_result = (
-            str(self.get_m_data(self.d - 1, encoded))
-            + " "
-            + str(self.get_m_data(0, encoded))
-            + "  "
-        )
-        for i in range(self.d - 2, -1, -1):
-            processed_result += str(self.get_m_ancilla(i, 0))
-        for r in range(1, self.T):
-            processed_result += " "
-            for i in range(self.d - 2, -1, -1):  # qiskit's qubit ordering
-                processed_result += str(
-                    (self.get_m_ancilla(i, r) + self.get_m_ancilla(i, r - 1)) % 2
-                )
-        processed_result += " "
-        for i in range(self.d - 2, -1, -1):  # qiskit's qubit ordering
-            processed_result += str(
-                (
-                    self.get_m_ancilla(i, self.T - 1)
-                    + self.get_m_data(i, encoded)
-                    + self.get_m_data(i + 1, encoded)
-                )
-                % 2
-            )
-        return processed_result
