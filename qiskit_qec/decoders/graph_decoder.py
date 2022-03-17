@@ -42,7 +42,7 @@ class DecodingGraph:
     of a quantum error correction code, and then run suitable decoders.
     """
 
-    def __init__(self, code, S=None, brute=False):
+    def __init__(self, code, brute=False):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoder
@@ -52,9 +52,7 @@ class DecodingGraph:
 
         self.code = code
 
-        if S:
-            self.S = S
-        elif not brute and hasattr(code, "_get_all_processed_results"):
+        if not brute and hasattr(code, "_get_all_processed_results"):
             self.S = self._make_syndrome_graph(results=code._get_all_processed_results())
         else:
             self.S = self._make_syndrome_graph()
