@@ -125,7 +125,7 @@ class DecodingGraph:
                 )
                 for error in errors:
                     for qubit in qubits:
-                        
+
                         results = job.result().get_counts(str((j, qubit, error)))
                         for string in results:
                             nodes = self.code.string2nodes(string)

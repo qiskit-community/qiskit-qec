@@ -187,19 +187,17 @@ class RepetitionCodeCircuit:
         separated_string = []
         for syndrome_type_string in string.split("  "):
             separated_string.append(syndrome_type_string.split(" "))
-        return separated_string 
-        
+        return separated_string
+
     def _process_string(self, string):
-        
+
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
 
         # final syndrome deduced from final code qubit readout
         full_syndrome = ""
         for j in range(self.d - 1):
-            full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (
-                string[j] != string[j + 1]
-            )
+            full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (string[j] != string[j + 1])
         # results from all other syndrome measurements then added
         full_syndrome = full_syndrome + string[self.d :]
 
@@ -232,9 +230,9 @@ class RepetitionCodeCircuit:
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end
         new_string = measured_log + "  " + syndrome_changes[:-1]
-        
+
         return new_string
-        
+
     def string2nodes(self, string, logical="0", all_logicals=False):
         """
         Convert output string from circuits into a set of nodes.
@@ -255,16 +253,18 @@ class RepetitionCodeCircuit:
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and element != logical)\
-                    or (syn_type == 0 and all_logicals)\
-                    or (syn_type != 0 and element == "1"):
+                    if (
+                        (syn_type == 0 and element != logical)
+                        or (syn_type == 0 and all_logicals)
+                        or (syn_type != 0 and element == "1")
+                    ):
                         if syn_type == 0:
                             elem_num = syn_round
                             syn_round = 0
                         node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
                         nodes.append(node)
         return nodes
-    
+
     def string2raw_logicals(self, string):
         """
         Extracts raw logicals from output string.
@@ -272,7 +272,7 @@ class RepetitionCodeCircuit:
             string (string): Results string from which to extract logicals
         Returns:
             list: Raw values for logical operators that correspond to nodes.
-        """ 
+        """
         return self._separate_string(self._process_string(string))[0]
 
     def _get_all_processed_results(self):
