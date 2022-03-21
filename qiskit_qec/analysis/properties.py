@@ -26,9 +26,9 @@ def minimum_distance(stabilizer: np.ndarray, max_weight: int = 10) -> int:
                 for paulis in product(*iterable):
                     error = np.zeros((2 * n,))
                     for i in range(weight):
-                        if paulis[i] == "x" or paulis[i] == "y":
+                        if paulis[i] in ("x", "y"):
                             error[combination[i]] = 1
-                        if paulis[i] == "z" or paulis[i] == "y":
+                        if paulis[i] in ("z", "y"):
                             error[combination[i] + n] = 1
                     test_matrix = np.vstack([stabilizer, error])
                     commutes = all_commute(test_matrix)
