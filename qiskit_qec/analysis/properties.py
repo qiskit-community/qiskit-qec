@@ -6,21 +6,19 @@ from qiskit_qec.linear.matrix import rank
 from qiskit_qec.linear.symplectic import all_commute, is_stabilizer_group
 
 
-def minimum_distance(stabilizer: np.ndarray) -> int:
+def minimum_distance(stabilizer: np.ndarray, max_weight: int = 10) -> int:
     """Minimum distance of stabilizer code.
 
-    stabilizer is symplectic matrix with full rank generating set.
+    stabilizer is a symplectic matrix generating the stabilizer group.
 
-    Returns the minimum distance of the code, or -1 if greater than max_weight.
+    Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
-    max_weight = 10
     assert is_stabilizer_group(stabilizer)
     n = int(stabilizer.shape[1] / 2)
-    n_minus_k = int(stabilizer.shape[0])
-    assert n_minus_k == rank(stabilizer)
+    n_minus_k = rank(stabilizer)
     k = n - n_minus_k
     pauli = ["x", "y", "z"]
-    distance = -1
+    distance = 0
     try:
         for weight in range(1, min(n, max_weight) + 1):
             iterable = [pauli] * weight
