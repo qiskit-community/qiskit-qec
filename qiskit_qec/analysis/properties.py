@@ -20,10 +20,9 @@ def minimum_distance(stabilizer: np.ndarray) -> int:
     assert n_minus_k == rank(stabilizer)
     k = n - n_minus_k
     pauli = ["x", "y", "z"]
-    quit = False
     distance = -1
     try:
-        for weight in range(1, n + 1):
+        for weight in range(1, min(n, max_weight) + 1):
             iterable = [pauli] * weight
             for combination in combinations(list(range(n)), weight):
                 for paulis in product(*iterable):
