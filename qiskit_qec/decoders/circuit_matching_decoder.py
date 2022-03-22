@@ -7,15 +7,16 @@ from typing import List, Tuple, Dict, Set
 import logging
 
 import json
+
 from sympy import Poly, symbols, Symbol
 from qiskit import QuantumCircuit
 import networkx as nx
 from pymatching import Matching
 
+from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-
 from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
 
 
@@ -69,18 +70,18 @@ class CircuitModelMatchingDecoder(ABC):
         self.blocks = blocks
 
         if self.blocks < 1:
-            raise Exception("expected positive integer for blocks")
+            raise QiskitQECError("expected positive integer for blocks")
         self.round_schedule = round_schedule
         if set(self.round_schedule) > set("xyz"):
-            raise Exception("expected round schedule of 'x', 'y', 'z' chars")
+            raise QiskitQECError("expected round schedule of 'x', 'y', 'z' chars")
         self.basis = basis
         if not self.basis in ("x", "z"):
-            raise Exception("expected basis to be 'x' or 'z'")
+            raise QiskitQECError("expected basis to be 'x' or 'z'")
 
         self.uniform = uniform
         self.method = method
         if not self.method in ("networkx", "pymatching"):
-            raise Exception("unsupported implementation")
+            raise QiskitQECError("unsupported implementation")
         if self.method == "pymatching":
             self.usepymatching = True
         else:
@@ -154,11 +155,11 @@ class CircuitModelMatchingDecoder(ABC):
         for s1, sub in edge_weight_polynomials.items():
             for s2, wpoly in sub.items():
                 if s1 not in idxmap:
-                    raise Exception(f"vertex {s1} not in decoding graph")
+                    raise QiskitQECError(f"vertex {s1} not in decoding graph")
                 if s2 not in idxmap:
-                    raise Exception(f"vertex {s2} not in decoding graph")
+                    raise QiskitQECError(f"vertex {s2} not in decoding graph")
                 if not graph.has_edge(idxmap[s1], idxmap[s2]):
-                    raise Exception("edge {s1} - {s2} not in decoding graph")
+                    raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
                     # TODO: new edges may be needed for hooks, but raise exception if we're surprised
                 graph.edges[idxmap[s1], idxmap[s2]]["weight_poly"] = wpoly
         remove_list = []
@@ -207,11 +208,14 @@ class CircuitModelMatchingDecoder(ABC):
         this function to construct the matching decoder object (pymatching)
         or compute the shortest paths between vertices in the decoding
         graph (networkx).
+
+        Args:
+            model: moise model
         """
         parameter_values = [model.get_error_probability(name) for name in self.parameters]
         if not self.uniform:
             if len(parameter_values) != len(self.parameters):
-                raise Exception("wrong number of error rate parameters")
+                raise QiskitQECError("wrong number of error rate parameters")
             symbol_list = [self.symbols[s] for s in self.parameters]
             assignment = dict(zip(symbol_list, parameter_values))
             logging.info("update_edge_weights %s", str(assignment))
@@ -272,6 +276,24 @@ class CircuitModelMatchingDecoder(ABC):
         type: event_map[v0][v1][name][pauli] contains the number of
         events where a gate "name" fails with error "pauli" and
         the edge between v0 and v1 is highlighted.
+
+        Args:
+            css_x_gauge_ops: x gauge ops
+            css_x_stabilizer_ops: x stabilizer ops
+            css_x_boundary: x boundary
+            x_gauge_products: x gauge products
+            css_z_gauge_ops: z gauge ops
+            css_z_stabilizer_ops: z stabilizer ops
+            css_z_boundary: z boundary
+            z_gauge_products: z gauge products
+            blocks: blocks
+            round_schedule:
+            basis: basis
+            layer_types: layer types
+            fault_enumerator: fault enumerator
+
+        Returns:
+            Events map
         """
         event_map = {}
         for event in fault_enumerator.generate():
@@ -310,9 +332,9 @@ class CircuitModelMatchingDecoder(ABC):
             # Examine the highlighted vertices to find the edge of the
             # decoding graph that corresponds with this fault event
             if len(highlighted) > 2:
-                raise Exception("too many highlighted vertices for a " + "single fault event")
+                raise QiskitQECError("too many highlighted vertices for a " + "single fault event")
             if len(highlighted) == 1:  # _highlighted_vertices highlights the boundary
-                raise Exception("only one highlighted vertex for a " + "single fault event")
+                raise QiskitQECError("only one highlighted vertex for a " + "single fault event")
             if len(highlighted) == 2:
                 v0 = highlighted[0]
                 v1 = highlighted[1]
@@ -348,7 +370,7 @@ class CircuitModelMatchingDecoder(ABC):
 
         Return lists x_gauge_outcomes, z_gauge_outcomes, final_outcomes.
         """
-        pass
+        raise NotImplementedError("Not implemented.")
 
     def _edge_weight_polynomials(
         self,
@@ -434,7 +456,7 @@ class CircuitModelMatchingDecoder(ABC):
             try:
                 correction = self.pymatching.decode(syndrome)
             except AttributeError as attrib_error:
-                raise Exception("Did you call update_edge_weights?") from attrib_error
+                raise QiskitQECError("Did you call update_edge_weights?") from attrib_error
             qubit_errors = []
             for i, corr in enumerate(correction):
                 if corr == 1:
@@ -452,7 +474,7 @@ class CircuitModelMatchingDecoder(ABC):
             test = temp_syndrome(corrected_outcomes, self.css_x_stabilizer_ops)
         logging.debug("process: test syndrome = %s", test)
         if sum(test) != 0:
-            raise Exception("decoder failure: syndrome should be trivial!")
+            raise QiskitQECError("decoder failure: syndrome should be trivial!")
         return corrected_outcomes
 
     def export_decoding_graph_json(self, filename: str):
