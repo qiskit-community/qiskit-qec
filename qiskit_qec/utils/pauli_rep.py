@@ -2282,67 +2282,6 @@ def gate2symplectic(
     raise QiskitError("Invalid Pauli instruction.")
 
 
-# ----------------------------------------------------------------------
-# This method belongs here but will cause a circuar reference since the
-# compose operation is currently stationed in BasePauli. The best option
-# is to have an external opertional that BasePauli uses of that this method
-# can use. Of this could be put into the BasePauli - which seems the wrond
-# place.
-# TODO: Fix
-def pauli_circuit2symplectic(
-    instr: Instruction, encoding: str = DEFAULT_EXTERNAL_PAULI_ENCODING
-) -> Tuple[np.ndarray, Union[np.array, Any]]:
-    """Converts a Pauli circuit to symplectic matrix and encoded phase
-
-    Args:
-        instr: Pauli Instruction/Circuit
-        encoding (optional): Encoding to encode phase. Defaults to
-            DEFAULT_EXTERNAL_PAULI_ENCODING='-iYZX'.
-
-    Raises:
-        QiskitError: Cannot apply Instruction
-        QiskitError: Cannot apply instruction with classical registers
-
-    Returns:
-        matrix, phase_exp: symplectic matrix and encoded phase
-
-    Exmaples:
-        TODO
-
-    See Also:
-        gate2symplectic
-    """
-    # Try and convert single instruction
-    if isinstance(instr, (PauliGate, IGate, XGate, YGate, ZGate)):
-        return gate2symplectic(instr, encoding)
-    if isinstance(instr, Instruction):
-        # Convert other instructions to circuit definition
-        if instr.definition is None:
-            raise QiskitError(f"Cannot apply Instruction: {instr.name}")
-        # Convert to circuit
-        instr = instr.definition
-
-    # Initialize identity Pauli data
-    ret_exp = np.zeros(1, dtype=int)
-    ret_matrix = np.zeros((1, 2 * instr.num_qubits), dtype=bool)
-
-    # Add circuit global phase if specified
-    if instr.global_phase:
-        ret_exp = cpx2exp(np.exp(1j * float(instr.global_phase)), get_phase_enc(encoding))
-
-    ret = BasePauli(ret_matrix, ret_exp)
-
-    # Recursively apply instructions
-    for dinstr, qregs, cregs in instr.data:
-        if cregs:
-            raise QiskitError(f"Cannot apply instruction with classical registers: {dinstr.name}")
-        if not isinstance(dinstr, Barrier):
-            next_instr = BasePauli(*pauli_circuit2symplectic(dinstr, encoding))
-            if next_instr is not None:
-                qargs = [tup.index for tup in qregs]
-                ret = ret.compose(next_instr, qargs=qargs)
-    return ret.matrix, ret.exp
-
 
 # ----------------------------------------------------------------------
 def symplectic2str(
