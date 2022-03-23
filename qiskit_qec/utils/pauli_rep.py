@@ -119,13 +119,16 @@ PAULI_ENCODINGS_SPLIT = {
 # -iX \otimes Y \otimes Z -> -iZ0Y1X2
 # X \otimes Y \otimes Z \otimes I \otimes I \otimes I  -> Z3Y4X5
 
-COMPLEX_REGEX = r"[\-+]?1?[ij]?"  # -i, -1j, +1, ...
-ENC_I_REGEX = r"\(\s*[+]?[ij]\s*\,\s*[0123]\s*\)"  # (i,2), (1j, 0), ( +i , 2 ), ...
-ENC_MI_REGEX = r"\(\s*\-1?[ij]\s*\,\s*[0123]\s*\)"  # (-i,2), (-1j, 0), ( -i , 2 ), ...
-ENC_IS_REGEX = (
-    r"\(\s*1?[ij]\s*\,\s*[01]\s*\)\s*\(\s*\-1\s*\,\s*[01]\s*\)"  # (i,0)(-1,1), (1j,1)(-1 , 0), ...
-)
-ENC_MIS_REGEX = r"\(\s*\-1?[ij]\s*\,\s*[01]\s*\)\s*\(\s*\-1\s*\,\s*[01]\s*\)"  # (-i,0)(-1,1), (-1j,1)(-1, 0), ...
+# -i, -1j, +1, ...
+COMPLEX_REGEX = r"[\-+]?1?[ij]?"
+# (i,2), (1j, 0), ( +i , 2 ), ...
+ENC_I_REGEX = r"\(\s*[+]?[ij]\s*\,\s*[0123]\s*\)"
+# (-i,2), (-1j, 0), ( -i , 2 ), ...
+ENC_MI_REGEX = r"\(\s*\-1?[ij]\s*\,\s*[0123]\s*\)"
+# (i,0)(-1,1), (1j,1)(-1 , 0), ...
+ENC_IS_REGEX = r"\(\s*1?[ij]\s*\,\s*[01]\s*\)\s*\(\s*\-1\s*\,\s*[01]\s*\)"
+# (-i,0)(-1,1), (-1j,1)(-1, 0), ...
+ENC_MIS_REGEX = r"\(\s*\-1?[ij]\s*\,\s*[01]\s*\)\s*\(\s*\-1\s*\,\s*[01]\s*\)"
 
 CAP_STAND_ENC_I_REGEX = r"\(i\,([0123])\)"
 CAP_STAND_ENC_MI_REGEX = r"\(-i\,([0123])\)"
@@ -227,7 +230,7 @@ def _is_pattern(string, pattern):
 # -------------------------------------------------------------------------------
 
 
-def phase_encodings() -> List[str]:
+def get_phase_encodings() -> List[str]:
     """Returns the availble phase encodings
 
     Returns:
@@ -238,12 +241,12 @@ def phase_encodings() -> List[str]:
         ['i', '-i', 'is', '-is']
 
     See Also
-        tensor_encodings, pauli_encldings
+        get_tensor_encodings, get_pauli_encldings
     """
     return PHASE_ENCODINGS
 
 
-def tensor_encodings() -> List[str]:
+def get_tensor_encodings() -> List[str]:
     """Returns the available tensor encodings
 
     Returns:
@@ -254,7 +257,7 @@ def tensor_encodings() -> List[str]:
         ['XZ', 'XZY', 'ZX', 'YZX']
 
     See Also:
-        phase_encodings, pauli_encodings
+        get_phase_encodings, get_pauli_encodings
     """
     return TENSOR_ENCODINGS
 
@@ -285,7 +288,7 @@ def pauli_encodings() -> List[str]:
          '-isYZX']
 
     See Also:
-        phase_encodings, tensor_encodings
+        get_phase_encodings, get_tensor_encodings
 
     """
     return PAULI_ENCODINGS
@@ -330,7 +333,7 @@ def _split_pauli_enc(encoding: str) -> Tuple[str, str]:
     return PAULI_ENCODINGS_SPLIT[encoding]
 
 
-def phase_enc(encoding: str) -> str:
+def get_phase_enc(encoding: str) -> str:
     """Returns the phase encodeing part of the Pauli encoding string
 
     Args:
@@ -343,7 +346,7 @@ def phase_enc(encoding: str) -> str:
     return phase_part
 
 
-def tensor_enc(encoding: str) -> str:
+def get_tensor_enc(encoding: str) -> str:
     """Returns the tensor encodeing part of the Pauli encoding string
 
     Args:
@@ -383,13 +386,18 @@ def change_pauli_encoding(
         y_count : number of Ys (XZ,ZX) factors in associated Pauli's
         input_pauli_encoding: Pauli encoding of input
         output_pauli_encoding: Pauli encoding of output
+        same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
         QiskitError: Unsupported Pauli encoding
-        QiskitError: The phase exponent must be an element in Z_4 or a pair of elements in GF(2) x GF(2)
+        QiskitError: The phase exponent must be an element in Z_4 or a pair of elements
+            in GF(2) x GF(2)
 
     Examples:
-        >>> change_pauli_encoding(2, y_count=1, input_pauli_encoding="-iXZY", output_pauli_encoding="-iXZ")
+        >>> change_pauli_encoding(2,
+                                  y_count=1,
+                                  input_pauli_encoding="-iXZY",
+                                  output_pauli_encoding="-iXZ")
         1
 
         >>> change_pauli_encoding(np.array([2,1]),
@@ -528,7 +536,9 @@ def _change_pauli_encoding(
     return phase_exponent
 
 
-def stand_phase_str(phase_str, same_type=True, imaginary: str = "i") -> Union[np.ndarray, str]:
+def stand_phase_str(
+    phase_str: str, same_type: bool = True, imaginary: str = "i"
+) -> Union[np.ndarray, str]:
     """Standardize the phase string
 
     The string representing a phase may use different
@@ -614,7 +624,7 @@ def _stand_phase_str(phase_string: np.ndarray, imaginary: str) -> np.ndarray:
     return np.array(res)
 
 
-def is_scalar(obj, scalar_pair=False):
+def is_scalar(obj: Any, scalar_pair: bool = False):
     """Deteremines if an obj is a scalar or not (i.e. not an array of some sort).
 
     This method is not equivalent to checking if the object is not iterable.
@@ -756,7 +766,7 @@ def cpxstr2cpx(
     """Converts the complex number defined by the input string(s) to a complex number
 
     Args:
-        cpx_string : Complex number string(s)
+        cpx_str: Complex number string(s)
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Returns:
@@ -825,11 +835,11 @@ def _cpxstr2cpx(cpx_string: np.ndarray) -> np.ndarray:
     }
     try:
         return np.array([CONV_[item] for item in cpx_string])
-    except KeyError:
+    except KeyError as not_all_complex:
         raise QiskitError(
-            f"Not all strings where of strings of complex phases. \
+            "Not all strings where of strings of complex phases. \
             Phases must be in standard representation."
-        )
+        ) from not_all_complex
 
 
 # ----------------------------------------------------------------------
@@ -925,7 +935,7 @@ def exp2cpx(
 
     Args:
         phase_exp: Encoded phase
-        encoding: Encoding used to encode the phase
+        input_encoding: Encoding used to encode the phase
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
@@ -1018,13 +1028,13 @@ def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
 
 
 def cpx2exp(
-    cpx: numbers.Complex, encoding: str, same_type: bool = True, roundit: bool = True
+    cpx: numbers.Complex, output_encoding: str, same_type: bool = True, roundit: bool = True
 ) -> Union[np.ndarray, Tuple[numbers.Integral, numbers.Integral], numbers.Integral]:
     """Converts complex phases to encoded exponents for Pauli group phases
 
     Args:
         cpx: complex pauli phases to encode
-        encoding: phase encoding to use
+        output_encoding: phase encoding to use
         same_type (optional): Scalar/Vector return flag. Defaults to True.
         roundit (optional): round the complex numbers if desired befor encoding. Defaults to True.
 
@@ -1048,8 +1058,8 @@ def cpx2exp(
     See Also:
         _cpx2exp
     """
-    if encoding not in PHASE_ENCODINGS:
-        raise QiskitError(f"Invalid phase exponent encoding: {encoding}")
+    if output_encoding not in PHASE_ENCODINGS:
+        raise QiskitError(f"Invalid phase exponent encoding: {output_encoding}")
 
     scalar = is_scalar(cpx) and same_type
     cpx = np.atleast_1d(cpx)
@@ -1058,9 +1068,9 @@ def cpx2exp(
         cpx = cpx.round()
 
     if scalar:
-        return squeeze(_cpx2exp(cpx, encoding), scalar=scalar)
+        return squeeze(_cpx2exp(cpx, output_encoding), scalar=scalar)
     else:
-        return _cpx2exp(cpx, encoding)
+        return _cpx2exp(cpx, output_encoding)
 
 
 def _cpx2exp(cpx: numbers.Complex, encoding: str) -> np.ndarray:
@@ -1205,7 +1215,7 @@ def exp2expstr(
 
     Args:
         phase_exp: Phase encosings to convert to string representations
-        encoding: Encoding of the input phase exponents
+        input_encoding: Encoding of the input phase exponents
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
@@ -1288,7 +1298,7 @@ def _exp2expstr(phase_exp: np.ndarray, encoding: str) -> np.ndarray:
 
 
 def exp2exp(
-    phase_exp,
+    phase_exp: Union[np.ndarray, Any],
     input_encoding=INTERNAL_PHASE_ENCODING,
     output_encoding=DEFAULT_EXTERNAL_PHASE_ENCODING,
     same_type: bool = True,
@@ -1750,7 +1760,7 @@ def split_pauli(pauli_str: str, same_type: bool = True) -> Tuple[str, str]:
             'YZX': 'X5Z20Y21'
 
     Args:
-        string: string describing the Pauli operator
+        pauli_str: string describing the Pauli operator
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Returns:
@@ -1835,7 +1845,7 @@ def encode_of_phase_str(phase_str: str, same_type: bool = True) -> Union[np.ndar
         '-is': (-i,1)(-1,1), (-1j,0)(-1,1), ...
 
     Args:
-        string: string representing a coefficient of a Pauli operator
+        phase_str: string representing a coefficient of a Pauli operator
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
@@ -1925,12 +1935,13 @@ def encode_of_tensor_str(
     are returned.
 
     Args:
-        string: string representation a pauli operator with no phase
+        tensor_str: string representation a pauli operator with no phase
         encoded (optional): The syntax type of the input string is either
             returned as a name (str) or an encoded integer (pauli_rep.PRODUCT
             or pauli_rep.INDEX). If encoded is set to True then the encoded
             integer is returned. If encoded is set to False then the name (str)
             is returned. Defaults to True.
+        same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
         QiskitError: Unknown Pauli syntax type
@@ -2003,8 +2014,8 @@ def _encode_of_tensor_str(
                 return encoding_rep, syntax_type
             else:
                 return encoding_rep, SYNTAX_TO_TEXT[syntax_type]
-        except IndexError:
-            raise QiskitError(f"Unknown Pauli syntax type: {t_str}")
+        except IndexError as unknown_syntax:
+            raise QiskitError(f"Unknown Pauli syntax type: {t_str}") from unknown_syntax
 
     return [_find_encode(item, encoded) for item in tensor_str]
 
@@ -2019,15 +2030,17 @@ def str2symplectic(
     index_start: int = 0,
     same_type: bool = True,
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
-    """Converts strings of Pauli group elements into phase exponents and their symplectic
-    matric representation.
+    """Converts strings of Pauli group elements into phase exponents and their
+    symplectic matrix representation.
 
     Args:
         pauli_str: Strings representing Pauli group elements
         qubit_order (optional): order in which to read product representation Paulis.
             Defaults to "right-to-left". Alternative is "left-to-right".
-        outpout_encoding (optional): Pauli encoding for phase_exponent matrix pair. Defaults to INTERNAL_PAULI_ENCODING.
-        index_start (optional): Lowest value for index in index syntax tensors. Defaults to 0
+        output_encoding (optional): Pauli encoding for phase_exponent matrix pair.
+            Defaults to INTERNAL_PAULI_ENCODING.
+        index_start (optional): Lowest value for index in index syntax tensors.
+            Defaults to 0
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
     Raises:
@@ -2035,18 +2048,23 @@ def str2symplectic(
         QiakitError: Pauli encoding is not supported or invalid
 
     Returns:
-        symplectic_matrix, phase_exp : Returns the phase exponent(s) and symplectic matrix of the inputs
+        symplectic_matrix, phase_exp : Returns the phase exponent(s) and s
+        ymplectic matrix of the inputs
 
     Examples:
         >>> pauli_str = "iXXIZY"
-        >>> matrix, phase_exp = str2symplectic(pauli_str, qubit_order="left-to-right", output_encoding='-isXZ')
+        >>> matrix, phase_exp = str2symplectic(pauli_str,
+                                               qubit_order="left-to-right",
+                                               output_encoding='-isXZ')
         >>> phase_exp
         array([0, 1], dtype=int8)
         >>> matrix.astype(int)
         array([[1, 1, 0, 0, 1, 0, 0, 0, 1, 1]])
 
         >>> pauli_str = ["iYII", "-iX0Z2", "X1Z2"]
-        >>> matrix, phase_exp = str2symplectic(pauli_str, qubit_order="left-to-right", output_encoding='-iXZY')
+        >>> matrix, phase_exp = str2symplectic(pauli_str,
+                                               qubit_order="left-to-right",
+                                               output_encoding='-iXZY')
         >>> phase_exp
         array([3, 1, 0], dtype=int8)
         >>> matrix.astype(int)
@@ -2055,7 +2073,10 @@ def str2symplectic(
                [0, 1, 0, 0, 0, 1]])
 
         >>> pauli_str = "iX1X3Y4Z9"
-        >>> matrix, phase_exp = str2symplectic(pauli_str, qubit_order="left-to-right", output_encoding='-isXZ', index_start=1)
+        >>> matrix, phase_exp = str2symplectic(pauli_str,
+                                               qubit_order="left-to-right",
+                                               output_encoding='-isXZ',
+                                               index_start=1)
         >>> phase_exp
         array([0, 1], dtype=int8)
         >>> matrix.astype(int)
@@ -2093,8 +2114,8 @@ def _str2symplectic(
     output_encoding: str,
     index_start: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Converts strings of Pauli group elements into phase exponents and their symplectic
-    matric representation.
+    """Converts strings of Pauli group elements into phase exponents and their
+    symplectic matrix representation.
 
     Args:
         pauli_str: Strings representing Pauli group elements
@@ -2104,10 +2125,12 @@ def _str2symplectic(
         index_start: Lowest value for index in index syntax tensors. Defaults to 0
 
     Returns:
-        symplectic_matrix, phase_exp : Returns the phase exponent(s) and symplectic matrix of the inputs
+        symplectic_matrix, phase_exp : Returns the phase exponent(s) and
+        symplectic matrix of the inputs
     """
 
-    # TODO: Fix up (make better and faster) the conversion of XZ and ZX types in PRODUCT_SYNTAX mode. Replace
+    # TODO: Fix up (make better and faster) the conversion of XZ and ZX
+    # types in PRODUCT_SYNTAX mode. Replace
     # regex substitution and in the case of the INDEX_SYNTAX mode.
 
     phase_str, tensor_str = split_pauli(pauli_str, same_type=False)
@@ -2202,7 +2225,7 @@ def _str2symplectic(
 
 
 def scalar_op2symplectic(
-    op: ScalarOp, encoding: str = DEFAULT_EXTERNAL_PHASE_ENCODING
+    op: ScalarOp, output_encoding: str = DEFAULT_EXTERNAL_PHASE_ENCODING
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
     """Convert a ScalarOp to symplectic representation with phase.
 
@@ -2210,18 +2233,20 @@ def scalar_op2symplectic(
 
     Args:
         op: Input scalarOp
-        encoding: Phase encoding to use to encode phase from ScalarOp. Default is INTERNAL_PHASE_ENCODING='-i'
+        output_encoding: Phase encoding to use to encode phase from ScalarOp.
+            Default is INTERNAL_PHASE_ENCODING='-i'
 
     Raises:
         QiskitError: Operator is not an N-qubit identity
 
     Returns:
-        matrix, phase_exponent: GF(2) symplectic matrix and phase_exponent representing ScalarOp
+        matrix, phase_exponent: GF(2) symplectic matrix and phase_exponent
+        representing ScalarOp
     """
     if op.num_qubits is None:
         raise QiskitError(f"{op} is not an N-qubit identity")
     matrix = np.zeros(shape=(1, 2 * op.num_qubits), dtype=np.bool_)
-    phase_exp = cpx2exp(op.coeff, output_phase_format=encoding)
+    phase_exp = cpx2exp(op.coeff, output_encoding=output_encoding)
     return matrix, phase_exp
 
 
@@ -2271,7 +2296,8 @@ def pauli_circuit2symplectic(
 
     Args:
         instr: Pauli Instruction/Circuit
-        encoding (optional): Encoding to encode phase. Defaults to DEFAULT_EXTERNAL_PAULI_ENCODING='-iYZX'.
+        encoding (optional): Encoding to encode phase. Defaults to
+            DEFAULT_EXTERNAL_PAULI_ENCODING='-iYZX'.
 
     Raises:
         QiskitError: Cannot apply Instruction
@@ -2302,7 +2328,7 @@ def pauli_circuit2symplectic(
 
     # Add circuit global phase if specified
     if instr.global_phase:
-        ret_exp = cpx2exp(np.exp(1j * float(instr.global_phase)), phase_enc(encoding))
+        ret_exp = cpx2exp(np.exp(1j * float(instr.global_phase)), get_phase_enc(encoding))
 
     ret = BasePauli(ret_matrix, ret_exp)
 
@@ -2366,8 +2392,10 @@ def symplectic2str(
         pauli_str: Pauli strings
 
     Examples:
-        >>> matrix = numpy.array([[0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-                                  [0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1]], dtype=numpy.bool_)
+        >>> matrix = numpy.array([[0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, \
+                                   0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+                                  [0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, \
+                                   0, 0, 0, 0, 0, 1, 1, 0, 0, 1]], dtype=numpy.bool_)
         >>> phase_exp = numpy.array([3, 1], dtype=numpy.int8)
 
         >>> symplectic2str(matrix, phase_exp)
@@ -2452,7 +2480,7 @@ def symplectic2str(
                 output_pauli_encoding=temp_enc,
             )
 
-            phase_str = exp2cpxstr(phase_exp, phase_enc(temp_enc))
+            phase_str = exp2cpxstr(phase_exp, get_phase_enc(temp_enc))
         else:
             phase_exp = change_pauli_encoding(
                 phase_exp,
