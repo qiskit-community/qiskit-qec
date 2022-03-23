@@ -1155,8 +1155,8 @@ def expstr2exp(exp_str: Union[np.ndarray, str], same_type: bool = True) -> Any:
         if scalar:
             return squeeze(_expstr2exp(exp_str, encoding), scalar=scalar)
         return _expstr2exp(exp_str, encoding)
-    else:
-        QiskitError(f"String encoding {encoding} is not implemented.")
+    
+    raise QiskitError(f"String encoding {encoding} is not implemented.")
 
 
 def _expstr2exp(exp_string, encoding: str) -> np.ndarray:
