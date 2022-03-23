@@ -20,8 +20,6 @@ import unittest
 
 import sys
 
-import retworkx as rx
-
 from qiskit import execute, Aer, QuantumCircuit
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
@@ -42,11 +40,11 @@ def get_syndrome(code, noise_model, shots=1024):
         noise_model=noise_model,
         shots=shots,
     )
-    raw_results = {}
+    results = {}
     for log in ["0", "1"]:
-        raw_results[log] = job.result().get_counts(log)
+        results[log] = job.result().get_counts(log)
 
-    return code.process_results(raw_results)
+    return results
 
 
 def get_noise(p_meas, p_gate):
@@ -70,7 +68,6 @@ class TestCodes(unittest.TestCase):
         Insert all possible single qubit errors into the given code,
         and check that each creates a pair of syndrome nodes.
         """
-        dec = DecodingGraph(code)
 
         for logical in ["0", "1"]:
             qc = code.circuit[logical]
@@ -101,11 +98,9 @@ class TestCodes(unittest.TestCase):
                 qubits = qc.data[j][1]
                 for qubit in qubits:
                     for error in ["x", "y", "z"]:
-                        raw_results = {}
-                        raw_results[logical] = job.result().get_counts(str((j, qubit, error)))
-                        results = code.process_results(raw_results)[logical]
+                        results = job.result().get_counts(str((j, qubit, error)))
                         for string in results:
-                            nodes = dec.string2nodes(string, logical=logical)
+                            nodes = code.string2nodes(string, logical=logical)
                             self.assertIn(
                                 len(nodes),
                                 [0, 2],
@@ -123,11 +118,10 @@ class TestCodes(unittest.TestCase):
     def test_string2nodes(self):
         """Test string2nodes with different logical values."""
         code = RepetitionCode(3, 2)
-        dec = DecodingGraph(code)
         s0 = "0 0  01 00 01"
         s1 = "1 1  01 00 01"
         self.assertTrue(
-            dec.string2nodes(s0, logical="0") == dec.string2nodes(s1, logical="1"),
+            code.string2nodes(s0, logical="0") == code.string2nodes(s1, logical="1"),
             "Error: Incorrect nodes from results string",
         )
 
@@ -161,7 +155,7 @@ class TestCodes(unittest.TestCase):
         )
         code = RepetitionCode(3, 1)
         dec = DecodingGraph(code)
-        test_results = {"0": {"0 0  00 00": 1024, "0 0  11 00": 512}}
+        test_results = {"000 00": 1024, "010 11": 512}
         p = dec.get_error_probs(test_results)
         n0 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 0})
         n1 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 1})
@@ -184,9 +178,9 @@ class TestCodes(unittest.TestCase):
             dec = DecodingGraph(code)
             decode = GraphDecoder(dec)
 
-            logical_prob_match = decode.get_logical_prob(results)
             for log in ["0", "1"]:
-                matching_probs[(d, log)] = logical_prob_match[log]
+                logical_prob_match = decode.get_logical_prob(results[log], logical=log)
+                matching_probs[(d, log)] = logical_prob_match
 
         for d in range(3, max_dist - 1, 2):
             for log in ["0", "1"]:
@@ -200,26 +194,6 @@ class TestCodes(unittest.TestCase):
                 )
 
                 self.assertTrue(m_down or matching_probs[(d, log)] == 0.0, m_error)
-
-    def test_graph(self):
-        """Test if analytically derived SyndromeGraph is correct."""
-        for resets in [True, False]:
-            error = (
-                "Error: The analytical SyndromeGraph does not coincide "
-                + "with the brute force SyndromeGraph in d=7, T=2, resets="
-                + str(resets)
-                + " RepetitionCode."
-            )
-            code = RepetitionCode(7, 2, resets=resets)
-            graph_new = DecodingGraph(code, brute=False).S
-            graph_old = DecodingGraph(code, brute=True).S
-            test_passed = True
-            for node in graph_new.nodes():
-                test_passed &= node in graph_old.nodes()
-            for node in graph_old.nodes():
-                test_passed &= node in graph_new.nodes()
-            test_passed &= rx.is_isomorphic(graph_new, graph_old, lambda x, y: x == y)
-            self.assertTrue(test_passed, error)
 
 
 if __name__ == "__main__":
