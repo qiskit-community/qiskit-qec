@@ -234,7 +234,7 @@ def get_phase_encodings() -> List[str]:
         encoding: List of available phase encodings
 
     Examples:
-        >>> phase_encodings()
+        >>> get_phase_encodings()
         ['i', '-i', 'is', '-is']
 
     See Also
@@ -250,7 +250,7 @@ def get_tensor_encodings() -> List[str]:
         encoding: List of available tensor encodings
 
     Examples:
-        >>> tensor_encodings()
+        >>> get_tensor_encodings()
         ['XZ', 'XZY', 'ZX', 'YZX']
 
     See Also:
@@ -310,7 +310,7 @@ def split_pauli_enc(encoding: str) -> Tuple[str, str]:
 
     Exampes:
         >>> encoding = "iXZ'
-        >>> split_pauli_encoding(encoding)
+        >>> split_pauli_enc(encoding)
         ('i', 'XZ')
 
     See Also:
@@ -561,7 +561,7 @@ def stand_phase_str(
 
         >>> phase_str = "(-1j,0)(-1,1)"
         >>> stand_phase_str(phase_str)
-        "(-i,0)(-1,1)
+        "(-i,0)(-1,1)"
 
     Returns:
         out: standardized phase string(s)
@@ -841,7 +841,9 @@ def _cpxstr2cpx(cpx_string: np.ndarray) -> np.ndarray:
 
 # ----------------------------------------------------------------------
 def cpx2cpxstr(
-    cpx: Union[numbers.Complex, np.ndarray], same_type: bool = True, ones: bool = False
+    cpx: Union[int, complex, np.ndarray, List[Union[int, complex]]],
+    same_type: bool = True,
+    ones: bool = False,
 ) -> Union[str, np.ndarray]:
     """Converts the complex number(s) to strings
 
@@ -1025,7 +1027,7 @@ def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
 
 
 def cpx2exp(
-    cpx: numbers.Complex, output_encoding: str, same_type: bool = True, roundit: bool = True
+    cpx: complex, output_encoding: str, same_type: bool = True, roundit: bool = True
 ) -> Union[np.ndarray, Tuple[numbers.Integral, numbers.Integral], numbers.Integral]:
     """Converts complex phases to encoded exponents for Pauli group phases
 
@@ -1438,7 +1440,7 @@ def _exp2exp(phase_exp, input_encoding, output_encoding):
 
 
 def cpxstr2expstr(
-    cpx_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
+    cpx_str: Union[np.ndarray, str, List[str]], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, str]:
     """Converts a complex string represnetation into a exponent string representation.
 
@@ -1561,7 +1563,7 @@ def exp2cpxstr(
 
 
 def expstr2cpx(
-    phase_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
+    phase_str: Union[np.ndarray, str, List[str]], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, numbers.Complex]:
     """Converts strings representing phase exponents to complex numbers
 
@@ -1592,7 +1594,9 @@ def expstr2cpx(
 
 
 def cpx2expstr(
-    cpx: Union[np.ndarray, numbers.Complex], encoding: str, same_type: bool = True
+    cpx: Union[np.ndarray, complex, List[Union[complex, int]]],
+    encoding: str,
+    same_type: bool = True,
 ) -> Union[np.ndarray, str]:
     """Converts complex Pauli group phases into strings representing phase exponents
 
@@ -1620,7 +1624,7 @@ def cpx2expstr(
 
 
 def str2exp(
-    phase_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
+    phase_str: Union[np.ndarray, str, List[str]], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, str]:
     """Converts string representations of a Pauli group phases to and encoded phase exponents
 
@@ -1868,7 +1872,7 @@ def encode_of_phase_str(phase_str: str, same_type: bool = True) -> Union[np.ndar
         'i'
 
         >>> phase_str = array(['(-i,1)', 'i'])
-        >>> rep.encode_of_phase_str(phase_str)
+        >>> encode_of_phase_str(phase_str)
         array(['-i', 'complex'], dtype='<U7')
     """
 
@@ -1961,7 +1965,7 @@ def encode_of_tensor_str(
         >>> syn = pauli_rep.PRODUCT
         True
 
-        >>> string = (X1)(Z2)(Z3X3)(Z10)
+        >>> string = "(X1)(Z2)(Z3X3)(Z10)"
         >>> encoding_rep, syn = encode_of_tensor_str(string, encoded=False)
         >>> encoding_rep
         ['ZX']
@@ -2021,7 +2025,7 @@ def _encode_of_tensor_str(
 
 
 def str2symplectic(
-    pauli_str: Union[np.ndarray, str],
+    pauli_str: Union[np.ndarray, str, List[str]],
     qubit_order: str = "right-to-left",
     output_encoding: Optional[str] = INTERNAL_PAULI_ENCODING,
     index_start: int = 0,
@@ -2079,7 +2083,7 @@ def str2symplectic(
         >>> matrix.astype(int)
         array([[1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]])
 
-        >>> matrix, phase_exp = rep.str2symplectic("iXXXIZYZ")
+        >>> matrix, phase_exp = str2symplectic("iXXXIZYZ")
         >>> phase
         2
         >>> matrix.astype(int)
