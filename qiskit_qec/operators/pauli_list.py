@@ -222,7 +222,7 @@ class PauliList(BasePauli):
         instead returns the phase_exponent
         """
         # Convert internal exponent frmt to complex number representation
-        return pauli_rep.exp2phase(self.phase_exponent, pauli_rep.INTERNAL_PAULI_REP_FORMAT)
+        return pauli_rep.change_pauli_encoding(self.phase_exponent)
 
     @phase.setter
     def phase(self, phase):
@@ -232,20 +232,13 @@ class PauliList(BasePauli):
             phase (numpy.ndarray or complex numbers): Array of phases,
                 phases must be one of [1,-1, 1j, -1j]
         """
-        phase_exp = pauli_rep.phase2exp(
-            phase, output_phase_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT
-        )
+        phase_exp = pauli_rep.cpx2exp(phase, output_encoding=pauli_rep.INTERNAL_PAULI_ENCODING)
         self.phase_exponent[:] = phase_exp
 
     @property
     def phase_exp(self):
         """Return the phase exponent vector of the PauliList"""
-        return pauli_rep._change_rep(
-            self.phase_exp,
-            self.num_y,
-            pauli_rep.INTERNAL_PHASE_REP_FORMAT,
-            BasePauli.EXTERNAL_PHASE_REP_FORMAT,
-        )
+        return pauli_rep.change_pauli_encoding(self.phase_exp, self.num_y)
 
     @phase_exp.setter
     def phase_exp(self, phase_exp, frmt=BasePauli.EXTERNAL_PHASE_REP_FORMAT):
@@ -258,8 +251,10 @@ class PauliList(BasePauli):
             frmt (str, optional): Format that phase exponent vector is provided in.
                 Default: BasePauli.EXTERNAL_PHASE_REP_FORMAT
         """
-        self.phase_exponent[:] = pauli_rep.convert_phase_exp(
-            phase_exp, input_format=frmt, output_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT
+        self.phase_exponent[:] = pauli_rep.change_pauli_encoding(
+            phase_exp,
+            input_pauli_encoding=frmt,
+            output_pauli_encoding=pauli_rep.INTERNAL_PAULI_ENCODING,
         )
 
     @property
