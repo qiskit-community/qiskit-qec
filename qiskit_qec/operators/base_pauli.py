@@ -25,8 +25,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     """Base Pauli"""
 
     # External string formats used when displaying Pauli's as strings
-    EXTERNAL_SYMP_FORMAT = pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT
-    EXTERNAL_PHASE_REP_FORMAT = pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT
+    EXTERNAL_SYMP_FORMAT = pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING
+    EXTERNAL_PHASE_REP_FORMAT = pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING
     EXTERNAL_PAULI_REP_FORMAT = EXTERNAL_PHASE_REP_FORMAT + EXTERNAL_SYMP_FORMAT
 
     def __init__(self, matrix, phase_exponent=0, stype="numpy"):
@@ -59,12 +59,12 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_SYMP_FORMAT
 
     @symp_format.setter
-    def symp_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT):
+    def symp_format(self, frmt=pauli_rep.INTERNAL_TENSOR_ENCODING):
         """Set the external symplectic matrix format
 
         Args:
             frmt (str, optional): Symplectic matrix format.
-            Defaults to pauli_rep.DEFAULT_EXTERNAL_SYMP_FORMAT.
+            Defaults to pauli_rep.INTERNAL_TENSOR_ENCODING.
         """
         assert frmt in pauli_rep.symp_formats(), QiskitError(
             f"Invalid symplectic matrix frmt: {frmt}. Must be one of {pauli_rep.symp_formats()}"
@@ -77,12 +77,12 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_PHASE_REP_FORMAT
 
     @phase_format.setter
-    def phase_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT):
+    def phase_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
         """Set the phase frmt
 
         Args:
             frmt (str, optional): phase frmt.
-            Defaults to pauli_rep.DEFAULT_EXTERNAL_PHASE_REP_FORMAT.
+            Defaults to pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING.
         """
         assert frmt in pauli_rep.phase_formats(), QiskitError(
             f"Invalid phase frmt: {frmt}. Must be one of {pauli_rep.phase_formats()}"
@@ -95,7 +95,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_PAULI_REP_FORMAT
 
     @pauli_format.setter
-    def pauli_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT):
+    def pauli_format(self, frmt=pauli_rep.DEFAULT_EXTERNAL_PAULI_ENCODING):
         """Set the Pauli frmt
 
         Args:

@@ -16,19 +16,16 @@ N-qubit Pauli Representation Encodings and Conversion Module
 # pylint: disable=invalid-name,anomalous-backslash-in-string
 # pylint: disable=bad-docstring-quotes  # for deprecate_function decorator
 
-from typing import Iterable, Tuple, Union, List, Any, Optional
-
 import numbers
 import re
+from typing import Iterable, Tuple, Union, List, Any, Optional
 
 import numpy as np
-from qiskit.exceptions import QiskitError
-
+from qiskit.circuit import Gate
 from qiskit.circuit.library.generalized_gates import PauliGate
 from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
+from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
-from qiskit.circuit import Instruction, Gate
-from qiskit.circuit.barrier import Barrier
 
 from qiskit_qec.linear.symplectic import count_num_y
 
@@ -1155,7 +1152,7 @@ def expstr2exp(exp_str: Union[np.ndarray, str], same_type: bool = True) -> Any:
         if scalar:
             return squeeze(_expstr2exp(exp_str, encoding), scalar=scalar)
         return _expstr2exp(exp_str, encoding)
-    
+
     raise QiskitError(f"String encoding {encoding} is not implemented.")
 
 
@@ -2280,7 +2277,6 @@ def gate2symplectic(
     if isinstance(gate, ZGate):
         return str2symplectic("Z", output_encoding=encoding)
     raise QiskitError("Invalid Pauli instruction.")
-
 
 
 # ----------------------------------------------------------------------

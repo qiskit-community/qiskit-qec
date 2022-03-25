@@ -75,7 +75,7 @@ class Pauli(BasePauli):
             raise QiskitError("Not yet implemented")
             # matrix, phase_exponent = self._from_array(*data)
         elif isinstance(data, str):
-            matrix, phase_exponent = rep.from_label(data, qubit_order=input_qubit_order)
+            matrix, phase_exponent = rep.str2symplectic(data, qubit_order=input_qubit_order)
         elif isinstance(data, ScalarOp):
             raise QiskitError("Not yet implemented")
             # matrix, phase_exponent = self._from_scalar_op(data)
