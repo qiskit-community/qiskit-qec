@@ -1,6 +1,14 @@
 name: Tests, linter and coverage
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - 'stable/**'
+  pull_request:
+    branches:
+      - main
+      - 'stable/**'
 
 jobs:
   tests:
