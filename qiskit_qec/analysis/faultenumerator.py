@@ -15,7 +15,12 @@ class FaultEnumerator:
     """Enumerates faults in a circuit according to a noise model."""
 
     def __init__(
-        self, circ, order: int = 1, method: str = "stabilizer", model=None, sim_seed: int = 0
+        self,
+        circ,
+        order: int = 1,
+        method: str = "stabilizer",
+        model=None,
+        sim_seed: int = 0,
     ):
         """Construct a fault enumerator object.
 

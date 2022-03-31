@@ -1010,7 +1010,7 @@ def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
         exp2cpx, ...
     """
     if input_encoding == "i":
-        return 1j ** phase_exp
+        return 1j**phase_exp
     if input_encoding == "-i":
         return (-1j) ** phase_exp
     if input_encoding == "is":
@@ -1410,7 +1410,14 @@ def _exp2exp(phase_exp, input_encoding, output_encoding):
     _ENC = {"i": 0, "-i": 1, "is": 2, "-is": 3}
     # Conversion matrix split and compressed into two index matrices
     # Transformation indices
-    _TI = [[0, 1, 2, 3], [0, 3, 2, 1], [0, 2, 1, 3], [0, 2, 3, 1], [0, 3, 1, 2], [0, 1, 3, 2]]
+    _TI = [
+        [0, 1, 2, 3],
+        [0, 3, 2, 1],
+        [0, 2, 1, 3],
+        [0, 2, 3, 1],
+        [0, 3, 1, 2],
+        [0, 1, 3, 2],
+    ]
     # Index to transformation matrices via (input_encoding, output_encoding) pairs
     _TRANS = [[0, 1, 2, 4], [1, 0, 4, 2], [2, 3, 0, 5], [3, 2, 5, 0]]
     # Conversion is done via precalculated tables that are stored in _CN, _DD and _TRANS
@@ -1472,7 +1479,10 @@ def cpxstr2expstr(
 
 
 def expstr2cpxstr(
-    exp_str: Union[np.ndarray, str], encoding: str, same_type: bool = True, ones: bool = False
+    exp_str: Union[np.ndarray, str],
+    encoding: str,
+    same_type: bool = True,
+    ones: bool = False,
 ) -> Union[str, np.ndarray]:
     """Converts a string(s) representing a phase exponent into a string representing
     the equivalent complex number.

@@ -144,7 +144,8 @@ class TestCodes(unittest.TestCase):
                 if delay > 0 and T > 1:
                     num_delays = code.circuit["0"].count_ops()["delay"]
                     self.assertTrue(
-                        num_delays == (d - 1) * (T - 1), "Error: wrong number of delay gates."
+                        num_delays == (d - 1) * (T - 1),
+                        "Error: wrong number of delay gates.",
                     )
 
     def test_weight(self):

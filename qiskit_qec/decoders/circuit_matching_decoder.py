@@ -92,7 +92,12 @@ class CircuitModelMatchingDecoder(ABC):
         self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
         logging.debug("layer_types = %s", self.layer_types)
 
-        self.idxmap, self.node_layers, self.graph, self.pymatching_indexer = self._decoding_graph(
+        (
+            self.idxmap,
+            self.node_layers,
+            self.graph,
+            self.pymatching_indexer,
+        ) = self._decoding_graph(
             self.css_x_gauge_ops,
             self.css_x_stabilizer_ops,
             self.css_x_boundary,
@@ -305,9 +310,11 @@ class CircuitModelMatchingDecoder(ABC):
             outcome = event[3]  # result of simulation
             logging.debug("event %d %s %s %s", ctr, comb, pauli, outcome)
 
-            x_gauge_outcomes, z_gauge_outcomes, final_outcomes = self._partition_outcomes(
-                blocks, round_schedule, outcome
-            )
+            (
+                x_gauge_outcomes,
+                z_gauge_outcomes,
+                final_outcomes,
+            ) = self._partition_outcomes(blocks, round_schedule, outcome)
 
             # Compute the highlighted vertices
             # Note that this only depends on the stabilizers at each
@@ -443,7 +450,13 @@ class CircuitModelMatchingDecoder(ABC):
             matching = self._compute_matching(self.idxmap, self.length, highlighted)
             logging.info("process: matching = %s", matching)
             qubit_errors, measurement_errors = self._compute_error_correction(
-                self.graph, self.idxmap, self.path, matching, highlighted, export, filename
+                self.graph,
+                self.idxmap,
+                self.path,
+                matching,
+                highlighted,
+                export,
+                filename,
             )
             logging.info("process: qubit_errors = %s", qubit_errors)
             logging.debug("process: measurement_errors = %s", measurement_errors)
@@ -603,7 +616,9 @@ class CircuitModelMatchingDecoder(ABC):
                         )
                         logging.debug("spacelike t=%d (%s, %s)", time, op_g, op_h)
                         logging.debug(
-                            " qubits %s qubit_id %s", [com[0]], pymatching_indexer[com[0]]
+                            " qubits %s qubit_id %s",
+                            [com[0]],
+                            pymatching_indexer[com[0]],
                         )
 
             # Add boundary space-like edges
@@ -827,7 +842,9 @@ class CircuitModelMatchingDecoder(ABC):
                 )
             qubit_errors ^= set(graph[v0][v1]["qubits"])
             logging.debug(
-                "_error_chain_for_vertex_path q = %s, m = %s", qubit_errors, measurement_errors
+                "_error_chain_for_vertex_path q = %s, m = %s",
+                qubit_errors,
+                measurement_errors,
             )
         return qubit_errors, measurement_errors
 

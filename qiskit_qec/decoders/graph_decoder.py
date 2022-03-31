@@ -120,9 +120,10 @@ class DecodingGraph:
             for j in range(depth):
                 gate = qc.data[j][0].name
                 qubits = qc.data[j][1]
-                errors = ["x", "y", "z"] * (gate not in ["reset", "measure"]) + ["x_id", "x_x"] * (
-                    gate == "measure"
-                )
+                errors = ["x", "y", "z"] * (gate not in ["reset", "measure"]) + [
+                    "x_id",
+                    "x_x",
+                ] * (gate == "measure")
                 for error in errors:
                     for qubit in qubits:
 

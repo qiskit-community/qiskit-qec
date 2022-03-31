@@ -1,0 +1,18 @@
+
+Important Notes:
+
+Only the Standard Codebase (qec_standard_subsystem_codebase, currently located in https://github.ibm.com/Grace-Harper/ibm-codebase-repo/ )
+is considered verified. Nothing in playground is verified.
+
+The Standard Codebase is *NOT* complete. If you query for some n,k code and receive fewer results
+than you expect (including no results at all), this is likely due to the those codes missing from the codebase.
+
+
+Incomplete properties for
+[[9,2]] - only computed css, tri, and gf4linear for d=3
+[[9,3]] - only computed css, tri, and gf4linear for d=3
+[[9,4]] - did not compute css or gf4linear
+[[10,0]]
+[[10,1]]
+[[10,6]]
+
