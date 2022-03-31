@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from qiskit_qec.analysis.properties import minimum_distance
+from qiskit_qec.extensions import compiledextension
 
 
 def strarray(label: str) -> np.ndarray:
@@ -17,28 +17,31 @@ def strarray(label: str) -> np.ndarray:
     return vec
 
 
-class TestMinimumDistance(unittest.TestCase):
-    """Tests of minimum distance property."""
+class TestMinimumDistanceCompiled(unittest.TestCase):
+    """Tests of minimum distance property in compiled extensions."""
 
     def test_minimum_distance_1(self):
         """Test Steane code."""
         paulis = ["iiixxxx", "ixxiixx", "xixixix", "iiizzzz", "izziizz", "ziziziz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        inputform = stabilizer.astype(np.int32).tolist()
+        d = compiledextension.minimum_distance(inputform)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_2(self):
         """Test four qubit code."""
         paulis = ["xxxx", "zzzz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        inputform = stabilizer.astype(np.int32).tolist()
+        d = compiledextension.minimum_distance(inputform)
         self.assertEqual(d, 2)
 
     def test_minimum_distance_3(self):
         """Test five qubit code."""
         paulis = ["xzzxi", "ixzzx", "xixzz", "zxixz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        inputform = stabilizer.astype(np.int32).tolist()
+        d = compiledextension.minimum_distance(inputform)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_4(self):
@@ -54,7 +57,8 @@ class TestMinimumDistance(unittest.TestCase):
             "zzzzzziiii",
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        inputform = stabilizer.astype(np.int32).tolist()
+        d = compiledextension.minimum_distance(inputform)
         self.assertEqual(d, 4)
 
     def test_minimum_distance_4_overcomplete(self):
@@ -72,7 +76,8 @@ class TestMinimumDistance(unittest.TestCase):
             "ziiziixxzz",
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        inputform = stabilizer.astype(np.int32).tolist()
+        d = compiledextension.minimum_distance(inputform)
         self.assertEqual(d, 4)
 
 

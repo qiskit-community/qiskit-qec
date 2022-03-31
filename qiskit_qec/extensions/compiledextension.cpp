@@ -1,5 +1,6 @@
 #include "errorpropagator.h"
 #include "faultenumerator.h"
+#include "properties.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -40,4 +41,6 @@ PYBIND11_MODULE(compiledextension, m)
       .def("get_index", &FaultEnumerator::get_index)
       .def("get_state", &FaultEnumerator::get_state)
       .def("done", &FaultEnumerator::done);
+  m.def("minimum_distance", &minimum_distance, "compute minimum distance of stabilizer code",
+        py::arg("symplectic_vectors"), py::arg("max_weight") = 10);
 }
