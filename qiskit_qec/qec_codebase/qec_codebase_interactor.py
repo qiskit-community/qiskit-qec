@@ -11,19 +11,18 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for interacting with codebase"""
-# gg , float
+
 import copy
 import json
 import os
-import pathlib
 import shutil
 import uuid
-from typing import Dict, List, Set, Union, Any
+from typing import Any, Dict, List, Set, Union
 
 from qiskit_qec.codes.subsystemcodes import SubSystemCode
+from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.structures.gauge import GaugeGroup
-from qiskit_qec.exceptions import QiskitQECError
 
 
 class QECCodeBase:
@@ -104,7 +103,7 @@ class QECCodeBase:
     }
 
     def __init__(self, codebase_parent_path: str):
-        """Inteface for QEC Codebase.
+        """Interface for QEC Codebase.
         Currently the actual directories making up the
         codebase reside in https://github.ibm.com/Grace-Harper/ibm-codebase-repo
         It must be downloaded and it's local path given
@@ -562,10 +561,9 @@ class QECCodeBase:
         """
 
         Args:
-            code_storage_format_1 ():
-            code_storage_format_2 ():
+            code_storage_format: code_info in the same format it's used to be stored on disk
 
-        Returns: # 1 subset of 2, 2 subset of 1, 1 == 2, 1 unrelated
+        Returns: if code already exists via n,k, uuid
 
         """
         # check if code already exists via n,k, uuid
