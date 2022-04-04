@@ -8,3 +8,4 @@ reno>=3.4.0
 nbsphinx
 ddt~=1.4.2
 matplotlib>=3.3.0
+black[jupyter]~=22.1

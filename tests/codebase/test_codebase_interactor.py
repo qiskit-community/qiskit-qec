@@ -1,6 +1,7 @@
 """Test python error propagator selector."""
 import unittest
-import copy, os
+import copy
+import os
 from qiskit_qec.codes import SubSystemCode
 from qiskit_qec.qec_codebase.qec_codebase_interactor import QECCodeBase
 from qiskit_qec.operators.pauli_list import PauliList
@@ -214,8 +215,10 @@ class TestQECCodebaseInteractor(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up interactor for class"""
-        codebase_name ="test_codebase"
-        codebase_dir_path = os.path.join(*([os.sep] + os.path.abspath(__file__).split(os.sep)[:-1] + [codebase_name]))
+        codebase_name = "test_codebase"
+        codebase_dir_path = os.path.join(
+            *([os.sep] + os.path.abspath(__file__).split(os.sep)[:-1] + [codebase_name])
+        )
         cls.db = QECCodeBase(codebase_dir_path)
 
     def tearDown(self) -> None:

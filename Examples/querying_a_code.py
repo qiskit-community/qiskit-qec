@@ -3,6 +3,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.structures.gauge import GaugeGroup
 from qiskit_qec.codes import SubSystemCode
 from qiskit_qec.exceptions import QiskitQECError
+
 # download codebase from:
 # then give QECCodeBase path to codebase: https://github.ibm.com/Grace-Harper/ibm-codebase-repo
 
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     print("derulo", len(derulo_codes))
     print(derulo_codes[0].gauge_group.generators)
     print(derulo_codes[0].parameters)
-    
+
     # MULTI-QUERY
     swift_codes = db.get_subsystem_code([3, 2], [0, 1])  # all codes: (2,0), (2,1), (3,0), (3,1)
     print("swift", len(swift_codes))
@@ -51,18 +52,16 @@ if __name__ == "__main__":
 
     only_standard_codes_derulo = db.get_subsystem_code(2, 1, allow_playground=False)
     print("only standard derulo codes", len(only_standard_codes_derulo))
-    
-    
-    
-    #If you're going to add a lot of codes at once, set cache=True and flush after:
+
+    # If you're going to add a lot of codes at once, set cache=True and flush after:
     my_code = SubSystemCode(GaugeGroup(PauliList("XX")))
     my_code.parameters = {db.IS_GF4LINEAR: 1, db.N: 4, db.K: 2}
 
     for i in range(300):
         db.store_new_subsystem_code(my_code, flush_cache=False, force=True)
-    
-    db.flush_cache() # actually create/write to the json file
-    
+
+    db.flush_cache()  # actually create/write to the json file
+
     retrieved_codes = db.get_subsystem_code(4, 2)
 
     db.delete_playground_codebase(True)  # kill all the codes you've made

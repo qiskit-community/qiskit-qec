@@ -18,7 +18,6 @@ import os
 import shutil
 import uuid
 from typing import Any, Dict, List, Set, Union
-
 from qiskit_qec.codes.subsystemcodes import SubSystemCode
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.operators.pauli_list import PauliList
@@ -128,7 +127,9 @@ class QECCodeBase:
         )
         # parent_name = pathlib.Path(__file__).parent.resolve()
         self.parent_name = codebase_parent_path
-        self.qec_standard_subsystem_codebase_name = "qec_standard_subsystem_codebase"
+        self.qec_standard_subsystem_codebase_name = (  # pylint: disable=invalid-name
+            "qec_standard_subsystem_codebase"
+        )
         self.codebase_path = os.path.join(
             self.parent_name, self.qec_standard_subsystem_codebase_name
         )
@@ -684,12 +685,15 @@ class QECCodeBase:
         return next(iter(code_storage_format.keys()))
 
     def flush_cache(self):
+        """Write everything in cache to disk and clear cache"""
         try:
             self._store_code_storage_format_in_playground(self.playground_cache)
             self.playground_cache = {}
-        except Exception as e:
+        except Exception as cur_except:  # pylint: disable=broad-except
             print(
-                f"ERROR: {e}. Please try to reflush-cache. Playground might have data partially written to it."
+                f"ERROR: {cur_except}. Please try to reflush-cache. "
+                f"Playground might have data partially "
+                f"written to it."
             )
 
     def delete_playground_codebase(self, force=False):
