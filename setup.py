@@ -40,7 +40,7 @@ with open(README_PATH) as readme_file:
 
 setup(
     name="qiskit_qec",
-    version="1.0.0",
+    version="v0.0.0-alpha",
     description="Quantum Error Correcting Package",
     long_description=README,
     long_description_content_type="text/markdown",
