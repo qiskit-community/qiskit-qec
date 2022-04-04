@@ -141,6 +141,8 @@ class QECCodeBase:
             self.code_path_folder, "codes_n_{}_k_{}.json"
         )  # n,n,k"
 
+        self.playground_cache = {}
+
     def get_subsystem_code(
         self,
         n_len: Union[List[int], int],
@@ -181,6 +183,11 @@ class QECCodeBase:
         # if additional_params[self.IS_SUBSYSTEM] != 1:
         #     raise QiskitQECError("CANNOT get subsystem code that isn't a subsystem")
 
+        if self.BELONGS_TO_STANDARD_CODEBASE in additional_params:
+            print("Are you sure you mean to query whether code belongs to standard codebase?")
+        if self.QEC_UUID in additional_params:
+            print("Are you sure you mean to query on uuid?")
+
         qec_code_jsons = {}
         for n in n_len:
             for k in k_dim:
@@ -219,6 +226,7 @@ class QECCodeBase:
         allow_new_fields=False,
         verify_code_info_for_storage=True,
         validate_code_uniqueness=True,
+        flush_cache=True,
     ) -> str:
         """Store new subsystem code in playground codebase
 
@@ -234,18 +242,22 @@ class QECCodeBase:
             information follows codebase schema. Defaults to True.
             validate_code_uniqueness (bool, optional): Make sure there does not exist
             another code in the database that is equal or a superset of code. Defaults to True.
+            flush_cache (bool): Flush cache by writing codes to playground and emptying cache
 
         Returns:
             str: str(uuid) of saved code
         """
         storage_formatted_code = self._convert_code_subsystem_to_storage_format(code, keep_uuid)
-        return self._protected_store_new_code_storage_format(
+        retval = self._protected_store_new_code_storage_format(
             storage_formatted_code,
             force_input=force,
             verify_code_info_for_storage=verify_code_info_for_storage,
             validate_code_uniqueness=validate_code_uniqueness,
             allow_new_fields=allow_new_fields,
         )
+        if flush_cache:
+            self.flush_cache()
+        return retval
 
     def delete_subsystem_code_from_playground(self, code: SubSystemCode):
         """Delete subsystem code from playground codebase
@@ -386,6 +398,7 @@ class QECCodeBase:
         k_dim: int,
         allow_standard_db=True,
         allow_playground=True,
+        allow_cache=True,
     ) -> Dict:
         """
         Args:
@@ -402,6 +415,9 @@ class QECCodeBase:
                     qec_code_jsons = {**json.load(code_file), **qec_code_jsons}
             except FileNotFoundError:
                 print(f"{path} does not exist")  # TODO turn into logging
+        if allow_cache:
+            if (n_len, k_dim) in self.playground_cache:
+                qec_code_jsons = {**qec_code_jsons, **self.playground_cache[(n_len, k_dim)]}
         return qec_code_jsons
 
     def _convert_codes_storage_format_to_subsystem_codes(
@@ -491,7 +507,10 @@ class QECCodeBase:
                             or value.upper() in retrieved_code_value
                         ):
                             return False
-                    except TypeError:  # retrieved_code_value probably wasn't iterable
+                    except (
+                        TypeError,
+                        AttributeError,
+                    ):  # retrieved_code_value probably wasn't iterable
                         return False
             else:
                 if (
@@ -605,29 +624,31 @@ class QECCodeBase:
                     + "force_input=True which will insert without checking"
                 )
 
-    def _store_code_storage_format_in_playground(self, code_storage_format):
+    def _store_code_storage_format_in_playground(self, cached_codes_to_be_stored):
         """CHECKS NOTHING. Literally shoves it into database."""
-        code_info = next(iter(code_storage_format.values()))
-        n_len = code_info[self.N]
-        k_dim = code_info[self.K]
 
-        code_info[self.BELONGS_TO_STANDARD_CODEBASE] = 0
+        for code_nk, codes in cached_codes_to_be_stored.items():
+            n_len = code_nk[0]
+            k_dim = code_nk[1]
 
-        playground_path = self._evaluate_playground_path(n_len, k_dim)
+            for code_info in iter(codes.values()):
+                code_info[self.BELONGS_TO_STANDARD_CODEBASE] = 0
 
-        new_playground_nk_codes = self._load_code_storage_format_from_n_k(
-            n_len, k_dim, allow_standard_db=False
-        )
-        if len(new_playground_nk_codes) == 0:
-            new_playground_nk_codes = {}
-            enclosing_folder = playground_path[: playground_path.rfind(os.path.sep)]
-            if not os.path.exists(enclosing_folder):
-                os.makedirs(enclosing_folder)
-        new_playground_nk_codes = {
-            **new_playground_nk_codes,
-            **code_storage_format,
-        }
-        self._overwrite_codes_to_playground_file(n_len, k_dim, new_playground_nk_codes)
+            playground_path = self._evaluate_playground_path(n_len, k_dim)
+
+            new_playground_nk_codes = self._load_code_storage_format_from_n_k(
+                n_len, k_dim, allow_standard_db=False, allow_cache=False
+            )
+            if len(new_playground_nk_codes) == 0:
+                new_playground_nk_codes = {}
+                enclosing_folder = playground_path[: playground_path.rfind(os.path.sep)]
+                if not os.path.exists(enclosing_folder):
+                    os.makedirs(enclosing_folder)
+            new_playground_nk_codes = {
+                **new_playground_nk_codes,
+                **codes,
+            }
+            self._overwrite_codes_to_playground_file(n_len, k_dim, new_playground_nk_codes)
 
     def _protected_store_new_code_storage_format(
         self,
@@ -646,13 +667,30 @@ class QECCodeBase:
             if validate_code_uniqueness:
                 self._validate_code_storage_format_uniqueness(code_storage_format)
 
-        self._store_code_storage_format_in_playground(code_storage_format)
+        code_info = next(iter(code_storage_format.values()))
+        code_nk_key = (code_info[self.N], code_info[self.K])
+        if code_nk_key in self.playground_cache:
+            self.playground_cache[code_nk_key] = {
+                **self.playground_cache[code_nk_key],
+                **code_storage_format,
+            }
+        else:
+            self.playground_cache[code_nk_key] = code_storage_format
 
         # TODO rewriting everything will be very slow -- figure if there's a way to append json
         # hopefully not a problem given playground might be small
 
         # return uuid of newly stored code
         return next(iter(code_storage_format.keys()))
+
+    def flush_cache(self):
+        try:
+            self._store_code_storage_format_in_playground(self.playground_cache)
+            self.playground_cache = {}
+        except Exception as e:
+            print(
+                f"ERROR: {e}. Please try to reflush-cache. Playground might have data partially written to it."
+            )
 
     def delete_playground_codebase(self, force=False):
         """Delete all codes in playground codebase
@@ -666,6 +704,6 @@ class QECCodeBase:
                 " COMPLETELY delete playground codebase, rerun with force=True."
             )
             return
-
+        self.playground_cache = {}
         for file in os.listdir(self.playground_path):
             shutil.rmtree(os.path.join(self.playground_path, file))
