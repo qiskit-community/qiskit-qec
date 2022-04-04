@@ -617,7 +617,7 @@ class QECCodeBase:
 
         new_playground_nk_codes = self._load_code_storage_format_from_n_k(
             n_len, k_dim, allow_standard_db=False
-        )  # TODO don't double load (pre_existing_codes & here)
+        )
         if len(new_playground_nk_codes) == 0:
             new_playground_nk_codes = {}
             enclosing_folder = playground_path[: playground_path.rfind(os.path.sep)]
@@ -668,7 +668,4 @@ class QECCodeBase:
             return
 
         for file in os.listdir(self.playground_path):
-            try:
-                os.remove(os.path.join(self.playground_path, file))
-            except PermissionError:
-                shutil.rmtree(os.path.join(self.playground_path, file))
+            shutil.rmtree(os.path.join(self.playground_path, file))
