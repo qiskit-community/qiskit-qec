@@ -19,28 +19,10 @@ Decoders for quantum error correction codes, with a focus on those that can be
 expressed as solving a graph-theoretic problem.
 """
 
-import copy
+
 import warnings
 import retworkx as rx
-import numpy as np
 
-from qiskit import QuantumCircuit
-
-try:
-    from qiskit.providers.aer import Aer
-
-    HAS_AER = True
-except ImportError:
-    from qiskit import BasicAer
-
-    HAS_AER = False
-
-"""
-Decoders for quantum error correction codes, with a focus on those that can be
-expressed as solving a graph-theoretic problem.
-"""
-
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
 class GraphDecoder:
     """

@@ -19,7 +19,6 @@ Graph used as the basis of decoders.
 """
 
 import copy
-import warnings
 import retworkx as rx
 import numpy as np
 
