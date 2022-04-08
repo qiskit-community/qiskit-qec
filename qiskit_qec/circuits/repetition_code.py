@@ -93,7 +93,7 @@ class RepetitionCodeCircuit:
             self.css_z_stabilizer_ops = []
             self.css_z_boundary = []
             self.basis = 'x'
-        else
+        else:
             self.css_x_gauge_ops = []
             self.css_x_stabilizer_ops = []
             self.css_x_boundary = []
