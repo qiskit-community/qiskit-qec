@@ -166,13 +166,14 @@ class FaultEnumerator:
         circ = input QuantumCircuit
         Return REVERSED outcome.
         """
+
         def gint(c):
-            #Casts to int if possible
+            # Casts to int if possible
             if c.isnumeric():
                 return int(c)
             else:
                 return c
-            
+
         result = execute(
             circ,
             Aer.get_backend("aer_simulator"),

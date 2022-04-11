@@ -19,22 +19,10 @@ Graph used as the basis of decoders.
 """
 
 import itertools
-import copy
 import retworkx as rx
 import numpy as np
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-
-from qiskit import QuantumCircuit
-
-try:
-    from qiskit.providers.aer import Aer
-
-    HAS_AER = True
-except ImportError:
-    from qiskit import BasicAer
-
-    HAS_AER = False
 
 
 class DecodingGraph:
@@ -57,14 +45,14 @@ class DecodingGraph:
     def _make_syndrome_graph(self):
 
         S = rx.PyGraph(multigraph=False)
-        
+
         qc = self.code.circuit["0"]
         fe = FaultEnumerator(qc)
         blocks = list(fe.generate_blocks())
         fault_paths = list(itertools.chain(*blocks))
-        
-        for j,gate,error,output in fault_paths:
-            string = ''.join([str(c) for c in output[::-1]])
+
+        for _, _, _, output in fault_paths:
+            string = "".join([str(c) for c in output[::-1]])
             nodes = self.code.string2nodes(string)
             for node in nodes:
                 if node not in S.nodes():

@@ -81,10 +81,10 @@ class RepetitionCodeCircuit:
         if T != 0:
             self.syndrome_measurement(final=True)
             self.readout()
-            
-        gauge_ops = [(2*j,2*(j+1)) for j in range(self.d)]
-        boundary = [0,2*self.d]
-            
+
+        gauge_ops = [(2 * j, 2 * (j + 1)) for j in range(self.d)]
+        boundary = [0, 2 * self.d]
+
         if xbasis:
             self.css_x_gauge_ops = gauge_ops
             self.css_x_stabilizer_ops = gauge_ops
@@ -92,7 +92,7 @@ class RepetitionCodeCircuit:
             self.css_z_gauge_ops = []
             self.css_z_stabilizer_ops = []
             self.css_z_boundary = []
-            self.basis = 'x'
+            self.basis = "x"
         else:
             self.css_x_gauge_ops = []
             self.css_x_stabilizer_ops = []
@@ -100,10 +100,10 @@ class RepetitionCodeCircuit:
             self.css_z_gauge_ops = gauge_ops
             self.css_z_stabilizer_ops = gauge_ops
             self.css_z_boundary = boundary
-            self.basis = 'z'
+            self.basis = "z"
         self.round_schedule = self.basis
         self.blocks = T
-        
+
         self.resets = resets
         self.delay = delay
 
