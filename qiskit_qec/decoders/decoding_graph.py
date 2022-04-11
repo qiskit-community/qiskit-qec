@@ -18,9 +18,12 @@
 Graph used as the basis of decoders.
 """
 
+import itertools
 import copy
 import retworkx as rx
 import numpy as np
+
+from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 from qiskit import QuantumCircuit
 
@@ -51,107 +54,27 @@ class DecodingGraph:
 
         self.S = self._make_syndrome_graph()
 
-    def _make_syndrome_graph(self, results=None):
+    def _make_syndrome_graph(self):
 
         S = rx.PyGraph(multigraph=False)
-        if results:
-
-            for string in results:
-                nodes = self.code.string2nodes(string)
-                for node in nodes:
-                    if node not in S.nodes():
-                        S.add_node(node)
-                for source in nodes:
-                    for target in nodes:
-                        if target != source:
-                            n0 = S.nodes().index(source)
-                            n1 = S.nodes().index(target)
-                            S.add_edge(n0, n1, 1)
-
-        else:
-            qc = self.code.circuit["0"]
-
-            blank_qc = QuantumCircuit()
-            for qreg in qc.qregs:
-                blank_qc.add_register(qreg)
-            for creg in qc.cregs:
-                blank_qc.add_register(creg)
-
-            error_circuit = {}
-            circuit_name = {}
-            depth = len(qc)
-            for j in range(depth):
-                gate = qc.data[j][0].name
-                qubits = qc.data[j][1]
-                if gate not in ["measure", "reset"]:
-                    for error in ["x", "y", "z"]:
-                        for qubit in qubits:
-                            temp_qc = copy.deepcopy(blank_qc)
-                            temp_qc.name = str((j, qubit, error))
-                            temp_qc.data = qc.data[0:j]
-                            getattr(temp_qc, error)(qubit)
-                            temp_qc.data += qc.data[j : depth + 1]
-                            circuit_name[(j, qubit, error)] = temp_qc.name
-                            error_circuit[temp_qc.name] = temp_qc
-                elif gate == "measure":
-                    pre_error = "x"
-                    for post_error in ["id", "x"]:
-                        for qubit in qubits:
-                            temp_qc = copy.deepcopy(blank_qc)
-                            temp_qc.name = str((j, qubit, pre_error + "_" + post_error))
-                            temp_qc.data = qc.data[0:j]
-                            getattr(temp_qc, pre_error)(qubit)
-                            temp_qc.data.append(qc.data[j])
-                            getattr(temp_qc, post_error)(qubit)
-                            temp_qc.data += qc.data[j + 1 : depth + 1]
-                            circuit_name[(j, qubit, pre_error + "_" + post_error)] = temp_qc.name
-                            error_circuit[temp_qc.name] = temp_qc
-
-            if HAS_AER:
-                simulator = Aer.get_backend("aer_simulator")
-            else:
-                simulator = BasicAer.get_backend("qasm_simulator")
-
-            job = simulator.run(list(error_circuit.values()), shots=1)
-
-            node_map = {}
-            for j in range(depth):
-                gate = qc.data[j][0].name
-                qubits = qc.data[j][1]
-                errors = ["x", "y", "z"] * (gate not in ["reset", "measure"]) + ["x_id", "x_x"] * (
-                    gate == "measure"
-                )
-                for error in errors:
-                    for qubit in qubits:
-
-                        results = job.result().get_counts(str((j, qubit, error)))
-                        for string in results:
-                            nodes = self.code.string2nodes(string)
-
-                            assert len(nodes) in [0, 2], (
-                                "Error of type "
-                                + error
-                                + " on qubit "
-                                + str(qubit)
-                                + " at depth "
-                                + str(j)
-                                + " creates "
-                                + str(len(nodes))
-                                + " nodes in syndrome graph, instead of 2."
-                            )
-                            for node in nodes:
-                                if node not in node_map.values():
-                                    node_map[S.add_node(node)] = node
-                            for source in nodes:
-                                for target in nodes:
-                                    if target != source:
-                                        ns = list(node_map.keys())[
-                                            list(node_map.values()).index(source)
-                                        ]
-                                        nt = list(node_map.keys())[
-                                            list(node_map.values()).index(target)
-                                        ]
-                                        S.add_edge(ns, nt, 1)
+        
+        qc = self.code.circuit["0"]
+        fe = FaultEnumerator(qc)
+        blocks = list(fe.generate_blocks())
+        fault_paths = list(itertools.chain(*blocks))
+        
+        for j,gate,error,output in fault_paths:
+            string = ''.join([str(c) for c in output[::-1]])
+            nodes = self.code.string2nodes(string)
+            for node in nodes:
+                if node not in S.nodes():
+                    S.add_node(node)
+            for source in nodes:
+                for target in nodes:
+                    if target != source:
+                        n0 = S.nodes().index(source)
+                        n1 = S.nodes().index(target)
+                        S.add_edge(n0, n1, 1)
 
         return S
 
