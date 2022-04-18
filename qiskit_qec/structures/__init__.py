@@ -10,6 +10,23 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Structures."""
+"""
+=========================================
+Structures (:mod:`qiskit_qec.structures`)
+=========================================
 
-from . import gauge, group
+.. currentmodule:: qiskit_qec.structures
+
+
+Structures module classes and functions
+=======================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Group
+    GaugeGroup
+"""
+
+from .gauge import GaugeGroup
+from .group import Group
