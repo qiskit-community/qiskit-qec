@@ -17,6 +17,7 @@ def strarray(label: str) -> np.ndarray:
     return vec
 
 
+# pylint: disable=c-extension-no-member
 class TestMinimumDistanceCompiled(unittest.TestCase):
     """Tests of minimum distance property in compiled extensions."""
 
