@@ -290,7 +290,11 @@ class RepetitionCodeCircuit:
                         if syn_type == 0:
                             elem_num = syn_round
                             syn_round = 0
-                        node = {"time": syn_round, "is_logical": syn_type == 0, "element": elem_num}
+                        node = {
+                            "time": syn_round,
+                            "is_logical": syn_type == 0,
+                            "element": elem_num,
+                        }
                         nodes.append(node)
         return nodes
 

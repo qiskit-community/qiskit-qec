@@ -28,7 +28,11 @@ class PauliList(BasePauli):
     __truncate__ = 2000
 
     def __init__(
-        self, pdata: str, stype="numpy", phase_exponent=0, input_qubit_order="right-to-left"
+        self,
+        pdata: str,
+        stype="numpy",
+        phase_exponent=0,
+        input_qubit_order="right-to-left",
     ):
         """Inits a PauliList
 
@@ -41,8 +45,15 @@ class PauliList(BasePauli):
         Raises:
             QiskitError: Something went wrong.
         """
+        if isinstance(pdata, str):
+            self.stabilizer_info = pdata
 
-        if isinstance(pdata, BasePauli):
+        if isinstance(pdata, PauliList):
+            self.stabilizer_info = pdata.stabilizer_info
+            matrix = pdata.matrix
+            p_ext = pdata.phase_exponent
+            stype = pdata.stype
+        elif isinstance(pdata, BasePauli):
             matrix = pdata.matrix
             p_ext = pdata.phase_exponent
             stype = pdata.stype
@@ -153,7 +164,11 @@ class PauliList(BasePauli):
         else:
             suffix = "]" + tail
         list_str = np.array2string(
-            np.array(labels), threshold=stop + 1, separator=", ", prefix=prefix, suffix=suffix
+            np.array(labels),
+            threshold=stop + 1,
+            separator=", ",
+            prefix=prefix,
+            suffix=suffix,
         )
         return prefix + list_str[:-1] + suffix
 

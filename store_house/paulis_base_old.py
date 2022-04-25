@@ -276,6 +276,7 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
     def num_y(self):
         """Count the number of Y Pauli's"""
         return self._matrix.num_y()
+
     def copy(self):
         """Make a deep copy of current operator."""
         # Deepcopy has terrible performance on objects with Numpy arrays
@@ -402,7 +403,8 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
 
         if SympMatrix.__name__ != other.symplectic_class.__name__:
             new_other = PaulisBase(
-                xz_matrix=SympMatrix.convert(other._matrix), phase_exponent=other._phase_exponent
+                xz_matrix=SympMatrix.convert(other._matrix),
+                phase_exponent=other._phase_exponent,
             )
         else:
             new_other = other
@@ -455,7 +457,9 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
             cls=type(self).__name__
         )
         phase_exponent = pauli_rep.phase_to_exponent(
-            phase, output_phase_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT, roundit=roundit
+            phase,
+            output_phase_format=pauli_rep.INTERNAL_PHASE_REP_FORMAT,
+            roundit=roundit,
         )
         return PaulisBase(self._matrix, np.mod(self._phase_exponent + phase_exponent, 4))
 
@@ -700,7 +704,12 @@ class PaulisBase(BaseOperator, AdjointMixin, MultiplyMixin):
             "sdg": _evolve_sdg,
             "sinv": _evolve_sdg,
         }
-        basis_2q = {"cx": _evolve_cx, "cz": _evolve_cz, "cy": _evolve_cy, "swap": _evolve_swap}
+        basis_2q = {
+            "cx": _evolve_cx,
+            "cz": _evolve_cz,
+            "cy": _evolve_cy,
+            "swap": _evolve_swap,
+        }
 
         # Non-Clifford gates
         non_clifford = ["t", "tdg", "ccx", "ccz"]

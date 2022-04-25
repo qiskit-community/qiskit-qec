@@ -60,7 +60,10 @@ class TestPauliRep(TestCase):
         self.assertTrue(np.array_equal(result2, np.array([[1, 0], [0, 1]])))
 
         result3 = change_pauli_encoding(
-            np.array([1, 1]), y_count=1, input_pauli_encoding="isXZY", output_pauli_encoding="iXZ"
+            np.array([1, 1]),
+            y_count=1,
+            input_pauli_encoding="isXZY",
+            output_pauli_encoding="iXZ",
         )
         self.assertEqual(result3, 0)
 
@@ -125,7 +128,8 @@ class TestPauliRep(TestCase):
 
         self.assertTrue(
             np.array_equal(
-                exp2cpx(np.array([[0, 0], [1, 0]]), "is"), np.array([1.0 + 0.0j, 0.0 + 1.0j])
+                exp2cpx(np.array([[0, 0], [1, 0]]), "is"),
+                np.array([1.0 + 0.0j, 0.0 + 1.0j]),
             )
         )
 
@@ -140,7 +144,8 @@ class TestPauliRep(TestCase):
 
         self.assertTrue(
             np.array_equal(
-                expstr2exp(np.array(["(-i,1)", "(-i,2)", "(-i,0)"])), np.array([1, 2, 0])
+                expstr2exp(np.array(["(-i,1)", "(-i,2)", "(-i,0)"])),
+                np.array([1, 2, 0]),
             )
         )
 
@@ -179,7 +184,8 @@ class TestPauliRep(TestCase):
             np.array_equal(
                 cpxstr2expstr(["1", "-1", "i", "-i"], "is"),
                 np.array(
-                    ["(i,0)(-1,0)", "(i,0)(-1,1)", "(i,1)(-1,0)", "(i,1)(-1,1)"], dtype="<U11"
+                    ["(i,0)(-1,0)", "(i,0)(-1,1)", "(i,1)(-1,0)", "(i,1)(-1,1)"],
+                    dtype="<U11",
                 ),
             )
         )
@@ -212,7 +218,8 @@ class TestPauliRep(TestCase):
             np.array_equal(
                 cpx2expstr([1j, 1, -1j, -1], "-is"),
                 np.array(
-                    ["(-i,1)(-1,1)", "(-i,0)(-1,0)", "(-i,1)(-1,0)", "(-i,0)(-1,1)"], dtype="<U12"
+                    ["(-i,1)(-1,1)", "(-i,0)(-1,0)", "(-i,1)(-1,0)", "(-i,0)(-1,1)"],
+                    dtype="<U12",
                 ),
             )
         )
@@ -224,7 +231,8 @@ class TestPauliRep(TestCase):
         self.assertEqual(str2exp("", "i"), 0)
         self.assertTrue(
             np.array_equal(
-                str2exp(["i", "-i", "+1", "1"], "-is"), np.array([[1, 1], [1, 0], [0, 0], [0, 0]])
+                str2exp(["i", "-i", "+1", "1"], "-is"),
+                np.array([[1, 1], [1, 0], [0, 0], [0, 0]]),
             )
         )
 
@@ -262,22 +270,29 @@ class TestPauliRep(TestCase):
         self.assertTrue(np.array_equal(np.array([[1, 1, 0, 0, 1, 0, 0, 0, 1, 1]]), matrix))
 
         matrix, phase_exp = str2symplectic(
-            ["iYII", "-iX0Z2", "X1Z2"], qubit_order="left-to-right", output_encoding="-iXZY"
+            ["iYII", "-iX0Z2", "X1Z2"],
+            qubit_order="left-to-right",
+            output_encoding="-iXZY",
         )
         self.assertTrue(np.array_equal(np.array([3, 1, 0]), phase_exp))
         self.assertTrue(
             np.array_equal(
-                np.array([[1, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 1], [0, 1, 0, 0, 0, 1]]), matrix
+                np.array([[1, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 1], [0, 1, 0, 0, 0, 1]]),
+                matrix,
             )
         )
 
         matrix, phase_exp = str2symplectic(
-            "iX1X3Y4Z9", qubit_order="left-to-right", output_encoding="-isXZ", index_start=1
+            "iX1X3Y4Z9",
+            qubit_order="left-to-right",
+            output_encoding="-isXZ",
+            index_start=1,
         )
         self.assertTrue(np.array_equal(np.array([0, 1]), phase_exp))
         self.assertTrue(
             np.array_equal(
-                np.array([[1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]]), matrix
+                np.array([[1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]]),
+                matrix,
             )
         )
 
@@ -312,14 +327,16 @@ class TestPauliRep(TestCase):
         )
         self.assertTrue(
             np.array_equal(
-                symplectic2str(matrix), np.array(["-Y9Y4X3X1", "-Z10X8Y7Y6X3"], dtype="<U12")
+                symplectic2str(matrix),
+                np.array(["-Y9Y4X3X1", "-Z10X8Y7Y6X3"], dtype="<U12"),
             )
         )
         self.assertEqual(symplectic2str(matrix[0]), "-Y9Y4X3X1")
         self.assertEqual(symplectic2str(matrix[0], no_phase=True), "Y9Y4X3X1")
         self.assertTrue(
             np.array_equal(
-                symplectic2str(matrix), np.array(["-Y9Y4X3X1", "-Z10X8Y7Y6X3"], dtype="<U12")
+                symplectic2str(matrix),
+                np.array(["-Y9Y4X3X1", "-Z10X8Y7Y6X3"], dtype="<U12"),
             )
         )
         self.assertTrue(
@@ -345,7 +362,10 @@ class TestPauliRep(TestCase):
                     output_tensor_encoding="XZ",
                     syntax=INDEX_SYNTAX,
                 ),
-                np.array(["-i(X9Z9)(X4Z4)(X3)(X1)", "i(Z10)(X8)(X7Z7)(X6Z6)(X3)"], dtype="<U26"),
+                np.array(
+                    ["-i(X9Z9)(X4Z4)(X3)(X1)", "i(Z10)(X8)(X7Z7)(X6Z6)(X3)"],
+                    dtype="<U26",
+                ),
             )
         )
         self.assertTrue(
@@ -395,7 +415,8 @@ class TestPauliRep(TestCase):
                     index_str="_",
                 ),
                 np.array(
-                    ["(-i,1)(-1,1)X_2X_4Y_5Y_10", "(-i,1)(-1,0)X_4Y_7Y_8X_9Z_11"], dtype="<U28"
+                    ["(-i,1)(-1,1)X_2X_4Y_5Y_10", "(-i,1)(-1,0)X_4Y_7Y_8X_9Z_11"],
+                    dtype="<U28",
                 ),
             )
         )

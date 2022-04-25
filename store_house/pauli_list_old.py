@@ -160,7 +160,7 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
     def __array__(self, dtype=None):
         """Convert to numpy array"""
         # pylint: disable=unused-argument
-        shape = (len(self),) + 2 * (2 ** self.num_qubits,)
+        shape = (len(self),) + 2 * (2**self.num_qubits,)
         ret = np.zeros(shape, dtype=complex)
         for i, mat in enumerate(self.matrix_iter()):
             ret[i] = mat
@@ -230,7 +230,11 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
         else:
             suffix = "]" + tail
         list_str = np.array2string(
-            np.array(labels), threshold=stop + 1, separator=", ", prefix=prefix, suffix=suffix
+            np.array(labels),
+            threshold=stop + 1,
+            separator=", ",
+            prefix=prefix,
+            suffix=suffix,
         )
         return prefix + list_str[:-1] + suffix
 
@@ -1016,7 +1020,7 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
         # For efficiency we also allow returning a single rank-3
         # array where first index is the Pauli row, and second two
         # indices are the matrix indices
-        dim = 2 ** self.num_qubits
+        dim = 2**self.num_qubits
         ret = np.zeros((self.size, dim, dim), dtype=complex)
         iterator = self.matrix_iter(sparse=sparse)
         for i in range(self.size):
@@ -1073,7 +1077,10 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
 
             def __getitem__(self, key):
                 return self.obj._to_matrix(
-                    self.obj._z[key], self.obj._x[key], self.obj._phase[key], sparse=sparse
+                    self.obj._z[key],
+                    self.obj._x[key],
+                    self.obj._phase[key],
+                    sparse=sparse,
                 )
 
         return MatrixIterator(self)
