@@ -21,18 +21,11 @@ from typing import Iterable, Tuple, Union, List, Any, Optional
 import numbers
 import re
 
+from scipy.sparse import csr_matrix
+
 import numpy as np
 from qiskit.exceptions import QiskitError
-
-from qiskit.circuit.library.generalized_gates import PauliGate
-from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
-from qiskit.quantum_info.operators.scalar_op import ScalarOp
-from qiskit.circuit import Instruction, Gate
-from qiskit.circuit.barrier import Barrier
-
-from qiskit_qec.linear.symplectic import count_num_y
-
-# from qiskit_qec.operators.base_pauli import BasePauli
+from qiskit_qec.linear.symplectic import count_num_y, is_symplectic_matrix_form
 
 
 # -------------------------------------------------------------------------------
@@ -262,7 +255,7 @@ def get_tensor_encodings() -> List[str]:
     return TENSOR_ENCODINGS
 
 
-def pauli_encodings() -> List[str]:
+def get_pauli_encodings() -> List[str]:
     """Returns the available Pauli encodings
 
     Returns:
@@ -494,20 +487,35 @@ def _change_pauli_encoding(
     """
     # phases change with changing symplectic formats via a multiple of i. This
     # multiple is given by the converter table: S_1->S_2 has multiplier i^converter[S_1][S_2]
+    
+    
+    #converter = {
+    #    "XZ": {"ZX": 0, "XZ": 2, "XZY": 3, "YZX": 3},
+    #    "ZX": {"ZX": 0, "XZ": 2, "XZY": 3, "YZX": 3},
+    #    "XZY": {"XZY": 0, "YZX": 0, "XZ": 1, "ZX": 1},
+    #    "YZX": {"YZX": 0, "XZY": 0, "XZ": 1, "ZX": 1},
+    #}
+
     converter = {
-        "XZ": {"ZX": 0, "XZ": 2, "XZY": 3, "YZX": 3},
+        "XZ": {"ZX": 2, "XZ": 0, "XZY": 1, "YZX": 1},
         "ZX": {"ZX": 0, "XZ": 2, "XZY": 3, "YZX": 3},
-        "XZY": {"XZY": 0, "YZX": 0, "XZ": 1, "ZX": 1},
-        "YZX": {"YZX": 0, "XZY": 0, "XZ": 1, "ZX": 1},
+        "XZY": {"XZY": 0, "YZX": 0, "XZ": 3, "ZX": 1},
+        "YZX": {"YZX": 0, "XZY": 0, "XZ": 3, "ZX": 1},
     }
 
+    #print(f"input_pauli_encoding={input_pauli_encoding}, output_pauli_encoding={output_pauli_encoding}")
     input_phase_encoding, input_tensor_encoding = _split_pauli_enc(input_pauli_encoding)
     output_phase_encoding, output_tensor_encoding = _split_pauli_enc(output_pauli_encoding)
+    #print(f"input_phase_encoding={input_phase_encoding}, input_tensor_encoding={input_tensor_encoding}")
+    #print(f"output_phase_encoding={output_phase_encoding}, output_tensor_encoding={output_tensor_encoding}")
 
     multiplier = converter[input_tensor_encoding][output_tensor_encoding]
+    #print(f"multiplier={multiplier}")
 
     # convert to the new phase exponents directly
+    #print(f"phase_exponent={phase_exponent}")
     phase_exponent = exp2exp(phase_exponent, input_phase_encoding, output_phase_encoding)
+    #print(f"phase_exponent={phase_exponent}")
 
     # modify phase exponents to align with the Y count of the Paulis
 
@@ -518,9 +526,8 @@ def _change_pauli_encoding(
             return (marker % 2, (exp[1] + 1) % 2)
 
     if output_phase_encoding == "i":
-        phase_exponent = np.mod(phase_exponent + multiplier * y_count, 4)
+        phase_exponent = np.mod(phase_exponent + 3 * multiplier * y_count, 4)
     elif output_phase_encoding == "-i":
-        multiplier = (4 - multiplier) % 4
         phase_exponent = np.mod(phase_exponent + multiplier * y_count, 4)
     elif output_phase_encoding == "is":
         res = np.mod(phase_exponent.T[0] + multiplier * y_count, 4)
@@ -824,6 +831,7 @@ def _cpxstr2cpx(cpx_string: np.ndarray) -> np.ndarray:
     CONV_ = {
         "": 1,
         "1": 1,
+        "-": -1,
         "i": 0 + 1j,
         "-i": 0 - 1j,
         "-1": -1,
@@ -1824,6 +1832,8 @@ def _split_pauli(pauli_str: str):
 
     def _split(p_str):
         result = re.findall(SPLIT_PATTERN, p_str)
+        if not result:
+            raise QiskitError(f"Pauli tensor {pauli_str} string is not valid")
         return result[0][0], result[0][1]
 
     result = np.array([_split(item) for item in pauli_str])
@@ -2134,9 +2144,13 @@ def _str2symplectic(
     # regex substitution and in the case of the INDEX_SYNTAX mode.
 
     phase_str, tensor_str = split_pauli(pauli_str, same_type=False)
+    #print(f"phase_str={phase_str}, tensor_str={tensor_str}")
+
     phase_exp = str2exp(phase_str, INTERNAL_PHASE_ENCODING)
+    #print(f"phase_exp={phase_exp}")
 
     tensor_enc = encode_of_tensor_str(tensor_str)
+    #print(f"tensor_enc={tensor_enc}")
 
     index_store = []
     tensor_store = []
@@ -2145,9 +2159,10 @@ def _str2symplectic(
     _TRANS = {"I": "I", "X": "X", "Z": "Z", "XZ": "Y", "ZX": "Y"}
 
     for tensor, (tensor_encodings, syntax) in zip(tensor_str, tensor_enc):
+        #print(f"Working with tensor={tensor}, tensor_encodins={tensor_encodings} and syntax={syntax}")
         if syntax == PRODUCT_SYNTAX:
             if "XZ" in tensor_encodings:
-                # Male this better as below
+                # Make this better as below
                 new_tensor = re.findall(ENC_PRODUCT_XZ_CAP, tensor)
                 new_tensor = [_TRANS[item] for item in new_tensor]
             elif "ZX" in tensor_encodings:
@@ -2155,6 +2170,7 @@ def _str2symplectic(
                 new_tensor = re.findall(ENC_PRODUCT_ZX_CAP, tensor)
                 new_tensor = [_TRANS[item] for item in new_tensor]
             else:
+                #print("Not XZ or XZ encoding")
                 new_tensor = tensor
 
             num_qubits = len(new_tensor)
@@ -2183,6 +2199,7 @@ def _str2symplectic(
         tensor_store.append(new_tensor)
         num_qubits_store.append(num_qubits)
 
+    #print(f"index_store = {index_store}, tensor_store={tensor_store} and num_qubits_store={num_qubits_store}")
     num_qubits = max(num_qubits_store)
     matrix = np.zeros(shape=(len(tensor_store), 2 * num_qubits), dtype=np.bool_)
 
@@ -2200,6 +2217,10 @@ def _str2symplectic(
                 matrix[row_index, index] = True
                 matrix[row_index, index + num_qubits] = True
 
+        #print(f"matrix={matrix}")
+
+    #print(f"matrix={matrix}")
+
     out_phase_enc, _ = split_pauli_enc(output_encoding)
     if out_phase_enc in PHASE_ENCODINGS_ISMIS:
         new_phase_exp = np.zeros(shape=(phase_exp.shape[0], 2), dtype=np.int8)
@@ -2207,9 +2228,11 @@ def _str2symplectic(
         new_phase_exp = np.zeros(shape=phase_exp.shape, dtype=np.int8)
 
     y_count = count_num_y(matrix, scalar=False)
+    #print(f"y_count={y_count}")
     for index, (p_exp, count, (tensor_encodings, syntax)) in enumerate(
         zip(phase_exp, y_count, tensor_enc)
     ):
+        #print(f"index={index}, p_exp={p_exp}, count={count}, tensor_excodings={tensor_encodings}, syntax={syntax}")
         n_exp = change_pauli_encoding(
             p_exp,
             count,
@@ -2219,67 +2242,6 @@ def _str2symplectic(
         new_phase_exp[index] = n_exp
 
     return matrix, new_phase_exp
-
-
-# ----------------------------------------------------------------------
-
-
-def scalar_op2symplectic(
-    op: ScalarOp, output_encoding: str = DEFAULT_EXTERNAL_PHASE_ENCODING
-) -> Tuple[np.ndarray, Union[np.array, Any]]:
-    """Convert a ScalarOp to symplectic representation with phase.
-
-    TODO: Allow this to work on arrays of ScalarOps
-
-    Args:
-        op: Input scalarOp
-        output_encoding: Phase encoding to use to encode phase from ScalarOp.
-            Default is INTERNAL_PHASE_ENCODING='-i'
-
-    Raises:
-        QiskitError: Operator is not an N-qubit identity
-
-    Returns:
-        matrix, phase_exponent: GF(2) symplectic matrix and phase_exponent
-        representing ScalarOp
-    """
-    if op.num_qubits is None:
-        raise QiskitError(f"{op} is not an N-qubit identity")
-    matrix = np.zeros(shape=(1, 2 * op.num_qubits), dtype=np.bool_)
-    phase_exp = cpx2exp(op.coeff, output_encoding=output_encoding)
-    return matrix, phase_exp
-
-
-# ----------------------------------------------------------------------
-
-
-def gate2symplectic(
-    gate: Gate, encoding: str = DEFAULT_EXTERNAL_PAULI_ENCODING
-) -> Tuple[np.ndarray, Union[np.array, Any]]:
-    """Converts a Pauli gate to a symplectic matrix with phase
-
-    Args:
-        gate: Gate
-        encoding (optional): Pauli encoding to encode symplectic matrix with phase.
-            Defaults to DEFAULT_EXTERNAL_PAULI_ENCODING='-iYZX';
-
-    Raises:
-        QiskitError: Invalid Pauli instruction
-
-    Returns:
-        matrix, phase_exp: phase exponent and symplectic matrix
-    """
-    if isinstance(gate, PauliGate):
-        return str2symplectic(gate.params[0], output_encoding=encoding)
-    if isinstance(gate, IGate):
-        return str2symplectic("I", output_encoding=encoding)
-    if isinstance(gate, XGate):
-        return str2symplectic("X", output_encoding=encoding)
-    if isinstance(gate, YGate):
-        return str2symplectic("Y", output_encoding=encoding)
-    if isinstance(gate, ZGate):
-        return str2symplectic("Z", output_encoding=encoding)
-    raise QiskitError("Invalid Pauli instruction.")
 
 
 
@@ -2539,6 +2501,168 @@ def symplectic2str(
         return result[0]
     else:
         return np.array(result)
+
+# ----------------------------------------------------------------------
+# Array(s) to Symplectic
+# ----------------------------------------------------------------------
+
+def from_array(matrix:Union[List, Tuple, np.ndarray],
+               phase_exp:Union[int, List, Tuple, np.ndarray]=None,
+               input_pauli_encoding:Optional[str]=None)->Tuple[np.ndarray, np.ndarray]:
+    """Convert array and phase_exp to the matrix and phase_exp in BasePauli's internal
+    Pauli encoding (pauli_rep.INTERNAL_PAULI_ENCODING)
+    Args:
+        matrix (_type_): _description_
+        phase_exp (_type_): _description_
+        input_pauli_encoding: input Pauli encoding
+    Returns:
+        _type_: _description_
+    """
+    if input_pauli_encoding is None:
+        input_pauli_encoding = DEFAULT_EXTERNAL_PAULI_ENCODING
+    if isinstance(matrix, np.ndarray) and matrix.dtype == bool:
+        matrix_data = matrix
+    else:
+        matrix_data = np.asarray(matrix, dtype=bool)
+    #matrix_data = np.atleast_2d(matrix_data)
+    if not is_symplectic_matrix_form(matrix_data):
+        raise QiskitError("Input matrix not a symplectic matrix or symplectic vector")
+    if phase_exp is None or (isinstance(phase_exp, numbers.Integral) and phase_exp == 0):
+        phase_exp = np.zeros(shape=(matrix_data.shape[0],))
+    y_count = count_num_y(matrix_data)
+    in_phase_exp = change_pauli_encoding(phase_exp,
+                                         y_count,
+                                         input_pauli_encoding=input_pauli_encoding,
+                                         output_pauli_encoding=INTERNAL_PAULI_ENCODING, 
+                                         same_type=False)
+    return matrix_data, in_phase_exp
+    
+def from_split_array(x:Union[List, Tuple, np.ndarray],
+                     z:Union[List, Tuple, np.ndarray],
+                     phase_exp:Union[int, List, Tuple, np.ndarray],
+                     input_pauli_encoding:Optional[str]=None)->Tuple[np.ndarray, np.ndarray]:
+    """Convert split array (separate X and Z arrays) and phase_exp to the matrix and phase_exp in BasePauli's internal
+    Pauli encoding (pauli_rep.INTERNAL_PAULI_ENCODING)
+
+    Args:
+        x (Union[List, Tuple, np.ndarray]): _description_
+        z (Union[List, Tuple, np.ndarray]): _description_
+        phase_exp (Union[int, List, Tuple, np.ndarray]): _description_
+        input_pauli_encoding (Optional[str], optional): _description_. Defaults to None.
+
+    Raises:
+        QiskitError: _description_
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: _description_
+    """
+    
+    if input_pauli_encoding is None:
+        input_pauli_encoding = DEFAULT_EXTERNAL_PAULI_ENCODING
+    if isinstance(x, np.ndarray) and x.dtype == bool:
+        x_data = x
+    else:
+        x_data = np.asarray(x, dtype=bool)
+    x_data = np.atleast_2d(x_data)
+    if isinstance(z, np.ndarray) and z.dtype == bool:
+        z_data = z
+    else:
+        z_data = np.asarray(z, dtype=bool)
+    z_data = np.atleast_2d(z_data)
+    matrix = np.hstack((x_data,z_data))
+    if not is_symplectic_matrix_form(matrix):
+        raise QiskitError("Input matrix not a symplectic matrix or symplectic vector")
+    y_count = count_num_y(matrix)
+    in_phase_exp = change_pauli_encoding(phase_exp,
+                                         y_count,
+                                         input_pauli_encoding=input_pauli_encoding,
+                                         output_pauli_encoding=INTERNAL_PAULI_ENCODING, 
+                                         same_type=False)
+    return matrix, in_phase_exp
+
+
+# ----------------------------------------------------------------------
+# Symplectic to Complex Matrix conversion
+# ----------------------------------------------------------------------
+
+def to_cpx_matrix(matrix:np.ndarray, 
+                  phase_exp:Optional[np.ndarray],
+                  pauli_encoding:str=INTERNAL_PAULI_ENCODING,
+                  sparse:bool=False)->Union[np.ndarray, csr_matrix]:
+    """Return the complex matrix representation from its symplectic representation with phase.
+    Args:
+        matrix (np.ndarray): _description_
+        phase_exp (Optional[np.ndarray]): _description_
+        pauli_encoding (str, optional): _description_. Defaults to pauli_rep.INTERNAL_PAULI_ENCODING.
+        sparse (bool, optional): _description_. Defaults to False.
+    Raises:
+        QiskitError: Input matrix is not a symplectic GF(2) matrix
+        QiskitError: Can only convert a single Pauli operator to a complex matrix representation
+    Returns:
+        matrix: complex matrix representation of Pauli operator. 
+    """
+    if not is_symplectic_matrix_form(matrix):
+        raise QiskitError("Input matrix is not a symplectic GF(2) matrix")
+
+    matrix = np.atleast_2d(matrix)
+    if matrix.shape[0] != 1:
+        raise QiskitError("Can only convert a single Pauli operator to a complex matrix representation")
+
+    num_qubits = matrix.shape[1]>>1
+
+    if phase_exp is None:
+        phase_exp = 0
+    else:
+        phase_exp = np.atleast_1d(phase_exp)
+
+    # Convert to internal Pauli encoding if needed
+    if pauli_encoding != INTERNAL_PAULI_ENCODING:
+        num_y = count_num_y(matrix)
+        phase_exp = change_pauli_encoding(phase_exp,
+                                          num_y,
+                                          input_pauli_encoding=pauli_encoding,
+                                          output_pauli_encoding=INTERNAL_PAULI_ENCODING)
+    phase_exp = phase_exp[0]
+    matrix = np.squeeze(matrix)
+    return _to_cpx_matrix(matrix, phase_exp, num_qubits, sparse=sparse)
+
+def _to_cpx_matrix(matrix:np.ndarray, 
+                   phase_exp:int,
+                   num_qubits:int,
+                   sparse:bool=False)->Union[np.ndarray, csr_matrix]:
+    """Return the complex matrix representation from its symplectic representation with phase.
+    Args:
+        z (array): The symplectic representation z vector.
+        x (array): The symplectic representation x vector.
+        phase_exp (int): Pauli phase.
+        sparse (bool): Optional. Of True return a sparse CSR matrix,
+                       otherwise return a dense Numpy array
+                       (default: False).
+    Returns:
+        array: if sparse=False.
+        csr_matrix: if sparse=True.
+    """
+    #print(f"matrix.x={matrix[:num_qubits]}\n matrix.z={matrix[num_qubits:]}\n phase_exp={phase_exp}")
+    dim = 2**num_qubits
+    twos_array = 1 << np.arange(num_qubits)
+    x_indices = np.asarray(matrix[:num_qubits]).dot(twos_array)
+    z_indices = np.asarray(matrix[num_qubits:]).dot(twos_array)
+    indptr = np.arange(dim + 1, dtype=np.uint)
+    indices = indptr ^ x_indices
+    if phase_exp:
+        coeff = (-1j) ** phase_exp
+    else:
+        coeff = 1
+    data = np.array([coeff * (-1) ** (bin(i).count("1") % 2) for i in z_indices & indptr])
+    if sparse:
+        # Return sparse matrix
+        return csr_matrix((data, indices, indptr), shape=(dim, dim), dtype=complex)
+    # Build dense matrix using csr format
+    mat = np.zeros((dim, dim), dtype=complex)
+    for i in range(dim):
+        mat[i][indices[indptr[i] : indptr[i + 1]]] = data[indptr[i] : indptr[i + 1]]
+    return mat
+
 
 
 # ----------------------------------------------------------------------

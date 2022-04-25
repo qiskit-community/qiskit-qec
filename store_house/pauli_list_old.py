@@ -166,6 +166,55 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
             ret[i] = mat
         return ret
 
+    def _from_paulis(self, data, input_qubit_order="right-to-left"):
+        """Construct a PauliList from a list of Pauli data.
+
+        Args:
+            data (iterable): list of Pauli data.
+            stype (): Override which stype is used. Default is None
+
+        Returns:
+            PauliList: the constructed PauliList.
+
+        Raises:
+            QiskitError: If the input list is empty or contains invalid
+            Pauli strings.
+        """
+        if not isinstance(data, (list, tuple, set, np.ndarray)):
+            data = [data]
+        num_paulis = len(data)
+        if num_paulis == 0:
+            raise QiskitError("Input Pauli list is empty.")
+        paulis = []
+        for i in data:
+            if not isinstance(i, Pauli):
+                # TODO: Should check if matrix and then use appropriate tools
+                # Will not work at the moment with non-numpy arrays
+                if isinstance(i, (np.ndarray, list)):
+                    paulis.append(Pauli(np.atleast_2d(i), input_qubit_order=input_qubit_order))
+                else:
+                    paulis.append(Pauli(i, input_qubit_order=input_qubit_order))
+            else:
+                paulis.append(i)
+
+        # Determine the num_qubits (max number of the individual Paulis)
+        qubit_count = [pauli.num_qubits for pauli in paulis]
+        num_qubits = max(qubit_count)
+
+        # TODO: This will not work when using other type of matrices. Needs
+        # to be generalized
+        matrix = np.zeros((num_paulis, 2 * num_qubits), dtype=bool)
+        phase_exp = np.zeros(num_paulis, dtype=int)
+
+        # Note that the next step implicitly broadcasts an input array from two different shapes
+        # This is take extra time but is probably okay for most applications
+        for i, pauli in enumerate(paulis):
+            matrix[i][: 2 * qubit_count[i]] = pauli.matrix
+            # print(f"pauli.phase_exp={pauli._phase_exp}")
+            phase_exp[i] = pauli._phase_exp
+        return matrix, phase_exp
+
+
     @staticmethod
     def _from_paulis(data):
         """Construct a PauliList from a list of Pauli data.
@@ -258,35 +307,7 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
 
     # ---------------------------------------------------------------------
     # Direct array access
-    # ---------------------------------------------------------------------
-    @property
-    def phase(self):
-        """Return the phase exponent of the PauliList."""
-        # Convert internal ZX-phase convention to group phase convention
-        return np.mod(self._phase - self._count_y(), 4)
-
-    @phase.setter
-    def phase(self, value):
-        # Convert group phase convetion to internal ZX-phase convention
-        self._phase[:] = np.mod(value + self._count_y(), 4)
-
-    @property
-    def x(self):
-        """The x array for the symplectic representation."""
-        return self._x
-
-    @x.setter
-    def x(self, val):
-        self._x[:] = val
-
-    @property
-    def z(self):
-        """The z array for the symplectic representation."""
-        return self._z
-
-    @z.setter
-    def z(self, val):
-        self._z[:] = val
+  
 
     # ---------------------------------------------------------------------
     # Size Properties

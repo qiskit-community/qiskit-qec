@@ -809,7 +809,7 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
 # ---------------------------------------------------------------
 
 
-def count_num_y(matrix: np.ndarray, scalar=True) -> Union[np.ndarray, int]:
+def count_num_y(matrix: np.ndarray, scalar:bool=True) -> Union[np.ndarray, int]:
     """Returns the number of positions with 1's in k and n+k positions
     for matrices/vectors of width 2n for all k
 
