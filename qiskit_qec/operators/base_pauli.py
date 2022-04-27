@@ -14,7 +14,7 @@
 """Module for base pauli"""
 
 import copy
-from typing import Union, Optional, List, final
+from typing import Union, Optional, List
 import numbers
 
 import numpy as np
@@ -160,7 +160,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
         self.matrix[:, : self.num_qubits] = val
 
-    @final
+    # @final Add when python >= 3.8
     @property
     def _x(self):  # pylint: disable=invalid-name
         """Returns the X part of symplectic representation as a 2d matrix.
@@ -182,7 +182,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
         return self.matrix[:, : self.num_qubits]
 
-    @final
+    # @final Add when python >= 3.8
     @_x.setter
     def _x(self, val):  # pylint: disable=invalid-name
         self.matrix[:, : self.num_qubits] = val
@@ -196,13 +196,13 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     def z(self, val):
         self.matrix[:, self.num_qubits :] = val
 
-    @final
+    # @final Add when python >= 3.8
     @property
     def _z(self):  # pylint: disable=invalid-name
         """The z array for the symplectic representation."""
         return self.matrix[:, self.num_qubits :]
 
-    @final
+    # @final Add when python >= 3.8
     @_z.setter
     def _z(self, val):  # pylint: disable=invalid-name
         self.matrix[:, self.num_qubits :] = val
