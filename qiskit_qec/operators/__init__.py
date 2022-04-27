@@ -12,4 +12,5 @@
 
 """Operators."""
 
-from . import base_pauli, pauli, pauli_list
+from .pauli import Pauli
+from .pauli_list import PauliList

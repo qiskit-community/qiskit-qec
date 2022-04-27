@@ -26,6 +26,7 @@ from qiskit.circuit.delay import Delay
 from qiskit.circuit.instruction import Instruction
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
+
 # Must be imported as follows to avoid circular import errors
 import qiskit.quantum_info.operators.symplectic.clifford
 
@@ -36,7 +37,8 @@ from qiskit_qec.linear import matrix as mt
 
 # pylint: disable=no-member
 class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
-    r"""Symplectic representation of a list of N-qubit Paulis.
+    r"""Symplectic representation of a list of N-qubit Paulis with phases using
+    numpy arrays for symplectic matrices and phase vectors.
 
     Base class for Pauli and PauliList.
     """
@@ -50,38 +52,64 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     PRINT_PHASE_ENCODING = None
 
-    def __init__(self,
-                 matrix:np.ndarray,
-                 phase_exp:Union[None, np.ndarray, np.integer]=None,
-                 order:str='xz')->None:
-        """Generate Base Pauli
+    def __init__(
+        self,
+        matrix: Union[np.ndarray, None] = None,
+        phase_exp: Union[None, np.ndarray, np.integer] = None,
+        order: str = "xz",
+    ) -> None:
+        """A BasePauli object represents a list N-qubit Pauli operators with phases.
+        Numpy arrays are used to represent the symplectic matrix represention of these
+        Paulis. The phases of the Paulis are stored encoded. The phases of the Pauli
+        operators are internally encoded in the '-iZX' Pauli encoding (See the pauli_rep
+        module for more details). That is a Pauli operator is represented as symplectic
+        vector V and a phase exponent phase_exp such that:
 
-        
+        (-i)^phase_exp Z^z X^x
+
+        where V = [x, z] and phase_exp is a vector of Z_4 elements (0,1,2,3). A list
+        of Pauli operators is represented as a symplectic matrix S and a phase exponent
+        vector phase_exp such that the rows or S are the symplectic vector representations
+        of the Paulis and the phase_exp vector store the phase exponent of each
+        associated Pauli Operator.
 
         Args:
             matrix: Input GF(2) symplectic matrix
-            phase_exp (optional): Phase expondent for imput matrix. A value of None will 
-                result in an a complex coefficients of 1 for each Pauli operator. Defaults to None. 
-            order: Set to 'xz' or 'zx'. Defines the side the x and z parts of the input matrix
+            phase_exp (optional): Phase exponent vector for imput matrix. A value of None will
+                result in an a complex coefficients of 1 for each Pauli operator. Defaults to None.
+            order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
+
+        Raises: QiskitError: matrix and phase_exp sizes are not compatible
+
+        Examples:
+            >>> matrix = numpy.array([[1,1,0,0],[0,1,0,1]])
+            >>> base_pauli = BasePauli(matrix)
+
+        See Also:
+            Pauli, PauliList
         """
 
+        if matrix is None or matrix.size == 0:
+            matrix = np.empty(shape=(0, 0), dtype=np.bool_)
+            phase_exp = np.empty(shape=(0,), dtype=np.int8)
         matrix = np.atleast_2d(matrix)
-        num_qubits = matrix.shape[1]>>1
-        if order == 'zx':
-            nmatrix = np.empty(shape = matrix.shape, dtype=matrix.dtype)
-            nmatrix[:,:num_qubits] = matrix[:,num_qubits:]
-            nmatrix[:,num_qubits:] = matrix[:,:num_qubits]
+        num_qubits = matrix.shape[1] >> 1
+
+        if order == "zx":
+            nmatrix = np.empty(shape=matrix.shape, dtype=matrix.dtype)
+            nmatrix[:, :num_qubits] = matrix[:, num_qubits:]
+            nmatrix[:, num_qubits:] = matrix[:, :num_qubits]
             matrix = nmatrix
 
         self.matrix = matrix
-
+        self._num_paulis = self.matrix.shape[0]
         if phase_exp is None:
             self._phase_exp = np.zeros(shape=(self.matrix.shape[0],), dtype=np.int8)
         else:
             self._phase_exp = np.atleast_1d(phase_exp)
         if self._phase_exp.shape[0] != self.matrix.shape[0]:
             raise QiskitError("matrix and phase_exp sizes are not compatible")
-        self._num_paulis = self.matrix.shape[0]
+
         super().__init__(num_qubits=num_qubits)
 
     # ---------------------------------------------------------------------
@@ -90,43 +118,94 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @property
     def x(self):
-        """The x array for the symplectic representation."""
-        return self.matrix[:,:self.num_qubits]
+        """Returns the X part of symplectic representation as a 2d matrix.
+
+        Note: The Pauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._x method
+        if a 2d array is needed as _x method is markeded as @final
+
+        Examples:
+            >>> matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)
+            >>> phase_exp = numpy.array([0,1])
+            >>> base_pauli = BasePauli(matrix, phase_exp)
+            >>> base_pauli.x.astype(int)
+            array([[1, 0],
+                   [0, 1]])
+
+        See Also:
+            _x, z, _z
+
+        """
+        return self.matrix[:, : self.num_qubits]
 
     @x.setter
-    def x(self, val):
-        self.matrix[:,:self.num_qubits] = val
+    def x(self, val: np.ndarray):
+        """Sets the X part of symplectic representation
+
+        Args:
+            val: GF(2) matrix used to set the X part of
+                the symplectic representation
+
+        Examples:
+            >>> matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)
+            >>> phase_exp = numpy.array([0,1])
+            >>> base_pauli = BasePauli(matrix, phase_exp)
+            >>> base_pauli.x = numpy.array([[1,1],[0,0]], dtype=numpy.bool_)
+            >>> base_pauli.x.astype(int)
+            array([[1, 1],
+                   [0, 0]])
+
+        See Also:
+            x, z, _z
+        """
+        self.matrix[:, : self.num_qubits] = val
 
     @final
     @property
-    def _x(self):
-        """The x array for the symplectic representation."""
-        return self.matrix[:,:self.num_qubits]
+    def _x(self):  # pylint: disable=invalid-name
+        """Returns the X part of symplectic representation as a 2d matrix.
+
+        Note: The Pauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._x method
+        if a 2d array is needed as _x method is markeded as @final
+
+        Examples:
+            >>> matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)
+            >>> phase_exp = numpy.array([0,1])
+            >>> base_pauli = BasePauli(matrix, phase_exp)
+            >>> base_pauli._x.astype(int)
+            array([[1, 0],
+                   [0, 1]])
+
+        See Also:
+            x, z, _z
+        """
+        return self.matrix[:, : self.num_qubits]
 
     @final
     @_x.setter
-    def _x(self, val):
-        self.matrix[:,:self.num_qubits] = val
+    def _x(self, val):  # pylint: disable=invalid-name
+        self.matrix[:, : self.num_qubits] = val
 
     @property
     def z(self):
         """The z array for the symplectic representation."""
-        return self.matrix[:,self.num_qubits:]
+        return self.matrix[:, self.num_qubits :]
 
     @z.setter
     def z(self, val):
-        self.matrix[:,self.num_qubits:] = val
+        self.matrix[:, self.num_qubits :] = val
 
     @final
     @property
-    def _z(self):
+    def _z(self):  # pylint: disable=invalid-name
         """The z array for the symplectic representation."""
-        return self.matrix[:,self.num_qubits:]
+        return self.matrix[:, self.num_qubits :]
 
     @final
     @_z.setter
-    def _z(self, val):
-        self.matrix[:,self.num_qubits:] = val
+    def _z(self, val):  # pylint: disable=invalid-name
+        self.matrix[:, self.num_qubits :] = val
 
     @property
     def num_y(self):
@@ -139,7 +218,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_TENSOR_ENCODING
 
     @tensor_encoding.setter
-    def tensor_encoding(self, encoding:str=pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING):
+    def tensor_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING):
         """Set the external symplectic matrix format
 
         Args:
@@ -157,7 +236,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_PHASE_ENCODING
 
     @phase_encoding.setter
-    def phase_encoding(self, encoding:str=pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
+    def phase_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
         """Set the phase encoding
 
         Args:
@@ -175,7 +254,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_PAULI_ENCODING
 
     @pauli_encoding.setter
-    def pauli_encoding(self, encoding:str=pauli_rep.DEFAULT_EXTERNAL_PAULI_ENCODING):
+    def pauli_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PAULI_ENCODING):
         """Set the Pauli encoding
 
         Args:
@@ -196,14 +275,14 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.EXTERNAL_SYNTAX
 
     @syntax.setter
-    def syntax(self, syntax_code:Optional[int]=None, syntax_str:Optional[str]="Product"):
+    def syntax(self, syntax_code: Optional[int] = None, syntax_str: Optional[str] = "Product"):
         if syntax_code is None:
             if syntax_str == "Product":
                 BasePauli.EXTERNAL_SYNTAX = pauli_rep.PRODUCT_SYNTAX
             else:
                 BasePauli.EXTERNAL_SYNTAX = pauli_rep.INDEX_SYNTAX
         else:
-            if syntax_code not in [0,1]:
+            if syntax_code not in [0, 1]:
                 raise QiskitError("Unknown syntax: {syntax_code}. See pauli_rep for options.")
             BasePauli.EXTERNAL_SYNTAX = syntax_code
 
@@ -213,28 +292,30 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BasePauli.PRINT_PHASE_ENCODING
 
     @print_phase_encoding.setter
-    def print_phase_encoding(self, phase_encoding:Optional[str]=None):
+    def print_phase_encoding(self, phase_encoding: Optional[str] = None):
         if phase_encoding is None or phase_encoding in pauli_rep.PHASE_ENCODINGS:
             BasePauli.PRINT_PHASE_ENCODING = phase_encoding
         else:
-            raise QiskitError(f"Unknown print phase encoding {phase_encoding}. Encoding \
-                must be None or one of {pauli_rep.get_phase_encodings}")
-    
+            raise QiskitError(
+                f"Unknown print phase encoding {phase_encoding}. Encoding \
+                must be None or one of {pauli_rep.get_phase_encodings}"
+            )
+
     # ---------------------------------------------------------------------
     # Magic Methods
     # ---------------------------------------------------------------------
 
-    def __imul__(self, other:'BasePauli')->'BasePauli':
+    def __imul__(self, other: "BasePauli") -> "BasePauli":
         return self.compose(other, front=True, inplace=True)
 
-    def __neg__(self)->'BasePauli':
+    def __neg__(self) -> "BasePauli":
         ret = copy.copy(self)
         ret._phase_exp = np.mod(self._phase_exp + 2, 4)
         return ret
 
     # ---------------------------------------------------------------------
 
-    def copy(self)->'BasePauli':
+    def copy(self) -> "BasePauli":
         """Make a deep copy of current operator."""
         # Deepcopy has terrible performance on objects with Numpy arrays
         # attributes so we make a shallow copy and then manually copy the
@@ -250,18 +331,20 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Needed by GroupMixin class from BaseOperator class
 
     # pylint: disable=arguments-differ
-    def compose(self,
-                other:'BasePauli',
-                qargs:Optional[list]=None,
-                front:bool=False,
-                inplace:bool=False)->'BasePauli':
+    def compose(
+        self,
+        other: "BasePauli",
+        qargs: Optional[list] = None,
+        front: bool = False,
+        inplace: bool = False,
+    ) -> "BasePauli":
         r"""Return the composition of Paulis lists
 
-        To be consistent with other compose functions in Qiskit, composition is defined via 
+        To be consistent with other compose functions in Qiskit, composition is defined via
         left multiplication. That is
 
         A.compose(B) = B.A = B.dot(A) = A.compose(B, front=False)
-        
+
         where . is the Pauli group multiplication and so B is applied after A. Likewise
 
         A.compose(B, front=True) = A.B = A.dot(B)
@@ -281,7 +364,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             which should be corrected at some point).
 
         Args:
-            other: BasePauli 
+            other: BasePauli
             front (bool): (default: False)
             qargs (list or None): Optional, qubits to apply compose on
                                   on (default: None->All).
@@ -293,7 +376,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Raises:
             QiskitError: if number of qubits of other does not match qargs.
         """
-        
+
         # Validation
         if qargs is None and other.num_qubits != self.num_qubits:
             raise QiskitError(f"other {type(self).__name__} must be on the same number of qubits.")
@@ -312,11 +395,13 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return self._compose(self, other, qargs=qargs, front=front, inplace=inplace)
 
     @staticmethod
-    def _compose(a:'BasePauli',
-                 b:'BasePauli',
-                 qargs:Optional[list]=None,
-                 front:bool=False,
-                 inplace:bool=False)->'BasePauli':
+    def _compose(
+        a: "BasePauli",
+        b: "BasePauli",
+        qargs: Optional[list] = None,
+        front: bool = False,
+        inplace: bool = False,
+    ) -> "BasePauli":
         """Returns the composition of two BasePauli objects.
 
         Args:
@@ -330,8 +415,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BasePauli: _description_
         """
         if qargs is not None:
-            qargs = qargs + [item + a.num_qubits for item in qargs]
-            amat = a.matrix[:,qargs]
+            qargs = list(qargs) + [item + a.num_qubits for item in qargs]
+            amat = a.matrix[:, qargs]
         else:
             amat = a.matrix
         bmat = b.matrix
@@ -342,9 +427,13 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # Calculate the phase of the composition
         phase_exp = a._phase_exp + b._phase_exp
         if front:
-            phase_exp += 2 * np.sum(np.logical_and(amat[:,:b.num_qubits], bmat[:,b.num_qubits:]), axis=1)
+            phase_exp += 2 * np.sum(
+                np.logical_and(amat[:, : b.num_qubits], bmat[:, b.num_qubits :]), axis=1
+            )
         else:
-            phase_exp += 2 * np.sum(np.logical_and(bmat[:,:b.num_qubits], amat[:,b.num_qubits:]), axis=1)
+            phase_exp += 2 * np.sum(
+                np.logical_and(bmat[:, : b.num_qubits], amat[:, b.num_qubits :]), axis=1
+            )
         phase_exp = np.mod(phase_exp, 4)
 
         if qargs is None:
@@ -367,7 +456,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return self._tensor(self, other)
 
     @staticmethod
-    def _tensor(a:'BasePauli', b:'BasePauli'):
+    def _tensor(a: "BasePauli", b: "BasePauli"):
         """Returns the generalized tensor product of Paulis that are represented by
         symplectic matrice and a phase exponent
 
@@ -404,12 +493,11 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     def expand(self, other):
         return self._tensor(other, self)
 
-    
     # ---------------------------------------------------------------------
     # Needed by MultiplyMixin class
     # ---------------------------------------------------------------------
 
-    def _multiply(self, phase, roundit=True)->'BasePauli':
+    def _multiply(self, phase, roundit=True) -> "BasePauli":
         """Return the {cls} phase * self where phase is in ``[1, -1j, -1, 1j]``.
 
         Args:
@@ -430,11 +518,11 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     # Needed by AdjointMixin class
 
-    def conjugate(self, inplace=False)->'BasePauli':
+    def conjugate(self, inplace=False) -> "BasePauli":
         """Return the conjugate of each Pauli in the list.
 
         Args:
-            inplace (boolean) : If True will modify inplace. Default: False, 
+            inplace (boolean) : If True will modify inplace. Default: False,
 
         Returns:
             {cls} : a new {cls} which has phases conjugates (if replace=False) or will change
@@ -449,10 +537,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             self._phase_exp = new_phase_exp
             return self
 
-    def transpose(self, inplace:bool=False)->'BasePauli':
-        """Return the transpose of each Pauli in the list.
-
-        """
+    def transpose(self, inplace: bool = False) -> "BasePauli":
+        """Return the transpose of each Pauli in the list."""
         new_phase_exp = np.mod(self._phase_exp + 2 * (self.num_y % 2), 4)
         if not inplace:
             return BasePauli(self.matrix, new_phase_exp).copy()
@@ -462,7 +548,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             self._phase_exp = new_phase_exp
             return self
 
-    def commutes(self, other:'BasePauli', qargs:List=None)->np.ndarray:
+    def commutes(self, other: "BasePauli", qargs: List = None) -> np.ndarray:
         """Return True if Pauli that commutes with other.
 
         Args:
@@ -488,15 +574,15 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             )
         return self._commutes(other, qargs=qargs)
 
-    def _commutes(self, other:'BasePauli', qargs:List=None)->np.ndarray:
+    def _commutes(self, other: "BasePauli", qargs: List = None) -> np.ndarray:
         if qargs is not None:
             inds = list(qargs)
-            sinds = [index+self.num_qubits for index in inds]
-            #x1, z1 = self.x[:, inds], self.z[:, inds]
-            x1, z1 = self.matrix[:,inds], self.matrix[:,sinds]
+            sinds = [index + self.num_qubits for index in inds]
+            # x1, z1 = self.x[:, inds], self.z[:, inds]
+            x1, z1 = self.matrix[:, inds], self.matrix[:, sinds]
         else:
-            #x1, z1 = self.x, self.z
-            x1, z1 = self.matrix[:,:self.num_qubits], self.matrix[:,self.num_qubits:]
+            # x1, z1 = self.x, self.z
+            x1, z1 = self.matrix[:, : self.num_qubits], self.matrix[:, self.num_qubits :]
 
         return np.logical_not(np.sum((x1 & other.z) ^ (z1 & other.x), axis=1) % 2)
 
@@ -504,7 +590,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Extra all_commutes method
     # ---------------------------------------------------------------------
 
-    def all_commutes(self, other:'BasePauli')->np.ndarray:
+    def all_commutes(self, other: "BasePauli") -> np.ndarray:
         """_summary_
 
         Args:
@@ -519,7 +605,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Evolve Methods
     # ---------------------------------------------------------------------
 
-    def evolve(self, other:'BasePauli', qargs:Union[None, List, int]=None, frame:str="h"):
+    def evolve(self, other: "BasePauli", qargs: Union[None, List, int] = None, frame: str = "h"):
         r"""Heisenberg picture evolution of a Pauli by a Clifford.
 
         This returns the Pauli :math:`P^\prime = C^\dagger.P.C`.
@@ -571,7 +657,12 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             return self.copy()._append_circuit(other, qargs=qargs)
         return self.copy()._append_circuit(other.inverse(), qargs=qargs)
 
-    def _evolve_clifford(self, other:qiskit.quantum_info.operators.symplectic.clifford.Clifford, qargs:Union[None, List, int]=None, frame:str="h"):
+    def _evolve_clifford(
+        self,
+        other: qiskit.quantum_info.operators.symplectic.clifford.Clifford,
+        qargs: Union[None, List, int] = None,
+        frame: str = "h",
+    ):
         """Heisenberg picture evolution of a Pauli by a Clifford."""
         if qargs is None:
             idx = slice(None)
@@ -615,7 +706,6 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Helper Metods
     # ---------------------------------------------------------------------
 
-
     def _eq(self, other):
         """Entrywise comparison of Pauli equality."""
         return (
@@ -628,15 +718,17 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Class methods for creating labels -> Uses pauli_rep suite of methods
     # ---------------------------------------------------------------------
 
-    def to_label(self,
-                 output_pauli_encoding:Optional[str]=None,
-                 no_phase:bool=False, 
-                 return_phase:bool=False,
-                 syntax:Optional[int]=None,
-                 qubit_order: str = "right-to-left",
-                 index_start: int = 0,
-                 squeeze: bool = True,
-                 index_str: str = "")->Union[str, List[str]]:
+    def to_label(
+        self,
+        output_pauli_encoding: Optional[str] = None,
+        no_phase: bool = False,
+        return_phase: bool = False,
+        syntax: Optional[int] = None,
+        qubit_order: str = "right-to-left",
+        index_start: int = 0,
+        squeeze: bool = True,
+        index_str: str = "",
+    ) -> Union[str, List[str]]:
         """Returns the string representatiojn for a Pauli or Paulis.
 
         Args:
@@ -656,7 +748,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 "right-to-left" and "left-to-right". Defaults to "right-to-left".
             index_start (optional): Lowest value for index in index syntax tensors.
                 Defaults to 0
-            squeeze (optional): Squeezes the list of reults to a scalar if the number 
+            squeeze (optional): Squeezes the list of reults to a scalar if the number
                 of Paulis is one. Defaults to True.
             index_str (optional): String that get inserted between operator and numbers in
                 index format. Default is "".
@@ -674,55 +766,62 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             output_phase_encoding = BasePauli.PRINT_PHASE_ENCODING
             output_tensor_encoding = BasePauli.EXTERNAL_TENSOR_ENCODING
         else:
-            output_phase_encoding, output_tensor_encoding = pauli_rep.split_pauli_enc(output_pauli_encoding)
+            output_phase_encoding, output_tensor_encoding = pauli_rep.split_pauli_enc(
+                output_pauli_encoding
+            )
         if syntax is None:
             syntax = BasePauli.EXTERNAL_SYNTAX
 
-        pauli_str = pauli_rep.symplectic2str(self.matrix,
-                                             self._phase_exp,
-                                             output_phase_encoding=output_phase_encoding,
-                                             no_phase=no_phase,
-                                             output_tensor_encoding=output_tensor_encoding,
-                                             syntax=syntax,
-                                             qubit_order=qubit_order,
-                                             index_start=index_start,
-                                             same_type=squeeze,
-                                             index_str=index_str)
+        pauli_str = pauli_rep.symplectic2str(
+            self.matrix,
+            self._phase_exp,
+            output_phase_encoding=output_phase_encoding,
+            no_phase=no_phase,
+            output_tensor_encoding=output_tensor_encoding,
+            syntax=syntax,
+            qubit_order=qubit_order,
+            index_start=index_start,
+            same_type=squeeze,
+            index_str=index_str,
+        )
 
         if return_phase:
-            phase_exp = pauli_rep.change_pauli_encoding(self._phase_exp,
-                                                        self.num_y,
-                                                        input_pauli_encoding=pauli_rep.INTERNAL_PAULI_ENCODING,
-                                                        output_pauli_encoding=output_pauli_encoding)
+            phase_exp = pauli_rep.change_pauli_encoding(
+                self._phase_exp,
+                self.num_y,
+                input_pauli_encoding=pauli_rep.INTERNAL_PAULI_ENCODING,
+                output_pauli_encoding=output_pauli_encoding,
+            )
             return pauli_str, phase_exp
         else:
             return pauli_str
-        
 
     # ---------------------------------------------------------------------
     # The methods below should be deprecated eventually as they simply refer
     # to the newer versions that are now elsewhere.
     # ---------------------------------------------------------------------
 
-    def _count_y(self)->np.ndarray:
+    def _count_y(self) -> np.ndarray:
         """Count the number of Y Pauli's"""
         return self.num_y
 
     @staticmethod
-    def _stack(array:np.ndarray, size:int, vertical:bool=True)->np.ndarray:
+    def _stack(array: np.ndarray, size: int, vertical: bool = True) -> np.ndarray:
         return mt.istack(array, size, interleave=vertical)
 
     @staticmethod
-    def _phase_from_complex(coeff:numbers.Complex)->np.ndarray:
+    def _phase_from_complex(coeff: numbers.Complex) -> np.ndarray:
         return pauli_rep.cpxstr2exp(coeff, encoding=pauli_rep.INTERNAL_PHASE_ENCODING)
 
     # ---------------------------------------------------------------------
     # Apply Clifford to BasePauli
     # ---------------------------------------------------------------------
 
-    def _append_circuit(self,
-                        circuit:Union[Barrier, Delay, QuantumCircuit, Instruction],
-                        qargs:Optional[List]=None)->'BasePauli':
+    def _append_circuit(
+        self,
+        circuit: Union[Barrier, Delay, QuantumCircuit, Instruction],
+        qargs: Optional[List] = None,
+    ) -> "BasePauli":
         """Update BasePauli inplace by applying a Clifford circuit.
 
         Args:
@@ -823,90 +922,98 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 # ---------------------------------------------------------------------
 
 
-def _evolve_h(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+def _evolve_h(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> H.P.H"""
     x = base_pauli.matrix[:, qubit].copy()
-    z = base_pauli.matrix[:, qubit+base_pauli.num_qubits].copy()
+    z = base_pauli.matrix[:, qubit + base_pauli.num_qubits].copy()
     base_pauli.matrix[:, qubit] = z
-    base_pauli.matrix[:, qubit+base_pauli.num_qubits] = x
+    base_pauli.matrix[:, qubit + base_pauli.num_qubits] = x
     base_pauli._phase_exp += 2 * np.logical_and(x, z).T
     return base_pauli
 
-def _evolve_s(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+
+def _evolve_s(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> S.P.Sdg"""
     x = base_pauli.matrix[:, qubit]
-    base_pauli.matrix[:, qubit+base_pauli.num_qubits] ^= x
+    base_pauli.matrix[:, qubit + base_pauli.num_qubits] ^= x
     base_pauli._phase_exp += x.T
     return base_pauli
 
 
-def _evolve_sdg(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+def _evolve_sdg(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> Sdg.P.S"""
     x = base_pauli.matrix[:, qubit]
-    base_pauli.matrix[:, qubit+base_pauli.num_qubits] ^= x
+    base_pauli.matrix[:, qubit + base_pauli.num_qubits] ^= x
     base_pauli._phase_exp -= x.T
     return base_pauli
 
 
 # pylint: disable=unused-argument
-def _evolve_i(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+def _evolve_i(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> P"""
     return base_pauli
 
 
-def _evolve_x(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+def _evolve_x(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> X.P.X"""
-    base_pauli._phase_exp += 2 * base_pauli.matrix[:, qubit+base_pauli.num_qubits].T
+    base_pauli._phase_exp += 2 * base_pauli.matrix[:, qubit + base_pauli.num_qubits].T
     return base_pauli
 
-def _evolve_y(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+
+def _evolve_y(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> Y.P.Y"""
-    base_pauli._phase_exp += 2 * base_pauli.matrix[:, qubit].T + 2 * base_pauli.matrix[:, qubit+base_pauli.num_qubits].T
+    base_pauli._phase_exp += (
+        2 * base_pauli.matrix[:, qubit].T
+        + 2 * base_pauli.matrix[:, qubit + base_pauli.num_qubits].T
+    )
     return base_pauli
 
 
-def _evolve_z(base_pauli:'BasePauli', qubit:int)->'BasePauli':
+def _evolve_z(base_pauli: "BasePauli", qubit: int) -> "BasePauli":
     """Update P -> Z.P.Z"""
     base_pauli._phase_exp += 2 * base_pauli.matrix[:, qubit].T
     return base_pauli
 
 
-def _evolve_cx(base_pauli:'BasePauli', qctrl:int, qtrgt:int)->'BasePauli':
+def _evolve_cx(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     """Update P -> CX.P.CX"""
     base_pauli.matrix[:, qtrgt] ^= base_pauli.matrix[:, qctrl]
-    base_pauli.matrix[:, qctrl+base_pauli.num_qubits] ^= base_pauli.matrix[:, qtrgt+base_pauli.num_qubits]
+    base_pauli.matrix[:, qctrl + base_pauli.num_qubits] ^= base_pauli.matrix[
+        :, qtrgt + base_pauli.num_qubits
+    ]
     return base_pauli
 
 
-
-def _evolve_cz(base_pauli:'BasePauli', q1:int, q2:int)->'BasePauli':
+def _evolve_cz(base_pauli: "BasePauli", q1: int, q2: int) -> "BasePauli":
     """Update P -> CZ.P.CZ"""
     x1 = base_pauli.matrix[:, q1].copy()
     x2 = base_pauli.matrix[:, q2].copy()
-    base_pauli.matrix[:, q1+base_pauli.num_qubits] ^= x2
-    base_pauli.matrix[:, q2+base_pauli.num_qubits] ^= x1
+    base_pauli.matrix[:, q1 + base_pauli.num_qubits] ^= x2
+    base_pauli.matrix[:, q2 + base_pauli.num_qubits] ^= x1
     base_pauli._phase_exp += 2 * np.logical_and(x1, x2).T
     return base_pauli
 
 
-def _evolve_cy(base_pauli:'BasePauli', qctrl:int, qtrgt:int)->'BasePauli':
+def _evolve_cy(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     """Update P -> CY.P.CY"""
     x1 = base_pauli.matrix[:, qctrl].copy()
     x2 = base_pauli.matrix[:, qtrgt].copy()
-    z2 = base_pauli.matrix[:, qtrgt+base_pauli.num_qubits].copy()
+    z2 = base_pauli.matrix[:, qtrgt + base_pauli.num_qubits].copy()
     base_pauli.matrix[:, qtrgt] ^= x1
-    base_pauli.matrix[:, qtrgt+base_pauli.num_qubits] ^= x1
-    base_pauli.matrix[:, qctrl+base_pauli.num_qubits] ^= np.logical_xor(x2, z2)
+    base_pauli.matrix[:, qtrgt + base_pauli.num_qubits] ^= x1
+    base_pauli.matrix[:, qctrl + base_pauli.num_qubits] ^= np.logical_xor(x2, z2)
     base_pauli._phase_exp += x1 + 2 * np.logical_and(x1, x2).T
     return base_pauli
 
 
-def _evolve_swap(base_pauli:'BasePauli', q1:int, q2:int)->'BasePauli':
+def _evolve_swap(base_pauli: "BasePauli", q1: int, q2: int) -> "BasePauli":
     """Update P -> SWAP.P.SWAP"""
     x1 = base_pauli.matrix[:, q1].copy()
-    z1 = base_pauli.matrix[:, q1+base_pauli.num_qubits].copy()
+    z1 = base_pauli.matrix[:, q1 + base_pauli.num_qubits].copy()
     base_pauli.matrix[:, q1] = base_pauli.matrix[:, q2]
-    base_pauli.matrix[:, q1+base_pauli.num_qubits] = base_pauli.matrix[:, q2+base_pauli.num_qubits]
+    base_pauli.matrix[:, q1 + base_pauli.num_qubits] = base_pauli.matrix[
+        :, q2 + base_pauli.num_qubits
+    ]
     base_pauli.matrix[:, q2] = x1
-    base_pauli.matrix[:, q2+base_pauli.num_qubits] = z1
+    base_pauli.matrix[:, q2 + base_pauli.num_qubits] = z1
     return base_pauli

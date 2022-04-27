@@ -31,7 +31,6 @@ from qiskit.circuit import QuantumCircuit
 import qiskit_qec.utils.pauli_rep as pauli_rep
 
 
-
 # ----------------------------------------------------------------------
 
 
@@ -92,9 +91,11 @@ def gate2symplectic(
         return pauli_rep.str2symplectic("Z", output_encoding=encoding)
     raise QiskitError("Invalid Pauli instruction.")
 
+
 # ----------------------------------------------------------------------
 
-def instrs2symplectic(instr:Union[Instruction, QuantumCircuit]):
+
+def instrs2symplectic(instr: Union[Instruction, QuantumCircuit]):
     """Convert a Pauli circuit to BasePauli data."""
     # Try and convert single instruction
     if isinstance(instr, (PauliGate, IGate, XGate, YGate, ZGate)):
@@ -106,22 +107,21 @@ def instrs2symplectic(instr:Union[Instruction, QuantumCircuit]):
         # Convert to circuit
         instr = instr.definition
 
-    
     from qiskit_qec.operators.base_pauli import BasePauli
     from qiskit_qec.operators.pauli import Pauli
 
     # Initialize identity Pauli
-    ret = Pauli(np.zeros((1, 2*instr.num_qubits), dtype=bool),phase_exp=0) 
+    ret = Pauli(np.zeros((1, 2 * instr.num_qubits), dtype=bool), phase_exp=0)
     # Add circuit global phase if specified
     if instr.global_phase:
-        ret._phase_exp = pauli_rep.cpx2exp(np.exp(1j * float(instr.global_phase)),
-                            output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING)
+        ret._phase_exp = pauli_rep.cpx2exp(
+            np.exp(1j * float(instr.global_phase)),
+            output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING,
+        )
     # Recursively apply instructions
     for dinstr, qregs, cregs in instr.data:
         if cregs:
-            raise QiskitError(
-                f"Cannot apply instruction with classical registers: {dinstr.name}"
-            )
+            raise QiskitError(f"Cannot apply instruction with classical registers: {dinstr.name}")
         if not isinstance(dinstr, (Barrier, Delay)):
             next_instr = BasePauli(*instrs2symplectic(dinstr))
             if next_instr is not None:

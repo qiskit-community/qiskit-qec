@@ -809,7 +809,7 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
 # ---------------------------------------------------------------
 
 
-def count_num_y(matrix: np.ndarray, scalar:bool=True) -> Union[np.ndarray, int]:
+def count_num_y(matrix: np.ndarray, scalar: bool = True) -> Union[np.ndarray, int]:
     """Returns the number of positions with 1's in k and n+k positions
     for matrices/vectors of width 2n for all k
 
@@ -823,7 +823,7 @@ def count_num_y(matrix: np.ndarray, scalar:bool=True) -> Union[np.ndarray, int]:
 
     Returns:
         result: number of positions with 1's in k and n+k positions
-    for matrices/vectors of width 2n for all k. 
+    for matrices/vectors of width 2n for all k.
 
     Examples:
         >>> a = np.array([1,0,1,1], dtype=np.bool_)
@@ -842,12 +842,13 @@ def count_num_y(matrix: np.ndarray, scalar:bool=True) -> Union[np.ndarray, int]:
     matrix = np.atleast_2d(matrix)
     if not is_symplectic_form(matrix):
         raise QiskitError(f"Input matrix/vector not a GF(2) symplectic matrix")
-    num_qubits = matrix.shape[1]>>1
+    num_qubits = matrix.shape[1] >> 1
     result = _count_num_y(matrix, num_qubits)
     if scalar and matrix.shape[0] == 1:
         return result[0]
     else:
         return result
+
 
 def _count_num_y(matrix: np.ndarray, n: int) -> np.ndarray:
     """Returns the number of positions with 1's in k and n+k positions
@@ -868,11 +869,13 @@ def _count_num_y(matrix: np.ndarray, n: int) -> np.ndarray:
 
         >>> b = np.array([[1,0,1,1],[0,0,1,1]], dtype=np.bool_)
         >>> count_num_y(a, scalar=False)
-        array([1,0])   
+        array([1,0])
     """
-    return np.sum(np.logical_and(matrix[:, : n], matrix[:, n :]), axis=1, dtype=int)
+    return np.sum(np.logical_and(matrix[:, :n], matrix[:, n:]), axis=1, dtype=int)
+
 
 # ---------------------------------------------------------------
+
 
 def is_symplectic_matrix_form(
     matrix: np.ndarray, dtype: Optional[Union[bool, np.bool_, int, np.integer]] = None

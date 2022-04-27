@@ -440,14 +440,15 @@ def _rref_complete(matrix) -> Tuple[List[int], np.ndarray, np.ndarray, int]:
 
     return heads, rref_mat, transform_mat, rank_
 
-def istack(mat:np.ndarray, size:int, interleave:bool=False)->np.ndarray:
+
+def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
     """Vertically stacks array of copies of vectors with or with interleaving.
 
     Args:
         mat: array of vectors to stack or interleave stack
         size: Number of copies to stack or interleave
         interleave (Oprional): Interleave copies if True, not if False. Default is False
-    
+
     mat = [v_1
             v_2
             ...
@@ -483,9 +484,5 @@ def istack(mat:np.ndarray, size:int, interleave:bool=False)->np.ndarray:
     if size == 1:
         return mat
     if interleave:
-        return np.hstack(size * [mat._matrix]).reshape(
-            (size * len(mat._matrix),) + mat._matrix.shape[1:]
-        )
-    return np.vstack(size * [mat._matrix]).reshape(
-        (size * len(mat._matrix),) + mat._matrix.shape[1:]
-    )
+        return np.hstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
+    return np.vstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])

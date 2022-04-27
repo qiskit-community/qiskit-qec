@@ -24,7 +24,6 @@ from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
 
 
-
 def random_pauli(num_qubits, group_phase=False, seed=None):
     """Return a random Pauli.
 

@@ -214,7 +214,6 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
             phase_exp[i] = pauli._phase_exp
         return matrix, phase_exp
 
-
     @staticmethod
     def _from_paulis(data):
         """Construct a PauliList from a list of Pauli data.
@@ -307,7 +306,6 @@ class PauliList(PaulisBase, LinearMixin, GroupMixin):
 
     # ---------------------------------------------------------------------
     # Direct array access
-  
 
     # ---------------------------------------------------------------------
     # Size Properties

@@ -46,7 +46,7 @@ from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.utils.pauli_rep import split_pauli, cpxstr2exp
 
-#from qiskit.quantum_info.operators.symplectic.pauli import _split_pauli_label, _phase_from_label
+# from qiskit.quantum_info.operators.symplectic.pauli import _split_pauli_label, _phase_from_label
 
 
 @lru_cache(maxsize=8)
@@ -61,7 +61,7 @@ def pauli_group_labels(nq, full_group=True):
 def operator_from_label(label):
     """Construct operator from full Pauli group label"""
     coeff, pauli = split_pauli(label)
-    coeff = (-1j) ** cpxstr2exp(coeff,'-i')
+    coeff = (-1j) ** cpxstr2exp(coeff, "-i")
     return coeff * Operator.from_label(pauli)
 
 
@@ -153,7 +153,7 @@ class TestPauliProperties(QiskitTestCase):
         """Test phase attribute"""
         pauli = Pauli(label)
         coeff, _ = split_pauli(str(pauli))
-        target = cpxstr2exp(coeff,encoding=BasePauli.EXTERNAL_PHASE_ENCODING)
+        target = cpxstr2exp(coeff, encoding=BasePauli.EXTERNAL_PHASE_ENCODING)
         self.assertEqual(pauli.phase_exp, target)
 
     @data(*((p, q) for p in ["I", "X", "Y", "Z"] for q in range(4)))
@@ -163,7 +163,7 @@ class TestPauliProperties(QiskitTestCase):
         pauli = Pauli(pauli)
         pauli.phase_exp = phase_exp
         coeff, _ = split_pauli(str(pauli))
-        value = cpxstr2exp(coeff,encoding=BasePauli.EXTERNAL_PHASE_ENCODING)
+        value = cpxstr2exp(coeff, encoding=BasePauli.EXTERNAL_PHASE_ENCODING)
         self.assertEqual(value, phase_exp)
 
     def test_x_setter(self):
@@ -331,7 +331,7 @@ class TestPauli(QiskitTestCase):
         """Test power method."""
         iden = Pauli("II")
         op = Pauli(label)
-        self.assertTrue(op**2, iden)
+        self.assertTrue(op ** 2, iden)
 
     @data(1, 1.0, -1, -1.0, 1j, -1j)
     def test_multiply(self, val):
