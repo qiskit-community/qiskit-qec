@@ -23,8 +23,8 @@ from qiskit.quantum_info.operators.mixins import generate_apidocs
 from qiskit.utils.deprecation import deprecate_function
 
 from qiskit_qec.operators.base_pauli import BasePauli
-import qiskit_qec.utils.pauli_rep as pauli_rep
-import qiskit_qec.utils.op_rep as op_rep
+from qiskit_qec.utils import pauli_rep as pauli_rep
+from qiskit_qec.utils import op_rep as op_rep
 
 
 class Pauli(BasePauli):
