@@ -244,7 +244,9 @@ class Pauli(BasePauli):
         # Add extra phase from new Pauli to current
         self._phase_exp = (self._phase_exp + value._phase_exp) % 4
 
-    def __getitem__(self, qubits: Union[int, np.integer, slice, List[int], List[np.integer]]) -> "Pauli":
+    def __getitem__(
+        self, qubits: Union[int, np.integer, slice, List[int], List[np.integer]]
+    ) -> "Pauli":
         """Get no phase Pauli for specific qubits
 
         Args:
