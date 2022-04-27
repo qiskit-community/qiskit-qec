@@ -1,4 +1,11 @@
-black==21.10b0
+black
 pylint==2.11.1
 coverage==6.1.1
-ddt>=1.2.0,!=1.4.0,!=1.4.3
+qiskit-sphinx-theme>=1.6
+sphinx-autodoc-typehints
+jupyter-sphinx
+reno>=3.4.0
+nbsphinx
+ddt~=1.4.2
+matplotlib>=3.3.0
+black[jupyter]~=22.1

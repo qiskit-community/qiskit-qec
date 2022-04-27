@@ -10,6 +10,20 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Circuits."""
+"""
+=====================================
+Circuits (:mod:`qiskit_qec.circuits`)
+=====================================
 
-from . import repetition_code
+.. currentmodule:: qiskit_qec.circuits
+
+Circuits module classes and functions
+=====================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    RepetitionCodeCircuit
+"""
+
+from .repetition_code import RepetitionCodeCircuit

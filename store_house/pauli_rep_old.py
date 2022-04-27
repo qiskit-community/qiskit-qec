@@ -209,7 +209,9 @@ def _split_rep(rep):
 
 
 def convert_phase_exp(
-    phase, input_format=INTERNAL_PHASE_REP_FORMAT, output_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT
+    phase,
+    input_format=INTERNAL_PHASE_REP_FORMAT,
+    output_format=DEFAULT_EXTERNAL_PHASE_REP_FORMAT,
 ):
     """Convert between the different phase exponents of encoded phase
     Phase Representation/Encodings:
@@ -261,7 +263,14 @@ def convert_phase_exp(
     _ENC = {"i": 0, "-i": 1, "is": 2, "-is": 3}
     # Conversion matrix split and compressed into two index matrices
     # Transformation indices
-    _TI = [[0, 1, 2, 3], [0, 3, 2, 1], [0, 2, 1, 3], [0, 2, 3, 1], [0, 3, 1, 2], [0, 1, 3, 2]]
+    _TI = [
+        [0, 1, 2, 3],
+        [0, 3, 2, 1],
+        [0, 2, 1, 3],
+        [0, 2, 3, 1],
+        [0, 3, 1, 2],
+        [0, 1, 3, 2],
+    ]
     # Index to transformation matrices via (input_format, output_format) pairs
     _TRANS = [[0, 1, 2, 4], [1, 0, 4, 2], [2, 3, 0, 5], [3, 2, 5, 0]]
     # Conversion is done via precalculated tables that are stored in _CN, _DD and _TRANS
@@ -515,7 +524,7 @@ def exp2phase(phase_exponent, input_phase_format, same_type=True):
 def r_exp2phase(phase_exponent, input_phase_format):
     """Convert an array of phase exponents to an array of phases"""
     if input_phase_format == "i":
-        return 1j ** phase_exponent
+        return 1j**phase_exponent
     if input_phase_format == "-i":
         return (-1j) ** phase_exponent
     if input_phase_format == "is":

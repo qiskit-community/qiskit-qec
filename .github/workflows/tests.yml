@@ -1,6 +1,14 @@
 name: Tests, linter and coverage
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - 'stable/**'
+  pull_request:
+    branches:
+      - main
+      - 'stable/**'
 
 jobs:
   tests:
@@ -46,17 +54,3 @@ jobs:
     - name: Run styles check
       run: tox -elint
 
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-          python-version: '3.9'
-    - name: Install tox and coverage
-      run: |
-        python -m pip install --upgrade pip
-        pip install tox
-    - name: Run styles check
-      run: tox -ecoverage

@@ -1,0 +1,52 @@
+{
+ "9f95c997-4048-4001-b2fd-aa919be5866f": {
+  "stabilizer": [
+   "xx"
+  ],
+  "logical_ops": [
+   "ix",
+   "zz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 8,
+  "n": 2,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   1
+  ],
+  "d": 1,
+  "uuid": "9f95c997-4048-4001-b2fd-aa919be5866f",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "6b47540a-46a3-4e6f-bc97-886fe08caf44": {
+  "stabilizer": [
+   "xi"
+  ],
+  "logical_ops": [
+   "ix",
+   "iz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 12,
+  "n": 2,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1,
+   0
+  ],
+  "d": 1,
+  "uuid": "6b47540a-46a3-4e6f-bc97-886fe08caf44",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ }
+}

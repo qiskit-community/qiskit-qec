@@ -57,7 +57,10 @@ class TestGeometry(TestCase):
 
         # Tile the restriced lattice L_l with RSSC tiles
         tiling = Tiling(
-            tile_type=tile, lattice=lattice, qubit_count=qubit_count, qubit_data=qubit_data
+            tile_type=tile,
+            lattice=lattice,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
         )
 
         # Determine the intersection of faces/operators with defined region/cutter

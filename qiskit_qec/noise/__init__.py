@@ -10,6 +10,21 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Noise."""
+"""
+===============================
+Noise (:mod:`qiskit_qec.noise`)
+===============================
 
-from . import paulinoisemodel
+.. currentmodule:: qiskit_qec.noise
+
+
+Noise module classes and functions
+==================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    PauliNoiseModel
+"""
+
+from .paulinoisemodel import PauliNoiseModel
