@@ -84,7 +84,7 @@ class RepetitionCodeCircuit:
 
         gauge_ops = [[2 * j, 2 * (j + 1)] for j in range(self.d - 1)]
         measured_logical = [[0]]
-        flip_logical = [[2 * j] for j in range(self.d)]
+        flip_logical = [2 * j for j in range(self.d)]
         boundary = [[0], [2 * (self.d - 1)]]
 
         if xbasis:
