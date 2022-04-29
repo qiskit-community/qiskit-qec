@@ -226,7 +226,7 @@ class FaultEnumerator:
                     else:
                         outcome = []
                         j = 0
-                        for reg_size in reg_sizes:
+                        for reg_size in self.reg_sizes:
                             for _ in range(reg_size):
                                 outcome.append(raw_outcome[j])
                                 j += 1
