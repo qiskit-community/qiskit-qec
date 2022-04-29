@@ -1,20 +1,14 @@
 """Tests for the subsystem CSS circuit-level matching decoder."""
 import unittest
 
-from qiskit import execute, QuantumCircuit, Aer
+from qiskit import execute, Aer
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.circuit_matching_decoder import temp_syndrome
 from qiskit_qec.decoders.repetition_decoder import RepetitionDecoder
+from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
-
-def gint(c):
-    # Casts to int if possible
-    if c.isnumeric():
-        return int(c)
-    else:
-        return c
 
 class TestRepetitionCircuitMatcher(unittest.TestCase):
     """Tests for the three bit decoder example."""
@@ -36,21 +30,23 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         self.pnm = pnm
 
         # 3-bit, 2 round repetition code
-        self.code_circuit = RepetitionCodeCircuit(3,2)
+        self.code_circuit = RepetitionCodeCircuit(3, 2)
         self.z_logical = self.code_circuit.css_z_logical
 
     def test_no_errors(self, method="networkx"):
         """Test the case with no errors using networkx."""
+
+        def gint(c):
+            """Casts to int if possible"""
+            if c.isnumeric():
+                return int(c)
+            else:
+                return c
+
         shots = 100
         seed = 100
-        for logical in ['0', '1']:
-            dec = RepetitionDecoder(
-                self.code_circuit,
-                self.pnm,
-                method,
-                False,
-                logical
-            )
+        for logical in ["0", "1"]:
+            dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
             qc = self.code_circuit.circuit[logical]
             result = execute(
                 qc,
@@ -67,23 +63,17 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
                 reversed_outcome = list(map(gint, outcome[::-1]))
                 corrected_outcomes = dec.process(reversed_outcome)
                 fail = temp_syndrome(corrected_outcomes, self.z_logical)
-                failures += str(fail[0])!=logical
+                failures += str(fail[0]) != logical
             self.assertEqual(failures, 0)
-            
+
     def test_no_errors_pymatching(self):
         """Test the case with no errors using pymatching."""
         self.test_no_errors(method="pymatching")
-        
+
     def test_correct_single_errors(self, method="networkx"):
         """Test the case with single faults using networkx."""
-        for logical in ['0', '1']:
-            dec = RepetitionDecoder(
-                self.code_circuit,
-                self.pnm,
-                method,
-                False,
-                logical
-            )
+        for logical in ["0", "1"]:
+            dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
             qc = self.code_circuit.circuit[logical]
             dec.update_edge_weights(self.pnm)
             fe = FaultEnumerator(qc, method="stabilizer", model=self.pnm)
@@ -92,22 +82,17 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
                 corrected_outcomes = dec.process(outcome)
                 fail = temp_syndrome(corrected_outcomes, self.z_logical)
                 self.assertEqual(str(fail[0]), logical)
-            
+
     def test_correct_single_errors_pymatching(self):
+        """Test the case with two faults using pymatching."""
         self.test_correct_single_errors(method="pymatching")
-        
+
     def test_error_pairs(self, method="networkx"):
         """Test the case with two faults using networkx."""
-        expected_failures = {"0":98, "1":169}
+        expected_failures = {"0": 98, "1": 169}
         for logical in ["0", "1"]:
             print(logical)
-            dec = RepetitionDecoder(
-                self.code_circuit,
-                self.pnm,
-                method,
-                False,
-                logical
-            )
+            dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
             dec.update_edge_weights(self.pnm)
             qc = self.code_circuit.circuit[logical]
             fe = FaultEnumerator(qc, order=2, method="stabilizer", model=self.pnm)
@@ -116,7 +101,7 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
                 outcome = faultpath[3]
                 corrected_outcomes = dec.process(outcome)
                 fail = temp_syndrome(corrected_outcomes, self.z_logical)
-                failures += str(fail[0])!=logical
+                failures += str(fail[0]) != logical
             self.assertEqual(failures, expected_failures[logical])
 
 

@@ -766,7 +766,9 @@ class CircuitModelMatchingDecoder(ABC):
                 # compare current and past gauge measurements
                 # if a bit differs, the vertex (i, g) is highlighted
                 for j, gauge_op in enumerate(gauges):
-                    if (i == 0 and gauge_outcomes[i][j] == 1) or (i > 0 and gauge_outcomes[i][j] != gauge_outcomes[i - 1][j]):
+                    if (i == 0 and gauge_outcomes[i][j] == 1) or (
+                        i > 0 and gauge_outcomes[i][j] != gauge_outcomes[i - 1][j]
+                    ):
                         highlighted.append((i, tuple(gauge_op)))
             elif ltype == "s":
                 # compare current and past stabilizer measurements

@@ -1,8 +1,6 @@
 """Matching Decoder for Repetition Codes."""
 from typing import Tuple, List
 
-from qiskit import QuantumCircuit
-
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
@@ -42,8 +40,8 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
         """Extract measurement outcomes."""
         # split into gauge and final outcomes
-        outcome = ''.join([str(c) for c in outcome])
-        outcome = outcome.split(' ')
+        outcome = "".join([str(c) for c in outcome])
+        outcome = outcome.split(" ")
         gs = outcome[0:-1]
         gauge_outcomes = [[int(c) for c in r] for r in gs]
         finals = outcome[-1]
@@ -51,11 +49,9 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         if not self.resets:
             for i, layer in enumerate(gauge_outcomes):
                 for j, gauge_op in enumerate(layer):
-                    if i>0:
-                        gauge_outcomes[i][j] = (gauge_op + gauge_outcomes[i-1][j])%2
-                    else:
-                        gauge_op = gauge_op
-        # assign outcomes to the correct gauge ops           
+                    if i > 0:
+                        gauge_outcomes[i][j] = (gauge_op + gauge_outcomes[i - 1][j]) % 2
+        # assign outcomes to the correct gauge ops
         if round_schedule == "z":
             x_gauge_outcomes = []
             z_gauge_outcomes = gauge_outcomes
