@@ -14,7 +14,6 @@
 
 import copy
 import json
-import logging
 import os
 import shutil
 import uuid
@@ -416,7 +415,7 @@ class QECCodeBase:
                 with open(path, "r", encoding="utf-8") as code_file:  # should except if invalid
                     qec_code_jsons = {**json.load(code_file), **qec_code_jsons}
             except FileNotFoundError:
-                pass # print(f"{path} does not exist")  # TODO turn into logging
+                print(f"{path} does not exist")  # TODO turn into logging
         if allow_cache:
             if (n_len, k_dim) in self.playground_cache:
                 qec_code_jsons = {**qec_code_jsons, **self.playground_cache[(n_len, k_dim)]}
