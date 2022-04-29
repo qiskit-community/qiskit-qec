@@ -33,6 +33,10 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         self.code_circuit = RepetitionCodeCircuit(3, 2)
         self.z_logical = self.code_circuit.css_z_logical
 
+        # 5-bit, 2 round repetition code
+        self.code_circuit_5 = RepetitionCodeCircuit(5, 2)
+        self.z_logical_5 = self.code_circuit.css_z_logical
+
     def test_no_errors(self, method="networkx"):
         """Test the case with no errors using networkx."""
 
@@ -87,22 +91,25 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         """Test the case with two faults using pymatching."""
         self.test_correct_single_errors(method="pymatching")
 
-    def test_error_pairs(self, method="networkx"):
-        """Test the case with two faults using networkx."""
-        expected_failures = {"0": 98, "1": 169}
+    def test_error_pairs(self, dec_method="networkx", fe_method="stabilizer"):
+        """Test the case with two faults on a d=5 code using networkx."""
+        expected_failures = {"0": 0, "1": 0}
         for logical in ["0", "1"]:
-            print(logical)
-            dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
+            dec = RepetitionDecoder(self.code_circuit_5, self.pnm, dec_method, False, logical)
             dec.update_edge_weights(self.pnm)
-            qc = self.code_circuit.circuit[logical]
-            fe = FaultEnumerator(qc, order=2, method="stabilizer", model=self.pnm)
+            qc = self.code_circuit_5.circuit[logical]
+            fe = FaultEnumerator(qc, order=2, method=fe_method, model=self.pnm)
             failures = 0
             for faultpath in fe.generate():
                 outcome = faultpath[3]
                 corrected_outcomes = dec.process(outcome)
-                fail = temp_syndrome(corrected_outcomes, self.z_logical)
+                fail = temp_syndrome(corrected_outcomes, self.z_logical_5)
                 failures += str(fail[0]) != logical
             self.assertEqual(failures, expected_failures[logical])
+
+    def test_error_pairs_pymatching(self):
+        """Test the case with two faults on a d=5 code using pymatching."""
+        self.test_error_pairs(dec_method="pymatching", fe_method="stabilizer")
 
 
 if __name__ == "__main__":
