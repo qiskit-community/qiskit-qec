@@ -83,6 +83,7 @@ class FaultEnumerator:
             eps = EPSelector()
             self.propagator = eps.get_error_propagator()
             self.propagator.load_circuit(circ)
+            self.reg_sizes = [len(reg) for reg in circ.cregs]
             try:
                 from qiskit_qec.extensions.compiledextension import (
                     FaultEnumerator as compiledFaultEnumerator,
@@ -219,7 +220,18 @@ class FaultEnumerator:
                 indices = [x[2] for x in comb]
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
-                    outcome = self.propagator.propagate_faults(indices, error)
+                    raw_outcome = self.propagator.propagate_faults(indices, error)
+                    if len(self.reg_sizes) == 1:
+                        outcome = raw_outcome
+                    else:
+                        outcome = []
+                        j = 0
+                        for reg_size in reg_sizes:
+                            for _ in range(reg_size):
+                                outcome.append(raw_outcome[j])
+                                j += 1
+                            outcome.append(" ")
+                        outcome.pop(-1)
                     yield (index, labels, list(error), outcome)
                     index += 1
 
