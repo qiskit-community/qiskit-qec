@@ -18,7 +18,7 @@ class FaultEnumerator:
         self,
         circ,
         order: int = 1,
-        method: str = "stabilizer",
+        method: str = "propagator",
         model=None,
         sim_seed: int = 0,
     ):
