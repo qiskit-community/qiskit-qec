@@ -115,7 +115,7 @@ class CircuitModelMatchingDecoder(ABC):
         self.edge_weight_polynomials = {}
         self.symbols = None
         if not self.uniform:
-            fe = FaultEnumerator(circuit, order=1, method="propagator", model=self.model)
+            fe = FaultEnumerator(circuit, order=1, method="stabilizer", model=self.model)
             self.event_map = self._enumerate_events(
                 self.css_x_gauge_ops,
                 self.css_x_stabilizer_ops,
@@ -766,9 +766,7 @@ class CircuitModelMatchingDecoder(ABC):
                 # compare current and past gauge measurements
                 # if a bit differs, the vertex (i, g) is highlighted
                 for j, gauge_op in enumerate(gauges):
-                    if (i == 0 and gauge_outcomes[i][j] == 1) or (
-                        i > 0 and gauge_outcomes[i][j] != gauge_outcomes[i - 1][j]
-                    ):
+                    if (i == 0 and gauge_outcomes[i][j] == 1) or (i > 0 and gauge_outcomes[i][j] != gauge_outcomes[i - 1][j]):
                         highlighted.append((i, tuple(gauge_op)))
             elif ltype == "s":
                 # compare current and past stabilizer measurements
