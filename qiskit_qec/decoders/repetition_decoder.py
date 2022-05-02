@@ -8,7 +8,7 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 class RepetitionDecoder(CircuitModelMatchingDecoder):
     """Instance of CircuitModelMatchingDecoder for use with
     circuits from RepetitionCodeCircuit.
-    
+
     Args:
         code_circuit: The QEC code circuit object for which this decoder
                 will be used.
