@@ -519,7 +519,7 @@ def _change_pauli_encoding(
             [_cal_phase(exp, marker) for exp, marker in zip(phase_exponent, res)]
         )
     else:
-        multiplier = (4 - multiplier) % 4
+        #multiplier = (4 - multiplier) % 4
         res = np.mod(phase_exponent.T[0] + multiplier * y_count, 4)
         phase_exponent = np.asarray(
             [_cal_phase(exp, marker) for exp, marker in zip(phase_exponent, res)]
@@ -2078,7 +2078,7 @@ def str2symplectic(
 
         >>> matrix, phase_exp = rep.str2symplectic("iXXXIZYZ")
         >>> phase
-        2
+        0
         >>> matrix.astype(int)
         array([[0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]])
 
