@@ -9,16 +9,21 @@ from qiskit import execute, Aer
 
 from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class FaultEnumerator:
     """Enumerates faults in a circuit according to a noise model."""
 
+    METHOD_STABILIZER: str = "stabilizer"
+    METHOD_PROPAGATOR: str = "propagator"
+    AVAILABLE_METHODS = {METHOD_STABILIZER, METHOD_PROPAGATOR}
+
     def __init__(
         self,
         circ,
         order: int = 1,
-        method: str = "propagator",
+        method: str = METHOD_PROPAGATOR,
         model=None,
         sim_seed: int = 0,
     ):
@@ -68,9 +73,8 @@ class FaultEnumerator:
             )
         else:
             self.model = model
-        sim_methods = ["stabilizer", "propagator"]
-        if method not in sim_methods:
-            raise Exception(f"unknown method '{method}'")
+        if method not in self.AVAILABLE_METHODS:
+            raise QiskitQECError("fmethod {methid} is not supported.")
         self.method = method
         self.location_types = self.model.get_operations()
         self.pauli_error_types = self.model.get_pauli_error_types()
