@@ -519,7 +519,7 @@ def _change_pauli_encoding(
             [_cal_phase(exp, marker) for exp, marker in zip(phase_exponent, res)]
         )
     else:
-        #multiplier = (4 - multiplier) % 4
+        # multiplier = (4 - multiplier) % 4
         res = np.mod(phase_exponent.T[0] + multiplier * y_count, 4)
         phase_exponent = np.asarray(
             [_cal_phase(exp, marker) for exp, marker in zip(phase_exponent, res)]

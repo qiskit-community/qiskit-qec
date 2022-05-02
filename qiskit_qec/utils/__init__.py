@@ -33,4 +33,3 @@ Utils module classes and functions
 from .pauli_rep import *
 from .op_rep import *
 from . import indexer
-
