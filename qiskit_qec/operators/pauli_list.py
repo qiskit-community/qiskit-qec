@@ -375,8 +375,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         if not qubit:
             if max(ind) >= len(self):
                 raise QiskitError(
-                    "Indices {} are not all less than the size"
-                    " of the PauliList ({})".format(ind, len(self))
+                    "fIndices {ind} are not all less than the size \
+                     of the PauliList ({len(self)})"
                 )
             matrix = np.delete(self.matrix, ind, axis=0)
             phase_exp = np.delete(self.phase_exp, ind)
@@ -386,8 +386,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         # Column (qubit) deletion
         if max(ind) >= self.num_qubits:
             raise QiskitError(
-                "Indices {} are not all less than the number of"
-                " qubits in the PauliList ({})".format(ind, self.num_qubits)
+                "Indices {ind} are not all less than the number of\
+                 qubits in the PauliList ({self.num_qubits})"
             )
         ind = ind + [item + self.num_qubits for item in ind]
         matrix = np.delete(self.matrix, ind, axis=1)
@@ -959,23 +959,6 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             return self.to_labels()
         else:
             return self.to_label().tolist()
-
-        """
-        if (self.phase == 1).any():
-            prefix_len = 2
-        elif (self.phase > 0).any():
-            prefix_len = 1
-        else:
-            prefix_len = 0
-        str_len = self.num_qubits + prefix_len
-        ret = np.zeros(self.size, dtype=f"<U{str_len}")
-        iterator = self.label_iter()
-        for i in range(self.size):
-            ret[i] = next(iterator)
-        if array:
-            return ret
-        return ret.tolist()
-        """
 
     def to_matrix(self, sparse=False, array=False):
         r"""Convert to a list or array of Pauli matrices.
