@@ -1,4 +1,5 @@
 """Factory for error propagators."""
+import logging
 
 
 class EPSelector:
@@ -6,13 +7,14 @@ class EPSelector:
 
     def __init__(self):
         """Create a new factory."""
-        pass
+        self.logger = logging.getLogger(__name__)
 
     def _attempt_import(self, module_name: str):
         """Try to load a module."""
         try:
             __import__(module_name)
-        except ImportError:
+        except ImportError as e:
+            self.logger.exception(f"__import__({module_name}) failed, raising {e}")
             return False
         else:
             return True

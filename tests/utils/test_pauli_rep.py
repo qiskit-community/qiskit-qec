@@ -3,7 +3,7 @@
 from unittest import TestCase
 import numpy as np
 
-from qiskit_qec.utils.pauli_rep import (
+from qiskit_qec.qec_utils.pauli_rep import (
     split_pauli_enc,
     change_pauli_encoding,
     stand_phase_str,

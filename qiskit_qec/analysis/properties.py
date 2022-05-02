@@ -4,9 +4,11 @@ import numpy as np
 
 from qiskit_qec.linear.matrix import rank
 from qiskit_qec.linear.symplectic import all_commute, is_stabilizer_group
+import logging
 
 
 def minimum_distance(stabilizer: np.ndarray, max_weight: int = 10) -> int:
+    logger = logging.getLogger(__name__)
     """Minimum distance of stabilizer code.
 
     stabilizer is a symplectic matrix generating the stabilizer group.
@@ -37,6 +39,6 @@ def minimum_distance(stabilizer: np.ndarray, max_weight: int = 10) -> int:
                         if (k > 0 and not in_stabilizer) or (k == 0 and in_stabilizer):
                             distance = weight
                             raise StopIteration
-    except StopIteration:
-        pass
+    except StopIteration as e:
+        logger.exception(f"Raised {e}")
     return distance

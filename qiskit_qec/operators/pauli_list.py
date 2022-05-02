@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
-"""Module fo Pauli Lists"""
+"""Module for Pauli Lists"""
 
 import numpy as np
 from qiskit.exceptions import QiskitError
@@ -18,7 +18,7 @@ from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
 from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.utils import pauli_rep
+from qiskit_qec.qec_utils import pauli_rep
 
 
 class PauliList(BasePauli):
@@ -222,7 +222,6 @@ class PauliList(BasePauli):
                 raise QiskitError("Different stype lists are not yet implemented")
 
             matrix[i][: 2 * qubit_count[i]] = pauli.matrix
-            # print(f"pauli.phase_exponent={pauli.phase_exponent}")
             phase_exponent[i] = pauli.phase_exponent
         return matrix, phase_exponent, stype
 

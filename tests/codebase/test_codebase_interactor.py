@@ -6,7 +6,7 @@ from qiskit_qec.codes import SubSystemCode
 from qiskit_qec.qec_codebase.qec_codebase_interactor import QECCodeBase
 from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.structures.gauge import GaugeGroup
-from qiskit_qec.exceptions import QiskitQECError
+from qiskit_qec.py_utils.exceptions import QiskitQECError
 
 
 class TestQECCodebaseInteractor(unittest.TestCase):

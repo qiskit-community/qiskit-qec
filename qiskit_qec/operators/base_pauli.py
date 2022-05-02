@@ -17,7 +17,7 @@ from qiskit import QiskitError
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
 from qiskit_qec.linear.smatrix_api.smatrix import SMatrix
-from qiskit_qec.utils import pauli_rep
+from qiskit_qec.qec_utils import pauli_rep
 
 
 # pylint: disable=no-member

@@ -1,6 +1,6 @@
 """Indexer object test."""
 import unittest
-from qiskit_qec.utils.indexer import Indexer
+from qiskit_qec.qec_utils.indexer import Indexer
 
 
 class TestIndexer(unittest.TestCase):

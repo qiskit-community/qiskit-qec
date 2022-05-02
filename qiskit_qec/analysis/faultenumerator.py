@@ -9,6 +9,7 @@ from qiskit import execute, Aer
 
 from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
+import logging
 
 
 class FaultEnumerator:
@@ -33,6 +34,8 @@ class FaultEnumerator:
         containing the Qiskit gate name or label
         if the latter exists.
         """
+
+        self.logger = logging.getLogger(__name__)
         if order < 1:
             raise Exception("order < 1")
         self.order = order
@@ -87,7 +90,8 @@ class FaultEnumerator:
                 from qiskit_qec.extensions.compiledextension import (
                     FaultEnumerator as compiledFaultEnumerator,
                 )
-            except ImportError:
+            except ImportError as e:
+                self.logger.exception(f"Setting self.use_compiled = False due to {e}")
                 self.use_compiled = False
             else:
                 self.use_compiled = True

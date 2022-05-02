@@ -54,7 +54,7 @@ import copy
 import sys
 
 import numpy as np
-import qiskit_qec.utils.pauli_rep as pauli_rep
+import qiskit_qec.qec_utils.pauli_rep as pauli_rep
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.barrier import Barrier
 from qiskit.exceptions import QiskitError

@@ -16,7 +16,7 @@ from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 
-import qiskit_qec.utils.pauli_rep as rep
+import qiskit_qec.qec_utils.pauli_rep as rep
 from qiskit_qec.operators.base_pauli import BasePauli
 
 
@@ -55,14 +55,11 @@ class Pauli(BasePauli):
             QiskitError: Something went wrong.
         """
         if isinstance(data, np.ndarray):
-            # print("Choice 1")
             matrix = np.atleast_2d(data)
         elif isinstance(data, BasePauli):
-            # print("Choice 2")
             matrix = data.matrix
             phase_exponent = data.phase_exponent
         elif isinstance(data, tuple):
-            # print("Choice 3")
             if len(data) not in [1, 2]:
                 if len(data) == 3:  # DEPRECATED
                     # Convert (z,x),p) to (matrix, p)
@@ -96,11 +93,7 @@ class Pauli(BasePauli):
             # matrix, phase_exponent = self._from_label_deprecated(label)
         else:
             raise QiskitError("Invalid input data for Pauli.")
-        # print("End Choice")
-        # print("to BasePauli")
-        # print(f"matrix={matrix}")
-        # print(f"shape={matrix.shape}")
-        # print(f"phase_exponent={phase_exponent}")
+
         # Initialize BasePauli
         if matrix.shape[0] != 1:
             raise QiskitError("Input is not a single Pauli")

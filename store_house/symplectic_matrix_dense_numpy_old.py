@@ -2,7 +2,7 @@ import copy
 import sys
 
 import numpy as np
-import qiskit_qec.utils.pauli_rep as pauli_rep
+import qiskit_qec.qec_utils.pauli_rep as pauli_rep
 from qiskit.exceptions import QiskitError
 from qiskit.utils.deprecation import deprecate_function
 from qiskit_qec.structures.symplectic_matrix_old import SymplecticMatrixBase
