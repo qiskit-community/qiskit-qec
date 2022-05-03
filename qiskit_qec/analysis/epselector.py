@@ -13,8 +13,10 @@ class EPSelector:
         """Try to load a module."""
         try:
             __import__(module_name)
-        except ImportError as e:
-            self.logger.exception(f"__import__({module_name}) failed, raising {e}")
+        except ImportError as e:  # pylint: disable=invalid-name
+            self.logger.exception(  # pylint: disable=logging-fstring-interpolation
+                f"__import__({module_name}) failed, raising {e}"
+            )
             return False
         else:
             return True

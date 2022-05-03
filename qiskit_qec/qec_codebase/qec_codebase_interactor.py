@@ -14,15 +14,16 @@
 
 import copy
 import json
+import logging
 import os
 import shutil
 import uuid
 from typing import Any, Dict, List, Set, Union
+
 from qiskit_qec.codes.subsystemcodes import SubSystemCode
-from qiskit_qec.py_utils.exceptions import QiskitQECError
 from qiskit_qec.operators.pauli_list import PauliList
+from qiskit_qec.py_utils.exceptions import QiskitQECError
 from qiskit_qec.structures.gauge import GaugeGroup
-import logging
 
 
 class QECCodeBase:
@@ -119,8 +120,10 @@ class QECCodeBase:
         self.logger = logging.getLogger(__name__)
         self.INSTANCE_NUMBER[0] += 1
         if self.INSTANCE_NUMBER[0] > 1:
-            self.logger.warning(
-                f"YOU SHOULD PROBABLY *NOT* CREATE MORE THAN 1 QECCodeBase. You are trying to create {self.INSTANCE_NUMBER} instances. THERE IS NO CONCURRENCY PROTECTION!"
+            self.logger.warning(  # pylint: disable=logging-fstring-interpolation
+                f"YOU SHOULD PROBABLY *NOT* CREATE MORE THAN 1 QECCodeBase. "
+                f"You are trying to create {self.INSTANCE_NUMBER} instances. "
+                f"THERE IS NO CONCURRENCY PROTECTION!"
             )
         self.logger.warning(
             "Database is a work in progress. Please read the DATABASE_NOTES in the top folder of the"
@@ -206,7 +209,7 @@ class QECCodeBase:
                 }
 
         if len(additional_params) > 0:
-            self.logger.warning(
+            self.logger.warning(  # pylint: disable=logging-fstring-interpolation
                 f"You have {len(additional_params)} additional params. Additional params may"
                 " cause really slow results"
             )
@@ -420,7 +423,9 @@ class QECCodeBase:
                 with open(path, "r", encoding="utf-8") as code_file:  # should except if invalid
                     qec_code_jsons = {**json.load(code_file), **qec_code_jsons}
             except FileNotFoundError:
-                self.logger.exception(f"{path} does not exist")
+                self.logger.exception(  # pylint: disable=logging-fstring-interpolation
+                    f"{path} does not exist"
+                )  # pylint: disable=logging-fstring-interpolation
         if allow_cache:
             if (n_len, k_dim) in self.playground_cache:
                 qec_code_jsons = {**qec_code_jsons, **self.playground_cache[(n_len, k_dim)]}
@@ -608,10 +613,10 @@ class QECCodeBase:
                         return False
             return True
 
-        self.logger.warning(
-            "Checking that code is unique' is not sophisticated!",
-            "It checks only if a code in the codebase/playground has an exact match"
-            + "for each field (except uuid) in the code being added",
+        self.logger.warning(  # pylint: disable=logging-not-lazy
+            "Checking that code is unique' is not sophisticated!"
+            + "It checks only if a code in the codebase/playground has an exact match"
+            + "for each field (except uuid) in the code being added"
         )
         code_info = next(
             iter(code_storage_format.values())
@@ -695,7 +700,7 @@ class QECCodeBase:
             self._store_code_storage_format_in_playground(self.playground_cache)
             self.playground_cache = {}
         except Exception as cur_except:  # pylint: disable=broad-except
-            self.logger.exception(
+            self.logger.exception(  # pylint: disable=logging-fstring-interpolation
                 f"{cur_except}. Please try to reflush-cache. "
                 f"Playground might have data partially "
                 f"written to it."
