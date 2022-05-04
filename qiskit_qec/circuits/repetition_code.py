@@ -82,10 +82,10 @@ class RepetitionCodeCircuit:
             self.syndrome_measurement(final=True)
             self.readout()
 
-        gauge_ops = [[2 * j, 2 * (j + 1)] for j in range(self.d - 1)]
+        gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
         measured_logical = [[0]]
-        flip_logical = [[2 * j] for j in range(self.d)]
-        boundary = [[0], [2 * (self.d - 1)]]
+        flip_logical = list(range(self.d))
+        boundary = [[0], [self.d - 1]]
 
         if xbasis:
             self.css_x_gauge_ops = gauge_ops
