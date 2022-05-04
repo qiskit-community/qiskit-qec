@@ -47,7 +47,7 @@ class DecodingGraph:
         S = rx.PyGraph(multigraph=False)
 
         qc = self.code.circuit["0"]
-        fe = FaultEnumerator(qc)
+        fe = FaultEnumerator(qc, method="stabilizer")
         blocks = list(fe.generate_blocks())
         fault_paths = list(itertools.chain(*blocks))
 
