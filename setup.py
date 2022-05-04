@@ -10,11 +10,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# currently used for backwards compatibility
-# and to allow for editable code for development mode
 import os
 import re
-import platform
 from glob import glob
 from setuptools import find_packages, setup
 from pybind11.setup_helpers import Pybind11Extension, build_ext
@@ -26,8 +23,7 @@ ext_modules = [
     ),
 ]
 
-VERSION_PATH = os.path.join(os.path.dirname(__file__),
-                            "qiskit_qec", "VERSION.txt")
+VERSION_PATH = os.path.join(os.path.dirname(__file__), "qiskit_qec", "VERSION.txt")
 with open(VERSION_PATH, "r") as version_file:
     VERSION = version_file.read().strip()
 
