@@ -1003,7 +1003,7 @@ def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
         exp2cpx, ...
     """
     if input_encoding == "i":
-        return 1j ** phase_exp
+        return 1j**phase_exp
     if input_encoding == "-i":
         return (-1j) ** phase_exp
     if input_encoding == "is":
@@ -2627,7 +2627,7 @@ def _to_cpx_matrix(
         array: if sparse=False.
         csr_matrix: if sparse=True.
     """
-    dim = 2 ** num_qubits
+    dim = 2**num_qubits
     twos_array = 1 << np.arange(num_qubits)
     x_indices = np.asarray(matrix[:num_qubits]).dot(twos_array)
     z_indices = np.asarray(matrix[num_qubits:]).dot(twos_array)
