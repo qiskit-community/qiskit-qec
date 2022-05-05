@@ -344,7 +344,7 @@ def rref_complete(matrix: np.ndarray) -> Tuple[List[int], np.ndarray, np.ndarray
     _rref_complete, rref, _rref
     """
     matrix = np.array(matrix, dtype=bool)
-    if matrix.shape == ():
+    if not matrix.shape:  # matrix.shape == ():
         raise QiskitError("Not a suitable matrix input")
     matrix = np.atleast_2d(matrix)
     if not matrix.ndim == 2:
