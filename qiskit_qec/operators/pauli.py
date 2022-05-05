@@ -394,8 +394,8 @@ class Pauli(BasePauli):
             qubits = [qubits]
         if max(qubits) > self.num_qubits - 1:
             raise QiskitError(
-                f"Qubit index is larger than the number of qubits "
-                "({max(qubits}>{self.num_qubits - 1})."
+                f"Qubit index is larger than the number of qubits \
+                ({max(qubits)}>{self.num_qubits - 1})."
             )
         if len(qubits) == self.num_qubits:
             raise QiskitError("Cannot delete all qubits of Pauli")
@@ -430,13 +430,13 @@ class Pauli(BasePauli):
                 qubits = list(range(qubits, qubits + value.num_qubits))
         if len(qubits) != value.num_qubits:
             raise QiskitError(
-                f"Number of indices does not match number of qubits for "
-                "the inserted Pauli ({len(qubits}!={value.num_qubits})"
+                f"Number of indices does not match number of qubits for \
+                 the inserted Pauli ({len(qubits)}!={value.num_qubits})"
             )
         if max(qubits) > ret.num_qubits - 1:
             raise QiskitError(
-                f"Index is too larger for combined Pauli number of qubits "
-                "({max(qubits)}>{ret.num_qubits - 1})."
+                f"Index is too larger for combined Pauli number of qubits \
+                 ({max(qubits)}>{ret.num_qubits - 1})."
             )
         # Qubit positions for original op
         self_qubits = [i for i in range(ret.num_qubits) if i not in qubits]
@@ -683,9 +683,9 @@ class Pauli(BasePauli):
 
     @classmethod
     @deprecate_function(
-        "Initializing Pauli from `Pauli(label=l)` kwarg is deprecated as of "
-        "version 0.17.0 and will be removed no earlier than 3 months after "
-        "the release date. Use `Pauli(l)` instead."
+        "Initializing Pauli from `Pauli(label=l)` kwarg is deprecated as of \
+         version 0.17.0 and will be removed no earlier than 3 months after \
+         the release date. Use `Pauli(l)` instead."
     )
     def _from_label_deprecated(cls, label, qubit_order):
         # Deprecated wrapper of `_from_label` so that a deprecation warning
@@ -694,9 +694,9 @@ class Pauli(BasePauli):
 
     @classmethod
     @deprecate_function(
-        "Initializing Pauli from `Pauli(z=z, x=x)` kwargs is deprecated as of "
-        "version 0.17.0 and will be removed no earlier than 3 months after "
-        "the release date. Use tuple initialization `Pauli((z, x))` instead."
+        "Initializing Pauli from `Pauli(z=z, x=x)` kwargs is deprecated as of \
+         version 0.17.0 and will be removed no earlier than 3 months after \
+         the release date. Use tuple initialization `Pauli((z, x))` instead."
     )
     def _from_split_array_deprecated(cls, z, x, phase_exp: int = 0):
         # Deprecated wrapper of `_from_array` so that a deprecation warning
@@ -712,8 +712,8 @@ class Pauli(BasePauli):
 
     @staticmethod
     @deprecate_function(
-        "`from_label` is deprecated and will be removed no earlier than "
-        "3 months after the release date. Use Pauli(label) instead."
+        "`from_label` is deprecated and will be removed no earlier than \
+         3 months after the release date. Use Pauli(label) instead."
     )
     def from_label(label):
         """DEPRECATED: Construct a Pauli from a string label.
@@ -737,9 +737,9 @@ class Pauli(BasePauli):
 
     @staticmethod
     @deprecate_function(
-        "sgn_prod is deprecated and will be removed no earlier than "
-        "3 months after the release date. Use `dot` instead."
-    )
+        "sgn_prod is deprecated and will be removed no earlier than \
+         3 months after the release date. Use `dot` instead."
+    )  # pylint: disable=invalid-name
     def sgn_prod(p1, p2):  # pylint: disable=invalid-name
         r"""
         DEPRECATED: Multiply two Paulis and track the phase.
@@ -761,8 +761,8 @@ class Pauli(BasePauli):
         return pauli[:], (-1j) ** pauli.phase
 
     @deprecate_function(
-        "`to_spmatrix` is deprecated and will be removed no earlier than "
-        "3 months after the release date. Use `to_matrix(sparse=True)` instead."
+        "`to_spmatrix` is deprecated and will be removed no earlier than \
+         3 months after the release date. Use `to_matrix(sparse=True)` instead."
     )
     def to_spmatrix(self):
         r"""
@@ -977,8 +977,8 @@ class Pauli(BasePauli):
 
     @classmethod
     @deprecate_function(
-        "`pauli_single` is deprecated and will be removed no earlier than "
-        "3 months after the release date."
+        "`pauli_single` is deprecated and will be removed no earlier than \
+         3 months after the release date."
     )
     def pauli_single(cls, num_qubits, index, pauli_label):
         """

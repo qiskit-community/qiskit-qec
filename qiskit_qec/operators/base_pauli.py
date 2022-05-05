@@ -983,9 +983,9 @@ def _evolve_cx(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     return base_pauli
 
 
-def _evolve_cz(
-    base_pauli: "BasePauli", q1: int, q2: int
-) -> "BasePauli":  # pylint: disable=invalid-name
+def _evolve_cz(  # pylint: disable=invalid-name
+    base_pauli: "BasePauli", q1: int, q2: int  # pylint: disable=invalid-name
+) -> "BasePauli":
     """Update P -> CZ.P.CZ"""
     x1 = base_pauli.matrix[:, q1].copy()
     x2 = base_pauli.matrix[:, q2].copy()
@@ -1007,9 +1007,9 @@ def _evolve_cy(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     return base_pauli
 
 
-def _evolve_swap(
-    base_pauli: "BasePauli", q1: int, q2: int
-) -> "BasePauli":  # pylint: disable=invalid-name
+def _evolve_swap(  # pylint: disable=invalid-name
+    base_pauli: "BasePauli", q1: int, q2: int  # pylint: disable=invalid-name
+) -> "BasePauli":
     """Update P -> SWAP.P.SWAP"""
     x1 = base_pauli.matrix[:, q1].copy()
     z1 = base_pauli.matrix[:, q1 + base_pauli.num_qubits].copy()

@@ -455,9 +455,9 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         else:
             # Blocks are incorrect size
             raise QiskitError(
-                f"Input PauliList must have a single row, or"
-                " the same number of rows as the Pauli Table"
-                " ({size})."
+                f"Input PauliList must have a single row, or \
+                 the same number of rows as the Pauli Table \
+                 ({size})."
             )
 
         # Build new array by blocks
