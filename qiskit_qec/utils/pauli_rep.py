@@ -25,6 +25,10 @@ from scipy.sparse import csr_matrix
 
 import numpy as np
 from qiskit.exceptions import QiskitError
+from qiskit.circuit.library.generalized_gates import PauliGate
+from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
+from qiskit.quantum_info.operators.scalar_op import ScalarOp
+from qiskit.circuit import Gate
 from qiskit_qec.linear.symplectic import count_num_y, is_symplectic_matrix_form
 
 
@@ -2688,3 +2692,64 @@ def boolean_to_indices(booleans: Iterable[bool]) -> np.ndarray:
         numpy.ndarray: Array of indices of non-zero values
     """
     return np.nonzero(np.asarray(booleans))
+
+
+def scalar_op2symplectic(
+    op: ScalarOp, output_encoding: str = DEFAULT_EXTERNAL_PHASE_ENCODING
+) -> Tuple[np.ndarray, Union[np.array, Any]]:
+    """Convert a ScalarOp to symplectic representation with phase.
+
+    TODO: Allow this to work on arrays of ScalarOps
+
+    Args:
+        op: Input scalarOp
+        output_encoding: Phase encoding to use to encode phase from ScalarOp.
+            Default is INTERNAL_PHASE_ENCODING='-i'
+
+    Raises:
+        QiskitError: Operator is not an N-qubit identity
+
+    Returns:
+        matrix, phase_exponent: GF(2) symplectic matrix and phase_exponent
+        representing ScalarOp
+    """
+    if op.num_qubits is None:
+        raise QiskitError(f"{op} is not an N-qubit identity")
+    matrix = np.zeros(shape=(1, 2 * op.num_qubits), dtype=np.bool_)
+    phase_exp = cpx2exp(op.coeff, output_encoding=output_encoding)
+    return matrix, phase_exp
+
+
+# ----------------------------------------------------------------------
+
+
+def gate2symplectic(
+    gate: Gate, encoding: str = INTERNAL_PAULI_ENCODING
+) -> Tuple[np.ndarray, Union[np.array, Any]]:
+    """Converts a Pauli gate to a symplectic matrix with phase
+
+    Args:
+        gate: Gate
+        encoding (optional): Pauli encoding to encode symplectic matrix with phase.
+            Defaults to DEFAULT_EXTERNAL_PAULI_ENCODING='-iYZX';
+
+    Raises:
+        QiskitError: Invalid Pauli instruction
+
+    Returns:
+        matrix, phase_exp: phase exponent and symplectic matrix
+    """
+    if isinstance(gate, PauliGate):
+        return str2symplectic(gate.params[0], output_encoding=encoding)
+    if isinstance(gate, IGate):
+        return str2symplectic("I", output_encoding=encoding)
+    if isinstance(gate, XGate):
+        return str2symplectic("X", output_encoding=encoding)
+    if isinstance(gate, YGate):
+        return str2symplectic("Y", output_encoding=encoding)
+    if isinstance(gate, ZGate):
+        return str2symplectic("Z", output_encoding=encoding)
+    raise QiskitError("Invalid Pauli instruction.")
+
+
+# ----------------------------------------------------------------------

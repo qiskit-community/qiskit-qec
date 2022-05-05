@@ -16,6 +16,8 @@ from typing import Union, Optional, List, Any, Dict
 import numpy as np
 from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.exceptions import QiskitError
+from qiskit.circuit.barrier import Barrier
+from qiskit.circuit.delay import Delay
 from qiskit.circuit.library.generalized_gates import PauliGate
 from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
@@ -24,7 +26,6 @@ from qiskit.utils.deprecation import deprecate_function
 
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.utils import pauli_rep
-from qiskit_qec.utils import op_rep
 
 
 class Pauli(BasePauli):
@@ -100,11 +101,11 @@ class Pauli(BasePauli):
         elif isinstance(data, str):
             matrix, phase_exp = pauli_rep.str2symplectic(data, qubit_order=input_qubit_order)
         elif isinstance(data, ScalarOp):
-            matrix, phase_exp = op_rep.scalar_op2symplectic(
+            matrix, phase_exp = pauli_rep.scalar_op2symplectic(
                 data, output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING
             )
         elif isinstance(data, (QuantumCircuit, Instruction)):
-            matrix, phase_exp = op_rep.instrs2symplectic(data)
+            matrix, phase_exp = self.instrs2symplectic(data)
         elif x is not None:  # DEPRECATED
             if z is None:
                 # Using old Pauli initialization with positional args instead of kwargs
@@ -462,15 +463,15 @@ class Pauli(BasePauli):
 
     @classmethod
     def _from_scalar_op(cls, op):
-        return op_rep.scalar_op2symplectic(op)
+        return pauli_rep.scalar_op2symplectic(op)
 
     @classmethod
     def _from_pauli_instruction(cls, instr):
-        return op_rep.gate2symplectic(instr)
+        return pauli_rep.gate2symplectic(instr)
 
     @classmethod
     def _from_circuit(cls, instr):
-        return op_rep.instrs2symplectic(instr)
+        return cls.instrs2symplectic(instr)
 
     # ---------------------------------------------------------------------
     # Output representation methods: Can also use the pauli_rep methods
@@ -676,6 +677,40 @@ class Pauli(BasePauli):
             other = Pauli(other)
 
         return Pauli(super().evolve(other, qargs=qargs, frame=frame))
+
+    @staticmethod
+    def instrs2symplectic(instr: Union[Instruction, QuantumCircuit]):
+        """Convert a Pauli circuit to BasePauli data."""
+        # Try and convert single instruction
+        if isinstance(instr, (PauliGate, IGate, XGate, YGate, ZGate)):
+            return pauli_rep.gate2symplectic(instr)
+        if isinstance(instr, Instruction):
+            # Convert other instructions to circuit definition
+            if instr.definition is None:
+                raise QiskitError(f"Cannot apply Instruction: {instr.name}")
+            # Convert to circuit
+            instr = instr.definition
+
+        # Initialize identity Pauli
+        ret = Pauli(np.zeros((1, 2 * instr.num_qubits), dtype=bool), phase_exp=0)
+        # Add circuit global phase if specified
+        if instr.global_phase:
+            ret._phase_exp = pauli_rep.cpx2exp(
+                np.exp(1j * float(instr.global_phase)),
+                output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING,
+            )
+        # Recursively apply instructions
+        for dinstr, qregs, cregs in instr.data:
+            if cregs:
+                raise QiskitError(
+                    f"Cannot apply instruction with classical registers: {dinstr.name}"
+                )
+            if not isinstance(dinstr, (Barrier, Delay)):
+                next_instr = BasePauli(*Pauli.instrs2symplectic(dinstr))
+                if next_instr is not None:
+                    qargs = [tup.index for tup in qregs]
+                    ret = ret.compose(next_instr, qargs=qargs)
+        return ret.matrix, ret._phase_exp
 
     # ---------------------------------------------------------------------
     # DEPRECATED methods from old Pauli class

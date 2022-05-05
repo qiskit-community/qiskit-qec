@@ -27,9 +27,7 @@ Utils module classes and functions
 
     Indexer
     pauli_rep
-    op_rep
 """
 
-from .pauli_rep import *
-from .op_rep import *
+from . import pauli_rep
 from . import indexer
