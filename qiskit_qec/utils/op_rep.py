@@ -28,7 +28,7 @@ from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.circuit import Gate
 from qiskit.circuit import QuantumCircuit
-import qiskit_qec.utils.pauli_rep as pauli_rep
+from qiskit_qec.utils import pauli_rep
 
 
 # ----------------------------------------------------------------------

@@ -885,7 +885,7 @@ def count_num_y(matrix: np.ndarray, scalar: bool = True) -> Union[np.ndarray, in
     """
     matrix = np.atleast_2d(matrix)
     if not is_symplectic_form(matrix):
-        raise QiskitError(f"Input matrix/vector not a GF(2) symplectic matrix")
+        raise QiskitError("Input matrix/vector not a GF(2) symplectic matrix")
     num_qubits = matrix.shape[1] >> 1
     result = _count_num_y(matrix, num_qubits)
     if scalar and matrix.shape[0] == 1:

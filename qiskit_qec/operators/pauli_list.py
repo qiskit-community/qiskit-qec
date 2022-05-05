@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module fo Pauli List"""
-from typing import Union, Tuple, Iterable, List, Set
+from typing import Union, Tuple, Iterable, List
 from collections import defaultdict
 import numbers
 
@@ -25,7 +25,7 @@ from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
 from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.utils import pauli_rep as pauli_rep
+from qiskit_qec.utils import pauli_rep
 
 
 class PauliList(BasePauli, LinearMixin, GroupMixin):
@@ -224,7 +224,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         Args:
             phase_exp (_type_): _description_
-            input_phase_encoding (_type_, optional): _description_. Defaults to BasePauli.EXTERNAL_PHASE_ENCODING.
+            input_phase_encoding (_type_, optional): _description_. Defaults to
+                BasePauli.EXTERNAL_PHASE_ENCODING.
         """
         self._phase_exp[:] = pauli_rep.exp2exp(
             phase_exp,
@@ -427,8 +428,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         if not qubit:
             if ind > size:
                 raise QiskitError(
-                    "Index {} is larger than the number of rows in the"
-                    " PauliList ({}).".format(ind, size)
+                    f"Index {ind} is larger than the number of rows in the" " PauliList ({size})."
                 )
             matrix = np.insert(self.matrix, ind, value.matrix, axis=0)
 
@@ -439,8 +439,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         # Column insertion
         if ind > self.num_qubits:
             raise QiskitError(
-                "Index {} is greater than number of qubits"
-                " in the PauliList ({})".format(ind, self.num_qubits)
+                f"Index {ind} is greater than number of qubits"
+                " in the PauliList ({self.num_qubits})"
             )
         if len(value) == 1:
             # Pad blocks to correct size
@@ -455,9 +455,9 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         else:
             # Blocks are incorrect size
             raise QiskitError(
-                "Input PauliList must have a single row, or"
+                f"Input PauliList must have a single row, or"
                 " the same number of rows as the Pauli Table"
-                " ({}).".format(size)
+                " ({size})."
             )
 
         # Build new array by blocks
@@ -1081,7 +1081,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         Note: Initialization this way will copy matrices and not reference them.
 
-        TODO: Fix this method to be more general and not in old form only (i.e. include matrix inputs ...)
+        TODO: Fix this method to be more general and not in old form only
+            (i.e. include matrix inputs ...)
         """
 
         matrix, phase_exp = pauli_rep.from_split_array(
@@ -1095,7 +1096,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         An edge (i, j) is present if i and j are not commutable.
 
         Returns:
-            List[Tuple(int,int)]: A list of pairs of indices of the PauliList that are not commutable.
+            List[Tuple(int,int)]: A list of pairs of indices of the PauliList that
+                are not commutable.
         """
         # convert a Pauli operator into int vector where {I: 0, X: 2, Y: 3, Z: 1}
         mat1 = np.array(

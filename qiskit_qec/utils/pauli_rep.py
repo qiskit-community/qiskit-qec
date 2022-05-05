@@ -2517,7 +2517,8 @@ def from_split_array(
     phase_exp: Union[int, List, Tuple, np.ndarray],
     input_pauli_encoding: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """Convert split array (separate X and Z arrays) and phase_exp to the matrix and phase_exp in BasePauli's internal
+    """Convert split array (separate X and Z arrays) and phase_exp to the matrix
+    and phase_exp in BasePauli's internal
     Pauli encoding (pauli_rep.INTERNAL_PAULI_ENCODING)
 
     Args:

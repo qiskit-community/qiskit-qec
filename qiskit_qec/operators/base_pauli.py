@@ -31,7 +31,7 @@ from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
 import qiskit.quantum_info.operators.symplectic.clifford
 
 from qiskit_qec.linear.symplectic import symplectic_product
-from qiskit_qec.utils import pauli_rep as pauli_rep
+from qiskit_qec.utils import pauli_rep
 from qiskit_qec.linear import matrix as mt
 
 
@@ -226,7 +226,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Defaults to pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING.
         """
         assert encoding in pauli_rep.get_tensor_encodings(), QiskitError(
-            f"Invalid symplectic matrix encoding: {encoding}. Must be one of {pauli_rep.get_tensor_encodings()}"
+            f"Invalid symplectic matrix encoding: {encoding}. Must be one \
+                of {pauli_rep.get_tensor_encodings()}"
         )
         BasePauli.EXTERNAL_TENSOR_ENCODING = encoding
 
@@ -627,15 +628,13 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # Check dimension
         if qargs is not None and len(qargs) != other.num_qubits:
             raise QiskitError(
-                "Incorrect number of qubits for Clifford circuit ({} != {}).".format(
-                    other.num_qubits, len(qargs)
-                )
+                f"Incorrect number of qubits for Clifford circuit \
+                    ({other.num_qubits} != {len(qargs)})."
             )
         if qargs is None and self.num_qubits != other.num_qubits:
             raise QiskitError(
-                "Incorrect number of qubits for Clifford circuit ({} != {}).".format(
-                    other.num_qubits, self.num_qubits
-                )
+                f"Incorrect number of qubits for Clifford circuit \
+                    ({other.num_qubits} != {self.num_qubits})."
             )
 
         # Evolve via Pauli
@@ -757,10 +756,11 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Returns:
             str: the Pauli label(string) from the full Pauli group (if ``no_phase=False``) or
                 from the unsigned Pauli group (if ``no_phase=True``).
-            Tuple[str or List[str], Any or List[Any]]: if ``return_phase=True`` returns a tuple of the Pauli
-                            label (from either the full or unsigned Pauli group) and
-                            the phase ``q`` for the coefficient :math:`(-i)^(q + x.z)`
-                            for the label from the full Pauli group.
+            Tuple[str or List[str], Any or List[Any]]: if ``return_phase=True`` returns a
+                tuple of the Pauli
+                label (from either the full or unsigned Pauli group) and
+                the phase ``q`` for the coefficient :math:`(-i)^(q + x.z)`
+                for the label from the full Pauli group.
         """
         if output_pauli_encoding is None:
             output_phase_encoding = BasePauli.PRINT_PHASE_ENCODING
@@ -890,9 +890,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             raise QiskitError(f"Cannot apply Instruction: {gate.name}")
         if not isinstance(gate.definition, QuantumCircuit):
             raise QiskitError(
-                "{} instruction definition is {}; expected QuantumCircuit".format(
-                    gate.name, type(gate.definition)
-                )
+                f"{gate.name} instruction definition is {type(gate.definition)}; \
+                    expected QuantumCircuit"
             )
 
         flat_instr = gate.definition
@@ -984,7 +983,9 @@ def _evolve_cx(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     return base_pauli
 
 
-def _evolve_cz(base_pauli: "BasePauli", q1: int, q2: int) -> "BasePauli":
+def _evolve_cz(
+    base_pauli: "BasePauli", q1: int, q2: int
+) -> "BasePauli":  # pylint: disable=invalid-name
     """Update P -> CZ.P.CZ"""
     x1 = base_pauli.matrix[:, q1].copy()
     x2 = base_pauli.matrix[:, q2].copy()
@@ -1006,7 +1007,9 @@ def _evolve_cy(base_pauli: "BasePauli", qctrl: int, qtrgt: int) -> "BasePauli":
     return base_pauli
 
 
-def _evolve_swap(base_pauli: "BasePauli", q1: int, q2: int) -> "BasePauli":
+def _evolve_swap(
+    base_pauli: "BasePauli", q1: int, q2: int
+) -> "BasePauli":  # pylint: disable=invalid-name
     """Update P -> SWAP.P.SWAP"""
     x1 = base_pauli.matrix[:, q1].copy()
     z1 = base_pauli.matrix[:, q1 + base_pauli.num_qubits].copy()

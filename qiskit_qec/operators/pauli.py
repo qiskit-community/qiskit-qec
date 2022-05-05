@@ -23,8 +23,8 @@ from qiskit.quantum_info.operators.mixins import generate_apidocs
 from qiskit.utils.deprecation import deprecate_function
 
 from qiskit_qec.operators.base_pauli import BasePauli
-from qiskit_qec.utils import pauli_rep as pauli_rep
-from qiskit_qec.utils import op_rep as op_rep
+from qiskit_qec.utils import pauli_rep
+from qiskit_qec.utils import op_rep
 
 
 class Pauli(BasePauli):
@@ -394,8 +394,8 @@ class Pauli(BasePauli):
             qubits = [qubits]
         if max(qubits) > self.num_qubits - 1:
             raise QiskitError(
-                "Qubit index is larger than the number of qubits "
-                "({}>{}).".format(max(qubits), self.num_qubits - 1)
+                f"Qubit index is larger than the number of qubits "
+                "({max(qubits}>{self.num_qubits - 1})."
             )
         if len(qubits) == self.num_qubits:
             raise QiskitError("Cannot delete all qubits of Pauli")
@@ -430,13 +430,13 @@ class Pauli(BasePauli):
                 qubits = list(range(qubits, qubits + value.num_qubits))
         if len(qubits) != value.num_qubits:
             raise QiskitError(
-                "Number of indices does not match number of qubits for "
-                "the inserted Pauli ({}!={})".format(len(qubits), value.num_qubits)
+                f"Number of indices does not match number of qubits for "
+                "the inserted Pauli ({len(qubits}!={value.num_qubits})"
             )
         if max(qubits) > ret.num_qubits - 1:
             raise QiskitError(
-                "Index is too larger for combined Pauli number of qubits "
-                "({}>{}).".format(max(qubits), ret.num_qubits - 1)
+                f"Index is too larger for combined Pauli number of qubits "
+                "({max(qubits)}>{ret.num_qubits - 1})."
             )
         # Qubit positions for original op
         self_qubits = [i for i in range(ret.num_qubits) if i not in qubits]
@@ -740,7 +740,7 @@ class Pauli(BasePauli):
         "sgn_prod is deprecated and will be removed no earlier than "
         "3 months after the release date. Use `dot` instead."
     )
-    def sgn_prod(p1, p2):
+    def sgn_prod(p1, p2):  # pylint: disable=invalid-name
         r"""
         DEPRECATED: Multiply two Paulis and track the phase.
 
@@ -969,8 +969,8 @@ class Pauli(BasePauli):
             Pauli: self
         """
         pauli = self.delete(indices)
-        self._z = pauli._z
-        self._x = pauli._x
+        self._z = pauli._z  # pylint: disable=invalid-name
+        self._x = pauli._x  # pylint: disable=invalid-name
         self._phase_exp = pauli._phase_exp
         self._op_shape = pauli._op_shape
         return self
@@ -1001,9 +1001,9 @@ class Pauli(BasePauli):
 
     @classmethod
     @deprecate_function(
-        "`random` is deprecated and will be removed no earlier than "
-        "3 months after the release date. "
-        "Use `qiskit.quantum_info.random_pauli` instead"
+        "`random` is deprecated and will be removed no earlier than \
+         3 months after the release date. \
+         Use `qiskit.quantum_info.random_pauli` instead"
     )
     def random(cls, num_qubits, seed=None):
         """DEPRECATED: Return a random Pauli on number of qubits.
