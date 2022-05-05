@@ -1007,7 +1007,7 @@ def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
         exp2cpx, ...
     """
     if input_encoding == "i":
-        return 1j**phase_exp
+        return 1j ** phase_exp
     if input_encoding == "-i":
         return (-1j) ** phase_exp
     if input_encoding == "is":
