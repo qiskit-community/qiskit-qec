@@ -62,7 +62,7 @@ class GraphDecoder:
         logical_neighbours = []
         for node in E.nodes():
             E_matching.add_node(node)
-            if node["is_logical"]:
+            if node["is_boundary"]:
                 logical_nodes.append(node)
             else:
                 syndrome_nodes.append(node)
@@ -105,8 +105,8 @@ class GraphDecoder:
         for (n0, n1) in matches:
             source = E_matching[n0]
             target = E_matching[n1]
-            sil = E_matching[n0]["is_logical"]
-            til = E_matching[n1]["is_logical"]
+            sil = E_matching[n0]["is_boundary"]
+            til = E_matching[n1]["is_boundary"]
             if sil and not til:
                 elem = E_matching[n0]["element"]
                 logicals[elem] = str((int(logicals[elem]) + 1) % 2)

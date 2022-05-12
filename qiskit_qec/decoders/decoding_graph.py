@@ -210,7 +210,9 @@ class DecodingGraph:
 
         # for each pair of nodes in error create an edge and weight with the
         # distance
-        distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=float)
+        def weight_fn(edge):
+            return int(edge["weight"])
+        distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=weight_fn)
 
         for source_index in E.node_indexes():
             for target_index in E.node_indexes():

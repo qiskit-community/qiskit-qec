@@ -106,11 +106,16 @@ class CircuitModelMatchingDecoder(ABC):
         self.layer_types = dg.layer_types
         logging.debug("layer_types = %s", self.layer_types)
 
-        (self.idxmap, self.node_layers, self.graph, self.pymatching_indexer,) = (
+        (
+            self.idxmap,
+            self.node_layers,
+            self.graph,
+            self.pymatching_indexer
+        ) = (
             dg.idxmap,
             dg.node_layers,
             dg.graph,
-            dg.pymatching_indexer,
+            dg.pymatching_indexer
         )
         self.ridxmap = {v: k for k, v in self.idxmap.items()}
 

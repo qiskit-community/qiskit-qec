@@ -305,6 +305,7 @@ class RepetitionCodeCircuit:
                                 qubits = self.css_x_gauge_ops[elem_num]
                         node["qubits"] = qubits
                         node["is_boundary"] = is_boundary
+                        node["element"] = elem_num
                         nodes.append(node)
         return nodes
 
