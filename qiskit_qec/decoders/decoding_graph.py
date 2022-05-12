@@ -59,10 +59,24 @@ class DecodingGraph:
                     S.add_node(node)
             for source in nodes:
                 for target in nodes:
+                    weight = 1 - (source["is_boundary"] and target["is_boundary"])
                     if target != source:
                         n0 = S.nodes().index(source)
                         n1 = S.nodes().index(target)
-                        S.add_edge(n0, n1, 1)
+                        S.add_edge(n0, n1, {'weight':weight})
+           
+        # repeat logical nodes for all times
+        times = []
+        for node in S.nodes():
+            times.append(node['time'])
+        times = set(times) 
+        for node in S.nodes():
+            if node['is_boundary']:
+                for time in times:
+                    new_node = node.copy()
+                    new_node['time'] = time
+                    if new_node not in S.nodes():
+                        S.add_node(new_node)
 
         return S
 
@@ -126,9 +140,9 @@ class DecodingGraph:
         error_probs = {}
         for n0, n1 in self.S.edge_list():
 
-            if self.S[n0]["is_logical"]:
+            if self.S[n0]["is_boundary"]:
                 boundary.append(n1)
-            elif self.S[n1]["is_logical"]:
+            elif self.S[n1]["is_boundary"]:
                 boundary.append(n0)
             else:
                 if (1 - 2 * av_xor[n0, n1]) != 0:
