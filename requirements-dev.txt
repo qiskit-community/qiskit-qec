@@ -1,4 +1,3 @@
-black
 pylint==2.11.1
 coverage==6.1.1
 qiskit-sphinx-theme>=1.6

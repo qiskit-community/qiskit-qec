@@ -90,7 +90,6 @@ class CircuitModelMatchingDecoder(ABC):
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
         self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
-        # print("layer_types = %s", self.layer_types)
 
         (
             self.idxmap,
@@ -131,12 +130,11 @@ class CircuitModelMatchingDecoder(ABC):
                 self.layer_types,
                 fe,
             )
-            # print("event_map = %s", self.event_map)
+
             self.symbols, self.edge_weight_polynomials = self._edge_weight_polynomials(
                 self.model, self.event_map
             )
-            # print("symbols = %s", self.symbols)
-            # print("edge_weight_polynomials = %s", self.edge_weight_polynomials)
+
             self.graph = self._revise_decoding_graph(
                 self.idxmap, self.graph, self.edge_weight_polynomials
             )
@@ -184,11 +182,11 @@ class CircuitModelMatchingDecoder(ABC):
                     # that are edges connected to the boundary. Instead
                     # we increase their weight to a large value.
                     edge[2]["weight"] = 1000000
-                    # print("increase edge weight (%d, %d)", edge[0], edge[1])
+
                 else:
                     # Otherwise, remove the edge
                     remove_list.append((edge[0], edge[1]))
-                    # print("remove edge (%d, %d)", edge[0], edge[1])
+
         graph.remove_edges_from(remove_list)
         return graph
 
@@ -223,7 +221,7 @@ class CircuitModelMatchingDecoder(ABC):
                 raise QiskitQECError("wrong number of error rate parameters")
             symbol_list = [self.symbols[s] for s in self.parameters]
             assignment = dict(zip(symbol_list, parameter_values))
-            # print("update_edge_weights %s", str(assignment))
+
             # P(chain) = \prod_i (1-p_i)^{1-l(i)}*p_i^{l(i)}
             #          \propto \prod_i ((1-p_i)/p_i)^{l(i)}
             # -log P(chain) \propto \sum_i -log[((1-p_i)/p_i)^{l(i)}]
@@ -231,7 +229,7 @@ class CircuitModelMatchingDecoder(ABC):
             # l(i) is 1 if the link belongs to the chain and 0 otherwise
             for edge in self.graph.edges(data=True):
                 if "weight_poly" in edge[2]:
-                    # print(
+
                     #     "update_edge_weights (%d, %d) %s",
                     #     edge[0],
                     #     edge[1],
@@ -309,7 +307,6 @@ class CircuitModelMatchingDecoder(ABC):
             comb = event[1][0]  # combination of faulty operations
             pauli = event[2][0]  # Pauli error string
             outcome = event[3]  # result of simulation
-            # print("event %d %s %s %s", ctr, comb, pauli, outcome)
 
             (
                 x_gauge_outcomes,
@@ -338,8 +335,7 @@ class CircuitModelMatchingDecoder(ABC):
                 z_gauge_outcomes,
                 final_outcomes,
             )
-            # print("gauge_outcomes %s", gauge_outcomes)
-            # print("highlighted %s", highlighted)
+
             # Examine the highlighted vertices to find the edge of the
             # decoding graph that corresponds with this fault event
             if len(highlighted) > 2:
@@ -427,7 +423,6 @@ class CircuitModelMatchingDecoder(ABC):
         These are the corrected values of the final transversal
         measurement in the basis given by self.basis.
         """
-        # print("process: outcomes = %s", outcomes)
 
         x_gauge_outcomes, z_gauge_outcomes, final_outcomes = self._partition_outcomes(
             self.blocks, self.round_schedule, outcomes
@@ -448,13 +443,10 @@ class CircuitModelMatchingDecoder(ABC):
             z_gauge_outcomes,
             final_outcomes,
         )
-        # print("process: gauge_outcomes = %s", gauge_outcomes)
-        # print("process: final_outcomes = %s", final_outcomes)
-        # print("process: highlighted = %s", highlighted)
 
         if not self.usepymatching:
             matching = self._compute_matching(self.idxmap, self.length, highlighted)
-            # print("process: matching = %s", matching)
+
             (
                 qubit_errors,
                 measurement_errors,  # pylint: disable=unused-variable
@@ -467,8 +459,7 @@ class CircuitModelMatchingDecoder(ABC):
                 export,
                 filename,
             )
-            # print("process: qubit_errors = %s", qubit_errors)
-            # print("process: measurement_errors = %s", measurement_errors)
+
         else:
             # Input: highlighted (list of highlighted vertices)
             # Output: qubit_errors (list of qubits to flip)
@@ -483,18 +474,17 @@ class CircuitModelMatchingDecoder(ABC):
             for i, corr in enumerate(correction):
                 if corr == 1:
                     qubit_errors.append(self.pymatching_indexer.rlookup(i))
-            # print("process: qubit_errors = %s", qubit_errors)
 
         corrected_outcomes = copy(final_outcomes)
         for i in qubit_errors:
             if i != -1:
                 corrected_outcomes[i] = (corrected_outcomes[i] + 1) % 2
-        # print("process: corrected_outcomes = %s", corrected_outcomes)
+
         if self.basis == "z":
             test = temp_syndrome(corrected_outcomes, self.css_z_stabilizer_ops)
         elif self.basis == "x":
             test = temp_syndrome(corrected_outcomes, self.css_x_stabilizer_ops)
-        # print("process: test syndrome = %s", test)
+
         if sum(test) != 0:
             raise QiskitQECError("decoder failure: syndrome should be trivial!")
         return corrected_outcomes
@@ -577,14 +567,14 @@ class CircuitModelMatchingDecoder(ABC):
                 all_z = stabilizers
             for supp in all_z:
                 graph.add_node(idx, time=time, qubits=supp, highlighted=False)
-                # print("node %d t=%d %s", idx, time, supp)
+
                 idxmap[(time, tuple(supp))] = idx
                 node_layer.append(idx)
                 idx += 1
             for supp in boundary:
                 # Add optional is_boundary property for pymatching
                 graph.add_node(idx, time=time, qubits=supp, highlighted=False, is_boundary=True)
-                # print("boundary %d t=%d %s", idx, time, supp)
+
                 idxmap[(time, tuple(supp))] = idx
                 node_layer.append(idx)
                 idx += 1
@@ -623,8 +613,7 @@ class CircuitModelMatchingDecoder(ABC):
                             qubit_id=pymatching_indexer[com[0]],
                             error_probability=0.01,
                         )
-                        # print("spacelike t=%d (%s, %s)", time, op_g, op_h)
-                        # print(
+
                         #     " qubits %s qubit_id %s",
                         #     [com[0]],
                         #     pymatching_indexer[com[0]],
@@ -648,7 +637,6 @@ class CircuitModelMatchingDecoder(ABC):
                     qubit_id=-1,
                     error_probability=0.0,
                 )
-                # print("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
 
             # Add (space)time-like edges from t to t-1
             # By construction, the qubit sets of pairs of vertices at S and T
@@ -695,7 +683,7 @@ class CircuitModelMatchingDecoder(ABC):
                                     qubit_id=-1,
                                     error_probability=0.01,
                                 )
-                                # print("timelike t=%d (%s, %s)", time, op_g, op_h)
+
                             else:  # Case (b)
                                 q_idx = pymatching_indexer[com[0]]
                                 graph.add_edge(
@@ -708,8 +696,7 @@ class CircuitModelMatchingDecoder(ABC):
                                     qubit_id=q_idx,
                                     error_probability=0.01,
                                 )
-                                # print("spacetime hook t=%d (%s, %s)", time, op_g, op_h)
-                                # print(" qubits %s qubit_id %s", [com[0]], q_idx)
+
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
                 graph.add_edge(
@@ -722,8 +709,7 @@ class CircuitModelMatchingDecoder(ABC):
                     qubit_id=-1,
                     error_probability=0.0,
                 )
-                # print("boundarylink t=%d", time)
-        # print("indexer %s", pymatching_indexer)
+
         return idxmap, node_layers, graph, pymatching_indexer
 
     def _highlighted_vertices(
@@ -793,12 +779,12 @@ class CircuitModelMatchingDecoder(ABC):
                     prior_outcome %= 2
                     if outcome != prior_outcome:
                         highlighted.append((i, tuple(stab_op)))
-        # print("|highlighted| = %d", len(highlighted))
+
         # If the total number of highlighted vertices is odd,
         # add a single special highlighted vertex at the boundary
         if len(highlighted) % 2 == 1:
             highlighted.append((0, tuple(boundary[0])))
-        # print("highlighted = %s", highlighted)
+
         return gauge_outcomes, highlighted
 
     def _compute_matching(
@@ -841,7 +827,7 @@ class CircuitModelMatchingDecoder(ABC):
         """
         qubit_errors = set([])
         measurement_errors = set([])
-        # print("_error_chain_for_vertex_path %s", vertex_path)
+
         for i in range(len(vertex_path) - 1):
             v0 = vertex_path[i]
             v1 = vertex_path[i + 1]
@@ -850,7 +836,7 @@ class CircuitModelMatchingDecoder(ABC):
                     [(graph.nodes[v0]["time"], tuple(graph.nodes[v0]["qubits"]))]
                 )
             qubit_errors ^= set(graph[v0][v1]["qubits"])
-            # print(
+
             #     "_error_chain_for_vertex_path q = %s, m = %s",
             #     qubit_errors,
             #     measurement_errors,

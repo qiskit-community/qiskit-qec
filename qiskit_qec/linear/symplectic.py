@@ -867,7 +867,7 @@ def count_num_y(matrix: np.ndarray, scalar: bool = True) -> Union[np.ndarray, in
 
     Returns:
         result: number of positions with 1's in k and n+k positions
-                for matrices/vectors of width 2n for all k.
+    for matrices/vectors of width 2n for all k.
 
     Examples:
         >>> a = np.array([1,0,1,1], dtype=np.bool_)
