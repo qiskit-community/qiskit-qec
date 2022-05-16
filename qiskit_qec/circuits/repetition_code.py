@@ -291,15 +291,15 @@ class RepetitionCodeCircuit:
                             elem_num = syn_round
                             syn_round = 0
                         node = {"time": syn_round}
-                        is_boundary = (syn_type == 0)
+                        is_boundary = syn_type == 0
                         if is_boundary:
-                            i = [0,-1][elem_num]
-                            if self.basis=="z":
+                            i = [0, -1][elem_num]
+                            if self.basis == "z":
                                 qubits = [self.css_x_logical[i]]
                             else:
                                 qubits = [self.css_z_logical[i]]
                         else:
-                            if self.basis=="z":
+                            if self.basis == "z":
                                 qubits = self.css_z_gauge_ops[elem_num]
                             else:
                                 qubits = self.css_x_gauge_ops[elem_num]

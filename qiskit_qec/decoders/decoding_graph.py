@@ -24,6 +24,7 @@ import numpy as np
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
+
 class DecodingGraph:
     """
     Class to construct the graph corresponding to the possible syndromes
@@ -49,7 +50,7 @@ class DecodingGraph:
         fe = FaultEnumerator(qc, method="stabilizer")
         blocks = list(fe.generate_blocks())
         fault_paths = list(itertools.chain(*blocks))
-        
+
         for _, _, _, output in fault_paths:
             string = "".join([str(c) for c in output[::-1]])
             nodes = self.code.string2nodes(string)
@@ -64,12 +65,9 @@ class DecodingGraph:
                         qubits = []
                         if not (source["is_boundary"] and target["is_boundary"]):
                             qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-                        if source["time"]!=target["time"] and len(qubits)>1:
+                        if source["time"] != target["time"] and len(qubits) > 1:
                             qubits = []
-                        edge = {
-                            "qubits":qubits,
-                            "weight":1  
-                        }
+                        edge = {"qubits": qubits, "weight": 1}
                         S.add_edge(n0, n1, edge)
 
         return S
@@ -206,6 +204,7 @@ class DecodingGraph:
         # distance
         def weight_fn(edge):
             return int(edge["weight"])
+
         distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=weight_fn)
 
         for source_index in E.node_indexes():

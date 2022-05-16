@@ -39,7 +39,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks: int,
         method: str,
         uniform: bool,
-        graph = None
+        graph=None,
     ):
         """Create a matching decoder.
 
@@ -98,13 +98,8 @@ class CircuitModelMatchingDecoder(ABC):
                 self.node_layers,
                 self.graph,
                 self.pymatching_indexer,
-                self.layer_types
-            ) = self._process_graph(
-                graph,
-                blocks,
-                round_schedule,
-                basis
-            )
+                self.layer_types,
+            ) = self._process_graph(graph, blocks, round_schedule, basis)
         else:
             dg = DecodingGraph(
                 css_x_gauge_ops,
@@ -117,23 +112,17 @@ class CircuitModelMatchingDecoder(ABC):
                 round_schedule,
                 basis,
             )
-                
+
             (
                 self.idxmap,
                 self.node_layers,
                 self.graph,
                 self.pymatching_indexer,
-                self.layer_types
-            ) = (
-                dg.idxmap,
-                dg.node_layers,
-                dg.graph,
-                dg.pymatching_indexer,
-                dg.layer_types
-            )
-            
+                self.layer_types,
+            ) = (dg.idxmap, dg.node_layers, dg.graph, dg.pymatching_indexer, dg.layer_types)
+
         logging.debug("layer_types = %s", self.layer_types)
-        
+
         self.ridxmap = {v: k for k, v in self.idxmap.items()}
 
         self.circuit = circuit
@@ -175,24 +164,24 @@ class CircuitModelMatchingDecoder(ABC):
     def _process_graph(self, graph, blocks, round_schedule, basis):
 
         pymatching_indexer = Indexer()
-        
+
         # symmetrize hook errors
-        for j,edge in enumerate(graph.edges()):
+        for j, edge in enumerate(graph.edges()):
             n0, n1 = graph.edge_list()[j]
             source = graph.nodes()[n0]
             target = graph.nodes()[n1]
-            if source['time']!=target['time']:
-                if source['is_boundary']==target['is_boundary']==False:
+            if source["time"] != target["time"]:
+                if source["is_boundary"] == target["is_boundary"] == False:
                     new_source = source.copy()
-                    new_source['time'] = target['time']
+                    new_source["time"] = target["time"]
                     nn0 = graph.nodes().index(new_source)
                     new_target = target.copy()
-                    new_target['time'] = source['time']
+                    new_target["time"] = source["time"]
                     nn1 = graph.nodes().index(new_target)
                     graph.add_edge(nn0, nn1, edge)
-        
+
         edges_to_remove = []
-        for j,edge in enumerate(graph.edges()):
+        for j, edge in enumerate(graph.edges()):
 
             n0, n1 = graph.edge_list()[j]
             source = graph.nodes()[n0]
@@ -200,61 +189,63 @@ class CircuitModelMatchingDecoder(ABC):
 
             # add the required attributes
             # highlighted', 'measurement_error','qubit_id' and 'error_probability'
-            edge['highlighted'] = False
-            edge["measurement_error"] = int(source["time"]!=target["time"])
+            edge["highlighted"] = False
+            edge["measurement_error"] = int(source["time"] != target["time"])
             if edge["qubits"]:
                 edge["qubit_id"] = pymatching_indexer[edge["qubits"][0]]
             else:
                 edge["qubit_id"] = -1
-            edge["error_probability"] = 0.01*edge['weight']
+            edge["error_probability"] = 0.01 * edge["weight"]
 
             # make it so times of boundary/boundary nodes agree
-            if source['is_boundary'] and not target['is_boundary']:
-                if source['time']!=target['time']:
+            if source["is_boundary"] and not target["is_boundary"]:
+                if source["time"] != target["time"]:
                     new_source = source.copy()
-                    new_source['time'] = target['time']
+                    new_source["time"] = target["time"]
                     n = graph.add_node(new_source)
-                    edge['measurement_error'] = 0
+                    edge["measurement_error"] = 0
                     edges_to_remove.append((n0, n1))
                     graph.add_edge(n, n1, edge)
 
         # remove old boundary/boundary nodes
         for n0, n1 in edges_to_remove:
-            graph.remove_edge(n0, n1)    
+            graph.remove_edge(n0, n1)
 
         for n0, source in enumerate(graph.nodes()):
             for n1, target in enumerate(graph.nodes()):
 
                 # add weightless nodes connecting different boundaries
-                if source['time']==target['time']:
-                    if source['is_boundary'] and target['is_boundary']:
-                        if source['qubits'] != target['qubits']:
+                if source["time"] == target["time"]:
+                    if source["is_boundary"] and target["is_boundary"]:
+                        if source["qubits"] != target["qubits"]:
                             edge = {
-                                'measurement_error': 0,
-                                'weight': 0,
-                                'highlighted': False,
-                                'error_probability': 0.0
+                                "measurement_error": 0,
+                                "weight": 0,
+                                "highlighted": False,
+                                "error_probability": 0.0,
                             }
-                            edge['qubits'] = list(set(source['qubits']).intersection((set(target['qubits']))))
-                            if edge['qubits']:
-                                edge['qubit_id'] = pymatching_indexer[qubits[0]]
+                            edge["qubits"] = list(
+                                set(source["qubits"]).intersection((set(target["qubits"])))
+                            )
+                            if edge["qubits"]:
+                                edge["qubit_id"] = pymatching_indexer[edge["qubit_id"][0]]
                             else:
-                                edge['qubit_id'] = -1
-                            if (n0,n1) not in graph.edge_list():
+                                edge["qubit_id"] = -1
+                            if (n0, n1) not in graph.edge_list():
                                 graph.add_edge(n0, n1, edge)
 
-                # connect one of the boundaries at different times           
-                if target['time']==source['time']+1:
-                    if source['qubits']==target['qubits']==[0]:
+                # connect one of the boundaries at different times
+                if target["time"] == source["time"] + 1:
+                    if source["qubits"] == target["qubits"] == [0]:
                         edge = {
-                            'qubits':[],
-                            'qubit_id': -1,
-                            'measurement_error': 0,
-                            'weight': 0,
-                            'highlighted': False,
-                            'error_probability': 0.0
+                            "qubits": [],
+                            "qubit_id": -1,
+                            "measurement_error": 0,
+                            "weight": 0,
+                            "highlighted": False,
+                            "error_probability": 0.0,
                         }
-                        if (n0,n1) not in graph.edge_list():
+                        if (n0, n1) not in graph.edge_list():
                             graph.add_edge(n0, n1, edge)
 
         # symmetrize edges
@@ -262,18 +253,18 @@ class CircuitModelMatchingDecoder(ABC):
             n0, n1 = graph.edge_list()[j]
             if (n1, n0) not in graph.edge_list():
                 graph.add_edge(n1, n0, edge)
-        
+
         idxmap = {}
         for n, node in enumerate(graph.nodes()):
-            idxmap[node['time'],tuple(node['qubits'])] = n
+            idxmap[node["time"], tuple(node["qubits"])] = n
 
         node_layers = []
         for node in graph.nodes():
-            time = node['time']
-            if len(node_layers)<time+1:
-                node_layers += [[]]*(time+1-len(node_layers))
-            node_layers[time].append(node['qubits'])
-                    
+            time = node["time"]
+            if len(node_layers) < time + 1:
+                node_layers += [[]] * (time + 1 - len(node_layers))
+            node_layers[time].append(node["qubits"])
+
         # create a list of decoding graph layer types
         # the entries are 'g' for gauge and 's' for stabilizer
         layer_types = []
@@ -292,10 +283,10 @@ class CircuitModelMatchingDecoder(ABC):
         if last_step == basis:
             layer_types.append("g")
         else:
-            layer_types.append("s") 
+            layer_types.append("s")
 
         return idxmap, node_layers, graph, pymatching_indexer, layer_types
-        
+
     def _revise_decoding_graph(
         self,
         idxmap: Dict[Tuple[int, List[int]], int],
@@ -317,7 +308,7 @@ class CircuitModelMatchingDecoder(ABC):
                 if not graph.has_edge(idxmap[s1], idxmap[s2]):
                     raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
                     # TODO: new edges may be needed for hooks, but raise exception if we're surprised
-                
+
                 data = graph.get_edge_data(idxmap[s1], idxmap[s2])
                 data["weight_poly"] = wpoly
         remove_list = []
@@ -825,7 +816,7 @@ class CircuitModelMatchingDecoder(ABC):
         if export:
             self._highlight_vertex_paths_export_json(gin, used_paths, filename)
         return qubit_errors, measurement_errors
-    
+
     def _highlight_vertex_paths_export_json(
         self, gin: rx.PyGraph, paths: List[List[int]], filename: str
     ):
