@@ -24,7 +24,6 @@ import numpy as np
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
-
 class DecodingGraph:
     """
     Class to construct the graph corresponding to the possible syndromes
@@ -50,7 +49,7 @@ class DecodingGraph:
         fe = FaultEnumerator(qc, method="stabilizer")
         blocks = list(fe.generate_blocks())
         fault_paths = list(itertools.chain(*blocks))
-
+        
         for _, _, _, output in fault_paths:
             string = "".join([str(c) for c in output[::-1]])
             nodes = self.code.string2nodes(string)
@@ -59,24 +58,19 @@ class DecodingGraph:
                     S.add_node(node)
             for source in nodes:
                 for target in nodes:
-                    weight = 1 - (source["is_boundary"] and target["is_boundary"])
                     if target != source:
                         n0 = S.nodes().index(source)
                         n1 = S.nodes().index(target)
-                        S.add_edge(n0, n1, {'weight':weight})
-           
-        # repeat logical nodes for all times
-        times = []
-        for node in S.nodes():
-            times.append(node['time'])
-        times = set(times) 
-        for node in S.nodes():
-            if node['is_boundary']:
-                for time in times:
-                    new_node = node.copy()
-                    new_node['time'] = time
-                    if new_node not in S.nodes():
-                        S.add_node(new_node)
+                        qubits = []
+                        if not (source["is_boundary"] and target["is_boundary"]):
+                            qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+                        if source["time"]!=target["time"] and len(qubits)>1:
+                            qubits = []
+                        edge = {
+                            "qubits":qubits,
+                            "weight":1  
+                        }
+                        S.add_edge(n0, n1, edge)
 
         return S
 

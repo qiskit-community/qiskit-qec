@@ -4,6 +4,7 @@ from typing import Tuple, List
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
 class RepetitionDecoder(CircuitModelMatchingDecoder):
     """Instance of CircuitModelMatchingDecoder for use with
@@ -27,6 +28,7 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
     ):
         """Constructor."""
         self.resets = code_circuit.resets
+        dg = DecodingGraph(code_circuit)
         super().__init__(
             code_circuit.css_x_gauge_ops,
             code_circuit.css_x_stabilizer_ops,
@@ -41,6 +43,7 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
             code_circuit.blocks,
             method,
             uniform,
+            dg.S
         )
 
     def _partition_outcomes(
