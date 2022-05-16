@@ -3,7 +3,6 @@ from typing import Tuple, List
 
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
-
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
 class RepetitionDecoder(CircuitModelMatchingDecoder):

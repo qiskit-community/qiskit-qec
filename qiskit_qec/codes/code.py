@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-""" This is the main module that defines a Code. """
+""" This is the main module that defines a general Code. """
 
 
 class Code:
