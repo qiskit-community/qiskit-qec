@@ -50,4 +50,4 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         self, blocks: int, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
         """Extract measurement outcomes."""
-        return self.code_circuit.partition_outcomes(None, round_schedule, outcome)
+        return self.code_circuit.partition_outcomes(round_schedule, outcome)
