@@ -320,7 +320,7 @@ class RepetitionCodeCircuit:
         return self._separate_string(self._process_string(string))[0]
 
     def partition_outcomes(
-        self, blocks: int, round_schedule: str, outcome: List[int]
+        self, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
         """Extract measurement outcomes."""
         # split into gauge and final outcomes
