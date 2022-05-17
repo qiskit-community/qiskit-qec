@@ -9,7 +9,7 @@ from qiskit import execute, Aer
 
 from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
-from qiskit_qec.py_utils.exceptions import QiskitQECError
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class FaultEnumerator:

@@ -12,11 +12,11 @@
 
 """
 ===============================
-Utils (:mod:`qiskit_qec.qec_utils`)
+Utils (:mod:`qiskit_qec.theory_utils`)
 ===============================
 
 =======
-.. currentmodule:: qiskit_qec.qec_utils
+.. currentmodule:: qiskit_qec.theory_utils
 
 
 Utils module classes and functions

@@ -1,20 +1,21 @@
 """Factory for error propagators."""
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class EPSelector:
     """Select and return an ErrorPropagator."""
 
     def __init__(self):
         """Create a new factory."""
-        self.logger = logging.getLogger(__name__)
 
     def _attempt_import(self, module_name: str):
         """Try to load a module."""
         try:
             __import__(module_name)
         except ImportError as e:  # pylint: disable=invalid-name
-            self.logger.exception(  # pylint: disable=logging-fstring-interpolation
+            logger.exception(  # pylint: disable=logging-fstring-interpolation
                 f"__import__({module_name}) failed, raising {e}"
             )
             return False

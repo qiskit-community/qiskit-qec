@@ -1,4 +1,4 @@
-.. automodule:: qiskit_qec.qec_utils
+.. automodule:: qiskit_qec.theory_utils
    :no-members:
    :no-inherited-members:
    :no-special-members:

@@ -25,7 +25,7 @@ from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
 from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.qec_utils import pauli_rep
+from qiskit_qec.theory_utils import pauli_rep
 
 
 class PauliList(BasePauli, LinearMixin, GroupMixin):

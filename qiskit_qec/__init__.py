@@ -11,8 +11,24 @@
 # that they have been altered from the originals.
 """Qiskit QEC."""
 
-
 import logging
 from logging import NullHandler
+
+from . import (
+    circuits,
+    codes,
+    decoders,
+    exceptions,
+    factory,
+    geometry,
+    info,
+    linear,
+    models,
+    operators,
+    qec_codebase,
+    structures,
+    theory_utils,
+)
+
 
 logging.getLogger(__name__).addHandler(NullHandler())
