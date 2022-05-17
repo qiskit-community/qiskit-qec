@@ -39,7 +39,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks: int,
         method: str,
         uniform: bool,
-        graph=None,
+        graph: rx.PyGraph = None,
     ):
         """Create a matching decoder.
 
