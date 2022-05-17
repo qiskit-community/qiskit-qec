@@ -24,6 +24,10 @@ from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_product
 class CircuitModelMatchingDecoder(ABC):
     """Matching decoder for circuit noise."""
 
+    METHOD_RETWORKX: str = "retworkx"
+    METHOD_PYMATCHING: str = "pymatching"
+    AVAILABLE_METHODS = {METHOD_RETWORKX, METHOD_PYMATCHING}
+
     def __init__(
         self,
         css_x_gauge_ops: List[Tuple[int]],
@@ -81,10 +85,11 @@ class CircuitModelMatchingDecoder(ABC):
             raise QiskitQECError("expected basis to be 'x' or 'z'")
 
         self.uniform = uniform
+
+        if method not in self.AVAILABLE_METHODS:
+            raise QiskitQECError("fmethod {method} is not supported.")
         self.method = method
-        if not self.method in ("retworkx", "pymatching"):
-            raise QiskitQECError("unsupported implementation")
-        if self.method == "pymatching":
+        if self.method == "METHOD_PYMATCHING":
             self.usepymatching = True
         else:
             self.usepymatching = False
