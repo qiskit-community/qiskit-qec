@@ -20,9 +20,9 @@ Graph used as the basis of decoders.
 from typing import List, Tuple, Dict
 
 import itertools
-import retworkx as rx
-import numpy as np
 import logging
+import numpy as np
+import retworkx as rx
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.utils.indexer import Indexer
