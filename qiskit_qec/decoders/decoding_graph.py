@@ -218,10 +218,13 @@ class DecodingGraph:
                 target = E[target_index]
                 if target != source:
                     distance = int(
-                        distance_matrix[self.graph.nodes().index(source)][self.graph.nodes().index(target)]
+                        distance_matrix[self.graph.nodes().index(source)][
+                            self.graph.nodes().index(target)
+                        ]
                     )
                     E.add_edge(source_index, target_index, -distance)
         return E
+
 
 class CSSDecodingGraph:
     """
