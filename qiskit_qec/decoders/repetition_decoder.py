@@ -27,7 +27,7 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         logical: str,
     ):
         """Constructor."""
-        self.resets = code_circuit.resets
+        self.code_circuit = code_circuit
         dg = DecodingGraph(code_circuit)
         super().__init__(
             code_circuit.css_x_gauge_ops,
@@ -50,25 +50,4 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         self, blocks: int, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
         """Extract measurement outcomes."""
-        # split into gauge and final outcomes
-        outcome = "".join([str(c) for c in outcome])
-        outcome = outcome.split(" ")
-        gs = outcome[0:-1]
-        gauge_outcomes = [[int(c) for c in r] for r in gs]
-        finals = outcome[-1]
-        # if circuit did not use resets, construct standard output
-        if not self.resets:
-            for i, layer in enumerate(gauge_outcomes):
-                for j, gauge_op in enumerate(layer):
-                    if i > 0:
-                        gauge_outcomes[i][j] = (gauge_op + gauge_outcomes[i - 1][j]) % 2
-        # assign outcomes to the correct gauge ops
-        if round_schedule == "z":
-            x_gauge_outcomes = []
-            z_gauge_outcomes = gauge_outcomes
-        else:
-            x_gauge_outcomes = gauge_outcomes
-            z_gauge_outcomes = []
-        final_outcomes = [int(c) for c in finals]
-
-        return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
+        return self.code_circuit.partition_outcomes(blocks, round_schedule, outcome)
