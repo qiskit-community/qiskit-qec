@@ -45,7 +45,7 @@ class DecodingGraph:
 
         self.code = code
 
-        self.S = self._make_syndrome_graph()
+        self.graph = self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
 
@@ -97,13 +97,13 @@ class DecodingGraph:
 
         neighbours = {}
         av_v = {}
-        for n in self.S.node_indexes():
+        for n in self.graph.node_indexes():
             av_v[n] = 0
             neighbours[n] = []
 
         av_vv = {}
         av_xor = {}
-        for n0, n1 in self.S.edge_list():
+        for n0, n1 in self.graph.edge_list():
             av_vv[n0, n1] = 0
             av_xor[n0, n1] = 0
             neighbours[n0].append(n1)
@@ -115,10 +115,10 @@ class DecodingGraph:
             error_nodes = self.code.string2nodes(string, logical=logical)
 
             for node0 in error_nodes:
-                n0 = self.S.nodes().index(node0)
+                n0 = self.graph.nodes().index(node0)
                 av_v[n0] += results[string]
                 for n1 in neighbours[n0]:
-                    node1 = self.S[n1]
+                    node1 = self.graph[n1]
                     if node1 in error_nodes and (n0, n1) in av_vv:
                         av_vv[n0, n1] += results[string]
                     if node1 not in error_nodes:
@@ -127,19 +127,19 @@ class DecodingGraph:
                         else:
                             av_xor[n1, n0] += results[string]
 
-        for n in self.S.node_indexes():
+        for n in self.graph.node_indexes():
             av_v[n] /= shots
-        for n0, n1 in self.S.edge_list():
+        for n0, n1 in self.graph.edge_list():
             av_vv[n0, n1] /= shots
             av_xor[n0, n1] /= shots
 
         boundary = []
         error_probs = {}
-        for n0, n1 in self.S.edge_list():
+        for n0, n1 in self.graph.edge_list():
 
-            if self.S[n0]["is_boundary"]:
+            if self.graph[n0]["is_boundary"]:
                 boundary.append(n1)
-            elif self.S[n1]["is_boundary"]:
+            elif self.graph[n1]["is_boundary"]:
                 boundary.append(n0)
             else:
                 if (1 - 2 * av_xor[n0, n1]) != 0:
@@ -150,7 +150,7 @@ class DecodingGraph:
 
         prod = {}
         for n0 in boundary:
-            for n1 in self.S.node_indexes():
+            for n1 in self.graph.node_indexes():
                 if n0 != n1:
                     if n0 not in prod:
                         prod[n0] = 1
@@ -179,15 +179,15 @@ class DecodingGraph:
 
         error_probs = self.get_error_probs(results)
 
-        for edge in self.S.edge_list():
-            p = error_probs[self.S[edge[0]], self.S[edge[1]]]
+        for edge in self.graph.edge_list():
+            p = error_probs[self.graph[edge[0]], self.graph[edge[1]]]
             if p == 0:
                 w = np.inf
             elif 1 - p == 1:
                 w = -np.inf
             else:
                 w = -np.log(p / (1 - p))
-            self.S.update_edge(edge[0], edge[1], w)
+            self.graph.update_edge(edge[0], edge[1], w)
 
     def make_error_graph(self, string):
         """
@@ -210,7 +210,7 @@ class DecodingGraph:
         def weight_fn(edge):
             return int(edge["weight"])
 
-        distance_matrix = rx.graph_floyd_warshall_numpy(self.S, weight_fn=weight_fn)
+        distance_matrix = rx.graph_floyd_warshall_numpy(self.graph, weight_fn=weight_fn)
 
         for source_index in E.node_indexes():
             for target_index in E.node_indexes():
@@ -218,7 +218,7 @@ class DecodingGraph:
                 target = E[target_index]
                 if target != source:
                     distance = int(
-                        distance_matrix[self.S.nodes().index(source)][self.S.nodes().index(target)]
+                        distance_matrix[self.graph.nodes().index(source)][self.graph.nodes().index(target)]
                     )
                     E.add_edge(source_index, target_index, -distance)
         return E

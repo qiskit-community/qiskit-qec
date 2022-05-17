@@ -159,8 +159,8 @@ class TestCodes(unittest.TestCase):
         dec = DecodingGraph(code)
         test_results = {"000 00": 1024, "010 11": 512}
         p = dec.get_error_probs(test_results)
-        n0 = dec.S.nodes().index({"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0})
-        n1 = dec.S.nodes().index({"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1})
+        n0 = dec.graph.nodes().index({"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0})
+        n1 = dec.graph.nodes().index({"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1})
         self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
 
     def test_rep_probs(self):

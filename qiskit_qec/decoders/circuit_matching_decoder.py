@@ -18,7 +18,7 @@ from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph
+from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
 
 
@@ -44,7 +44,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks: int,
         method: str,
         uniform: bool,
-        graph: rx.PyGraph = None,
+        decoding_graph: DecodingGraph = None,
     ):
         """Create a matching decoder.
 
@@ -98,14 +98,14 @@ class CircuitModelMatchingDecoder(ABC):
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
 
-        if graph:
+        if decoding_graph:
             (
                 self.idxmap,
                 self.node_layers,
                 self.graph,
                 self.pymatching_indexer,
                 self.layer_types,
-            ) = self._process_graph(graph, blocks, round_schedule, basis)
+            ) = self._process_graph(decoding_graph.graph, blocks, round_schedule, basis)
         else:
             dg = CSSDecodingGraph(
                 css_x_gauge_ops,

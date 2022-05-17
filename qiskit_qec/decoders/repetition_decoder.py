@@ -43,7 +43,7 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
             code_circuit.blocks,
             method,
             uniform,
-            dg.S,
+            dg,
         )
 
     def _partition_outcomes(
