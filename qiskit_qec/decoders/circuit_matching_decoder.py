@@ -846,7 +846,10 @@ class CircuitModelMatchingDecoder(ABC):
 
 
 class DecodingGraph:
-    """WIP"""
+    """
+    Class to construct the decoding graph required for the CircuitModelMatchingDecoder
+    for a generic CSS code.
+    """
 
     def __init__(
         self,
