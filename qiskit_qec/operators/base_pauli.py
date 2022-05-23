@@ -49,6 +49,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     EXTERNAL_PAULI_ENCODING = EXTERNAL_PHASE_ENCODING + EXTERNAL_TENSOR_ENCODING
 
     EXTERNAL_SYNTAX = pauli_rep.PRODUCT_SYNTAX
+    EXTERNAL_QUBIT_ORDER = pauli_rep.DEFAULT_QUBIT_ORDER
 
     PRINT_PHASE_ENCODING = None
 
@@ -217,8 +218,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """Return the external symplectic matrix encoding"""
         return BasePauli.EXTERNAL_TENSOR_ENCODING
 
-    @tensor_encoding.setter
-    def tensor_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING):
+    @classmethod
+    def set_tensor_encoding(cls, encoding: str = pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING):
         """Set the external symplectic matrix format
 
         Args:
@@ -236,8 +237,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """Return the phase encoding"""
         return BasePauli.EXTERNAL_PHASE_ENCODING
 
-    @phase_encoding.setter
-    def phase_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
+    @classmethod
+    def set_phase_encoding(cls, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
         """Set the phase encoding
 
         Args:
@@ -254,8 +255,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """Pauli format."""
         return BasePauli.EXTERNAL_PAULI_ENCODING
 
-    @pauli_encoding.setter
-    def pauli_encoding(self, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PAULI_ENCODING):
+    @classmethod
+    def set_pauli_encoding(cls, encoding: str = pauli_rep.DEFAULT_EXTERNAL_PAULI_ENCODING):
         """Set the Pauli encoding
 
         Args:
@@ -275,8 +276,17 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """_summary_"""
         return BasePauli.EXTERNAL_SYNTAX
 
-    @syntax.setter
-    def syntax(self, syntax_code: Optional[int] = None, syntax_str: Optional[str] = "Product"):
+    @classmethod
+    def set_syntax(cls, syntax_code: Optional[int] = None, syntax_str: Optional[str] = "Product"):
+        """_summary_
+
+        Args:
+            syntax_code (Optional[int], optional): _description_. Defaults to None.
+            syntax_str (Optional[str], optional): _description_. Defaults to "Product".
+
+        Raises:
+            QiskitError: _description_
+        """
         if syntax_code is None:
             if syntax_str == "Product":
                 BasePauli.EXTERNAL_SYNTAX = pauli_rep.PRODUCT_SYNTAX
@@ -292,8 +302,16 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """Prints how the phase will be displayed in when printing."""
         return BasePauli.PRINT_PHASE_ENCODING
 
-    @print_phase_encoding.setter
-    def print_phase_encoding(self, phase_encoding: Optional[str] = None):
+    @classmethod
+    def set_print_phase_encoding(cls, phase_encoding: Optional[str] = None):
+        """_summary_
+
+        Args:
+            phase_encoding (Optional[str], optional): _description_. Defaults to None.
+
+        Raises:
+            QiskitError: _description_
+        """
         if phase_encoding is None or phase_encoding in pauli_rep.PHASE_ENCODINGS:
             BasePauli.PRINT_PHASE_ENCODING = phase_encoding
         else:
@@ -301,6 +319,29 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 f"Unknown print phase encoding {phase_encoding}. Encoding \
                 must be None or one of {pauli_rep.get_phase_encodings}"
             )
+
+    @property
+    def qubit_order(self):
+        """Get external qubit order"""
+        return BasePauli.EXTERNAL_QUBIT_ORDER
+
+    @classmethod
+    def set_qubit_order(cls, qubit_order: Optional[str] = None):
+        """Set external qubit order
+
+        Args:
+            qubit_order (Optional[str], optional): _description_. Defaults to None.
+
+        Raises:
+            QiskitError: _description_
+        """
+        if qubit_order is None:
+            BasePauli.EXTERNAL_QUBIT_ORDER = pauli_rep.DEFAULT_QUBIT_ORDER
+        else:
+            if qubit_order not in pauli_rep.QUBIT_ORDERS:
+                raise QiskitError(f"Unknown qubit order: {qubit_order}")
+            else:
+                BasePauli.EXTERNAL_QUBIT_ORDER = qubit_order
 
     # ---------------------------------------------------------------------
     # Magic Methods
@@ -723,7 +764,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         no_phase: bool = False,
         return_phase: bool = False,
         syntax: Optional[int] = None,
-        qubit_order: str = "right-to-left",
+        qubit_order: Optional[str] = None,
         index_start: int = 0,
         squeeze: bool = True,
         index_str: str = "",
@@ -771,6 +812,9 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
             )
         if syntax is None:
             syntax = BasePauli.EXTERNAL_SYNTAX
+
+        if qubit_order is None:
+            qubit_order = BasePauli.EXTERNAL_QUBIT_ORDER
 
         pauli_str = pauli_rep.symplectic2str(
             self.matrix,

@@ -1,0 +1,23 @@
+{
+ "0": {
+  "stabilizer": [
+   "X"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 2,
+  "n": 1,
+  "k": 0,
+  "index": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1
+  ],
+  "d": 1,
+  "uuid": "b8ad169a-2d48-454e-80bc-957f7d45b807",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ }
+}

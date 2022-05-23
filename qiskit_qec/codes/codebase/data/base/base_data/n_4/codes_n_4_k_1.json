@@ -1,0 +1,380 @@
+{
+ "cd15f0d1-03ba-4d16-b655-54421c14f444": {
+  "stabilizer": [
+   "xiix",
+   "ixxi",
+   "izzi"
+  ],
+  "logical_ops": [
+   "iiix",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 96,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   4,
+   0,
+   3
+  ],
+  "d": 1,
+  "uuid": "cd15f0d1-03ba-4d16-b655-54421c14f444",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "c821744f-8a44-419d-9ebf-224ea08bceb0": {
+  "stabilizer": [
+   "xiix",
+   "izzi",
+   "xxxi"
+  ],
+  "logical_ops": [
+   "iiix",
+   "zziz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 32,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   2,
+   4,
+   1
+  ],
+  "d": 1,
+  "uuid": "c821744f-8a44-419d-9ebf-224ea08bceb0",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "4dd77395-56de-4ce6-8197-ab3459c1fa5e": {
+  "stabilizer": [
+   "ixii",
+   "zizi",
+   "yiyi"
+  ],
+  "logical_ops": [
+   "iiix",
+   "iiiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 144,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1,
+   3,
+   3,
+   0
+  ],
+  "d": 1,
+  "uuid": "4dd77395-56de-4ce6-8197-ab3459c1fa5e",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "0a4d8521-adfb-4851-90a7-2306a5994120": {
+  "stabilizer": [
+   "zizi",
+   "zziz",
+   "yiyx"
+  ],
+  "logical_ops": [
+   "ixix",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 8,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   1,
+   4,
+   2
+  ],
+  "d": 1,
+  "uuid": "0a4d8521-adfb-4851-90a7-2306a5994120",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "53f29d74-e57c-4862-bf32-2ad5b8a72abf": {
+  "stabilizer": [
+   "iziz",
+   "iizz",
+   "xxyy"
+  ],
+  "logical_ops": [
+   "ixxx",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 48,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   0,
+   4
+  ],
+  "d": 1,
+  "uuid": "53f29d74-e57c-4862-bf32-2ad5b8a72abf",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "38dc68ef-413c-4a3f-a9db-cd3d98455b3d": {
+  "stabilizer": [
+   "xiii",
+   "ixii",
+   "iixi"
+  ],
+  "logical_ops": [
+   "iiix",
+   "iiiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 288,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   3,
+   3,
+   1,
+   0
+  ],
+  "d": 1,
+  "uuid": "38dc68ef-413c-4a3f-a9db-cd3d98455b3d",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "c7dc0782-2a48-4b21-b16a-93c4321aeead": {
+  "stabilizer": [
+   "xixi",
+   "ixxi",
+   "zzzi"
+  ],
+  "logical_ops": [
+   "iiix",
+   "iiiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 144,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   4,
+   0
+  ],
+  "d": 1,
+  "uuid": "c7dc0782-2a48-4b21-b16a-93c4321aeead",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "ffe28461-1f15-42e8-a98d-ed359e071ca3": {
+  "stabilizer": [
+   "ixii",
+   "iixi",
+   "xixx"
+  ],
+  "logical_ops": [
+   "iiix",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 64,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   2,
+   2,
+   2,
+   1
+  ],
+  "d": 1,
+  "uuid": "ffe28461-1f15-42e8-a98d-ed359e071ca3",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "e4578451-f006-434e-99d7-57e7cfe24d80": {
+  "stabilizer": [
+   "iixi",
+   "ixix",
+   "xxii"
+  ],
+  "logical_ops": [
+   "iiix",
+   "zziz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 96,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1,
+   3,
+   3,
+   0
+  ],
+  "d": 1,
+  "uuid": "e4578451-f006-434e-99d7-57e7cfe24d80",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "05d34588-613a-47b5-a5c2-52af50a386b4": {
+  "stabilizer": [
+   "xixi",
+   "ixix",
+   "zzzz"
+  ],
+  "logical_ops": [
+   "iixx",
+   "iziz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 32,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "is_triorthogonal": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   2,
+   0,
+   5
+  ],
+  "d": 2,
+  "uuid": "05d34588-613a-47b5-a5c2-52af50a386b4",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "a39bac98-ff26-46f9-bab7-8191a1d25514": {
+  "stabilizer": [
+   "ziiz",
+   "iziz",
+   "iizz"
+  ],
+  "logical_ops": [
+   "xxxx",
+   "iiiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 384,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   6,
+   0,
+   1
+  ],
+  "d": 1,
+  "uuid": "a39bac98-ff26-46f9-bab7-8191a1d25514",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "622b0e0f-5ca4-4f66-9294-1a08005aba68": {
+  "stabilizer": [
+   "zxzi",
+   "yyix",
+   "izxz"
+  ],
+  "logical_ops": [
+   "iizx",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 24,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   0,
+   4,
+   3
+  ],
+  "d": 2,
+  "uuid": "622b0e0f-5ca4-4f66-9294-1a08005aba68",
+  "is_css": 0,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "43c522e0-bd6f-4aed-a977-e4cccefd18fb": {
+  "stabilizer": [
+   "ixii",
+   "zizi",
+   "yiyx"
+  ],
+  "logical_ops": [
+   "iiix",
+   "ziiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 16,
+  "n": 4,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1,
+   1,
+   3,
+   2
+  ],
+  "d": 1,
+  "uuid": "43c522e0-bd6f-4aed-a977-e4cccefd18fb",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ }
+}

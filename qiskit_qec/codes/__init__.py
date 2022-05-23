@@ -25,9 +25,8 @@ Codes module classes and functions
 
     Code
     QECCode
-    SubSystemCode
+    StabSubSystemCode
 """
 
-from .code import Code
 from .qec_code import QECCode
-from .subsystemcodes import SubSystemCode
+from .stabsubsystemcodes import StabSubSystemCode
