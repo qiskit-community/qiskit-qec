@@ -100,9 +100,9 @@ class Properties:
     def info(self):
         """Print info"""
         print(
-            f"[[{self.properties[Properties.N]}, \
-                {self.properties[Properties.K]}]]-{self.properties[Properties.INDEX]} \
-                {self.properties[Properties.TYPE]}"
+            f"[[{self.properties[Properties.N]}," +
+            f"{self.properties[Properties.K]}]]-{self.properties[Properties.INDEX]}" +
+            f" of type {self.properties[Properties.TYPE]}"
         )
         line = "-" * 79
         print(line)
