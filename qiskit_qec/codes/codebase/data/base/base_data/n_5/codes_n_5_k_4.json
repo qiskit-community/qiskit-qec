@@ -1,24 +1,23 @@
 {
- "e1b64946-589b-446a-8062-f61a1aaf8849": {
-  "stabilizer": [
-   "xiixi"
+ "0": {
+  "isotropic_generators": [
+   "X0X3"
   ],
   "logical_ops": [
-   "ixiii",
-   "iixii",
-   "iiixi",
-   "iiiix",
-   "iziii",
-   "iizii",
-   "ziizi",
-   "iiiiz"
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "Z1",
+   "Z2",
+   "Z0Z3",
+   "Z4"
   ],
   "is_subsystem": 1,
-  "belongs_to_standard_codebase": 1,
+  "index": "0",
+  "code_type": "StabSubSystemCode",
   "aut_group_size": 10368,
-  "n": 5,
-  "k": 4,
-  "is_degenerate": 0,
+  "is_decomposable": 0,
   "weight_enumerator": [
    1,
    0,
@@ -27,32 +26,33 @@
    0,
    0
   ],
-  "d": 1,
-  "uuid": "e1b64946-589b-446a-8062-f61a1aaf8849",
   "is_css": 1,
-  "is_decomposable": 0,
-  "is_gf4linear": 0
+  "uuid": "8d6acf18-0a99-47ce-a2e5-cbff39c68f1c",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 4,
+  "n": 5
  },
- "f3dce3a1-7233-4725-a416-09513dc802b2": {
-  "stabilizer": [
-   "xxiix"
+ "1": {
+  "isotropic_generators": [
+   "X0X1X4"
   ],
   "logical_ops": [
-   "ixiii",
-   "iixii",
-   "iiixi",
-   "iiiix",
-   "zziii",
-   "iizii",
-   "iiizi",
-   "ziiiz"
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "Z0Z1",
+   "Z2",
+   "Z3",
+   "Z0Z4"
   ],
   "is_subsystem": 1,
-  "belongs_to_standard_codebase": 1,
+  "index": "1",
+  "code_type": "StabSubSystemCode",
   "aut_group_size": 3456,
-  "n": 5,
-  "k": 4,
-  "is_degenerate": 0,
+  "is_decomposable": 0,
   "weight_enumerator": [
    1,
    0,
@@ -61,32 +61,33 @@
    0,
    0
   ],
-  "d": 1,
-  "uuid": "f3dce3a1-7233-4725-a416-09513dc802b2",
   "is_css": 1,
-  "is_decomposable": 0,
-  "is_gf4linear": 0
+  "uuid": "90120dbb-7363-4f53-b93f-63288780098e",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 4,
+  "n": 5
  },
- "cafcee02-8378-4865-b48b-fa5a6438e7bc": {
-  "stabilizer": [
-   "zizzz"
+ "2": {
+  "isotropic_generators": [
+   "Z0Z2Z3Z4"
   ],
   "logical_ops": [
-   "ixiii",
-   "xixii",
-   "xiixi",
-   "xiiix",
-   "iziii",
-   "iizii",
-   "iiizi",
-   "iiiiz"
+   "X1",
+   "X0X2",
+   "X0X3",
+   "X0X4",
+   "Z1",
+   "Z2",
+   "Z3",
+   "Z4"
   ],
   "is_subsystem": 1,
-  "belongs_to_standard_codebase": 1,
+  "index": "2",
+  "code_type": "StabSubSystemCode",
   "aut_group_size": 2304,
-  "n": 5,
-  "k": 4,
-  "is_degenerate": 0,
+  "is_decomposable": 0,
   "weight_enumerator": [
    1,
    0,
@@ -95,32 +96,33 @@
    1,
    0
   ],
-  "d": 1,
-  "uuid": "cafcee02-8378-4865-b48b-fa5a6438e7bc",
   "is_css": 1,
-  "is_decomposable": 0,
-  "is_gf4linear": 0
+  "uuid": "586c57a1-92bc-4b6f-89cc-8707194e5dcb",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 4,
+  "n": 5
  },
- "18750da4-f512-4abe-a31b-ccb8b62a1844": {
-  "stabilizer": [
-   "xxxxx"
+ "3": {
+  "isotropic_generators": [
+   "X0X1X2X3X4"
   ],
   "logical_ops": [
-   "ixiii",
-   "iixii",
-   "iiixi",
-   "iiiix",
-   "zziii",
-   "zizii",
-   "ziizi",
-   "ziiiz"
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "Z0Z1",
+   "Z0Z2",
+   "Z0Z3",
+   "Z0Z4"
   ],
   "is_subsystem": 1,
-  "belongs_to_standard_codebase": 1,
+  "index": "3",
+  "code_type": "StabSubSystemCode",
   "aut_group_size": 3840,
-  "n": 5,
-  "k": 4,
-  "is_degenerate": 0,
+  "is_decomposable": 0,
   "weight_enumerator": [
    1,
    0,
@@ -129,32 +131,33 @@
    0,
    1
   ],
-  "d": 1,
-  "uuid": "18750da4-f512-4abe-a31b-ccb8b62a1844",
   "is_css": 1,
-  "is_decomposable": 0,
-  "is_gf4linear": 0
+  "uuid": "2f522d66-2a36-4272-b91e-d320f0803c9a",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 4,
+  "n": 5
  },
- "44284098-eb73-4c8d-93bc-7dc41696abc7": {
-  "stabilizer": [
-   "xiiii"
+ "4": {
+  "isotropic_generators": [
+   "X0"
   ],
   "logical_ops": [
-   "ixiii",
-   "iixii",
-   "iiixi",
-   "iiiix",
-   "iziii",
-   "iizii",
-   "iiizi",
-   "iiiiz"
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "Z1",
+   "Z2",
+   "Z3",
+   "Z4"
   ],
   "is_subsystem": 1,
-  "belongs_to_standard_codebase": 1,
+  "index": "4",
+  "code_type": "StabSubSystemCode",
   "aut_group_size": 62208,
-  "n": 5,
-  "k": 4,
-  "is_degenerate": 0,
+  "is_decomposable": 0,
   "weight_enumerator": [
    1,
    1,
@@ -163,10 +166,12 @@
    0,
    0
   ],
-  "d": 1,
-  "uuid": "44284098-eb73-4c8d-93bc-7dc41696abc7",
   "is_css": 1,
-  "is_decomposable": 0,
-  "is_gf4linear": 0
+  "uuid": "d58e5a44-f7fe-4c7e-9f8e-f1ac0da6b847",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 4,
+  "n": 5
  }
 }
