@@ -1,0 +1,137 @@
+{
+ "a7753bb2-01f8-461b-aedd-24d42a7322da": {
+  "stabilizer": [
+   "xii",
+   "ixi"
+  ],
+  "logical_ops": [
+   "iix",
+   "iiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 48,
+  "n": 3,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   2,
+   1,
+   0
+  ],
+  "d": 1,
+  "uuid": "a7753bb2-01f8-461b-aedd-24d42a7322da",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "d340c69c-0310-4ce9-af44-1fd83c3ce67b": {
+  "stabilizer": [
+   "ixi",
+   "xxx"
+  ],
+  "logical_ops": [
+   "iix",
+   "ziz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 16,
+  "n": 3,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "d": 1,
+  "uuid": "d340c69c-0310-4ce9-af44-1fd83c3ce67b",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "103f7c5b-8601-4175-844d-695eee247b71": {
+  "stabilizer": [
+   "xix",
+   "ixx"
+  ],
+  "logical_ops": [
+   "iix",
+   "zzz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 48,
+  "n": 3,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   0
+  ],
+  "d": 1,
+  "uuid": "103f7c5b-8601-4175-844d-695eee247b71",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ },
+ "d6ade957-fdac-45d5-814c-d386c3f4604a": {
+  "stabilizer": [
+   "xxi",
+   "zzi"
+  ],
+  "logical_ops": [
+   "iix",
+   "iiz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 72,
+  "n": 3,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   0
+  ],
+  "d": 1,
+  "uuid": "d6ade957-fdac-45d5-814c-d386c3f4604a",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 1
+ },
+ "0a80b836-3c62-47ec-9efa-a417b8b01b12": {
+  "stabilizer": [
+   "xix",
+   "zzz"
+  ],
+  "logical_ops": [
+   "ixx",
+   "ziz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 8,
+  "n": 3,
+  "k": 1,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   1,
+   2
+  ],
+  "d": 1,
+  "uuid": "0a80b836-3c62-47ec-9efa-a417b8b01b12",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 0
+ }
+}

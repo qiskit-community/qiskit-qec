@@ -30,10 +30,10 @@ def all_commute(matrix: np.ndarray) -> bool:
     defined by the matrix generate an abelian subgroup.
 
     Args:
-        matrix : Input GF(2) symplectic matrix
+        matrix: Input GF(2) symplectic matrix
 
     Returns:
-        out: True if operators mutually commute - have zero symplectic product
+        True if operators mutually commute - have zero symplectic product
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],
@@ -70,7 +70,7 @@ def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> int:
         mat1, mat2: Input GF(2) symplectic matrixes
 
     Returns:
-        int: Symplectic product of mat1 and mat2
+        Symplectic product of mat1 and mat2
 
     Raises:
         QiskitError: Input matrices/vectors must be GF(2) symplectic matrices/vectors
@@ -107,8 +107,7 @@ def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> int:
             dimensions: {mat1_np_array.shape[0]} not equal \
             to {mat2_np_array.shape[0]}"
             )
-
-        return _symplectic_product_vv(mat1, mat2, mat1_np_array.shape[0] >> 1)
+        return _symplectic_product_vv(mat1_np_array, mat2_np_array, mat1_np_array.shape[0] >> 1)
 
     elif mat1_np_array.ndim == 2:
         return _symplectic_product_dense(mat1_np_array, mat2_np_array)
@@ -127,12 +126,16 @@ def _symplectic_product_vv(vec1: np.ndarray, vec2: np.ndarray, n: int) -> int:
     lambda = [0 I]
              [I 0]
 
+    Warning: This method requires integer components. Python bool and nump bool_
+    type will give incorrect results. Use _symplectic_product_vv_boolean  or the
+    more general symplectic_product
+
     Args:
         vec1, vec2: Input GF(2) symplectic vectors
         n: Input size, half of the symplectic vector length
 
     Returns:
-        out: Symplectic product of vec1 and vec2
+        Symplectic product of vec1 and vec2
 
     Examples:
         >>> a = np.array([1,0,0,0,1,1,1,0,1,0])
@@ -148,16 +151,54 @@ def _symplectic_product_vv(vec1: np.ndarray, vec2: np.ndarray, n: int) -> int:
     is faster. Note that this method is faster if the vectors are
     numpy arrays with dtype=int8
     """
+    assert vec1.dtype != bool
     r = 0
     for i in range(n):
         r += vec1[i] * vec2[n + i] + vec1[n + i] * vec2[i]
     return r % 2
 
 
+def _symplectic_product_vv_boolean(vec1: np.ndarray, vec2: np.ndarray, n: int) -> int:
+    r"""Finds the sympletic product or two GF(2) (boolean types) symplectic vectors of
+    length 2n: vec1 . Lambda . vec2^T where
+
+    lambda = [0 I]
+             [I 0]
+
+    Warning: This method requires boolean components.
+
+    Args:
+        vec1, vec2: Input GF(2) symplectic vectors
+        n: Input size, half of the symplectic vector length
+
+    Returns:
+        out: Symplectic product of vec1 and vec2
+
+    Examples:
+        >>> a = np.array([1,0,0,0,1,1,1,0,1,0], dtype=numpy.bool_)
+        >>> b = numpy.array([1,1,1,1,0,0,1,0,1,1], dtype=numpy.bool_)
+        >>> _symplectic_product_vv_boolean(a, b, 5)
+        0
+
+    See Also:
+    symplectic_product, _symplectic_product_dense, _symplectic_product_vv
+
+    Notes:
+    If changing the method please make sure that the new method
+    is faster. Note that this method is faster if the vectors are
+    numpy arrays with dtype=int8
+    """
+    assert vec1.dtype == bool
+    r = False
+    for i in range(n):
+        r += vec1[i] & vec2[n + i] ^ vec1[n + i] & vec2[i]
+    return int(r)
+
+
 def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, np.ndarray]:
     r"""Returns the symplectic product of two GF(2) symplectic matrices.
 
-    Let math:'A', math:'B' be two GF(2) symplectic matrices of width math:'2m',
+    Let math:'A', math:'B' be two GF(2) (as integer not boolean) symplectic matrices of width math:'2m',
     then the symplectic product is defined as
 
     .. math::
@@ -167,7 +208,7 @@ def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, 
         mat1, mat2: Input GF(2) symplectic matrixes
 
     Returns:
-        int: Symplectic product of mat1 and mat2
+        Symplectic product of mat1 and mat2
 
     Examples:
         >>> mat1 = numpy.array([[1,0,1,1],[0,1,1,0]], dtype=numpy.bool_)
@@ -177,8 +218,9 @@ def _symplectic_product_dense(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, 
         array([[0, 1], [1, 0]]
 
     See Also:
-    _symplectic_product_vv, _symplectic_product_numpy
+    _symplectic_product_vv, symplectic_product
     """
+    assert mat1.dtype != bool
     m1, m2 = np.hsplit(mat1, 2)  # pylint: disable=unbalanced-tuple-unpacking
     result = np.hstack((m2, m1)).dot(mat2.transpose()) % 2
     if result.size == 1:
@@ -236,7 +278,7 @@ def make_commute_hyper(
         QiskitError: Input matrices/vectors must have the same number of columns/length
 
     Returns:
-        out: GF(2) symplectic vectors that commute with the given hyperbolic pairs
+        GF(2) symplectic vectors that commute with the given hyperbolic pairs
 
     Examples:
         >>> a = numpy.array([1,1,1,0,0,0],dtype=numpy.bool_)
@@ -275,7 +317,6 @@ def make_commute_hyper(
 
     See Also:
     _make_commute_hyper
-
     """
     if not (is_symplectic_form(a) and is_symplectic_form(x) and is_symplectic_form(z)):
         raise QiskitError("Input matrices/vectors must be GF(2) symplectic matrices/vectors")
@@ -352,7 +393,7 @@ def _make_commute_hyper(
         squeeze (optional): squeeze = True will return a vector if a vector results
 
     Returns:
-        out: GF(2) symplectic vectors that commute with the given hyperbolic pairs
+        GF(2) symplectic vectors that commute with the given hyperbolic pairs
 
     Examples:
         >>> a = numpy.array([[1,1,1,0,0,0]],dtype=numpy.bool_)
@@ -407,9 +448,9 @@ def _make_commute_hyper(
         for k in arange:
             # a[k] = _commute_with_pair(a[k], x[i], z[j])
             num_qubits = x[i].shape[0] >> 1
-            if _symplectic_product_vv(a[k], x[i], num_qubits):
+            if _symplectic_product_vv(a[k].astype(int), x[i].astype(int), num_qubits):
                 a[k] = a[k] ^ z[j]
-            if _symplectic_product_vv(a[k], z[j], num_qubits):
+            if _symplectic_product_vv(a[k].astype(int), z[j].astype(int), num_qubits):
                 a[k] = a[k] ^ x[i]
     if squeeze:
         a = np.squeeze(a)
@@ -443,7 +484,7 @@ def locate_hyper_partner(
             of columns/length
 
     Returns:
-        (av, index) or None: Tuple of the found hyperbolic partner and its index in the
+        Tuple of the found hyperbolic partner (av) and its index in the
             search matrix. 'None' if no hyperbolic partner is found.
 
     Examples:
@@ -493,7 +534,7 @@ def _locate_hyper_partner(matrix: np.ndarray, vector: np.ndarray) -> Union[None,
         vector: GF(2) symplectic vector to find a hyperbolic pair for
 
     Returns:
-        (av, index) or None: Tuple of the found hyperbolic partner and its index in the
+        Tuple of the found hyperbolic partner (av) and its index in the
             search matrix. 'None' if no hyperbolic partner is found.
 
     Examples:
@@ -510,7 +551,7 @@ def _locate_hyper_partner(matrix: np.ndarray, vector: np.ndarray) -> Union[None,
     """
     n = matrix.shape[1] >> 1
     for index, item in enumerate(matrix):
-        if _symplectic_product_vv(item, vector, n) == 1:
+        if _symplectic_product_vv(item.astype(int), vector.astype(int), n) == 1:
             return (item.copy(), index)
     return None
 
@@ -544,7 +585,7 @@ def build_hyper_partner(matrix, index: int) -> np.ndarray:
         QiskitError: Input index out or range
 
     Returns:
-        out: a hyperbolic partner for the given vector wrt the set of commuting
+        a hyperbolic partner for the given vector wrt the set of commuting
             generators
 
     Examples:
@@ -605,7 +646,7 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
         index: index of generator to build a hyperbolic partner for
 
     Returns:
-        out: a hyperbolic partner for the given vector wrt the set of commuting
+        a hyperbolic partner for the given vector wrt the set of commuting
             generators
 
     Examples:
@@ -654,7 +695,7 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
 
 def symplectic_gram_schmidt(
     a: np.ndarray, x: Optional[np.ndarray] = None, z: Optional[np.ndarray] = None
-):
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Applies the sympletic Gram-Schmidt process to the input matrix
 
     Apply the symplectic GramSchmidt process to the input symplectic matrix. Resulting
@@ -675,7 +716,7 @@ def symplectic_gram_schmidt(
         QiskitError: Input hyperbolic matrices do not represent a hyperbolic basis
 
     Returns:
-        center, x, z: Center array and hyperbolic pairs split accross x and z
+        Center array and hyperbolic pairs split accross x and z
 
     Examples:
         >>> a = numpy.array([[0,1,0,0,1,0,1,0],
@@ -729,7 +770,9 @@ def symplectic_gram_schmidt(
     return _symplectic_gram_schmidt(a, x, z)
 
 
-def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndarray]):
+def _symplectic_gram_schmidt(
+    a: np.ndarray, x: List[np.ndarray], z: List[np.ndarray]
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Applies the sympletic Gram-Schmidt process to the input matrix
 
     Apply the symplectic GramSchmidt process to the input symplectic matrix. Resulting
@@ -739,7 +782,7 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
     Args:
         a: Symplectic matrix
         x, z (optional): GF(2) Symplectic matrices representing hyperbolic pairs to
-        build upon. Default is None.
+            build upon. Default is None.
 
     Raises:
         QiskitError Input matric not a GF(2) symplectic matrix
@@ -748,7 +791,7 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
         QiskitError: Input hyperbolic arrays have different dimensions
 
     Returns:
-        center, x, z: Center array and hyperbolic pairs split accross x and z
+        Center array and hyperbolic pairs split accross x and z
 
     Examples:
         >>> a = numpy.array([[0,1,0,0,1,0,1,0],
@@ -794,16 +837,85 @@ def _symplectic_gram_schmidt(a: np.ndarray, x: List[np.ndarray], z: List[np.ndar
             #    a_view, range(a_view.shape[0]), elem, elem_p
             # )
         except TypeError:
-            center_.append(elem)
+            if elem.any():
+                center_.append(elem)
 
     x = np.asarray(x)
     z = np.asarray(z)
     if len(center_) == 0:
-        center_ = np.zeros(shape=(0, x.shape[1]), dtype=np.bool_)
+        center_ = np.zeros(shape=(1, x.shape[1]), dtype=np.bool_)
     else:
         center_ = np.asarray(center_)
 
     return center_, x, z
+
+
+# ---------------------------------------------------------------
+
+
+def count_num_y(matrix: np.ndarray, scalar: bool = True) -> Union[np.ndarray, int]:
+    """Returns the number of positions with 1's in k and n+k positions
+    for matrices/vectors of width 2n for all k
+
+    Args:
+        matrix: Input GF(2) symplectic matrix/vector
+        scalar: If scalar is True and a vector is input then a scalar will
+            be output else a vector will be output. Default is True
+
+    Raises:
+        QiskitError: Input matrix/vector not a GF(2) symplectic matrix
+
+    Returns:
+        result: number of positions with 1's in k and n+k positions
+    for matrices/vectors of width 2n for all k.
+
+    Examples:
+        >>> a = np.array([1,0,1,1], dtype=np.bool_)
+        >>> count_num_y(a)
+        1
+
+        >>> a = np.array([1,0,1,1], dtype=np.bool_)
+        >>> count_num_y(a, scalar=False)
+        array([1])
+
+        >>> b = np.array([[1,0,1,1],[0,0,1,1]], dtype=np.bool_)
+        >>> count_num_y(b)
+        array([1,0])
+
+    """
+    matrix = np.atleast_2d(matrix)
+    if not is_symplectic_form(matrix):
+        raise QiskitError("Input matrix/vector not a GF(2) symplectic matrix")
+    num_qubits = matrix.shape[1] >> 1
+    result = _count_num_y(matrix, num_qubits)
+    if scalar and matrix.shape[0] == 1:
+        return result[0]
+    else:
+        return result
+
+
+def _count_num_y(matrix: np.ndarray, n: int) -> np.ndarray:
+    """Returns the number of positions with 1's in k and n+k positions
+    for matrices/vectors of width 2n for all k
+
+    Args:
+        matrix (np.ndarray): Input GF(2) symplectic matrix/vector
+        n (int): half of the number of columns of input matrix
+
+    Returns:
+        np.ndarray: number of positions with 1's in k and n+k positions
+    for matrices/vectors of width 2n for all k.
+
+    Examples:
+        >>> a = np.array([1,0,1,1], dtype=np.bool_)
+        >>> _count_num_y(a)
+        array([1])
+
+        >>> b = np.array([[1,0,1,1],[0,0,1,1]], dtype=np.bool_)
+        >>> count_num_y(a, scalar=False)
+        array([1,0])
+    """
+    return np.sum(np.logical_and(matrix[:, :n], matrix[:, n:]), axis=1, dtype=int)
 
 
 # ---------------------------------------------------------------
@@ -823,7 +935,7 @@ def is_symplectic_matrix_form(
         dtype: Optional. Check if given matrix is of type dtype. Default: None
 
     Returns:
-        out: True if the input matrix is GF(2) symplectic. False otherwise.
+        True if the input matrix is GF(2) symplectic. False otherwise.
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,1,0,0,1,0],[0,1,1,1,0,0,0,1]], dtype=numpy.bool_)
@@ -870,7 +982,7 @@ def is_symplectic_vector_form(
         dtype: Optional. Check if given vector is of type dtype. Default: None
 
     Returns:
-        out: True if the input vector is GF(2) symplectic. False otherwise.
+        True if the input vector is GF(2) symplectic. False otherwise.
 
     Examples:
         >>> vector = numpy.array([[1,0,0,1,0,0,1,0],[0,1,1,1,0,0,0,1]], dtype=numpy.bool_)
@@ -916,7 +1028,7 @@ def is_symplectic_form(
         dtype (Optional): Check if given matrix/vector is of type dtype. Defaults to None.
 
     Returns:
-        out: True if the input matrix/vector is GF(2) symplectic. False otherwise.
+        True if the input matrix/vector is GF(2) symplectic. False otherwise.
 
     Examples:
         >>> vector = numpy.array([[1,0,0,1,0,0,1,0]], dtype=numpy.bool_)
@@ -943,27 +1055,23 @@ def is_symplectic_form(
 # ---------------------------------------------------------------
 
 
-def is_center(center_: np.ndarray, matrix: np.ndarray) -> bool:
+def is_center(cntr: np.ndarray, matrix: np.ndarray) -> bool:
     """Does the input center matrix represent the center of the supplied matrix?
 
-    Let op(center_) = [op(c_0),op(c_1),...,op(c_(k-1))] be the Pauli operators
-    represented by the input center_matrix. Let op(matrix_) = [op(m_0),op(m_1),...,op(m_(t-1))]
+    Let op(cntr) = [op(c_0),op(c_1),...,op(c_(k-1))] be the Pauli operators
+    represented by the input center_matrix. Let op(matrix) = [op(m_0),op(m_1),...,op(m_(t-1))]
     be the Pauli operators represented by the input matrix. This method
-    returns True if
-
-    <op(center_)> = Z(<op(matrix)>)
-
-    and False otherwise.
+    returns True if <op(cntr)> = Z(<op(matrix)>) and False otherwise.
 
     Args:
-        center_ (np.ndarray): Generators of center to be checked
+        cntr (np.ndarray): Generators of center to be checked
         matrix (np.ndarray): Generators of full group
 
     Raises:
         QiskitError: Not all inputs are not GF(2) symplectic matrices/vectors
 
     Returns:
-        out: True if <op(center_)> = Z(<op(matrix)>), False otherwise
+        True if <op(cntr)> = Z(<op(matrix)>), False otherwise
 
     Examples:
         >>> matrix = numpy.array(
@@ -971,21 +1079,18 @@ def is_center(center_: np.ndarray, matrix: np.ndarray) -> bool:
             [0,0,0,0,1,1,0,1],
             [1,1,1,0,0,1,0,0],
             [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
-        >>> center_ = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
+        >>> cntr = numpy.array([[1, 1, 1, 0, 1, 0, 0, 1],
                                 [1, 0, 0, 1, 0, 1, 1, 1]], dtype=numpy.bool_)
-        >>> is_center(center_, matrix)
+        >>> is_center(cntr, matrix)
         True
-
-    See Also:
-    center
     """
     matrix = np.atleast_2d(np.array(matrix))
-    center_ = np.atleast_2d(np.array(center_))
-    if not (is_symplectic_matrix_form(center_) and is_symplectic_matrix_form(matrix)):
+    cntr = np.atleast_2d(np.array(cntr))
+    if not (is_symplectic_matrix_form(cntr) and is_symplectic_matrix_form(matrix)):
         QiskitError("Not all inputs are not GF(2) symplectic matrices")
     cal_center = center(matrix)
 
-    return is_same_span(center_, cal_center)
+    return is_same_span(cntr, cal_center)
 
 
 # ---------------------------------------------------------------
@@ -999,7 +1104,7 @@ def is_same_span(matrix1: np.ndarray, matrix2: np.ndarray) -> bool:
         matrix2: Second set of vectors
 
     Returns:
-        out: True if span(rows of matrix1) = span(rows of matrix2). False otherwise
+        True if span(rows of matrix1) = span(rows of matrix2). False otherwise
 
     Raises:
         QiskitError: Inpiut matrices must by GF(2) symplectic matrices
@@ -1042,7 +1147,7 @@ def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
         x,z: Pairs to test if they form a hyperbolic/symnplectic basis
 
     Returns:
-        out: True if input matrices form a hyperbolic/symplectic basis
+        True if input matrices form a hyperbolic/symplectic basis
 
     Examples:
         >>> x = numpy.array([[1,0,0,0,],[0,1,0,0]], dtype=numpy.bool_)
@@ -1071,7 +1176,7 @@ def is_stabilizer_group(matrix: np.ndarray) -> bool:
         QiskitError: Input matrix not a GF(2) symplectic matrix
 
     Returns:
-        out: True is matrix represents a Stabilizer group
+        True is matrix represents a Stabilizer group
 
     Examples:
         >>> matrix = numpy.array([[1,0,0,0,0,0],
@@ -1100,7 +1205,7 @@ def center(matrix: np.ndarray, preserve: bool = False) -> np.ndarray:
         QiskitError: Input matrix is not a symplectic matrix
 
     Returns:
-        out : Generators for the center, represented as a symplectic matrix,
+        Generators for the center, represented as a symplectic matrix,
             of the group with generators given by the input symplectic matrix
 
     Examples:
@@ -1132,7 +1237,7 @@ def _center(matrix: np.ndarray) -> bool:
         matrix: GF(2) symplectic matrix
 
     Returns:
-        out : Generators for the center, represented as a symplectic matrix,
+        Generators for the center, represented as a symplectic matrix,
             of the group with generators given by the input symplectic matrix
 
     Examples:
@@ -1161,7 +1266,7 @@ def _center_preserve(matrix: np.ndarray) -> np.ndarray:
         matrix: GF(2) symplectic matrix
 
     Returns:
-        out : Generators for the center, represented as a symplectic matrix,
+        Generators for the center, represented as a symplectic matrix,
             of the group with generators given by the input symplectic matrix
 
     Examples:
@@ -1212,7 +1317,7 @@ def basis_for_pauli_group(matrix: np.ndarray) -> np.ndarray:
         QiskitError: Input matrix not in a GF(2) symplectic matrix
 
     Returns:
-        out: A maximal independant set
+        A maximal independant set
 
     Examples:
         >>> matrix = numpy.array([[1,1,0,0,1,0],[0,0,0,1,1,0],[0,1,0,1,0,1]], dtype=numpy.bool_)
@@ -1240,7 +1345,7 @@ def _basis_for_pauli_group(matrix: np.ndarray) -> np.ndarray:
         matrix: Set of generators (in GF(2) symplectic form)
 
     Returns:
-        out: A maximal independant set
+        A maximal independant set
 
     Examples:
         >>> matrix = numpy.array([[1,1,0,0,1,0],[0,0,0,1,1,0],[0,1,0,1,0,1]], dtype=numpy.bool_)
@@ -1311,6 +1416,11 @@ def make_hyperbolic(
         return x, z
 
     center_ = np.atleast_2d(np.array(center_))
+    if center_.shape[0] == 1 and not center_.any():
+        return x, z
+
+    center_ = min_generating(center_)
+
     x = np.atleast_2d(np.array(x))
     z = np.atleast_2d(np.array(z))
 
@@ -1389,14 +1499,16 @@ def _make_hyperbolic(
     return x, z
 
 
-def make_isotropic_hyperbolic_form(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def make_isotropic_hyperbolic_form(
+    matrix: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Creates a isotrophic hyperbolic basis from a set of generators
 
     Args:
         matrix (np.ndarray): GF(2) symplectic matrix
 
     Returns:
-        center_, x, z: An isotrophic hyperbolic basis
+        An isotrophic hyperbolic basis (center, x, z)
 
     Examples:
         >>> matrix = np.array([[0,1,0,0,1,0,1,0],
@@ -1414,7 +1526,6 @@ def make_isotropic_hyperbolic_form(matrix: np.ndarray) -> Tuple[np.ndarray, np.n
 
     See Also:
     symplectic_gram_schmidt, _symplectic_gram_schmidt
-
     """
     return _symplectic_gram_schmidt(matrix, [], [])
 
@@ -1443,7 +1554,7 @@ def hyperbolic_basis_for_pauli_group(
         QiskitError: If matrix, x and z are None then n must be provided
 
     Returns:
-        new_x, new_z: Hyperbolic basis for the associated Pauli group
+        Hyperbolic basis for the associated Pauli group (new_x, new_z)
 
     Examples:
         >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
@@ -1560,7 +1671,7 @@ def _hyperbolic_basis_for_pauli_group(
         x, z (Optional): Input GF(2) hyperbolic pairs
 
     Returns:
-        new_x, new_z: Hyperbolic basis for the associated Pauli group
+        Hyperbolic basis for the associated Pauli group (new_x, new_z)
 
     Examples:
         >>> matrix = numpy.array([[0,1,0,0,1,0,1,0],
@@ -1648,7 +1759,7 @@ def remove_hyper_elements_from_hyper_form(
                 dimension as the center
 
     Returns:
-        center_, x, z : isotropic hyperbolic basis
+        isotropic hyperbolic basis (center, x, z)
 
     Examples:
         >>> x, z = sysp.hyperbolic_basis_for_pauli_group(n=5)
@@ -1703,7 +1814,7 @@ def _remove_hyper_elements_from_hyper_form(
         indices: indices indicating which rows to transfer from source to sink
 
     Returns:
-        center_, x, z : isotropic hyperbolic basis
+        isotropic hyperbolic basis (center, x, z)
 
     Examples:
         >>> x, z = sysp.hyperbolic_basis_for_pauli_group(n=5)
@@ -1744,21 +1855,155 @@ def _remove_hyper_elements_from_hyper_form(
     else:
         new_center = np.vstack((center_, part_center))
 
+    if new_center.shape[0] > 1:
+        new_center = new_center[np.where(new_center.any(axis=1))[0]]
+
     return new_center, new_x, new_z
+
+
+# pylint: disable=missing-param-doc
+def min_generating(
+    matrix: Optional[np.ndarray] = None,
+    x: Optional[np.ndarray] = None,
+    z: Optional[np.ndarray] = None,
+) -> np.ndarray:
+    """Returns a minimal generating/linearily independent set of rows.
+
+    If only a matrix is provide the method returns a submatrix with maximally
+    independent set of rows. If a matrix and a set of hyperbolic pairs are provided then
+    the method returns a submatrix such that the rows of the submatrix and the
+    hyperbolic pairs are maximally linearily independent.
+
+    Note: This method returns matrix as a 2d matrix (relative to numpy)
+
+    Args:
+        matrix (Optional[np.ndarray]): Input GF(2) symplectic matrix
+        x, z (Optional[np.ndarray]): Input hyperbolic set - pair of GF(2) symplectic matrices
+
+    Raises:
+        QiskitError: An input matrix is required
+        QiskitError: Inputs x and z matrices do not have the same shape
+        QiskitError: Input hyper pair matrices do not represent a set of Hyperbolic pairs
+        QiskitError: Input matrix and x and z components must have the same number of columns
+
+    Returns:
+        matrix: minimal generating set or rows
+
+    Examples:
+        >>> mat = numpy.array([[1,0,1,0],[1,1,0,1],[0,1,1,1]])
+        >>> res = min_generating(mat)
+        >>> res.astype(int)
+        array([[1,0,1,0],
+               [1,1,0,1]])
+
+        >>> mat = numpy.array([[1,0,1,0],[1,1,0,1],[0,1,1,1]])
+        >>> x = numpy.array([[0,1,0,0]])
+        >>> z = numpy.array([[0,0,0,1]])
+        >>> res = symp.min_generating(mat,x,z)
+        >>> res.astype(int)
+        array([[1, 0, 1, 0],
+               [1, 1, 0, 1]])
+
+    See Also:
+        _min_generating_matrix, _min_generating_matrix_xz
+    """
+
+    # all inputs are None
+
+    if matrix is None and x is None and z is None:
+        raise QiskitError("An input matrix is required")
+
+    # Only matrix is provided
+    if x is None and z is None:
+        matrix = np.atleast_2d(matrix)
+        return _min_generating_matrix(matrix)
+
+    # Only x and z are provided
+    if matrix is None:
+        raise QiskitError("An input matrix is required")
+
+    # All matrix, x and z are provided
+    if x.shape != z.shape:
+        raise QiskitError("Inputs x and z matrices do not have the same shape")
+    matrix = np.atleast_2d(matrix)
+    x = np.atleast_2d(x)
+    z = np.atleast_2d(z)
+    if matrix.shape[1] != x.shape[1]:
+        raise QiskitError(
+            "Input matrix and x and z components must have the same number of columns"
+        )
+    return _min_generating_matrix_xz(matrix, x, z)
+
+
+def _min_generating_matrix(matrix: np.ndarray) -> np.ndarray:
+    """Returns a matrix consisting of rows from the input matrix such that the resulting
+    matrix and the input matrix have the same rank.
+
+    Note: This method returns everything as 2d matrices
+
+    Args:
+        matrix: Input GF(2) symplectic matrix
+
+    Examples:
+        >>> mat = numpy.array([[1,0,1,0],[1,1,0,1],[0,1,1,1],[1,1,1,1],[0,0,0,0]])
+        >>> _min_generating_matrix(mat)
+        array([[1, 0, 1, 0],
+               [1, 1, 0, 1],
+               [0, 1, 1, 1]])
+
+    Returns:
+        matrix: submatrix of input matrix with full rank
+    """
+    heads, _, _, rank_ = mt.rref_complete(matrix)
+    if rank_ == matrix.shape[0]:
+        return matrix
+
+    posns = np.flatnonzero(heads)
+    ext_matrix = np.zeros(shape=(posns.shape[0], matrix.shape[1]), dtype=np.bool_)
+    for k, index in enumerate(posns):
+        ext_matrix[k] = matrix[index]
+    return ext_matrix
+
+
+def _min_generating_matrix_xz(matrix, x, z) -> np.ndarray:
+    """Returns a submatrix of the input matrix such that combined rows of the submatrix and the
+    hyperbolic pairs are linearily independent of GF(2)
+
+    Args:
+        matrix: GF(2) symplectic matrix
+        x, y: hyperbolic basis pairs
+
+    Returns:
+        matrix: Submatrix of input matrix
+    """
+    # Priority is given to preserving the hyperbolic set (x,z) and so matrix is stack on the bottom.
+    tmp_matrix = np.vstack((x, z, matrix))
+    heads, _, _, rank_ = mt.rref_complete(tmp_matrix)
+    if rank_ < tmp_matrix.shape[0]:
+        # Since (x,z) has already been reduced any removal will appear in the matrix part
+        posns = np.flatnonzero(heads[2 * x.shape[0] :])
+        ext_matrix = np.zeros(shape=(posns.shape[0], matrix.shape[1]), dtype=np.bool_)
+        for k, index in enumerate(posns):
+            ext_matrix[k] = matrix[index]
+        matrix = ext_matrix
+    return matrix
 
 
 def normalizer(
     matrix: Optional[np.ndarray] = None,
     x: Optional[np.ndarray] = None,
     z: Optional[np.ndarray] = None,
+    min_gen: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Returns the normalizer of the group generated by the generators represented in the
     symplectic matrix(s):
 
     Args:
         matrix (optional): GF(2) symplectic matrix. Defaults to None.
-        x: (optional): Hyperbolic pairs. Defaults to None.
-        z: (optional): Hyperbolic pairs. Defaults to None.
+        x (optional): Hyperbolic pairs. Defaults to None.
+        z (optional): Hyperbolic pairs. Defaults to None.
+        min_gen (optional): If True then the matrix will be reduced to be full
+            rank (i.e. the rows will be a minimal generating set). Default is False
 
     Raises:
         QiskitError: All inputs should not be None
@@ -1769,7 +2014,7 @@ def normalizer(
         QiskitError: All inputs must have the same number of columns/length
 
     Returns:
-        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+        Isotropic hyperbolic form/basis of normalizer (center, x_new, y_new)
 
     Examples:
         >>> a = np.array([[1, 1, 1, 0, 1, 0, 0, 1]], dtype=np.bool_)
@@ -1799,6 +2044,8 @@ def normalizer(
         raise QiskitError("x and z must be both be None or both be array like")
 
     if matrix is not None and x is None:
+        if min_gen:
+            matrix = min_generating(matrix)
         if is_stabilizer_group(matrix):
             return _normalizer_abelian_group(matrix)
         else:
@@ -1809,8 +2056,10 @@ def normalizer(
     if not (is_symplectic_matrix_form(x) and is_symplectic_matrix_form(z)):
         raise QiskitError("x and z must be GF(2) symplectic matrices/vectors")
 
+    zero_mat = False
     if matrix is None:
         matrix = np.zeros(shape=(0, x.shape[1]), dtype=np.bool_)
+        zero_mat = True
 
     if not x.shape == z.shape:
         raise QiskitError("x and z must have the same shape")
@@ -1823,11 +2072,14 @@ def normalizer(
             "When a matrix and hyperbolic parts are "
             "provided the matrix must represent the center of the union"
         )
-
+    if not zero_mat:
+        matrix = min_generating(matrix, x, z)
     return _normalizer_group_preserve(matrix, x, z)
 
 
-def _normalizer_abelian_group(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _normalizer_abelian_group(
+    matrix: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Returns the normalizer of the abelian group generated by the generators represented in the
     symplectic matrix(s):
 
@@ -1836,7 +2088,7 @@ def _normalizer_abelian_group(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarra
         x, z  (optional): Hyperbolic pairs. Defaults to None.
 
     Returns:
-        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+        Isotropic hyperbolic form/basis of normalizer (center, x_new, y_new)
 
     TODO: Add examples
     """
@@ -1845,6 +2097,10 @@ def _normalizer_abelian_group(matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarra
     matrix_ext = _basis_for_pauli_group(matrix)
     center_, x, z = _symplectic_gram_schmidt(matrix_ext, [], [])
     center_, x, z = _remove_hyper_elements_from_hyper_form(center_, x, z, list(range(dist_center)))
+
+    if center_.shape[0] > 1:
+        center_ = center_[np.where(center_.any(axis=1))[0]]
+
     return center_, x, z
 
 
@@ -1854,19 +2110,28 @@ def _normalizer_group_preserve(
     """Returns the normalizer of the group generated by the generators represented in the
     symplectic matrix(s) and trys to preserve elements:
 
+    This method assumes that the matrix has full rank. That is that the
+    set of generators is independent.
+
     Args:
         matrix (optional): GF(2) symplectic matrix. Defaults to None.
         x, z  (optional): Hyperbolic pairs. Defaults to None.
 
     Returns:
-        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+        Isotropic hyperbolic form/basis of normalizer (center, x_new, y_new)
 
     TODO: Add examples
     """
     center_size = center_.shape[0]
+    if center_size == 1:
+        if not center_[0].any():
+            center_size = 0
+
     gauge_degree = x.shape[0]
 
-    x, z = _make_hyperbolic(center_, x, z)
+    if center_size > 0:
+        x, z = _make_hyperbolic(center_, x, z)
+
     matrix_ext = _basis_for_pauli_group(np.vstack((x, z)))
     matrix_ext = make_commute_hyper(matrix_ext, x, z, range(x.shape[0] << 1, matrix_ext.shape[0]))
     # matrix_ext = _make_elements_commute_with_hyper_pairs(
@@ -1889,11 +2154,14 @@ def _normailzer_group(matrix):
     """Returns the normalizer of the group generated by the generators represented in the
     symplectic matrix(s):
 
+    This method assumes that the matrix has full rank. That is that the
+    set of generators is independent.
+
     Args:
         matrix: GF(2) Sympletic matrix
 
     Returns:
-        center, x_new, y_new: Isotropic hyperbolic form/basis of normalizer
+        Isotropic hyperbolic form/basis of normalizer (center, x_new, y_new)
 
     TODO: Add examples
     """

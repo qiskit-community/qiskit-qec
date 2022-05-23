@@ -10,6 +10,71 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Linear."""
+"""
+=================================
+Linear (:mod:`qiskit_qec.linear`)
+=================================
 
-from . import bit
+.. currentmodule:: qiskit_qec.linear
+
+
+Linear module classes and functions
+===================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    Bit
+    SMatrix
+
+Linear matrix functions
+=======================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    create_lambda_matrix
+    augment_mat
+    rref
+    rank
+    rref_complete
+
+Linear symplectic functions
+===========================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    all_commute
+    symplectic_product
+    make_commute_hyper
+    locate_hyper_partner
+    build_hyper_partner
+    symplectic_gram_schmidt
+    is_symplectic_matrix_form
+    is_symplectic_vector_form
+    is_symplectic_form
+    is_hyper_form
+    is_center
+    is_same_span
+    is_stabilizer_group
+"""
+
+from .bit.bit import Bit
+from .smatrix_api.smatrix import SMatrix
+from .matrix import create_lambda_matrix, augment_mat, rref, rank, rref_complete
+from .symplectic import (
+    all_commute,
+    symplectic_product,
+    make_commute_hyper,
+    locate_hyper_partner,
+    build_hyper_partner,
+    symplectic_gram_schmidt,
+    is_symplectic_matrix_form,
+    is_symplectic_vector_form,
+    is_symplectic_form,
+    is_hyper_form,
+    is_center,
+    is_same_span,
+    is_stabilizer_group,
+)

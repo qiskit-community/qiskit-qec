@@ -1,6 +1,8 @@
 #include "errorpropagator.h"
 #include "faultenumerator.h"
 #include "faultsampler.h"
+#include "properties.h"
+#include "linear.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -48,4 +50,8 @@ PYBIND11_MODULE(compiledextension, m)
                     std::map<std::string, double>&,
                     unsigned int>())
       .def("sample", &FaultSampler::sample);
+  m.def("minimum_distance", &minimum_distance, "compute minimum distance of stabilizer code",
+        py::arg("symplectic_vectors"), py::arg("max_weight") = 10);
+  m.def("rank", &rank, "compute rank of set of vectors", py::arg("vectors"));
+  m.def("isotropic", &is_isotropic, "test if set of symplectic vectors is isotropic", py::arg("symplectic_vectors"));
 }

@@ -9,13 +9,23 @@ from qiskit import execute, Aer
 
 from qiskit_qec.analysis.epselector import EPSelector
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class FaultEnumerator:
     """Enumerates faults in a circuit according to a noise model."""
 
+    METHOD_STABILIZER: str = "stabilizer"
+    METHOD_PROPAGATOR: str = "propagator"
+    AVAILABLE_METHODS = {METHOD_STABILIZER, METHOD_PROPAGATOR}
+
     def __init__(
-        self, circ, order: int = 1, method: str = "stabilizer", model=None, sim_seed: int = 0
+        self,
+        circ,
+        order: int = 1,
+        method: str = METHOD_PROPAGATOR,
+        model=None,
+        sim_seed: int = 0,
     ):
         """Construct a fault enumerator object.
 
@@ -63,9 +73,8 @@ class FaultEnumerator:
             )
         else:
             self.model = model
-        sim_methods = ["stabilizer", "propagator"]
-        if method not in sim_methods:
-            raise Exception(f"unknown method '{method}'")
+        if method not in self.AVAILABLE_METHODS:
+            raise QiskitQECError("fmethod {methid} is not supported.")
         self.method = method
         self.location_types = self.model.get_operations()
         self.pauli_error_types = self.model.get_pauli_error_types()
@@ -78,6 +87,7 @@ class FaultEnumerator:
             eps = EPSelector()
             self.propagator = eps.get_error_propagator()
             self.propagator.load_circuit(circ)
+            self.reg_sizes = [len(reg) for reg in circ.cregs]
             try:
                 from qiskit_qec.extensions.compiledextension import (
                     FaultEnumerator as compiledFaultEnumerator,
@@ -166,6 +176,14 @@ class FaultEnumerator:
         circ = input QuantumCircuit
         Return REVERSED outcome.
         """
+
+        def gint(c):
+            # Casts to int if possible
+            if c.isnumeric():
+                return int(c)
+            else:
+                return c
+
         result = execute(
             circ,
             Aer.get_backend("aer_simulator"),
@@ -176,7 +194,7 @@ class FaultEnumerator:
         ).result()
         outcomes = result.get_counts(circ)
         raw_outcome = list(outcomes.keys())[0]
-        outcome = list(map(int, raw_outcome[::-1]))
+        outcome = list(map(gint, raw_outcome[::-1]))
         return outcome
 
     def generate(self):
@@ -206,7 +224,18 @@ class FaultEnumerator:
                 indices = [x[2] for x in comb]
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
-                    outcome = self.propagator.propagate_faults(indices, error)
+                    raw_outcome = self.propagator.propagate_faults(indices, error)
+                    if len(self.reg_sizes) == 1:
+                        outcome = raw_outcome
+                    else:
+                        outcome = []
+                        j = 0
+                        for reg_size in self.reg_sizes:
+                            for _ in range(reg_size):
+                                outcome.append(raw_outcome[j])
+                                j += 1
+                            outcome.append(" ")
+                        outcome.pop(-1)
                     yield (index, labels, list(error), outcome)
                     index += 1
 

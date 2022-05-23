@@ -10,9 +10,27 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-"""Analysis tools."""
+"""
+=====================================
+Analysis (:mod:`qiskit_qec.analysis`)
+=====================================
+
+.. currentmodule:: qiskit_qec.analysis
+
+This module contains an :class:`ErrorPropagator` a circuit error propagator interface.
+
+Analysis module classes and functions
+=====================================
+
+.. autosummary::
+    :toctree: ../stubs/
+
+    PyErrorPropagator
+"""
 
 from . import cerrorpropagator
 from . import epselector
 from . import errorpropagator
 from . import pyerrorpropagator
+
+from .pyerrorpropagator import PyErrorPropagator

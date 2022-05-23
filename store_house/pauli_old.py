@@ -133,7 +133,15 @@ class Pauli(BasePauli):
 
     __class_map_dict__ = dict()
 
-    def __init__(self, data=None, x=None, *, z=None, label=None, input_qubit_order="right-to-left"):
+    def __init__(
+        self,
+        data=None,
+        x=None,
+        *,
+        z=None,
+        label=None,
+        input_qubit_order="right-to-left",
+    ):
         """Initialize the Pauli.
 
         When using the symplectic array input data both z and x arguments must
@@ -608,7 +616,12 @@ class Pauli(BasePauli):
     # ---------------------------------------------------------------------
 
     def register(
-        self, mapper, identifier=None, class_register=True, instance_register=False, override=True
+        self,
+        mapper,
+        identifier=None,
+        class_register=True,
+        instance_register=False,
+        override=True,
     ):
         if not isinstance(mapper, TranslationMap):
             QiskitError("Maps being registered must be of class QubitMap")
@@ -736,7 +749,8 @@ class Pauli(BasePauli):
         base_z = np.zeros((1, op.num_qubits), dtype=bool)
         base_x = np.zeros((1, op.num_qubits), dtype=bool)
         base_phase = np.mod(
-            cls._phase_from_complex(op.coeff) + np.sum(np.logical_and(base_z, base_x), axis=1), 4
+            cls._phase_from_complex(op.coeff) + np.sum(np.logical_and(base_z, base_x), axis=1),
+            4,
         )
         return base_z, base_x, base_phase
 
