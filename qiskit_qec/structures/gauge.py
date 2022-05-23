@@ -40,8 +40,10 @@ class GaugeGroup(Group):
         Args:
             generators (Union[str,List[str], BasePauli]): _description_
             name (Any, optional): _description_. Defaults to None.
-            isotropic_generators (Union[str,List[str],np.ndarray,None], optional): _description_. Defaults to None.
-            hyperbolic_generators (Union[str,List[str],np.ndarray,None], optional): _description_. Defaults to None.
+            isotropic_generators (Union[str,List[str],np.ndarray,None], optional):
+            _description_. Defaults to None.
+            hyperbolic_generators (Union[str,List[str],np.ndarray,None], optional):
+            _description_. Defaults to None.
             with_generators (bool, optional): _description_. Defaults to True.
         """
 
@@ -75,13 +77,13 @@ class GaugeGroup(Group):
     def k(self):
         """Returns the number of logical operators"""
         warnings.warn("Number of logical operators - Property not yet implemented")
-        return None
+        return 0  # pylint: disable=useless-return
 
     @property
     def num_gen(self):
         """Returns the number of generators"""
         warnings.warn("Number of generators - Property not yet implemented")
-        return None
+        return 0  # pylint: disable=useless-return
 
     def __str__(self) -> str:
         return f"GaugeGroup[ [[{self.n},{self.k}]] with {self.num_gen} min generators]"

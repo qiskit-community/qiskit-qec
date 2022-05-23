@@ -18,10 +18,10 @@ import os
 import shutil
 import uuid
 from typing import Any, Dict, List, Set, Union
-from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
-from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.operators.pauli_list import PauliList
-from qiskit_qec.structures.gauge import GaugeGroup
+from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode #pylint: disable=import-error
+from qiskit_qec.exceptions import QiskitQECError #pylint: disable=import-error
+from qiskit_qec.operators.pauli_list import PauliList #pylint: disable=import-error
+from qiskit_qec.structures.gauge import GaugeGroup #pylint: disable=import-error
 
 
 class QECCodeBase:

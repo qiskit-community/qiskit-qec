@@ -340,8 +340,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         else:
             if qubit_order not in pauli_rep.QUBIT_ORDERS:
                 raise QiskitError(f"Unknown qubit order: {qubit_order}")
-            else:
-                BasePauli.EXTERNAL_QUBIT_ORDER = qubit_order
+
+            BasePauli.EXTERNAL_QUBIT_ORDER = qubit_order
 
     # ---------------------------------------------------------------------
     # Magic Methods

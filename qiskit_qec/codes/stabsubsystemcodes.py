@@ -31,10 +31,7 @@ class StabSubSystemCode(Code):
         """
 
         self.gauge_group = gauge_group
-        self._n = (
-            self.gauge_group.generators.num_qubits
-        )  # Number of qubits n: N=2^n pylint: disable=invalid-name
-
+        self._n = self.gauge_group.generators.num_qubits  # pylint: disable=invalid-name
         super().__init__()
 
     @property

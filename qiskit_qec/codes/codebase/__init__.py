@@ -608,19 +608,3 @@ def _all_small_codes(
         return result
     else:
         return result[0]
-
-
-def small_codes_available(n: int, k: Optional[int]) -> int:
-    """Returns True if the library of codes of [[n,[k]]] is installed.
-
-    Args:
-        n (int): _description_
-        k (Optional[int]): _description_
-
-    Returns:
-        int: _description_
-
-    Note: This is the equivalent to the GAP method SmallGroupsAvailable but for codes
-    """
-    warnings.warn("Not yet implemented")
-    return 0
