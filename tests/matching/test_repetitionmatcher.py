@@ -37,8 +37,8 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         self.code_circuit_5 = RepetitionCodeCircuit(5, 2)
         self.z_logical_5 = self.code_circuit.css_z_logical
 
-    def test_no_errors(self, method="networkx"):
-        """Test the case with no errors using networkx."""
+    def test_no_errors(self, method="retworkx"):
+        """Test the case with no errors using retworkx."""
 
         def gint(c):
             """Casts to int if possible"""
@@ -74,8 +74,8 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         """Test the case with no errors using pymatching."""
         self.test_no_errors(method="pymatching")
 
-    def test_correct_single_errors(self, method="networkx"):
-        """Test the case with single faults using networkx."""
+    def test_correct_single_errors(self, method="retworkx"):
+        """Test the case with single faults using retworkx."""
         for logical in ["0", "1"]:
             dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
             qc = self.code_circuit.circuit[logical]
@@ -91,8 +91,8 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
         """Test the case with two faults using pymatching."""
         self.test_correct_single_errors(method="pymatching")
 
-    def test_error_pairs(self, dec_method="networkx", fe_method="stabilizer"):
-        """Test the case with two faults on a d=5 code using networkx."""
+    def test_error_pairs(self, dec_method="retworkx", fe_method="stabilizer"):
+        """Test the case with two faults on a d=5 code using retworkx."""
         expected_failures = {"0": 0, "1": 0}
         for logical in ["0", "1"]:
             dec = RepetitionDecoder(self.code_circuit_5, self.pnm, dec_method, False, logical)

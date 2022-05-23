@@ -10,6 +10,7 @@ import json
 
 from sympy import Poly, symbols, Symbol
 from qiskit import QuantumCircuit
+import retworkx as rx
 import networkx as nx
 from pymatching import Matching
 
@@ -17,11 +18,16 @@ from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
 
 
 class CircuitModelMatchingDecoder(ABC):
     """Matching decoder for circuit noise."""
+
+    METHOD_RETWORKX: str = "retworkx"
+    METHOD_PYMATCHING: str = "pymatching"
+    AVAILABLE_METHODS = {METHOD_RETWORKX, METHOD_PYMATCHING}
 
     def __init__(
         self,
@@ -38,6 +44,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks: int,
         method: str,
         uniform: bool,
+        decoding_graph: DecodingGraph = None,
     ):
         """Create a matching decoder.
 
@@ -79,34 +86,49 @@ class CircuitModelMatchingDecoder(ABC):
             raise QiskitQECError("expected basis to be 'x' or 'z'")
 
         self.uniform = uniform
+
+        if method not in self.AVAILABLE_METHODS:
+            raise QiskitQECError("fmethod {method} is not supported.")
         self.method = method
-        if not self.method in ("networkx", "pymatching"):
-            raise QiskitQECError("unsupported implementation")
-        if self.method == "pymatching":
+        if self.method == "METHOD_PYMATCHING":
             self.usepymatching = True
         else:
             self.usepymatching = False
 
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
-        self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
+
+        if decoding_graph:
+            (
+                self.idxmap,
+                self.node_layers,
+                self.graph,
+                self.pymatching_indexer,
+                self.layer_types,
+            ) = self._process_graph(decoding_graph.graph, blocks, round_schedule, basis)
+        else:
+            dg = CSSDecodingGraph(
+                css_x_gauge_ops,
+                css_x_stabilizer_ops,
+                css_x_boundary,
+                css_z_gauge_ops,
+                css_z_stabilizer_ops,
+                css_z_boundary,
+                blocks,
+                round_schedule,
+                basis,
+            )
+
+            (
+                self.idxmap,
+                self.node_layers,
+                self.graph,
+                self.pymatching_indexer,
+                self.layer_types,
+            ) = (dg.idxmap, dg.node_layers, dg.graph, dg.pymatching_indexer, dg.layer_types)
+
         logging.debug("layer_types = %s", self.layer_types)
 
-        (
-            self.idxmap,
-            self.node_layers,
-            self.graph,
-            self.pymatching_indexer,
-        ) = self._decoding_graph(
-            self.css_x_gauge_ops,
-            self.css_x_stabilizer_ops,
-            self.css_x_boundary,
-            self.css_z_gauge_ops,
-            self.css_z_stabilizer_ops,
-            self.css_z_boundary,
-            self.layer_types,
-            self.basis,
-        )
         self.ridxmap = {v: k for k, v in self.idxmap.items()}
 
         self.circuit = circuit
@@ -145,12 +167,138 @@ class CircuitModelMatchingDecoder(ABC):
         self.path = {}  # recomputed in update_edge_weights
         self.pymatching = None  # constructed in update_edge_weights
 
+    def _process_graph(self, graph, blocks, round_schedule, basis):
+
+        pymatching_indexer = Indexer()
+
+        # symmetrize hook errors
+        for j, edge in enumerate(graph.edges()):
+            n0, n1 = graph.edge_list()[j]
+            source = graph.nodes()[n0]
+            target = graph.nodes()[n1]
+            if source["time"] != target["time"]:
+                if source["is_boundary"] == target["is_boundary"] == False:
+                    new_source = source.copy()
+                    new_source["time"] = target["time"]
+                    nn0 = graph.nodes().index(new_source)
+                    new_target = target.copy()
+                    new_target["time"] = source["time"]
+                    nn1 = graph.nodes().index(new_target)
+                    graph.add_edge(nn0, nn1, edge)
+
+        edges_to_remove = []
+        for j, edge in enumerate(graph.edges()):
+
+            n0, n1 = graph.edge_list()[j]
+            source = graph.nodes()[n0]
+            target = graph.nodes()[n1]
+
+            # add the required attributes
+            # highlighted', 'measurement_error','qubit_id' and 'error_probability'
+            edge["highlighted"] = False
+            edge["measurement_error"] = int(source["time"] != target["time"])
+            if edge["qubits"]:
+                edge["qubit_id"] = pymatching_indexer[edge["qubits"][0]]
+            else:
+                edge["qubit_id"] = -1
+            edge["error_probability"] = 0.01 * edge["weight"]
+
+            # make it so times of boundary/boundary nodes agree
+            if source["is_boundary"] and not target["is_boundary"]:
+                if source["time"] != target["time"]:
+                    new_source = source.copy()
+                    new_source["time"] = target["time"]
+                    n = graph.add_node(new_source)
+                    edge["measurement_error"] = 0
+                    edges_to_remove.append((n0, n1))
+                    graph.add_edge(n, n1, edge)
+
+        # remove old boundary/boundary nodes
+        for n0, n1 in edges_to_remove:
+            graph.remove_edge(n0, n1)
+
+        for n0, source in enumerate(graph.nodes()):
+            for n1, target in enumerate(graph.nodes()):
+
+                # add weightless nodes connecting different boundaries
+                if source["time"] == target["time"]:
+                    if source["is_boundary"] and target["is_boundary"]:
+                        if source["qubits"] != target["qubits"]:
+                            edge = {
+                                "measurement_error": 0,
+                                "weight": 0,
+                                "highlighted": False,
+                                "error_probability": 0.0,
+                            }
+                            edge["qubits"] = list(
+                                set(source["qubits"]).intersection((set(target["qubits"])))
+                            )
+                            if edge["qubits"]:
+                                edge["qubit_id"] = pymatching_indexer[edge["qubit_id"][0]]
+                            else:
+                                edge["qubit_id"] = -1
+                            if (n0, n1) not in graph.edge_list():
+                                graph.add_edge(n0, n1, edge)
+
+                # connect one of the boundaries at different times
+                if target["time"] == source["time"] + 1:
+                    if source["qubits"] == target["qubits"] == [0]:
+                        edge = {
+                            "qubits": [],
+                            "qubit_id": -1,
+                            "measurement_error": 0,
+                            "weight": 0,
+                            "highlighted": False,
+                            "error_probability": 0.0,
+                        }
+                        if (n0, n1) not in graph.edge_list():
+                            graph.add_edge(n0, n1, edge)
+
+        # symmetrize edges
+        for j, edge in enumerate(graph.edges()):
+            n0, n1 = graph.edge_list()[j]
+            if (n1, n0) not in graph.edge_list():
+                graph.add_edge(n1, n0, edge)
+
+        idxmap = {}
+        for n, node in enumerate(graph.nodes()):
+            idxmap[node["time"], tuple(node["qubits"])] = n
+
+        node_layers = []
+        for node in graph.nodes():
+            time = node["time"]
+            if len(node_layers) < time + 1:
+                node_layers += [[]] * (time + 1 - len(node_layers))
+            node_layers[time].append(node["qubits"])
+
+        # create a list of decoding graph layer types
+        # the entries are 'g' for gauge and 's' for stabilizer
+        layer_types = []
+        last_step = basis
+        for _ in range(blocks):
+            for step in round_schedule:
+                if basis == "z" and step == "z" and last_step == "z":
+                    layer_types.append("g")
+                elif basis == "z" and step == "z" and last_step == "x":
+                    layer_types.append("s")
+                elif basis == "x" and step == "x" and last_step == "x":
+                    layer_types.append("g")
+                elif basis == "x" and step == "x" and last_step == "z":
+                    layer_types.append("s")
+                last_step = step
+        if last_step == basis:
+            layer_types.append("g")
+        else:
+            layer_types.append("s")
+
+        return idxmap, node_layers, graph, pymatching_indexer, layer_types
+
     def _revise_decoding_graph(
         self,
         idxmap: Dict[Tuple[int, List[int]], int],
-        graph: nx.Graph,
+        graph: rx.PyGraph,
         edge_weight_polynomials: Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]],
-    ) -> nx.Graph:
+    ) -> rx.PyGraph:
         """Add edge weight polynomials to the decoding graph g and prune it.
 
         Update attribute "weight_poly" on decoding graph edges contained in
@@ -166,16 +314,17 @@ class CircuitModelMatchingDecoder(ABC):
                 if not graph.has_edge(idxmap[s1], idxmap[s2]):
                     raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
                     # TODO: new edges may be needed for hooks, but raise exception if we're surprised
-                graph.edges[idxmap[s1], idxmap[s2]]["weight_poly"] = wpoly
+
+                data = graph.get_edge_data(idxmap[s1], idxmap[s2])
+                data["weight_poly"] = wpoly
         remove_list = []
-        for edge in graph.edges(data=True):
-            if "weight_poly" not in edge[2] and edge[2]["weight"] != 0:
+        for source, target in graph.edge_list():
+            edge_data = graph.get_edge_data(source, target)
+            if "weight_poly" not in edge_data and edge_data["weight"] != 0:
                 if (
-                    "is_boundary" in graph.nodes(data=True)[edge[0]]
-                    and graph.nodes(data=True)[edge[0]]["is_boundary"]
+                    "is_boundary" in graph.nodes()[source] and graph.nodes()[source]["is_boundary"]
                 ) or (
-                    "is_boundary" in graph.nodes(data=True)[edge[1]]
-                    and graph.nodes(data=True)[edge[1]]["is_boundary"]
+                    "is_boundary" in graph.nodes()[target] and graph.nodes()[target]["is_boundary"]
                 ):
                     # pymatching requires all qubit_ids from 0 to
                     # n-1 to appear as edge properties. If we
@@ -183,12 +332,12 @@ class CircuitModelMatchingDecoder(ABC):
                     # be present. We solve this by keeping unweighted
                     # that are edges connected to the boundary. Instead
                     # we increase their weight to a large value.
-                    edge[2]["weight"] = 1000000
-                    logging.info("increase edge weight (%d, %d)", edge[0], edge[1])
+                    edge_data["weight"] = 1000000
+                    logging.info("increase edge weight (%d, %d)", source, target)
                 else:
                     # Otherwise, remove the edge
-                    remove_list.append((edge[0], edge[1]))
-                    logging.info("remove edge (%d, %d)", edge[0], edge[1])
+                    remove_list.append((source, target))
+                    logging.info("remove edge (%d, %d)", source, target)
         graph.remove_edges_from(remove_list)
         return graph
 
@@ -212,7 +361,7 @@ class CircuitModelMatchingDecoder(ABC):
         Note that if self.uniform is True, it is still necessary to call
         this function to construct the matching decoder object (pymatching)
         or compute the shortest paths between vertices in the decoding
-        graph (networkx).
+        graph (retworkx).
 
         Args:
             model: moise model
@@ -229,26 +378,31 @@ class CircuitModelMatchingDecoder(ABC):
             # -log P(chain) \propto \sum_i -log[((1-p_i)/p_i)^{l(i)}]
             # p_i is the probability that edge i carries an error
             # l(i) is 1 if the link belongs to the chain and 0 otherwise
-            for edge in self.graph.edges(data=True):
-                if "weight_poly" in edge[2]:
+            for source, target in self.graph.edge_list():
+                edge_data = self.graph.get_edge_data(source, target)
+                if "weight_poly" in edge_data:
                     logging.info(
                         "update_edge_weights (%d, %d) %s",
-                        edge[0],
-                        edge[1],
-                        str(edge[2]["weight_poly"]),
+                        source,
+                        target,
+                        str(edge_data["weight_poly"]),
                     )
-                    restriction = {x: assignment[x] for x in edge[2]["weight_poly"].gens}
-                    p = edge[2]["weight_poly"].eval(restriction).evalf()
+                    restriction = {x: assignment[x] for x in edge_data["weight_poly"].gens}
+                    p = edge_data["weight_poly"].eval(restriction).evalf()
                     assert p < 0.5, "edge flip probability too large"
-                    edge[2]["weight"] = log((1 - p) / p)
-                    edge[2]["error_probability"] = p
+                    edge_data["weight"] = log((1 - p) / p)
+                    edge_data["error_probability"] = p
         if not self.usepymatching:
             # Recompute the shortest paths between pairs of vertices
-            # in the decoding graph.
-            self.length = dict(nx.all_pairs_dijkstra_path_length(self.graph))
-            self.path = dict(nx.all_pairs_dijkstra_path(self.graph))  # note "cutoff" argument
+            # in the decoding graph
+            edge_cost_fn = lambda edge: edge["weight"]
+            length = rx.all_pairs_dijkstra_path_lengths(self.graph, edge_cost_fn)
+            self.length = {s: dict(length[s]) for s in length}
+            path = rx.all_pairs_dijkstra_shortest_paths(self.graph, edge_cost_fn)
+            self.path = {s: {t: list(path[s][t]) for t in path[s]} for s in path}
         else:
-            self.pymatching = Matching(self.graph)
+            nxgraph = ret2net(self.graph)
+            self.pymatching = Matching(nxgraph)
 
     def _enumerate_events(
         self,
@@ -490,233 +644,6 @@ class CircuitModelMatchingDecoder(ABC):
             raise QiskitQECError("decoder failure: syndrome should be trivial!")
         return corrected_outcomes
 
-    def export_decoding_graph_json(self, filename: str):
-        """Write a file containing the decoding graph."""
-        self._export_json(self.graph, filename)
-
-    def _layer_types(self, blocks: int, round_schedule: str, basis: str) -> List[str]:
-        """Return a list of decoding graph layer types.
-
-        The entries are 'g' for gauge and 's' for stabilizer.
-        """
-        layer_types = []
-        last_step = basis
-        for _ in range(blocks):
-            for step in round_schedule:
-                if basis == "z" and step == "z" and last_step == "z":
-                    layer_types.append("g")
-                elif basis == "z" and step == "z" and last_step == "x":
-                    layer_types.append("s")
-                elif basis == "x" and step == "x" and last_step == "x":
-                    layer_types.append("g")
-                elif basis == "x" and step == "x" and last_step == "z":
-                    layer_types.append("s")
-                last_step = step
-        if last_step == basis:
-            layer_types.append("g")
-        else:
-            layer_types.append("s")
-        return layer_types
-
-    def _decoding_graph(
-        self,
-        css_x_gauge_ops: List[Tuple[int]],
-        css_x_stabilizer_ops: List[Tuple[int]],
-        css_x_boundary: List[Tuple[int]],
-        css_z_gauge_ops: List[Tuple[int]],
-        css_z_stabilizer_ops: List[Tuple[int]],
-        css_z_boundary: List[Tuple[int]],
-        layer_types: List[str],
-        basis: str,
-    ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], nx.Graph, Indexer]:
-        """Construct the decoding graph for the given basis.
-
-        This method sets edge weights all to 1 and is based on
-        computing intersections of operator supports.
-
-        Returns a tuple (idxmap, node_layers, G, pymatching_indexer)
-        where idxmap is a dict
-        mapping tuples (t, qubit_set) to integer vertex indices in the
-        decoding graph G. The list node_layers contains lists of nodes
-        for each time step.
-        """
-        graph = nx.Graph()
-        gauges = []
-        stabilizers = []
-        boundary = []
-        if basis == "z":
-            gauges = css_z_gauge_ops
-            stabilizers = css_z_stabilizer_ops
-            boundary = css_z_boundary
-        elif basis == "x":
-            gauges = css_x_gauge_ops
-            stabilizers = css_x_stabilizer_ops
-            boundary = css_x_boundary
-
-        pymatching_indexer = Indexer()
-
-        # Construct the decoding graph
-        idx = 0  # vertex index counter
-        idxmap = {}  # map from vertex data (t, qubits) to vertex index
-        node_layers = []
-        for time, layer in enumerate(layer_types):
-            # Add vertices at time t
-            node_layer = []
-            if layer == "g":
-                all_z = gauges
-            elif layer == "s":
-                all_z = stabilizers
-            for supp in all_z:
-                graph.add_node(idx, time=time, qubits=supp, highlighted=False)
-                logging.debug("node %d t=%d %s", idx, time, supp)
-                idxmap[(time, tuple(supp))] = idx
-                node_layer.append(idx)
-                idx += 1
-            for supp in boundary:
-                # Add optional is_boundary property for pymatching
-                graph.add_node(idx, time=time, qubits=supp, highlighted=False, is_boundary=True)
-                logging.debug("boundary %d t=%d %s", idx, time, supp)
-                idxmap[(time, tuple(supp))] = idx
-                node_layer.append(idx)
-                idx += 1
-            node_layers.append(node_layer)
-            if layer == "g":
-                all_z = gauges + boundary
-            elif layer == "s":
-                all_z = stabilizers + boundary
-            # Add space-like edges at time t
-            # The qubit sets of any pair of vertices at time
-            # t can intersect on multiple qubits.
-            # If they intersect, we add an edge and label it by
-            # one of the common qubits. This makes an assumption
-            # that the intersection operator is equivalent to a single
-            # qubit operator modulo the gauge group.
-            # Space-like edges do not correspond to syndrome errors, so the
-            # syndrome property is an empty list.
-            for i, op_g in enumerate(all_z):
-                for j in range(i + 1, len(all_z)):
-                    op_h = all_z[j]
-                    com = list(set(op_g).intersection(set(op_h)))
-                    if -1 in com:
-                        com.remove(-1)
-                    if len(com) > 0:
-                        # Include properties for use with pymatching:
-                        # qubit_id is an integer or set of integers
-                        # weight is a floating point number
-                        # error_probability is a floating point number
-                        graph.add_edge(
-                            idxmap[(time, tuple(op_g))],
-                            idxmap[(time, tuple(op_h))],
-                            qubits=[com[0]],
-                            measurement_error=0,
-                            weight=1,
-                            highlighted=False,
-                            qubit_id=pymatching_indexer[com[0]],
-                            error_probability=0.01,
-                        )
-                        logging.debug("spacelike t=%d (%s, %s)", time, op_g, op_h)
-                        logging.debug(
-                            " qubits %s qubit_id %s",
-                            [com[0]],
-                            pymatching_indexer[com[0]],
-                        )
-
-            # Add boundary space-like edges
-            for i in range(len(boundary) - 1):
-                bound_g = boundary[i]
-                bound_h = boundary[i + 1]
-                # Include properties for use with pymatching:
-                # qubit_id is an integer or set of integers
-                # weight is a floating point number
-                # error_probability is a floating point number
-                graph.add_edge(
-                    idxmap[(time, tuple(bound_g))],
-                    idxmap[(time, tuple(bound_h))],
-                    qubits=[],
-                    measurement_error=0,
-                    weight=0,
-                    highlighted=False,
-                    qubit_id=-1,
-                    error_probability=0.0,
-                )
-                logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
-
-            # Add (space)time-like edges from t to t-1
-            # By construction, the qubit sets of pairs of vertices at S and T
-            # at times t-1 and t respectively
-            # either (a) contain each other (S subset T or T subset S) and
-            # |S|,|T|>1,
-            # (b) intersect on one or more qubits, or (c) are disjoint.
-            # In case (a), we add an edge that corresponds to a syndrome bit
-            # error at time t-1.
-            # In case (b), we add an edge that corresponds to a spacetime hook
-            # error, i.e. a syndrome bit error at time t-1
-            # together with an error on one of the common qubits. Again
-            # this makes an assumption that all such errors are equivalent.
-            # In case (c), we do not add an edge.
-            # Important: some space-like hooks are not accounted for.
-            # They can have longer paths between non-intersecting operators.
-            # We will account for these in _revise_decoding_graph if needed.
-            if time > 0:
-                current_sets = gauges
-                prior_sets = gauges
-                if layer_types[time] == "s":
-                    current_sets = stabilizers
-                if layer_types[time - 1] == "s":
-                    prior_sets = stabilizers
-                for op_g in current_sets:
-                    for op_h in prior_sets:
-                        com = list(set(op_g).intersection(set(op_h)))
-                        if -1 in com:
-                            com.remove(-1)
-                        if len(com) > 0:  # not Case (c)
-                            # Include properties for use with pymatching:
-                            # qubit_id is an integer or set of integers
-                            # weight is a floating point number
-                            # error_probability is a floating point number
-                            # Case (a)
-                            if set(com) == set(op_h) or set(com) == set(op_g):
-                                graph.add_edge(
-                                    idxmap[(time - 1, tuple(op_h))],
-                                    idxmap[(time, tuple(op_g))],
-                                    qubits=[],
-                                    measurement_error=1,
-                                    weight=1,
-                                    highlighted=False,
-                                    qubit_id=-1,
-                                    error_probability=0.01,
-                                )
-                                logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
-                            else:  # Case (b)
-                                q_idx = pymatching_indexer[com[0]]
-                                graph.add_edge(
-                                    idxmap[(time - 1, tuple(op_h))],
-                                    idxmap[(time, tuple(op_g))],
-                                    qubits=[com[0]],
-                                    measurement_error=1,
-                                    weight=1,
-                                    highlighted=False,
-                                    qubit_id=q_idx,
-                                    error_probability=0.01,
-                                )
-                                logging.debug("spacetime hook t=%d (%s, %s)", time, op_g, op_h)
-                                logging.debug(" qubits %s qubit_id %s", [com[0]], q_idx)
-                # Add a single time-like edge between boundary vertices at
-                # time t-1 and t
-                graph.add_edge(
-                    idxmap[(time - 1, tuple(boundary[0]))],
-                    idxmap[(time, tuple(boundary[0]))],
-                    qubits=[],
-                    measurement_error=0,
-                    weight=0,
-                    highlighted=False,
-                    qubit_id=-1,
-                    error_probability=0.0,
-                )
-                logging.debug("boundarylink t=%d", time)
-        logging.debug("indexer %s", pymatching_indexer)
-        return idxmap, node_layers, graph, pymatching_indexer
-
     def _highlighted_vertices(
         self,
         css_x_gauge_ops: List[Tuple[int]],
@@ -804,11 +731,11 @@ class CircuitModelMatchingDecoder(ABC):
         (t, qubit_set).
         Return the matching.
         """
-        gm = nx.Graph()  # matching graph
+        gm = rx.PyGraph(multigraph=False)  # matching graph
         idx = 0  # vertex index in matching graph
         midxmap = {}  # map from (t, qubit_tuple) to vertex index
         for v in highlighted:
-            gm.add_node(idx, dvertex=v)
+            gm.add_node({"dvertex": v})
             midxmap[v] = idx
             idx += 1
         for i, high_i in enumerate(highlighted):
@@ -817,18 +744,22 @@ class CircuitModelMatchingDecoder(ABC):
                 vj = midxmap[highlighted[j]]
                 vip = idxmap[high_i]
                 vjp = idxmap[highlighted[j]]
-                gm.add_edge(vi, vj, weight=-length[vip][vjp])
-        matching = nx.max_weight_matching(gm, maxcardinality=True, weight="weight")
+                gm.add_edge(vi, vj, {"weight": -length[vip][vjp]})
+
+        def weight_fn(edge):
+            return int(edge["weight"])
+
+        matching = rx.max_weight_matching(gm, max_cardinality=True, weight_fn=weight_fn)
         return matching
 
     def _error_chain_for_vertex_path(
-        self, graph: nx.Graph, vertex_path: List[int]
+        self, graph: rx.PyGraph, vertex_path: List[int]
     ) -> Tuple[Set[int], Set[int]]:
         """Return a chain of qubit and measurement errors for a vertex path.
 
         Examine the edges along the path to extract the error chain.
         Store error chains as sets and merge using symmetric difference.
-        The vertex_path is a list of networkx node indices.
+        The vertex_path is a list of retworkx node indices.
         """
         qubit_errors = set([])
         measurement_errors = set([])
@@ -836,11 +767,11 @@ class CircuitModelMatchingDecoder(ABC):
         for i in range(len(vertex_path) - 1):
             v0 = vertex_path[i]
             v1 = vertex_path[i + 1]
-            if graph[v0][v1]["measurement_error"] == 1:
+            if graph.get_edge_data(v0, v1)["measurement_error"] == 1:
                 measurement_errors ^= set(
-                    [(graph.nodes[v0]["time"], tuple(graph.nodes[v0]["qubits"]))]
+                    [(graph.nodes()[v0]["time"], tuple(graph.nodes()[v0]["qubits"]))]
                 )
-            qubit_errors ^= set(graph[v0][v1]["qubits"])
+            qubit_errors ^= set(graph.get_edge_data(v0, v1)["qubits"])
             logging.debug(
                 "_error_chain_for_vertex_path q = %s, m = %s",
                 qubit_errors,
@@ -850,7 +781,7 @@ class CircuitModelMatchingDecoder(ABC):
 
     def _compute_error_correction(
         self,
-        gin: nx.Graph,
+        gin: rx.PyGraph,
         idxmap: Dict[Tuple[int, List[int]], int],
         paths: Dict[int, Dict[int, List[int]]],
         matching,
@@ -893,7 +824,7 @@ class CircuitModelMatchingDecoder(ABC):
         return qubit_errors, measurement_errors
 
     def _highlight_vertex_paths_export_json(
-        self, gin: nx.Graph, paths: List[List[int]], filename: str
+        self, gin: rx.PyGraph, paths: List[List[int]], filename: str
     ):
         """Highlight the vertex paths and export JSON to file.
 
@@ -903,12 +834,12 @@ class CircuitModelMatchingDecoder(ABC):
         graph = deepcopy(gin)
         for path in paths:
             # Highlight the endpoints of the path
-            nx.set_node_attributes(
-                graph, {path[0]: {"highlighted": True}, path[-1]: {"highlighted": True}}
-            )
+            for i in [0, -1]:
+                graph.nodes()[i]["highlighted"] = True
             # Highlight the edges along the path
             for i in range(len(path) - 1):
-                nx.set_edge_attributes(graph, {(path[i], path[i + 1]): {"highlighted": True}})
+                idx = list(graph.graph.edge_list()).index((i, i + 1))
+                graph.edges[idx]["highlighted"] = True
         self._export_json(graph, filename)
 
     def _export_json(self, graph: nx.Graph, filename: str):
@@ -918,3 +849,17 @@ class CircuitModelMatchingDecoder(ABC):
             # include the default function that casts to a string
             json.dump(nx.node_link_data(graph), fp, indent=4, default=str)
         fp.close()
+
+
+def ret2net(graph):
+    """Convert retworkx graph to equivalent networx graph."""
+    nx_graph = nx.Graph()
+    for j, node in enumerate(graph.nodes()):
+        nx_graph.add_node(j)
+        for k, v in node.items():
+            nx.set_node_attributes(nx_graph, {j: v}, k)
+    for j, (n0, n1) in enumerate(graph.edge_list()):
+        nx_graph.add_edge(n0, n1)
+        for k, v in graph.edges()[j].items():
+            nx.set_edge_attributes(nx_graph, {(n0, n1): v}, k)
+    return nx_graph

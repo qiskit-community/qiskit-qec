@@ -15,7 +15,7 @@
 # pylint: disable=invalid-name
 
 """Generates circuits for quantum error correction."""
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from qiskit import QuantumRegister, ClassicalRegister
 from qiskit import QuantumCircuit
@@ -290,11 +290,22 @@ class RepetitionCodeCircuit:
                         if syn_type == 0:
                             elem_num = syn_round
                             syn_round = 0
-                        node = {
-                            "time": syn_round,
-                            "is_logical": syn_type == 0,
-                            "element": elem_num,
-                        }
+                        node = {"time": syn_round}
+                        is_boundary = syn_type == 0
+                        if is_boundary:
+                            i = [0, -1][elem_num]
+                            if self.basis == "z":
+                                qubits = [self.css_x_logical[i]]
+                            else:
+                                qubits = [self.css_z_logical[i]]
+                        else:
+                            if self.basis == "z":
+                                qubits = self.css_z_gauge_ops[elem_num]
+                            else:
+                                qubits = self.css_x_gauge_ops[elem_num]
+                        node["qubits"] = qubits
+                        node["is_boundary"] = is_boundary
+                        node["element"] = elem_num
                         nodes.append(node)
         return nodes
 
@@ -307,3 +318,30 @@ class RepetitionCodeCircuit:
             list: Raw values for logical operators that correspond to nodes.
         """
         return self._separate_string(self._process_string(string))[0]
+
+    def partition_outcomes(
+        self, round_schedule: str, outcome: List[int]
+    ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
+        """Extract measurement outcomes."""
+        # split into gauge and final outcomes
+        outcome = "".join([str(c) for c in outcome])
+        outcome = outcome.split(" ")
+        gs = outcome[0:-1]
+        gauge_outcomes = [[int(c) for c in r] for r in gs]
+        finals = outcome[-1]
+        # if circuit did not use resets, construct standard output
+        if not self.resets:
+            for i, layer in enumerate(gauge_outcomes):
+                for j, gauge_op in enumerate(layer):
+                    if i > 0:
+                        gauge_outcomes[i][j] = (gauge_op + gauge_outcomes[i - 1][j]) % 2
+        # assign outcomes to the correct gauge ops
+        if round_schedule == "z":
+            x_gauge_outcomes = []
+            z_gauge_outcomes = gauge_outcomes
+        else:
+            x_gauge_outcomes = gauge_outcomes
+            z_gauge_outcomes = []
+        final_outcomes = [int(c) for c in finals]
+
+        return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
