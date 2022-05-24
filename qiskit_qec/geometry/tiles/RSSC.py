@@ -73,7 +73,12 @@ class RSSC(Tile):
     size = np.array([2, 2])
 
     def __new__(
-        cls, center: np.array, qubit_count=None, qubit_data=None, operators=None, optype="XZXZ"
+        cls,
+        center: np.array,
+        qubit_count=None,
+        qubit_data=None,
+        operators=None,
+        optype="XZXZ",
     ) -> None:
 
         if operators is None:

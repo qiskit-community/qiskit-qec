@@ -12,8 +12,6 @@
 # Part of the QEC framework
 """Module for FacePartition"""
 
-from typing import List
-
 from qiskit_qec.geometry.model.face import Face
 
 

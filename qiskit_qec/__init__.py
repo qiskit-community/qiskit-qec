@@ -12,7 +12,9 @@
 """Qiskit QEC."""
 
 from . import (
+    circuits,
     codes,
+    decoders,
     exceptions,
     factory,
     geometry,
@@ -20,6 +22,7 @@ from . import (
     linear,
     models,
     operators,
+    qec_codebase,
     structures,
     utils,
 )

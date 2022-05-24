@@ -1,1 +1,5 @@
 qiskit-terra>=0.18.0
+qiskit-aer==0.9.1
+pybind11
+networkx
+pymatching

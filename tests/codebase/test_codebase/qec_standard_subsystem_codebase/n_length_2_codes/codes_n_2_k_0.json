@@ -1,0 +1,47 @@
+{
+ "b5dfa20f-8d48-4fd1-aa6f-0556f3021558": {
+  "stabilizer": [
+   "xi",
+   "ix"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 8,
+  "n": 2,
+  "k": 0,
+  "is_degenerate": 0,
+  "weight_enumerator": [
+   1,
+   2,
+   1
+  ],
+  "d": 1,
+  "uuid": "b5dfa20f-8d48-4fd1-aa6f-0556f3021558",
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_gf4linear": 0
+ },
+ "8ce0c4f9-135f-41b1-8609-ffcd9bc49362": {
+  "stabilizer": [
+   "xx",
+   "zz"
+  ],
+  "is_subsystem": 1,
+  "belongs_to_standard_codebase": 1,
+  "aut_group_size": 12,
+  "n": 2,
+  "k": 0,
+  "is_degenerate": 0,
+  "is_triorthogonal": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3
+  ],
+  "d": 2,
+  "uuid": "8ce0c4f9-135f-41b1-8609-ffcd9bc49362",
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_gf4linear": 1
+ }
+}

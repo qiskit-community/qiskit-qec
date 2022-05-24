@@ -10,8 +10,10 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
+
 """Module for shape"""
-from typing import List
+
+from typing import List, Optional
 
 from math import copysign
 
@@ -28,7 +30,6 @@ from qiskit_qec.geometry.face_partition import FacePartition
 class Shape:
     """This class is used to store a boundary shape on a given manifold that is used to
     select sublattices.
-
     """
 
     OUTSIDE = 0
@@ -68,7 +69,6 @@ class Shape:
 
     @classmethod
     def square(cls, origin: List, direction: List, length, manifold: Manifold, dtype=int):
-
         """Create a square (2d) shape on the 2-manifold.
 
         The square has one corner placed at the origin (origin must be on the plane). The the
@@ -100,24 +100,25 @@ class Shape:
 
     @classmethod
     def rect(cls, origin, direction, length1, length2, manifold, dtype=int):
+        r"""Create a rectangle on a manifold
 
-        """Create a rectangle on a manifold
-
-                    r2
-                    o
-                /      \
-         r3  o          \
-              \          o r1
-               \       /
-                  o
-              r0=origin
-
-        direction (r0 to r1)
-        length1 = length(r0,r1)
-        length2 = length(r1,r2)
+        .. parsed-literal::
+            ```
+                      r2
+                      o
+                  /       \
+            r3  o          \
+                 \          o r1
+                  \       /
+                      o
+                     r0=origin
+            direction (r0 to r1)
+            length1 = length(r0,r1)
+            length2 = length(r1,r2)
+            ```
 
         Args:
-            origin ([type]): [description]
+            origin ([]): [description]
             direction ([type]): [description]
             length1 ([type]): [description]
             length2 ([type]): [description]
@@ -127,7 +128,7 @@ class Shape:
             (Shape): rectangle
 
         Raises:
-            QiskitError: [description]
+            QiskitError: qiskit error
         """
 
         assert isinstance(origin, np.ndarray)
@@ -235,13 +236,13 @@ class Shape:
 
         Args:
             tiling (Shell): A Shell representation a set of faces/operators
-            levels (List[int], optional): List of integers taht specifiy the number of intersection per face to include.
+            levels (List[int], optional): List of integers taht specifiy the number 
+            of intersection per face to include.
                 So if levels is [0,1,2,3] then all levels < 4 will be included. Defaults to [2,3]
 
         Returns:
             FacePartition: Details of faces partitioned by the cutter on the tiling (Shell)
         """
-
         partition = FacePartition()
 
         for face in tiling.faces:

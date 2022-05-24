@@ -29,6 +29,7 @@ class Edge(ShapeObject):
         """
         super().__init__()
         self.vertices = vertices
+        
         for item in self.vertices: 
             item.add_parent(self)
 
