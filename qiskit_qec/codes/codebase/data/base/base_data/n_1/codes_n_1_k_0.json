@@ -1,0 +1,23 @@
+{
+ "0": {
+  "isotropic_generators": [
+   "X0"
+  ],
+  "is_subsystem": 1,
+  "index": "0",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 2,
+  "is_decomposable": 0,
+  "weight_enumerator": [
+   1,
+   1
+  ],
+  "is_css": 1,
+  "uuid": "47bdd04c-93fc-4f65-87d7-7cdda8baa4ac",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 0,
+  "n": 1
+ }
+}
