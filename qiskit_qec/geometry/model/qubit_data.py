@@ -18,6 +18,6 @@ class QubitData:
     def __init__(self) -> None:
         # TODO do QubitData and QubitCount share a qubit ID?
         """Init Qubit Data"""
-        self.operator = {}
-        self.qubit = {}
-        self.orientation = {}
+        self.operator = {} # Vertex_id to 
+        self.qubit = {} # vertex_id to qubit_id
+        self.orientation = {} # face_id -> orientation

@@ -53,6 +53,14 @@ class GeometryBounds:
         self.min = self.center - self.size / 2
         self.max = self.center + self.size / 2
 
+    def __str__(self):
+        retstr = "GeometryBounds\n"
+        retstr += "center ={self.center}\n"
+        retstr += f"size   ={self.size}\n"
+        retstr += f"min    = {self.min}\n"
+        retstr += f"max    = {self.max}"
+        return retstr
+
     def copy(self):
         """Copying self"""
         bounds = copy.copy(self)  # TODO shouldn't we do bounds = GeometryBounds()?

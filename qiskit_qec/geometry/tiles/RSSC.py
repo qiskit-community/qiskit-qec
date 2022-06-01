@@ -97,6 +97,7 @@ class RSSC(Tile):
         for i in range(4):
             faces.append(cls._make_operator(vertices=RSSC.op_indices[i], center=center))
 
+            # This should be made much better to allow general data etc
             if qubit_count is not None and qubit_data is not None:
                 cls._assign_qubit_data(
                     faces[i].vertices,

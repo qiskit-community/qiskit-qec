@@ -18,6 +18,7 @@ from math import ceil
 
 import numpy as np
 from qiskit.exceptions import QiskitError
+from sympy import RealNumber
 from qiskit_qec.geometry.bounds import GeometryBounds
 from qiskit_qec.geometry.shape import Shape
 from qiskit_qec.geometry.tiles.tile import Tile
@@ -61,6 +62,19 @@ class Lattice:
         else:
             self.points = points
 
+
+    def __str__(self)->str:
+        if self.points is None:
+            return f"Lattice(u_vec={np.array2string(self.u_vec, separator=', ')}, v_vec={np.array2string(self.v_vec, separator=', ')})"
+        outstr = "Lattive["
+        for point in self.points[:-1]:
+            outstr += np.array2string(point, separator=', ')
+            outstr += ", "
+        outstr += np.array2string(self.points[-1], separator=', ')
+        outstr += "]"
+        return outstr
+        
+
     @classmethod
     def make_transform(cls, u_vec, v_vec):
         """Generate a transformation to be used by other lattices"""
@@ -72,7 +86,6 @@ class Lattice:
         Args:
             size (int|float): size
         """
-        # TODO I don't know why we need size
         xynorm = np.linalg.norm(size)
         dem1 = min(self.unorm, self.vnorm)
         dem2 = np.sqrt(1 - np.dot(self.u_vec, self.v_vec) / (self.unorm * self.vnorm))
@@ -96,7 +109,6 @@ class Lattice:
 
     def apply_transform_from(self, lattice: "Lattice") -> "Lattice":
         """Apply transformation to self from lattice"""
-        # TODO: Not sure what this actually does
         points = []
         if self.points is None:
             raise QiskitError("Lattice points must first be generated")
@@ -144,6 +156,7 @@ class Lattice:
         size: List[Union[float, int]] = None,
         expand_value: np.array = None,
         in_place: bool = False,
+        alpha:RealNumber=1
     ) -> "Lattice":
         """Given a Shape to tile based on the lattice (self), restrict lattice (self) to
         the provided shape such that a tiling of that shape with the given tile will
@@ -160,6 +173,7 @@ class Lattice:
             to ensure that the entire region is filled. If no expand_value is provied then
             an approximate value will be determined. Defaults to None.
             in_place (bool, optional): Perform in place on lattice if set to True. Defaults to False.
+            alpha: tile_size = alpha * tile.size - Used for optimization of a factory
 
         Returns:
             Union[Lattice, None]: Lattice for tiling region, or None if done in place.
@@ -171,7 +185,7 @@ class Lattice:
         # Determine the size of tile expetected
 
         if tile is not None:
-            tile_size = tile.size
+            tile_size = alpha * tile.size
         elif size is not None:
             tile_size = np.array(size)
         else:
@@ -192,6 +206,9 @@ class Lattice:
 
         # Transform the standard lattice into a sublattice of self
         lattice_l = standard_lattice_l.apply_transform_from(self)
+
+        # Shift center of lattice to center of AABB
+        lattice_l.points = [point + extended_aabb.center + np.array([0,1]) for point in lattice_l.points]
 
         # Mask the lattice with the expanded AABB
         lattice_l.restrict(extended_aabb, in_place=True)

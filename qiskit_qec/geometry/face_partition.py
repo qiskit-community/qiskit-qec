@@ -34,6 +34,11 @@ class FacePartition:
         """
         self.attr = {}
 
+    @property
+    def faces(self):
+        """Returns the list of Faces in the Partition"""
+        return self.attr.keys()
+
     def add(self, face: Face):
         """Add a face to the attribute dictionary
 

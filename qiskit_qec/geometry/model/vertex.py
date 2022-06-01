@@ -27,6 +27,9 @@ class Vertex(ShapeObject):
         self.pos = pos
         super().__init__()
 
+    def __str__(self)->str:
+        return self.pos.__str__()
+
     def set_position(self, pos: List[Union[float, int]]):
         """Sets global position of Vertex
 
@@ -39,3 +42,6 @@ class Vertex(ShapeObject):
     def position(self) -> List[Union[float, int]]:
         """Return position of vertex"""
         return self.pos
+
+    def shallowcopy(self) -> "Vertex":
+        return Vertex(self.pos)
