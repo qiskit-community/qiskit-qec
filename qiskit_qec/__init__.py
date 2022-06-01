@@ -22,7 +22,6 @@ from . import (
     linear,
     models,
     operators,
-    qec_codebase,
     structures,
     utils,
 )

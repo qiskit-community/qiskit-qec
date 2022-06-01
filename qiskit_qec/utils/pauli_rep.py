@@ -165,7 +165,7 @@ SPLIT_PATTERN = re.compile(f"^(.*?)({PAULI_START_REGEX})")
 PHASE_REGEX = r"[\-+]?1?[ij]?"
 PAULI_REGEX = r"[IXZY]"
 
-INDEX_REGEX = r".*?[1-9].*"
+INDEX_REGEX = r".*?[0-9].*"
 INDEX_INDICATE_PATTERN = re.compile(f"^{INDEX_REGEX}$")
 
 ENC_INDEX_XZ_REGEX = r"(\((X[0-9]+|Z[0-9]+|X([0-9]+)Z\3)\))+"
@@ -216,6 +216,9 @@ PRODUCT_SYNTAX = 0
 INDEX_SYNTAX = 1
 DEFAULT_SYNTAX = 0
 SYNTAX_TO_TEXT = ["product", "index"]
+
+DEFAULT_QUBIT_ORDER = "right-to-left"
+QUBIT_ORDERS = ["right-to-left", "left-to-right"]
 
 
 def _is_pattern(string, pattern):
@@ -2006,6 +2009,7 @@ def _encode_of_tensor_str(
             for encoding in TENSOR_ENCODINGS:
                 if _is_pattern(t_str, pattern=TENSOR_PRODUCT_PATTERN[encoding]):
                     encoding_rep.append(encoding)
+
         try:
             _ = encoding_rep[0]
             if ecode:
