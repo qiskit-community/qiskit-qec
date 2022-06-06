@@ -15,7 +15,7 @@ import networkx as nx
 from pymatching import Matching
 
 from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.utils.indexer import Indexer
+from qiskit_qec.theory_utils.indexer import Indexer
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
