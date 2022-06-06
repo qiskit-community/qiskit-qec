@@ -1561,7 +1561,7 @@ def hyperbolic_basis_for_pauli_group(
                                [0,0,0,0,1,1,0,1],
                                [1,1,1,0,0,1,0,0],
                                [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
-        >>> center_, x, z = smake_isotropic_hyperbolic_form(matrix)
+        >>> center_, x, z = make_isotropic_hyperbolic_form(matrix)
         >>> nx, nz = sysp.hyperbolic_basis_for_pauli_group(center_, x, z)
         >>> nx.astype(int)
         array([[0, 1, 0, 0, 1, 0, 1, 0],

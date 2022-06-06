@@ -1,0 +1,142 @@
+{
+ "0": {
+  "isotropic_generators": [
+   "X0",
+   "X1"
+  ],
+  "logical_ops": [
+   "X2",
+   "Z2"
+  ],
+  "is_subsystem": 1,
+  "index": "0",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 48,
+  "is_decomposable": 1,
+  "weight_enumerator": [
+   1,
+   2,
+   1,
+   0
+  ],
+  "is_css": 1,
+  "uuid": "822561c6-bb25-47f7-9ec4-b05b3d1265fd",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 1,
+  "n": 3
+ },
+ "1": {
+  "isotropic_generators": [
+   "X1",
+   "X0X1X2"
+  ],
+  "logical_ops": [
+   "X2",
+   "Z0Z2"
+  ],
+  "is_subsystem": 1,
+  "index": "1",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 16,
+  "is_decomposable": 1,
+  "weight_enumerator": [
+   1,
+   1,
+   1,
+   1
+  ],
+  "is_css": 1,
+  "uuid": "ab81311b-eb2b-42aa-966c-12b17f36d70f",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 1,
+  "n": 3
+ },
+ "2": {
+  "isotropic_generators": [
+   "X0X2",
+   "X1X2"
+  ],
+  "logical_ops": [
+   "X2",
+   "Z0Z1Z2"
+  ],
+  "is_subsystem": 1,
+  "index": "2",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 48,
+  "is_decomposable": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   0
+  ],
+  "is_css": 1,
+  "uuid": "f3966aeb-2da3-4ce1-ba7a-385bc99646f8",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 1,
+  "n": 3
+ },
+ "3": {
+  "isotropic_generators": [
+   "X0X1",
+   "Z0Z1"
+  ],
+  "logical_ops": [
+   "X2",
+   "Z2"
+  ],
+  "is_subsystem": 1,
+  "index": "3",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 72,
+  "is_decomposable": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   3,
+   0
+  ],
+  "is_css": 1,
+  "uuid": "080dd43a-3e40-466f-9cb1-832ed4ec190e",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 1,
+  "k": 1,
+  "n": 3
+ },
+ "4": {
+  "isotropic_generators": [
+   "X0X2",
+   "Z0Z1Z2"
+  ],
+  "logical_ops": [
+   "X1X2",
+   "Z0Z2"
+  ],
+  "is_subsystem": 1,
+  "index": "4",
+  "code_type": "StabSubSystemCode",
+  "aut_group_size": 8,
+  "is_decomposable": 0,
+  "weight_enumerator": [
+   1,
+   0,
+   1,
+   2
+  ],
+  "is_css": 1,
+  "uuid": "fd0e6c6f-b097-42ac-880c-d74d93759820",
+  "is_degenerate": 0,
+  "d": 1,
+  "is_gf4linear": 0,
+  "k": 1,
+  "n": 3
+ }
+}
