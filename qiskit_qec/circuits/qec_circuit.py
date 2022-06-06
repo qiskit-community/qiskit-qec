@@ -21,9 +21,7 @@ from qiskit import QuantumCircuit
 
 
 class CSSCircuit:
-    """
-    Create and manage circuits for generic CSS codes.
-    """
+    """CSSCircuit class."""
 
     def __init__(
         self,
@@ -39,7 +37,7 @@ class CSSCircuit:
         resets: bool,
         delay: float,
     ):
-        """
+        """Create and manage circuits for generic CSS codes.
 
         Args:
             css_x_gauge_ops : list of supports of X gauge operators

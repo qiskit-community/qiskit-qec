@@ -78,8 +78,8 @@ class DecodingGraph:
         return S
 
     def get_error_probs(self, results, logical="0"):
-        """
-        Generate probabilities of single error events from result counts.
+        """Generate probabilities of single error events from result counts.
+
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
@@ -189,13 +189,14 @@ class DecodingGraph:
                 w = -np.log(p / (1 - p))
             self.graph.update_edge(edge[0], edge[1], w)
 
-    def make_error_graph(self, string):
-        """
+    def make_error_graph(self, string: str):
+        """Returns error graph.
+
         Args:
             string (str): A string describing the output from the code.
 
         Returns:
-            E: The subgraph of S which corresponds to the non-trivial
+            The subgraph of S which corresponds to the non-trivial
             syndrome elements in the given string.
         """
 
