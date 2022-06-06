@@ -23,7 +23,4 @@ Decoders module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
-    GraphDecoder
 """
-
-from .graph_decoder import GraphDecoder

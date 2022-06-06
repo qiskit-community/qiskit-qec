@@ -14,18 +14,14 @@
 
 import copy
 import json
-import logging
 import os
 import shutil
 import uuid
 from typing import Any, Dict, List, Set, Union
-
-from qiskit_qec.codes.subsystemcodes import SubSystemCode
-from qiskit_qec.operators.pauli_list import PauliList
-from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.structures.gauge import GaugeGroup
-
-logger = logging.getLogger(__name__)
+from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode #pylint: disable=import-error
+from qiskit_qec.exceptions import QiskitQECError #pylint: disable=import-error
+from qiskit_qec.operators.pauli_list import PauliList #pylint: disable=import-error
+from qiskit_qec.structures.gauge import GaugeGroup #pylint: disable=import-error
 
 
 class QECCodeBase:
@@ -37,17 +33,8 @@ class QECCodeBase:
     N = "n"  # pylint: disable=invalid-name
     K = "k"  # pylint: disable=invalid-name
     D = "d"  # pylint: disable=invalid-name
-    AUT_GROUP_SIZE = "aut_group_size"
-    IS_CSS = "is_css"
-    IS_DECOMPOSABLE = "is_decomposable"
-    IS_DEGENERATE = "is_degenerate"
-    IS_GF4LINEAR = "is_gf4linear"
-    IS_TRIORTHOGONAL = "is_triorthogonal"
-    IS_SUBSYSTEM = "is_subsystem"
-    LOGICAL_OPS = "logical_ops"
-    STABILIZER = "stabilizer"
-    WEIGHT_ENUMERATOR = "weight_enumerator"
-    GAUGE_GROUP = "gauge_group"
+    
+    
     CITATION = "citation"
     NAME = "name"
     QEC_UUID = "uuid"
@@ -119,14 +106,13 @@ class QECCodeBase:
         Raises:
             QiskitError: Something went wrong.
         """
+
         self.INSTANCE_NUMBER[0] += 1
         if self.INSTANCE_NUMBER[0] > 1:
-            logger.warning(  # pylint: disable=logging-fstring-interpolation
-                f"YOU SHOULD PROBABLY *NOT* CREATE MORE THAN 1 QECCodeBase. "
-                f"You are trying to create {self.INSTANCE_NUMBER} instances. "
-                f"THERE IS NO CONCURRENCY PROTECTION!"
+            raise QiskitQECError(
+                "DO NOT CREATE MORE THAN 1 QECCodeBase. THERE IS NOT CONCURRENCY PROTECTION"
             )
-        logger.warning(
+        print(
             "Database is a work in progress. Please read the DATABASE_NOTES in the top folder of the"
             " qiskit-qec software"
         )
@@ -157,7 +143,7 @@ class QECCodeBase:
         allow_standard_db=True,
         allow_playground=True,
         **additional_params,  # pylint: disable=missing-param-doc
-    ) -> (List[SubSystemCode]):
+    ) -> (List[StabSubSystemCode]):
         """
         Args:
             n_len (Union[List[int]],int]): length of the code
@@ -190,11 +176,9 @@ class QECCodeBase:
         #     raise QiskitQECError("CANNOT get subsystem code that isn't a subsystem")
 
         if self.BELONGS_TO_STANDARD_CODEBASE in additional_params:
-            logger.warning(
-                "Are you sure you mean to query whether code belongs to standard codebase?"
-            )
+            print("Are you sure you mean to query whether code belongs to standard codebase?")
         if self.QEC_UUID in additional_params:
-            logger.warning("Are you sure you mean to query on uuid?")
+            print("Are you sure you mean to query on uuid?")
 
         qec_code_jsons = {}
         for n in n_len:
@@ -210,8 +194,8 @@ class QECCodeBase:
                 }
 
         if len(additional_params) > 0:
-            logger.warning(  # pylint: disable=logging-fstring-interpolation
-                f"You have {len(additional_params)} additional params. Additional params may"
+            print(
+                f"WARNING. You have {len(additional_params)} additional params. Additional params may"
                 " cause really slow results"
             )
 
@@ -228,7 +212,7 @@ class QECCodeBase:
 
     def store_new_subsystem_code(
         self,
-        code: SubSystemCode,
+        code: StabSubSystemCode,
         force=False,
         keep_uuid=False,
         allow_new_fields=False,
@@ -239,7 +223,7 @@ class QECCodeBase:
         """Store new subsystem code in playground codebase
 
         Args:
-            code (SubSystemCode): code to be saved
+            code (StabSubSystemCode): code to be saved
             force (bool, optional): Override all checks and force code
             to be saved to playground. Defaults to False.
             keep_uuid (bool, optional): Use the same the uuid already stored
@@ -267,11 +251,11 @@ class QECCodeBase:
             self.flush_cache()
         return retval
 
-    def delete_subsystem_code_from_playground(self, code: SubSystemCode):
+    def delete_subsystem_code_from_playground(self, code: StabSubSystemCode):
         """Delete subsystem code from playground codebase
 
         Args:
-            code (SubSystemCode): code to be deleted
+            code (StabSubSystemCode): code to be deleted
 
         Raises:
             QiskitQECError: if deletion is unsuccessful
@@ -333,10 +317,10 @@ class QECCodeBase:
 
     def _convert_code_subsystem_to_storage_format(
         self,
-        code: SubSystemCode,
+        code: StabSubSystemCode,
         keep_uuid=False,
     ):
-        logger.warning("NOTICE. All uppercase letters will be forced into lowercase for storage")
+        print("NOTICE. All uppercase letters will be forced into lowercase for storage")
         assert code.parameters is not None, "code.parameters should not be empty"
         param_dict_deep_copy = copy.deepcopy(code.parameters)
         stabilizer_info = code.gauge_group.generators.stabilizer_info
@@ -422,9 +406,7 @@ class QECCodeBase:
                 with open(path, "r", encoding="utf-8") as code_file:  # should except if invalid
                     qec_code_jsons = {**json.load(code_file), **qec_code_jsons}
             except FileNotFoundError:
-                logger.exception(  # pylint: disable=logging-fstring-interpolation
-                    f"{path} does not exist"
-                )  # pylint: disable=logging-fstring-interpolation
+                print(f"{path} does not exist")  # TODO turn into logging
         if allow_cache:
             if (n_len, k_dim) in self.playground_cache:
                 qec_code_jsons = {**qec_code_jsons, **self.playground_cache[(n_len, k_dim)]}
@@ -432,7 +414,7 @@ class QECCodeBase:
 
     def _convert_codes_storage_format_to_subsystem_codes(
         self, qec_code_jsons: Dict
-    ) -> List[SubSystemCode]:
+    ) -> List[StabSubSystemCode]:
         """
 
         Args:
@@ -444,7 +426,7 @@ class QECCodeBase:
         qec_code_list = []
         for cur_code_json in qec_code_jsons.values():
             a_stabilizer = cur_code_json[self.STABILIZER][0].upper()
-            cur_code = SubSystemCode(GaugeGroup(PauliList(a_stabilizer)), parameters=cur_code_json)
+            cur_code = StabSubSystemCode(GaugeGroup(PauliList(a_stabilizer)), parameters=cur_code_json)
 
             qec_code_list.append(cur_code)
         return qec_code_list
@@ -612,10 +594,10 @@ class QECCodeBase:
                         return False
             return True
 
-        logger.warning(  # pylint: disable=logging-not-lazy
-            "Checking that code is unique' is not sophisticated!"
-            + "It checks only if a code in the codebase/playground has an exact match"
-            + "for each field (except uuid) in the code being added"
+        print(
+            "WARNING: 'checking that code is unique' is not sophisticated.",
+            "It checks only if a code in the codebase/playground has an exact match"
+            + "for each field (except uuid) in the code being added",
         )
         code_info = next(
             iter(code_storage_format.values())
@@ -699,8 +681,8 @@ class QECCodeBase:
             self._store_code_storage_format_in_playground(self.playground_cache)
             self.playground_cache = {}
         except Exception as cur_except:  # pylint: disable=broad-except
-            logger.exception(  # pylint: disable=logging-fstring-interpolation
-                f"{cur_except}. Please try to reflush-cache. "
+            print(
+                f"ERROR: {cur_except}. Please try to reflush-cache. "
                 f"Playground might have data partially "
                 f"written to it."
             )
@@ -712,8 +694,8 @@ class QECCodeBase:
             force (bool, optional): If True, actually delete playground codebase. Defaults to False.
         """
         if not force:
-            logger.warning(
-                "Consider committing to git before deleting playground codebase;\n To"
+            print(
+                "WARNING: Consider committing to git before deleting playground codebase;\n To"
                 " COMPLETELY delete playground codebase, rerun with force=True."
             )
             return
