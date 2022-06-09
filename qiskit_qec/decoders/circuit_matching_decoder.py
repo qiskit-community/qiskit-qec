@@ -30,7 +30,7 @@ class CircuitModelMatchingDecoder(ABC):
 
     def __init__(
         self,
-        n : int,
+        n: int,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
@@ -165,7 +165,9 @@ class CircuitModelMatchingDecoder(ABC):
                 self.idxmap, self.graph, self.edge_weight_polynomials
             )
 
-    def _process_graph(self, graph : DecodingGraph, blocks : int, round_schedule : str, basis : str) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], DecodingGraph, List[str]]:
+    def _process_graph(
+        self, graph: DecodingGraph, blocks: int, round_schedule: str, basis: str
+    ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], DecodingGraph, List[str]]:
         """Process a decoding graph to add required attributes."""
 
         # symmetrize hook errors
@@ -532,7 +534,7 @@ class CircuitModelMatchingDecoder(ABC):
                 map1[n2] = Poly(expr)
         return symbs, edge_weight_expressions
 
-    def process(self, outcomes : List[int]) -> List[int]:
+    def process(self, outcomes: List[int]) -> List[int]:
         """Process a set of outcomes and return corrected final outcomes.
 
         Be sure to have called update_edge_weights for the
@@ -567,7 +569,9 @@ class CircuitModelMatchingDecoder(ABC):
         logging.info("process: final_outcomes = %s", final_outcomes)
         logging.info("process: highlighted = %s", highlighted)
 
-        qubit_errors, measurement_errors = self.matcher.find_errors(self.graph, self.idxmap, highlighted)
+        qubit_errors, measurement_errors = self.matcher.find_errors(
+            self.graph, self.idxmap, highlighted
+        )
 
         corrected_outcomes = copy(final_outcomes)
         for i in qubit_errors:

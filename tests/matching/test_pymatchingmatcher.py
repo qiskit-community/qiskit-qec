@@ -11,7 +11,7 @@ class TestPyMatchingMatcher(unittest.TestCase):
 
     def make_test_graph(self) -> Tuple[rx.PyGraph, Dict[Tuple[int, Tuple[int]], int]]:
         """Make a basic decoding graph.
-        
+
         4 -- 0 -- 1 -- 2 -- 3 -- (4)
         """
         graph = rx.PyGraph(multigraph=False)
@@ -39,6 +39,7 @@ class TestPyMatchingMatcher(unittest.TestCase):
         qubit_errors, measurement_errors = self.m.find_errors(graph, idxmap, highlighted)
         self.assertEqual(qubit_errors, set([1, 4]))
         self.assertEqual(measurement_errors, set())
+
 
 if __name__ == "__main__":
     unittest.main()

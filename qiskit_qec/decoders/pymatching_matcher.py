@@ -15,7 +15,7 @@ from qiskit_qec.decoders.temp_graph_util import ret2net
 
 class PyMatchingMatcher(BaseMatcher):
     """Matching subroutines using PyMatching.
-    
+
     The input retworkx graph is expected to have the following properties:
     edge["weight"] : real edge weight
     edge["qubits"] : list of qubit ids associated to edge
@@ -28,7 +28,7 @@ class PyMatchingMatcher(BaseMatcher):
         self.indexer = None
         super().__init__()
 
-    def preprocess(self, graph : rx.PyGraph):
+    def preprocess(self, graph: rx.PyGraph):
         """Create the pymatching object.
         Add qubit_id properties to the graph.
         """
@@ -44,7 +44,12 @@ class PyMatchingMatcher(BaseMatcher):
                 edge[2]["qubit_id"] = -1
         self.pymatching = Matching(nxgraph)
 
-    def find_errors(self, graph : rx.PyGraph, idxmap : Dict[Tuple[int, List[int]], int], highlighted : List[Tuple[int, Tuple[int]]]) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
+    def find_errors(
+        self,
+        graph: rx.PyGraph,
+        idxmap: Dict[Tuple[int, List[int]], int],
+        highlighted: List[Tuple[int, Tuple[int]]],
+    ) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
         """Process a set of highlighted vertices and return error locations."""
         syndrome = [0] * len(idxmap)
         for vertex in highlighted:

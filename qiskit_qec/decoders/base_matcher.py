@@ -19,11 +19,16 @@ class BaseMatcher(ABC):
         pass
 
     @abstractmethod
-    def preprocess(self, graph : rx.PyGraph):
+    def preprocess(self, graph: rx.PyGraph):
         """Do any preprocessing using the graph data."""
         raise NotImplementedError("Not implemented.")
 
     @abstractmethod
-    def find_errors(self, graph : rx.PyGraph, idxmap : Dict[Tuple[int, List[int]], int], highlighted : List[Tuple[int, Tuple[int]]]) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
+    def find_errors(
+        self,
+        graph: rx.PyGraph,
+        idxmap: Dict[Tuple[int, List[int]], int],
+        highlighted: List[Tuple[int, Tuple[int]]],
+    ) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
         """Process a set of highlighted vertices and return error locations."""
         raise NotImplementedError("Not implemented.")

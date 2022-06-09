@@ -4,7 +4,7 @@ import retworkx as rx
 import json
 
 
-def ret2net(graph : rx.PyGraph):
+def ret2net(graph: rx.PyGraph):
     """Convert retworkx graph to equivalent networkx graph."""
     nx_graph = nx.Graph()
     for j, node in enumerate(graph.nodes()):
@@ -16,6 +16,7 @@ def ret2net(graph : rx.PyGraph):
         for k, v in graph.edges()[j].items():
             nx.set_edge_attributes(nx_graph, {(n0, n1): v}, k)
     return nx_graph
+
 
 def write_graph_to_json(self, graph: rx.PyGraph, filename: str):
     """Export a JSON formatted file with the graph data."""

@@ -11,7 +11,7 @@ class TestRetworkXMatcher(unittest.TestCase):
 
     def make_test_graph(self) -> Tuple[rx.PyGraph, Dict[Tuple[int, Tuple[int]], int]]:
         """Make a basic decoding graph.
-        
+
         4 -- 0 -- 1 -- 2 -- 3 -- (4)
         """
         graph = rx.PyGraph(multigraph=False)
@@ -63,11 +63,12 @@ class TestRetworkXMatcher(unittest.TestCase):
         self.assertEqual(self.rxm.annotated_graph[3]["highlighted"], True)
         self.assertEqual(self.rxm.annotated_graph[4]["highlighted"], True)
         eim = self.rxm.annotated_graph.edge_index_map()
-        self.assertEqual(eim[0][2]['highlighted'], False)
-        self.assertEqual(eim[1][2]['highlighted'], True)
-        self.assertEqual(eim[2][2]['highlighted'], False)
-        self.assertEqual(eim[3][2]['highlighted'], False)
-        self.assertEqual(eim[4][2]['highlighted'], True)
+        self.assertEqual(eim[0][2]["highlighted"], False)
+        self.assertEqual(eim[1][2]["highlighted"], True)
+        self.assertEqual(eim[2][2]["highlighted"], False)
+        self.assertEqual(eim[3][2]["highlighted"], False)
+        self.assertEqual(eim[4][2]["highlighted"], True)
+
 
 if __name__ == "__main__":
     unittest.main()

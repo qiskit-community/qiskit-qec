@@ -11,7 +11,7 @@ from qiskit_qec.decoders.base_matcher import BaseMatcher
 
 class RetworkXMatcher(BaseMatcher):
     """Matching subroutines using retworkx.
-    
+
     The input retworkx graph is expected to have the following properties:
     edge["weight"] : real edge weight
     edge["measurement_error"] : bool, true if edge corresponds to measurement error
@@ -22,7 +22,7 @@ class RetworkXMatcher(BaseMatcher):
     The annotated graph will also have "highlighted" properties on edges and vertices.
     """
 
-    def __init__(self, annotate : bool = False):
+    def __init__(self, annotate: bool = False):
         """Create the matcher."""
         self.length = {}
         self.path = {}
@@ -30,7 +30,7 @@ class RetworkXMatcher(BaseMatcher):
         self.annotated_graph = None
         super().__init__()
 
-    def preprocess(self, graph : rx.PyGraph):
+    def preprocess(self, graph: rx.PyGraph):
         """Compute shortest paths between vertex pairs in decoding graph.
 
         Updates sets self.length and self.path.
@@ -41,7 +41,12 @@ class RetworkXMatcher(BaseMatcher):
         path = rx.all_pairs_dijkstra_shortest_paths(graph, edge_cost_fn)
         self.path = {s: {t: list(path[s][t]) for t in path[s]} for s in path}
 
-    def find_errors(self, graph : rx.PyGraph, idxmap : Dict[Tuple[int, List[int]], int], highlighted : List[Tuple[int, Tuple[int]]]) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
+    def find_errors(
+        self,
+        graph: rx.PyGraph,
+        idxmap: Dict[Tuple[int, List[int]], int],
+        highlighted: List[Tuple[int, Tuple[int]]],
+    ) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
         """Process a set of highlighted vertices and return error locations.
 
         Be sure to have called recompute_paths if needed.
@@ -49,10 +54,7 @@ class RetworkXMatcher(BaseMatcher):
         matching = self._compute_matching(idxmap, highlighted)
         logging.info("process: matching = %s", matching)
         qubit_errors, measurement_errors = self._compute_error_correction(
-            graph,
-            idxmap,
-            matching,
-            highlighted
+            graph, idxmap, matching, highlighted
         )
         logging.info("process: qubit_errors = %s", qubit_errors)
         logging.debug("process: measurement_errors = %s", measurement_errors)
@@ -121,8 +123,8 @@ class RetworkXMatcher(BaseMatcher):
         self,
         graph: rx.PyGraph,
         idxmap: Dict[Tuple[int, List[int]], int],
-        matching : Set[Tuple[int, int]],
-        highlighted : List[Tuple[int, Tuple[int]]]
+        matching: Set[Tuple[int, int]],
+        highlighted: List[Tuple[int, Tuple[int]]],
     ) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
         """Compute the qubit and measurement corrections.
 
@@ -155,9 +157,7 @@ class RetworkXMatcher(BaseMatcher):
             self.annotated_graph = self._make_annotated_graph(graph, used_paths)
         return qubit_errors, measurement_errors
 
-    def _make_annotated_graph(
-        self, gin: rx.PyGraph, paths: List[List[int]]
-    ) -> rx.PyGraph:
+    def _make_annotated_graph(self, gin: rx.PyGraph, paths: List[List[int]]) -> rx.PyGraph:
         """Highlight the vertex paths and return annotated graph.
 
         gin : decoding graph
@@ -172,9 +172,9 @@ class RetworkXMatcher(BaseMatcher):
             # Highlight the edges along the path
             for i in range(len(path) - 1):
                 try:
-                    idx = list(graph.edge_list()).index((path[i], path[i+1]))
+                    idx = list(graph.edge_list()).index((path[i], path[i + 1]))
                 except ValueError:
-                    idx = list(graph.edge_list()).index((path[i+1], path[i]))
+                    idx = list(graph.edge_list()).index((path[i + 1], path[i]))
                 edge = graph.edges()[idx]
                 edge["highlighted"] = True
         return graph
