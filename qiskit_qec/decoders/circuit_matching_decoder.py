@@ -16,7 +16,6 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
-from qiskit_qec.decoders.temp_graph_util import ret2net
 from qiskit_qec.decoders.base_matcher import BaseMatcher
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
