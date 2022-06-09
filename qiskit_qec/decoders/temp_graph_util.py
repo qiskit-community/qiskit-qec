@@ -1,0 +1,26 @@
+"""Temporary module with methods for graphs."""
+import networkx as nx
+import retworkx as rx
+import json
+
+
+def ret2net(graph : rx.PyGraph):
+    """Convert retworkx graph to equivalent networkx graph."""
+    nx_graph = nx.Graph()
+    for j, node in enumerate(graph.nodes()):
+        nx_graph.add_node(j)
+        for k, v in node.items():
+            nx.set_node_attributes(nx_graph, {j: v}, k)
+    for j, (n0, n1) in enumerate(graph.edge_list()):
+        nx_graph.add_edge(n0, n1)
+        for k, v in graph.edges()[j].items():
+            nx.set_edge_attributes(nx_graph, {(n0, n1): v}, k)
+    return nx_graph
+
+def write_graph_to_json(self, graph: rx.PyGraph, filename: str):
+    """Export a JSON formatted file with the graph data."""
+    with open(filename, "w", encoding="utf-8") as fp:
+        # Any fields that are not serializable are converted to strings
+        from_ret = ret2net(graph)
+        json.dump(nx.node_link_data(from_ret), fp, indent=4, default=str)
+    fp.close()

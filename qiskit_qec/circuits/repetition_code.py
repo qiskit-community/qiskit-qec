@@ -54,6 +54,7 @@ class RepetitionCodeCircuit:
             syndrome measurement round).
         """
 
+        self.n = d
         self.d = d
         self.T = 0
 
