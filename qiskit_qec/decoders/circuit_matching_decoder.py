@@ -1,22 +1,20 @@
 """Abstract object for matching decoders for CSS codes and circuit noise."""
 
-from copy import deepcopy, copy
+from copy import copy
 from math import log
 from abc import ABC, abstractmethod
-from typing import List, Tuple, Dict, Set
+from typing import List, Tuple, Dict
 import logging
 
 from sympy import Poly, symbols, Symbol
 from qiskit import QuantumCircuit
 import retworkx as rx
-import networkx as nx
 
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
-from qiskit_qec.decoders.base_matcher import BaseMatcher
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
 
@@ -299,9 +297,8 @@ class CircuitModelMatchingDecoder(ABC):
                 if s2 not in idxmap:
                     raise QiskitQECError(f"vertex {s2} not in decoding graph")
                 if not graph.has_edge(idxmap[s1], idxmap[s2]):
+                    # TODO: new edges may be needed for hooks, but raise exception for now
                     raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
-                    # TODO: new edges may be needed for hooks, but raise exception if we're surprised
-
                 data = graph.get_edge_data(idxmap[s1], idxmap[s2])
                 data["weight_poly"] = wpoly
         remove_list = []
@@ -313,12 +310,7 @@ class CircuitModelMatchingDecoder(ABC):
                 ) or (
                     "is_boundary" in graph.nodes()[target] and graph.nodes()[target]["is_boundary"]
                 ):
-                    # pymatching requires all qubit_ids from 0 to
-                    # n-1 to appear as edge properties. If we
-                    # remove too many edges, not all qubit_ids will
-                    # be present. We solve this by keeping unweighted
-                    # that are edges connected to the boundary. Instead
-                    # we increase their weight to a large value.
+                    # TODO: we could consider removing the edge
                     edge_data["weight"] = 1000000
                     logging.info("increase edge weight (%d, %d)", source, target)
                 else:
@@ -569,7 +561,7 @@ class CircuitModelMatchingDecoder(ABC):
         logging.info("process: final_outcomes = %s", final_outcomes)
         logging.info("process: highlighted = %s", highlighted)
 
-        qubit_errors, measurement_errors = self.matcher.find_errors(
+        qubit_errors, _ = self.matcher.find_errors(
             self.graph, self.idxmap, highlighted
         )
 
