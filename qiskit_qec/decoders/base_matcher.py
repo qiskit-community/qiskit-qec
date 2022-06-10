@@ -1,13 +1,6 @@
 """Base matching object."""
-
-
 from abc import ABC, abstractmethod
-
-
-from copy import deepcopy
 from typing import List, Tuple, Dict, Set
-import logging
-
 import retworkx as rx
 
 

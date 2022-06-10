@@ -1,7 +1,7 @@
 """Temporary module with methods for graphs."""
+import json
 import networkx as nx
 import retworkx as rx
-import json
 
 
 def ret2net(graph: rx.PyGraph):
@@ -18,7 +18,7 @@ def ret2net(graph: rx.PyGraph):
     return nx_graph
 
 
-def write_graph_to_json(self, graph: rx.PyGraph, filename: str):
+def write_graph_to_json(graph: rx.PyGraph, filename: str):
     """Export a JSON formatted file with the graph data."""
     with open(filename, "w", encoding="utf-8") as fp:
         # Any fields that are not serializable are converted to strings

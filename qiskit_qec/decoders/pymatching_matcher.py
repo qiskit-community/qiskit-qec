@@ -1,6 +1,5 @@
 """PyMatching matching object."""
 
-from copy import deepcopy
 from typing import List, Tuple, Dict, Set
 import logging
 
@@ -34,7 +33,7 @@ class PyMatchingMatcher(BaseMatcher):
         """
         self.indexer = Indexer()
         nxgraph = ret2net(graph)
-        for j, edge in enumerate(nxgraph.edges(data=True)):
+        for edge in nxgraph.edges(data=True):
             if edge[2]["qubits"]:
                 qset = set()
                 for q in edge[2]["qubits"]:

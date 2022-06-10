@@ -33,7 +33,7 @@ class TestRetworkXMatcher(unittest.TestCase):
 
     def test_preprocess(self):
         """Test preprocessing example."""
-        graph, idxmap = self.make_test_graph()
+        graph, _ = self.make_test_graph()
         self.rxm.preprocess(graph)
         self.assertEqual(self.rxm.length[0][1], 1)
         self.assertEqual(self.rxm.length[1][3], 2)
@@ -56,7 +56,7 @@ class TestRetworkXMatcher(unittest.TestCase):
         graph, idxmap = self.make_test_graph()
         self.rxm.preprocess(graph)
         highlighted = [(0, (0, 1)), (0, (1, 2)), (0, (3, 4)), (0, ())]  # must be even
-        qubit_errors, measurement_errors = self.rxm.find_errors(graph, idxmap, highlighted)
+        self.rxm.find_errors(graph, idxmap, highlighted)
         self.assertEqual(self.rxm.annotated_graph[0]["highlighted"], True)
         self.assertEqual(self.rxm.annotated_graph[1]["highlighted"], True)
         self.assertEqual(self.rxm.annotated_graph[2]["highlighted"], False)

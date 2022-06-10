@@ -17,7 +17,7 @@
 """
 Graph used as the basis of decoders.
 """
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 import itertools
 import logging
