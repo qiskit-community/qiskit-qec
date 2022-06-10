@@ -3,12 +3,10 @@
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit.circuit.library import IGate
 from qiskit.circuit import Gate
-from hhc import HHC
+from qiskit_qec.codes.hhc import HHC
 from typing import List, Tuple
 import logging
 
-# TODO: Add flag to insert labeled idle before each measurement
-# TODO: Use the labels to set each measurement error independently
 
 class HHCCircuit:
     """Create quantum circuits for syndrome measurements.
@@ -31,6 +29,7 @@ class HHCCircuit:
         initial_state: str,
         logical_paulis: str,
         num_initialize: int,
+        idle_before_measure: bool
     ):
         """Create an object associated to a HHC."""
         self.code = hhc
@@ -47,11 +46,13 @@ class HHCCircuit:
             initial_state,
             logical_paulis,
             num_initialize,
+            idle_before_measure
         )
         self.total_ancilla, self.x_ancilla_indices, self.z_ancilla_indices = self._hex_ancillas(hhc)
         self.total_qubits = hhc.n + self.total_ancilla
         self.qreg = QuantumRegister(self.total_qubits)
         self.imlabel = "idm"  # label for idle during measurement
+        self.ibmlabel = "idbm"  # label for idle before measurement
         self.iinitlabel = (
             "idinit"  # label for idle in the beginning of circuit to add initialization error
         )
@@ -70,6 +71,7 @@ class HHCCircuit:
         initial_state: str,
         logical_paulis: str,
         num_initialize: int,
+        idle_before_measurement: bool
     ):
         """Validate parameters."""
         self.barriers = barriers
@@ -99,6 +101,7 @@ class HHCCircuit:
         if self.num_initialize is not None:
             if self.num_initialize < 0:
                 raise Exception("expected zero or positive integer number of initialization")
+        self.idle_before_measurement = idle_before_measurement
 
     def _hex_ancillas(self, code: HHC) -> Tuple[int, List[List[int]], List[List[int]]]:
         """Assign ancilla indices for X and Z gauge measurements.
@@ -168,6 +171,7 @@ class HHCCircuit:
         group_meas = self.group_meas
         with_xprs = self.xprs
         basis = self.basis if basis is None else basis
+        ibm = self.idle_before_measurement
         # Add xprs to use as reset right after measurement
         xprs = Gate(name="xprs", num_qubits=1, params=[])
 
@@ -198,6 +202,8 @@ class HHCCircuit:
             for j in self.x_ancilla_indices[i]:
                 circ.h(self.qreg[j])
                 if not group_meas:
+                    if ibm:
+                        circ.append(IGate(label=self.ibmlabel+str(cbits[i])), [self.qreg[j]])
                     circ.measure(self.qreg[j], creg[cbits[i]])
                     if not finalRound and num_initialize is not None:
                         if with_xprs:
@@ -220,6 +226,8 @@ class HHCCircuit:
                 circ.barrier(self.qreg)
             for i in range(len(self.code.x_gauges)):
                 for j in self.x_ancilla_indices[i]:
+                    if ibm:
+                        circ.append(IGate(label=self.ibmlabel+str(cbits[i])), [self.qreg[j]])
                     circ.measure(self.qreg[j], creg[cbits[i]])
                     if not finalRound and num_initialize is not None:
                         if with_xprs:
@@ -266,6 +274,7 @@ class HHCCircuit:
         group_meas = self.group_meas
         with_xprs = self.xprs
         basis = self.basis if basis is None else basis
+        ibm = self.idle_before_measurement
         # Add xprs to use as reset right after measurement
         xprs = Gate(name="xprs", num_qubits=1, params=[])
         for step in range(7):
@@ -342,6 +351,8 @@ class HHCCircuit:
                             circ.i(right)
                     else:
                         circ.h(right)
+                        if ibm:
+                            circ.append(IGate(label=self.ibmlabel+str(rflags[j])), [right])
                         circ.measure(right, creg[rflags[j]])
                         if not finalRound and num_initialize is not None:
                             if with_xprs:
@@ -353,6 +364,9 @@ class HHCCircuit:
                     if group_meas:
                         circ.h(right)
                     else:
+                        if ibm:
+                            circ.append(IGate(label=self.ibmlabel+str(cbits[j])), [middle])
+                            circ.append(IGate(label=self.ibmlabel+str(lflags[j])), [left])
                         circ.measure(middle, creg[cbits[j]])
                         circ.measure(left, creg[lflags[j]])
                         if not finalRound and num_initialize is not None:
@@ -382,6 +396,10 @@ class HHCCircuit:
                     left = self.qreg[self.z_ancilla_indices[j][0]]
                     middle = self.qreg[self.z_ancilla_indices[j][1]]
                     right = self.qreg[self.z_ancilla_indices[j][2]]
+                    if ibm:
+                        circ.append(IGate(label=self.ibmlabel+str(rflags[j])), [right])
+                        circ.append(IGate(label=self.ibmlabel+str(cbits[j])), [middle])
+                        circ.append(IGate(label=self.ibmlabel+str(lflags[j])), [left])
                     circ.measure(right, creg[rflags[j]])
                     circ.measure(middle, creg[cbits[j]])
                     circ.measure(left, creg[lflags[j]])
@@ -459,6 +477,7 @@ class HHCCircuit:
         num_initialize = self.num_initialize
         init_error = self.init_error
         group_meas = self.group_meas
+        ibm = self.idle_before_measurement
         # Compute the total number of classical bits
         xg = len(self.code.x_gauges)
         zg = len(self.code.z_gauges)
@@ -555,6 +574,8 @@ class HHCCircuit:
         for i in range(self.code.n):
             if basis == "x" and not group_meas:
                 circ.h(self.qreg[i])
+            if ibm:
+                circ.append(IGate(label=self.ibmlabel+str(start)), [self.qreg[i]])
             circ.measure(self.qreg[i], creg[start])
             start += 1
 
