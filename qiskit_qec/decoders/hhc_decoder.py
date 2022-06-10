@@ -1,6 +1,7 @@
 """Object to construct decoders and decode the HHC."""
 
 from typing import List, Tuple
+import logging
 
 from qiskit import QuantumCircuit
 
@@ -8,8 +9,6 @@ from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
-
-import logging
 
 
 class HHCDecoder(CircuitModelMatchingDecoder):
@@ -84,8 +83,8 @@ class HHCDecoder(CircuitModelMatchingDecoder):
         final_outcomes = []
         for r in range(blocks):
             bits_into_round = 0
-            for s in range(len(round_schedule)):
-                if round_schedule[s] == "z":
+            for rs in round_schedule:
+                if rs == "z":
                     z_gauge_outcomes.append(
                         outcome[
                             r * self.bits_per_round
@@ -113,7 +112,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                         ]
                     )
                     bits_into_round += len(self.css_z_gauge_ops)
-                if round_schedule[s] == "x":
+                if rs == "x":
                     x_gauge_outcomes.append(
                         outcome[
                             r * self.bits_per_round
@@ -125,9 +124,9 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                     bits_into_round += len(self.css_x_gauge_ops)
         final_outcomes = outcome[-self.n :]
         # Process the flags
-        logging.debug("left_flag_outcomes = %s" % left_flag_outcomes)
-        logging.debug("right_flag_outcomes = %s" % right_flag_outcomes)
-        logging.debug("x_gauge_outcomes (before deflag) = %s" % x_gauge_outcomes)
+        logging.debug(f"left_flag_outcomes = {left_flag_outcomes}")
+        logging.debug(f"right_flag_outcomes = {right_flag_outcomes}")
+        logging.debug(f"x_gauge_outcomes (before deflag) = {x_gauge_outcomes}")
         x_gauge_outcomes, final_outcomes = self._process_flags(
             self.blocks,
             self.round_schedule,
@@ -136,7 +135,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
             right_flag_outcomes,
             final_outcomes,
         )
-        logging.debug("x_gauge_outcomes (after deflag) = %s" % x_gauge_outcomes)
+        logging.debug(f"x_gauge_outcomes (after deflag) = {x_gauge_outcomes}")
         return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
 
     def _process_flags(
@@ -166,8 +165,8 @@ class HHCDecoder(CircuitModelMatchingDecoder):
         zidx = 0  # index z measurement cycles
         xidx = 0  # index x measurement cycles
         for r in range(blocks):
-            for s in range(len(round_schedule)):
-                if round_schedule[s] == "z":
+            for rs in round_schedule:
+                if rs == "z":
                     # Examine the left/right flags and update frame
                     for j in range(len(self.css_z_gauge_ops)):
                         # Only consider weight 4 operators
@@ -179,7 +178,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                                 # upper left qubit
                                 qubit = self.css_z_gauge_ops[j][0]
                                 frame[qubit] ^= 1
-                                logging.debug("frame, cycle %d -> qubit %d" % (zidx, qubit))
+                                logging.debug("frame, cycle %d -> qubit %d", zidx, qubit)
                             if (
                                 left_flag_outcomes[zidx][j] == 0
                                 and right_flag_outcomes[zidx][j] == 1
@@ -187,16 +186,16 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                                 # lower right qubit
                                 qubit = self.css_z_gauge_ops[j][3]
                                 frame[qubit] ^= 1
-                                logging.debug("frame, cycle %d -> qubit %d" % (zidx, qubit))
+                                logging.debug("frame, cycle %d -> qubit %d", zidx, qubit)
                     zidx += 1
-                if round_schedule[s] == "x":
+                if rs == "x":
                     # Update the X gauge syndromes
                     syn = temp_syndrome(frame, self.css_x_gauge_ops)
-                    logging.debug("frame syndrome, cycle %d -> %s" % (xidx, syn))
+                    logging.debug("frame syndrome, cycle %d -> %s", xidx, syn)
                     block = x_gauge_outcomes[xidx]
                     block = list(u ^ v for u, v in zip(block, syn))
                     x_gauge_outcomes[xidx] = block
-                    logging.debug("x gauge update, cycle %d -> %s" % (xidx, block))
+                    logging.debug("x gauge update, cycle %d -> %s", xidx, block)
                     xidx += 1
         # Update the final outcomes if X basis measurement
         if self.basis == "x":

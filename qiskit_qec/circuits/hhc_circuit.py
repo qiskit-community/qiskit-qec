@@ -1,11 +1,12 @@
 """Object to construct quantum circuits for the HHC."""
 
+from typing import List, Tuple
+import logging
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit.circuit.library import IGate
 from qiskit.circuit import Gate
 from qiskit_qec.codes.hhc import HHC
-from typing import List, Tuple
-import logging
 
 
 class HHCCircuit:
@@ -87,10 +88,10 @@ class HHCCircuit:
         if set(self.round_schedule) > set("xz"):
             raise Exception("expected round schedule of 'x', 'z' chars")
         self.basis = basis
-        if not (self.basis == "x" or self.basis == "z"):
+        if not (self.basis in ["x", "z"]):
             raise Exception("expected basis to be 'x' or 'z'")
         self.initial_state = initial_state
-        if not (self.initial_state == "+" or self.initial_state == "-"):
+        if not (self.initial_state in ["+", "-"]):
             raise Exception("expected initial state '+' or '-'")
         self.logical_paulis = logical_paulis
         if set(self.logical_paulis) > set("ixyz"):
@@ -123,8 +124,8 @@ class HHCCircuit:
         total_ancilla += len(code.x_gauges)
         # Append additional ancillas for Z gauge operators
         z_ancilla_indices = []
-        for j in range(len(code.z_gauges)):
-            if len(code.z_gauges[j]) == 2:  # boundary Z gauge
+        for j, zg in enumerate(code.z_gauges):
+            if len(zg) == 2:  # boundary Z gauge
                 # Hex layout has 3 extra ancillas per boundary Z gauge
                 start = total_ancilla
                 z_ancilla_indices.append([code.n + start, code.n + start + 1, code.n + start + 2])
@@ -132,26 +133,26 @@ class HHCCircuit:
             else:  # bulk Z gauge
                 # These borrow ancillas from adjacent X gauges
                 # and use one additional ancilla in the center of the face
-                for k in range(len(code.x_gauges)):
+                for k, xg in enumerate(code.x_gauges):
                     # qubits at indices 0 and 2 are shared
                     # with adjacent X gauge on left
                     if (
-                        code.z_gauges[j][0] in code.x_gauges[k]
-                        and code.z_gauges[j][2] in code.x_gauges[k]
+                        zg[0] in xg
+                        and zg[2] in xg
                     ):
                         left = code.n + k
                     # qubits at indices 1 and 3 are shared
                     # with adjacent X gauge on right
                     if (
-                        code.z_gauges[j][1] in code.x_gauges[k]
-                        and code.z_gauges[j][3] in code.x_gauges[k]
+                        zg[1] in xg
+                        and zg[3] in xg
                     ):
                         right = code.n + k
                 z_ancilla_indices.append([left, code.n + total_ancilla, right])
                 total_ancilla += 1
-        logging.info("total_ancilla = %d" % total_ancilla)
-        logging.info("x_ancilla_indices = %s" % x_ancilla_indices)
-        logging.info("z_ancilla_indices = %s" % z_ancilla_indices)
+        logging.info(f"total_ancilla = {total_ancilla}")
+        logging.info(f"x_ancilla_indices = {x_ancilla_indices}")
+        logging.info(f"z_ancilla_indices = {z_ancilla_indices}")
         return total_ancilla, x_ancilla_indices, z_ancilla_indices
 
     def _x_gauge_one_round_hex(
@@ -187,11 +188,11 @@ class HHCCircuit:
         # Interact with the ancilla
         for step in range(2):
             idle = list(range(self.code.n))
-            for i in range(len(self.code.x_gauges)):
+            for i, xg in enumerate(self.code.x_gauges):
                 circ.cx(
-                    self.qreg[self.x_ancilla_indices[i][0]], self.qreg[self.code.x_gauges[i][step]]
+                    self.qreg[self.x_ancilla_indices[i][0]], self.qreg[xg[step]]
                 )
-                idle.remove(self.code.x_gauges[i][step])
+                idle.remove(xg[step])
             if add_idles:
                 for i in idle:
                     circ.i(self.qreg[i])
@@ -211,10 +212,10 @@ class HHCCircuit:
                         else:
                             circ.reset(self.qreg[j])
         if group_meas:
-            if logical_pauli == "x" or logical_pauli == "y":
+            if logical_pauli in ["x", "y"]:
                 for k in self.code.logical_x[0]:
                     circ.x(self.qreg[k])
-            if logical_pauli == "z" or logical_pauli == "y":
+            if logical_pauli in ["z", "y"]:
                 for k in self.code.logical_z[0]:
                     circ.z(self.qreg[k])
             if add_barriers and logical_pauli is not None:
@@ -528,11 +529,11 @@ class HHCCircuit:
 
         # Construct the syndrome measurement circuit
         start = 0
-        finalRound = False
+        final_round = False
         for i in range(rounds):
             for j in range(len(round_schedule)):
                 if (i == rounds - 1) and (j == len(round_schedule) - 1):
-                    finalRound = True
+                    final_round = True
                 log_paul = "" if len(logical_paulis) == 0 else logical_paulis[j]
                 if round_schedule[j] == "x":
                     self._x_gauge_one_round_hex(
@@ -540,7 +541,7 @@ class HHCCircuit:
                         creg,
                         list(range(start, start + xg)),
                         basis=basis,
-                        finalRound=finalRound,
+                        finalRound=final_round,
                         logical_pauli=log_paul,
                     )
                     start += xg
@@ -555,7 +556,7 @@ class HHCCircuit:
                         list(range(start + zg, start + 2 * zg)),
                         list(range(start + 2 * zg, start + 3 * zg)),
                         basis=basis,
-                        finalRound=finalRound,
+                        finalRound=final_round,
                         logical_pauli=log_paul,
                     )
                     start += 3 * zg

@@ -1,7 +1,8 @@
 """Define the heavy hexagon compass code."""
 
-from qiskit_qec.exceptions import QiskitQECError
 from typing import List
+
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class HHC:
@@ -36,16 +37,16 @@ class HHC:
 
     def __repr__(self) -> str:
         """String representation."""
-        s = str(self)
-        s += "\nx_gauges = %s" % self.x_gauges
-        s += "\nz_gauges = %s" % self.z_gauges
-        s += "\nx_stabilizers = %s" % self.x_stabilizers
-        s += "\nz_stabilizers = %s" % self.z_stabilizers
-        s += "\nlogical_x = %s" % self.logical_x
-        s += "\nlogical_z = %s" % self.logical_z
-        s += "\nx_boundary = %s" % self.x_boundary
-        s += "\nz_boundary = %s" % self.z_boundary
-        return s
+        val = str(self)
+        val += f"\nx_gauges = {self.x_gauges}"
+        val += f"\nz_gauges = {self.z_gauges}"
+        val += f"\nx_stabilizers = {self.x_stabilizers}"
+        val += f"\nz_stabilizers = {self.z_stabilizers}"
+        val += f"\nlogical_x = {self.logical_x}"
+        val += f"\nlogical_z = {self.logical_z}"
+        val += f"\nx_boundary = {self.x_boundary}"
+        val += f"\nz_boundary = {self.z_boundary}"
+        return val
 
     def to_index(self, row: int, col: int, d: int) -> int:
         """Map a coordinate (row, col) to a qubit index.
@@ -144,11 +145,11 @@ class HHC:
 
     def _logical_z(self, n: int) -> List[List[int]]:
         """Return the support of the logical Z operators."""
-        return [[i for i in range(n)]]
+        return list(range(n))
 
     def _logical_x(self, n: int) -> List[List[int]]:
         """Return the support of the logical X operators."""
-        return [[i for i in range(n)]]
+        return list(range(n))
 
     def _z_boundary_qubits(self, d: int) -> List[List[int]]:
         """Return a list of singletons each containing a Z boundary qubit.
