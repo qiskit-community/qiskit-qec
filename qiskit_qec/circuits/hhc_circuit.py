@@ -144,9 +144,9 @@ class HHCCircuit:
                         right = code.n + k
                 z_ancilla_indices.append([left, code.n + total_ancilla, right])
                 total_ancilla += 1
-        logging.info(f"total_ancilla = {total_ancilla}")
-        logging.info(f"x_ancilla_indices = {x_ancilla_indices}")
-        logging.info(f"z_ancilla_indices = {z_ancilla_indices}")
+        logging.info("total_ancilla = %s", total_ancilla)
+        logging.info("x_ancilla_indices = %s", x_ancilla_indices)
+        logging.info("z_ancilla_indices = %s", z_ancilla_indices)
         return total_ancilla, x_ancilla_indices, z_ancilla_indices
 
     def _x_gauge_one_round_hex(
@@ -272,14 +272,14 @@ class HHCCircuit:
         xprs = Gate(name="xprs", num_qubits=1, params=[])
         for step in range(7):
             idle = list(range(self.code.n))
-            for j in range(len(self.code.z_gauges)):
+            for j, zg in enumerate(self.code.z_gauges):
                 # Label the ancillas
                 left = self.qreg[self.z_ancilla_indices[j][0]]
                 middle = self.qreg[self.z_ancilla_indices[j][1]]
                 right = self.qreg[self.z_ancilla_indices[j][2]]
                 # Identify the type of gauge operator
-                is_boundary = len(self.code.z_gauges[j]) == 2
-                is_top_row = self.code.z_gauges[j][0] < self.code.d
+                is_boundary = len(zg) == 2
+                is_top_row = zg[0] < self.code.d
                 # Follow the schedule in Fig 2b of arXiv:1907.09528,
                 # except conjugate the circuit by Hadamard.
                 # (i.e. switch +/0, X/Z, and CNOT direction in Fig 4)
@@ -298,28 +298,28 @@ class HHCCircuit:
                     right_idle = True
                     circ.cx(left, middle)
                     if is_boundary and not is_top_row:
-                        circ.cx(self.qreg[self.code.z_gauges[j][1]], right)
-                        idle.remove(self.code.z_gauges[j][1])
+                        circ.cx(self.qreg[zg[1]], right)
+                        idle.remove(zg[1])
                         right_idle = False
                     elif not is_boundary:
-                        circ.cx(self.qreg[self.code.z_gauges[j][1]], right)
-                        idle.remove(self.code.z_gauges[j][1])
+                        circ.cx(self.qreg[zg[1]], right)
+                        idle.remove(zg[1])
                         right_idle = False
                     if right_idle and add_idles:
                         circ.i(right)
                 elif step == 3:
                     ancilla_idle = True
                     if is_boundary and is_top_row:
-                        circ.cx(self.code.z_gauges[j][0], left)
-                        circ.cx(self.code.z_gauges[j][1], right)
-                        idle.remove(self.code.z_gauges[j][0])
-                        idle.remove(self.code.z_gauges[j][1])
+                        circ.cx(zg[0], left)
+                        circ.cx(zg[1], right)
+                        idle.remove(zg[0])
+                        idle.remove(zg[1])
                         ancilla_idle = False
                     elif not is_boundary:
-                        circ.cx(self.code.z_gauges[j][2], left)
-                        circ.cx(self.code.z_gauges[j][3], right)
-                        idle.remove(self.code.z_gauges[j][2])
-                        idle.remove(self.code.z_gauges[j][3])
+                        circ.cx(zg[2], left)
+                        circ.cx(zg[3], right)
+                        idle.remove(zg[2])
+                        idle.remove(zg[3])
                         ancilla_idle = False
                     if ancilla_idle and add_idles:
                         circ.i(left)
@@ -328,12 +328,12 @@ class HHCCircuit:
                     left_idle = True
                     circ.cx(right, middle)
                     if is_boundary and not is_top_row:
-                        circ.cx(self.code.z_gauges[j][0], left)
-                        idle.remove(self.code.z_gauges[j][0])
+                        circ.cx(zg[0], left)
+                        idle.remove(zg[0])
                         left_idle = False
                     elif not is_boundary:
-                        circ.cx(self.code.z_gauges[j][0], left)
-                        idle.remove(self.code.z_gauges[j][0])
+                        circ.cx(zg[0], left)
+                        idle.remove(zg[0])
                         left_idle = False
                     if left_idle and add_idles:
                         circ.i(left)
@@ -371,10 +371,10 @@ class HHCCircuit:
                                 circ.reset(left)
 
             if step == 6 and group_meas:
-                if logical_pauli == "x" or logical_pauli == "y":
+                if logical_pauli in ["x", "y"]:
                     for k in self.code.logical_x[0]:
                         circ.x(self.qreg[k])
-                if logical_pauli == "z" or logical_pauli == "y":
+                if logical_pauli in ["z", "y"]:
                     for k in self.code.logical_z[0]:
                         circ.z(self.qreg[k])
                 if add_barriers and logical_pauli is not None:

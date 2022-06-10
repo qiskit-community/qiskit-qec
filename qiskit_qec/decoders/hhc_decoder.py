@@ -124,9 +124,9 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                     bits_into_round += len(self.css_x_gauge_ops)
         final_outcomes = outcome[-self.n :]
         # Process the flags
-        logging.debug(f"left_flag_outcomes = {left_flag_outcomes}")
-        logging.debug(f"right_flag_outcomes = {right_flag_outcomes}")
-        logging.debug(f"x_gauge_outcomes (before deflag) = {x_gauge_outcomes}")
+        logging.debug("left_flag_outcomes = %s", left_flag_outcomes)
+        logging.debug("right_flag_outcomes = %s", right_flag_outcomes)
+        logging.debug("x_gauge_outcomes (before deflag) = %s", x_gauge_outcomes)
         x_gauge_outcomes, final_outcomes = self._process_flags(
             self.blocks,
             self.round_schedule,
@@ -135,7 +135,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
             right_flag_outcomes,
             final_outcomes,
         )
-        logging.debug(f"x_gauge_outcomes (after deflag) = {x_gauge_outcomes}")
+        logging.debug("x_gauge_outcomes (after deflag) = %s", x_gauge_outcomes)
         return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
 
     def _process_flags(
@@ -164,19 +164,19 @@ class HHCDecoder(CircuitModelMatchingDecoder):
         frame = self.n * [0]  # Z error frame
         zidx = 0  # index z measurement cycles
         xidx = 0  # index x measurement cycles
-        for r in range(blocks):
+        for _ in range(blocks):
             for rs in round_schedule:
                 if rs == "z":
                     # Examine the left/right flags and update frame
-                    for j in range(len(self.css_z_gauge_ops)):
+                    for j, zg in enumerate(self.css_z_gauge_ops):
                         # Only consider weight 4 operators
-                        if len(self.css_z_gauge_ops[j]) == 4:
+                        if len(zg) == 4:
                             if (
                                 left_flag_outcomes[zidx][j] == 1
                                 and right_flag_outcomes[zidx][j] == 0
                             ):
                                 # upper left qubit
-                                qubit = self.css_z_gauge_ops[j][0]
+                                qubit = zg[0]
                                 frame[qubit] ^= 1
                                 logging.debug("frame, cycle %d -> qubit %d", zidx, qubit)
                             if (
@@ -184,7 +184,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                                 and right_flag_outcomes[zidx][j] == 1
                             ):
                                 # lower right qubit
-                                qubit = self.css_z_gauge_ops[j][3]
+                                qubit = zg[3]
                                 frame[qubit] ^= 1
                                 logging.debug("frame, cycle %d -> qubit %d", zidx, qubit)
                     zidx += 1
