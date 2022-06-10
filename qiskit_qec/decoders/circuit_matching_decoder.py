@@ -561,9 +561,7 @@ class CircuitModelMatchingDecoder(ABC):
         logging.info("process: final_outcomes = %s", final_outcomes)
         logging.info("process: highlighted = %s", highlighted)
 
-        qubit_errors, _ = self.matcher.find_errors(
-            self.graph, self.idxmap, highlighted
-        )
+        qubit_errors, _ = self.matcher.find_errors(self.graph, self.idxmap, highlighted)
 
         corrected_outcomes = copy(final_outcomes)
         for i in qubit_errors:
