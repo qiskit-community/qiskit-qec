@@ -523,11 +523,11 @@ class HHCCircuit:
         start = 0
         final_round = False
         for i in range(rounds):
-            for j in range(len(round_schedule)):
+            for j, rs in enumerate(round_schedule):
                 if (i == rounds - 1) and (j == len(round_schedule) - 1):
                     final_round = True
                 log_paul = "" if len(logical_paulis) == 0 else logical_paulis[j]
-                if round_schedule[j] == "x":
+                if rs == "x":
                     self._x_gauge_one_round_hex(
                         circ,
                         creg,
@@ -537,7 +537,7 @@ class HHCCircuit:
                         logical_pauli=log_paul,
                     )
                     start += xg
-                if round_schedule[j] == "z":
+                if rs == "z":
                     # Outcomes go into first zg bits
                     # Left flags into second zg bits
                     # Right flags into third zg bits
