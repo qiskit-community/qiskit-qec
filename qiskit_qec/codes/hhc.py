@@ -21,7 +21,7 @@ class HHC:
             raise QiskitQECError("require distance > 2")
         self.d = distance
         self.k = 1
-        self.n = int(distance**2)
+        self.n = int(distance ** 2)
         self.x_gauges = self._x_gauge_generators(self.d)
         self.z_gauges = self._z_gauge_generators(self.d)
         self.x_stabilizers = self._x_stabilizer_generators(self.d)

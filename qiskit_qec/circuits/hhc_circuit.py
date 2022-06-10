@@ -136,17 +136,11 @@ class HHCCircuit:
                 for k, xg in enumerate(code.x_gauges):
                     # qubits at indices 0 and 2 are shared
                     # with adjacent X gauge on left
-                    if (
-                        zg[0] in xg
-                        and zg[2] in xg
-                    ):
+                    if zg[0] in xg and zg[2] in xg:
                         left = code.n + k
                     # qubits at indices 1 and 3 are shared
                     # with adjacent X gauge on right
-                    if (
-                        zg[1] in xg
-                        and zg[3] in xg
-                    ):
+                    if zg[1] in xg and zg[3] in xg:
                         right = code.n + k
                 z_ancilla_indices.append([left, code.n + total_ancilla, right])
                 total_ancilla += 1
@@ -189,9 +183,7 @@ class HHCCircuit:
         for step in range(2):
             idle = list(range(self.code.n))
             for i, xg in enumerate(self.code.x_gauges):
-                circ.cx(
-                    self.qreg[self.x_ancilla_indices[i][0]], self.qreg[xg[step]]
-                )
+                circ.cx(self.qreg[self.x_ancilla_indices[i][0]], self.qreg[xg[step]])
                 idle.remove(xg[step])
             if add_idles:
                 for i in idle:
