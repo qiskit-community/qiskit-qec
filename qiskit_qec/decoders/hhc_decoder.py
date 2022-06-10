@@ -17,7 +17,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
 
     def __init__(
         self,
-        n : int,
+        n: int,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
@@ -32,7 +32,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
         method: str,
         uniform: bool,
         decoding_graph: DecodingGraph = None,
-        annotate: bool = False
+        annotate: bool = False,
     ):
         """Create a decoder object."""
         # Sum the total number of bits per round
@@ -64,7 +64,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
             method,
             uniform,
             decoding_graph,
-            annotate
+            annotate,
         )
 
     def _partition_outcomes(self, blocks: int, round_schedule: str, outcome: List[int]):

@@ -29,7 +29,7 @@ class HHCCircuit:
         initial_state: str,
         logical_paulis: str,
         num_initialize: int,
-        idle_before_measure: bool
+        idle_before_measure: bool,
     ):
         """Create an object associated to a HHC."""
         self.code = hhc
@@ -46,7 +46,7 @@ class HHCCircuit:
             initial_state,
             logical_paulis,
             num_initialize,
-            idle_before_measure
+            idle_before_measure,
         )
         self.total_ancilla, self.x_ancilla_indices, self.z_ancilla_indices = self._hex_ancillas(hhc)
         self.total_qubits = hhc.n + self.total_ancilla
@@ -71,7 +71,7 @@ class HHCCircuit:
         initial_state: str,
         logical_paulis: str,
         num_initialize: int,
-        idle_before_measurement: bool
+        idle_before_measurement: bool,
     ):
         """Validate parameters."""
         self.barriers = barriers
@@ -203,7 +203,7 @@ class HHCCircuit:
                 circ.h(self.qreg[j])
                 if not group_meas:
                     if ibm:
-                        circ.append(IGate(label=self.ibmlabel+str(cbits[i])), [self.qreg[j]])
+                        circ.append(IGate(label=self.ibmlabel + str(cbits[i])), [self.qreg[j]])
                     circ.measure(self.qreg[j], creg[cbits[i]])
                     if not finalRound and num_initialize is not None:
                         if with_xprs:
@@ -227,7 +227,7 @@ class HHCCircuit:
             for i in range(len(self.code.x_gauges)):
                 for j in self.x_ancilla_indices[i]:
                     if ibm:
-                        circ.append(IGate(label=self.ibmlabel+str(cbits[i])), [self.qreg[j]])
+                        circ.append(IGate(label=self.ibmlabel + str(cbits[i])), [self.qreg[j]])
                     circ.measure(self.qreg[j], creg[cbits[i]])
                     if not finalRound and num_initialize is not None:
                         if with_xprs:
@@ -352,7 +352,7 @@ class HHCCircuit:
                     else:
                         circ.h(right)
                         if ibm:
-                            circ.append(IGate(label=self.ibmlabel+str(rflags[j])), [right])
+                            circ.append(IGate(label=self.ibmlabel + str(rflags[j])), [right])
                         circ.measure(right, creg[rflags[j]])
                         if not finalRound and num_initialize is not None:
                             if with_xprs:
@@ -365,8 +365,8 @@ class HHCCircuit:
                         circ.h(right)
                     else:
                         if ibm:
-                            circ.append(IGate(label=self.ibmlabel+str(cbits[j])), [middle])
-                            circ.append(IGate(label=self.ibmlabel+str(lflags[j])), [left])
+                            circ.append(IGate(label=self.ibmlabel + str(cbits[j])), [middle])
+                            circ.append(IGate(label=self.ibmlabel + str(lflags[j])), [left])
                         circ.measure(middle, creg[cbits[j]])
                         circ.measure(left, creg[lflags[j]])
                         if not finalRound and num_initialize is not None:
@@ -397,9 +397,9 @@ class HHCCircuit:
                     middle = self.qreg[self.z_ancilla_indices[j][1]]
                     right = self.qreg[self.z_ancilla_indices[j][2]]
                     if ibm:
-                        circ.append(IGate(label=self.ibmlabel+str(rflags[j])), [right])
-                        circ.append(IGate(label=self.ibmlabel+str(cbits[j])), [middle])
-                        circ.append(IGate(label=self.ibmlabel+str(lflags[j])), [left])
+                        circ.append(IGate(label=self.ibmlabel + str(rflags[j])), [right])
+                        circ.append(IGate(label=self.ibmlabel + str(cbits[j])), [middle])
+                        circ.append(IGate(label=self.ibmlabel + str(lflags[j])), [left])
                     circ.measure(right, creg[rflags[j]])
                     circ.measure(middle, creg[cbits[j]])
                     circ.measure(left, creg[lflags[j]])
@@ -575,7 +575,7 @@ class HHCCircuit:
             if basis == "x" and not group_meas:
                 circ.h(self.qreg[i])
             if ibm:
-                circ.append(IGate(label=self.ibmlabel+str(start)), [self.qreg[i]])
+                circ.append(IGate(label=self.ibmlabel + str(start)), [self.qreg[i]])
             circ.measure(self.qreg[i], creg[start])
             start += 1
 
