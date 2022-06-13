@@ -15,7 +15,6 @@
 Utils (:mod:`qiskit_qec.utils`)
 ===============================
 
-=======
 .. currentmodule:: qiskit_qec.utils
 
 
@@ -25,7 +24,7 @@ Utils module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
-    Indexer
+    indexer
     pauli_rep
 """
 

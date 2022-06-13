@@ -31,16 +31,12 @@ class CodeLibrary:
     """CodeLibrary class"""
 
     def __init__(self, name: str, path: str, config_filename: str) -> None:
-        """_summary_
+        """Code library class.
 
         Args:
-            name (str): _description_
-            path (str): _description_
-            config_file (str): _description_
-
-        Raises:
-            QiskitError: _description_
-            QiskitError: _description_
+            name (str): name of codebase
+            path (str): path to codebase
+            config_file (str): configuration file nme
         """
         # Set the name of the library
         self.name = name
@@ -294,16 +290,7 @@ class CodeLibrary:
 
 
 class CodeLibrarian:
-    """_summary_
-
-    Raises:
-        QiskitError: _description_
-        QiskitError: _description_
-        Exception: _description_
-
-    Returns:
-        _type_: _description_
-    """
+    """CodeLibrarian class."""
 
     _codebase_path = ""
     _data_path = ""
@@ -320,6 +307,11 @@ class CodeLibrarian:
     _ORDER_DICT = {"h": "http", "f": "file", "m": "memory"}
 
     def __init__(self, config: Optional[str] = None) -> None:
+        """CodeLibrarian class.
+
+        Args:
+            config: configuration
+        """
 
         # Get absolute path to codebase directory
         CodeLibrarian._codebase_path = os.path.abspath(os.path.dirname(__file__))
@@ -444,32 +436,33 @@ def small_code(n: int, k: int, index: int, info_only: bool = False) -> Union[Cod
         Union[Code, Properties]: Returns the [[n,k]]-index Code if info_only is False and a Properties
         object if the info_only is True.
 
-    Examples:
-        >>>code_info = small_code(5,2,0, info_only=True)
-        >>>code_info.info
-        [[5,2]]-0 StabSubSystemCode
-        -------------------------------------------------------------------------------
-        isotropic_generators : ['X0X2', 'Z1Z4', 'Z0Z2']
-        logical_ops          : ['X3', 'X1X4', 'Z3', 'Z4']
-        is_subsystem         : 1
-        index                : 0
-        code_type            : StabSubSystemCode
-        aut_group_size       : 576
-        is_decomposable      : 1
-        weight_enumerator    : [1, 0, 4, 0, 3, 0]
-        is_css               : 1
-        uuid                 : 47e52342-8ffc-48e5-be51-c60aab28e9b8
-        is_degenerate        : 0
-        d                    : 1
-        is_gf4linear         : 0
-        k                    : 2
-        n                    : 5
+    Example:
+        >>> code_info = small_code(5,2,0, info_only=True)
+        >>> code_info.info
+            [[5,2]]-0 StabSubSystemCode
+            -------------------------------------------------------------------------------
+            isotropic_generators : ['X0X2', 'Z1Z4', 'Z0Z2']
+            logical_ops          : ['X3', 'X1X4', 'Z3', 'Z4']
+            is_subsystem         : 1
+            index                : 0
+            code_type            : StabSubSystemCode
+            aut_group_size       : 576
+            is_decomposable      : 1
+            weight_enumerator    : [1, 0, 4, 0, 3, 0]
+            is_css               : 1
+            uuid                 : 47e52342-8ffc-48e5-be51-c60aab28e9b8
+            is_degenerate        : 0
+            d                    : 1
+            is_gf4linear         : 0
+            k                    : 2
+            n                    : 5
 
-        >>>code = small_code(5,2,0)
-        >>>code.gaugegroup.generators
-        PauliList(['X0X2', 'Z1Z4', 'Z0Z2'])
+        >>> code = small_code(5,2,0)
+        >>> code.gaugegroup.generators
+            PauliList(['X0X2', 'Z1Z4', 'Z0Z2'])
 
-    Note: This is the equivalent to the GAP method SmallGroup but for codes
+    Note:
+        This is the equivalent to the GAP method SmallGroup but for codes
     """
     if not isinstance(n, int):
         raise QiskitError("n, number of physical qubits, must be specified.")
@@ -511,7 +504,7 @@ def all_small_codes(
     list_only: bool = False,
     **kwargs,
 ) -> Union[Code, List[Code], Properties, List[Properties]]:
-    """_summary_
+    """Returns all small codes.
 
     Args:
         n (Union[int,List[int],None], optional): _description_. Defaults to None.
@@ -522,41 +515,41 @@ def all_small_codes(
         **kwargs: desc
 
     Returns:
-        Union[Code, List[Code], Properties, List[Properties]]: _description_
+        Union[Code, List[Code], Properties, List[Properties]]: codes or properties matches query
 
-    Examples:
-        >>>all_small_codes(4)
-        [<qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e304f40>,
-         <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30a490>,
-         <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30a880>,
-         <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30aa60>]
+    Example:
+        >>> all_small_codes(4)
+            [<qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e304f40>,
+             <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30a490>,
+             <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30a880>,
+             <qiskit_qec.codes.stabsubsystemcodes.StabSubSystemCode at 0x13e30aa60>]
 
-         >>>code = all_small_codes(4,is_css=False)
-         >>>code.gauge_group.generators
-         PauliList(['Z0X1Z2', 'Y0Y1X3', 'Z1X2Z3'])
+        >>> code = all_small_codes(4,is_css=False)
+        >>> code.gauge_group.generators
+            PauliList(['Z0X1Z2', 'Y0Y1X3', 'Z1X2Z3'])
 
-         >>>code_info = all_small_codes(4,is_css=False, info_only=True)
-         >>>code_info.info
-         [[4,1]]-8 StabSubSystemCode
-         -------------------------------------------------------------------------------
-         isotropic_generators : ['Z0X1Z2', 'Y0Y1X3', 'Z1X2Z3']
-         logical_ops          : ['Z2X3', 'Z0Z3']
-         is_subsystem         : 1
-         index                : 8
-         code_type            : StabSubSystemCode
-         aut_group_size       : 24
-         is_decomposable      : 0
-         weight_enumerator    : [1, 0, 0, 4, 3]
-         is_css               : 0
-         uuid                 : e6e4edd6-2ec6-467f-9187-0cc64bc51f1a
-         is_degenerate        : 0
-         d                    : 2
-         is_gf4linear         : 0
-         k                    : 1
-         n                    : 4
+        >>> code_info = all_small_codes(4,is_css=False, info_only=True)
+        >>> code_info.info
+            [[4,1]]-8 StabSubSystemCode
+            -------------------------------------------------------------------------------
+            isotropic_generators : ['Z0X1Z2', 'Y0Y1X3', 'Z1X2Z3']
+            logical_ops          : ['Z2X3', 'Z0Z3']
+            is_subsystem         : 1
+            index                : 8
+            code_type            : StabSubSystemCode
+            aut_group_size       : 24
+            is_decomposable      : 0
+            weight_enumerator    : [1, 0, 0, 4, 3]
+            is_css               : 0
+            uuid                 : e6e4edd6-2ec6-467f-9187-0cc64bc51f1a
+            is_degenerate        : 0
+            d                    : 2
+            is_gf4linear         : 0
+            k                    : 1
+            n                    : 4
 
-    Note: This is the equivalent to the GAP method AllSmallGroups but for codes
-
+    Note:
+        This is the equivalent to the GAP method AllSmallGroups but for codes
     """
     if n is not None:
         if not isinstance(n, (int, list)):
