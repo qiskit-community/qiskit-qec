@@ -24,8 +24,8 @@ from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.quantum_info.operators.mixins import generate_apidocs
 from qiskit.utils.deprecation import deprecate_function
 
-from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.utils import pauli_rep
+from qiskit_qec.operators.base_pauli import BasePauli
 
 
 class Pauli(BasePauli):
@@ -71,6 +71,7 @@ class Pauli(BasePauli):
             if phase_exp is None:
                 phase_exp = 0
         elif isinstance(data, BasePauli):
+
             matrix = data.matrix[:, :]
             phase_exp = data._phase_exp[:]
         elif isinstance(data, (tuple, list)):
@@ -116,6 +117,7 @@ class Pauli(BasePauli):
             matrix, phase_exp = self._from_label_deprecated(label, qubit_order=input_qubit_order)
         else:
             raise QiskitError("Invalid input data for Pauli.")
+
         # Initialize BasePauli
         if matrix.shape[0] != 1:
             raise QiskitError("Input is not a single Pauli")

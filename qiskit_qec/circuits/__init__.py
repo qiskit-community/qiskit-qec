@@ -24,6 +24,8 @@ Circuits module classes and functions
     :toctree: ../stubs/
 
     RepetitionCodeCircuit
+    CSSCircuit
 """
 
 from .repetition_code import RepetitionCodeCircuit
+from .qec_circuit import CSSCircuit
