@@ -96,7 +96,7 @@ from operator import itemgetter
 from typing import Dict
 
 import numpy as np
-import qiskit_qec.theory_utils.pauli_rep
+import qiskit_qec.utils.pauli_rep
 from attic.paulis_base_old import PaulisBase
 from qiskit.circuit import Instruction, QuantumCircuit
 from qiskit.circuit.barrier import Barrier

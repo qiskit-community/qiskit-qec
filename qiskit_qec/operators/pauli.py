@@ -24,7 +24,7 @@ from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.quantum_info.operators.mixins import generate_apidocs
 from qiskit.utils.deprecation import deprecate_function
 
-from qiskit_qec.theory_utils import pauli_rep
+from qiskit_qec.utils import pauli_rep
 from qiskit_qec.operators.base_pauli import BasePauli
 
 

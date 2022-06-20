@@ -44,7 +44,7 @@ from qiskit.quantum_info.operators import Operator
 from qiskit_qec.operators.random import random_clifford, random_pauli
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.theory_utils.pauli_rep import split_pauli, cpxstr2exp
+from qiskit_qec.utils.pauli_rep import split_pauli, cpxstr2exp
 
 # from qiskit.quantum_info.operators.symplectic.pauli import _split_pauli_label, _phase_from_label
 

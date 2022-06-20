@@ -26,8 +26,7 @@ from . import (
     models,
     operators,
     structures,
-    theory_utils,
+    utils,
 )
-
 
 logging.getLogger(__name__).addHandler(NullHandler())

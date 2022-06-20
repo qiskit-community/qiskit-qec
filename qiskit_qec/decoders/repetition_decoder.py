@@ -30,6 +30,7 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         self.code_circuit = code_circuit
         dg = DecodingGraph(code_circuit)
         super().__init__(
+            code_circuit.n,
             code_circuit.css_x_gauge_ops,
             code_circuit.css_x_stabilizer_ops,
             code_circuit.css_x_boundary,

@@ -31,7 +31,7 @@ from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
 import qiskit.quantum_info.operators.symplectic.clifford
 
 from qiskit_qec.linear.symplectic import symplectic_product
-from qiskit_qec.theory_utils import pauli_rep
+from qiskit_qec.utils import pauli_rep
 from qiskit_qec.linear import matrix as mt
 
 

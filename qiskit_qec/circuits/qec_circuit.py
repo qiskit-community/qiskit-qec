@@ -21,12 +21,11 @@ from qiskit import QuantumCircuit
 
 
 class CSSCircuit:
-    """
-    Create and manage circuits for generic CSS codes.
-    """
+    """CSSCircuit class."""
 
     def __init__(
         self,
+        n: int,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
@@ -39,9 +38,10 @@ class CSSCircuit:
         resets: bool,
         delay: float,
     ):
-        """
+        """Create and manage circuits for generic CSS codes.
 
         Args:
+            n : number of code qubits
             css_x_gauge_ops : list of supports of X gauge operators
             css_x_stabilizer_ops : list of supports of X stabilizers
             css_x_boundary : list of qubits along the X-type boundary
@@ -54,6 +54,7 @@ class CSSCircuit:
             resets : Whether to include a reset gate after mid-circuit measurements.
             delay: Time (in dt) to delay after mid-circuit measurements (and reset).
         """
+        self.n = n
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
         self.css_x_boundary = css_x_boundary

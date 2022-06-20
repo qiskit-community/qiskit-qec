@@ -67,6 +67,7 @@ class TestCircuitMatcher(unittest.TestCase):
         shots = 100
         seed = 100
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -104,6 +105,7 @@ class TestCircuitMatcher(unittest.TestCase):
         shots = 100
         seed = 100
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -139,6 +141,7 @@ class TestCircuitMatcher(unittest.TestCase):
     def test_correct_single_errors(self):
         """Test the case with single faults using retworkx."""
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -161,9 +164,36 @@ class TestCircuitMatcher(unittest.TestCase):
             fail = temp_syndrome(corrected_outcomes, self.z_logical)
             self.assertEqual(fail[0], 0)
 
+    def test_correct_single_errors_uniform(self):
+        """Test the case with single faults using retworkx."""
+        dec = ThreeBitDecoder(
+            3,
+            self.x_stabilizers,
+            self.x_stabilizers,
+            self.x_boundary,
+            self.z_stabilizers,
+            self.z_stabilizers,
+            self.z_boundary,
+            self.qc,
+            self.pnm,
+            "z",
+            "z",
+            2,
+            "retworkx",
+            True,
+        )
+        dec.update_edge_weights(self.pnm)
+        fe = FaultEnumerator(self.qc, method="stabilizer", model=self.pnm)
+        for faultpath in fe.generate():
+            outcome = faultpath[3]
+            corrected_outcomes = dec.process(outcome)
+            fail = temp_syndrome(corrected_outcomes, self.z_logical)
+            self.assertEqual(fail[0], 0)
+
     def test_correct_single_errors_pymatching(self):
         """Test the case with single faults using pymatching."""
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -186,9 +216,36 @@ class TestCircuitMatcher(unittest.TestCase):
             fail = temp_syndrome(corrected_outcomes, self.z_logical)
             self.assertEqual(fail[0], 0)
 
+    def test_correct_single_errors_pymatching_uniform(self):
+        """Test the case with single faults using pymatching."""
+        dec = ThreeBitDecoder(
+            3,
+            self.x_stabilizers,
+            self.x_stabilizers,
+            self.x_boundary,
+            self.z_stabilizers,
+            self.z_stabilizers,
+            self.z_boundary,
+            self.qc,
+            self.pnm,
+            "z",
+            "z",
+            2,
+            "pymatching",
+            True,
+        )
+        dec.update_edge_weights(self.pnm)
+        fe = FaultEnumerator(self.qc, method="stabilizer", model=self.pnm)
+        for faultpath in fe.generate():
+            outcome = faultpath[3]
+            corrected_outcomes = dec.process(outcome)
+            fail = temp_syndrome(corrected_outcomes, self.z_logical)
+            self.assertEqual(fail[0], 0)
+
     def test_error_pairs(self):
         """Test the case with two faults using retworkx."""
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -213,9 +270,38 @@ class TestCircuitMatcher(unittest.TestCase):
             failures += fail[0]
         self.assertEqual(failures, 128)
 
+    def test_error_pairs_uniform(self):
+        """Test the case with two faults using retworkx."""
+        dec = ThreeBitDecoder(
+            3,
+            self.x_stabilizers,
+            self.x_stabilizers,
+            self.x_boundary,
+            self.z_stabilizers,
+            self.z_stabilizers,
+            self.z_boundary,
+            self.qc,
+            self.pnm,
+            "z",
+            "z",
+            2,
+            "retworkx",
+            True,
+        )
+        dec.update_edge_weights(self.pnm)
+        fe = FaultEnumerator(self.qc, order=2, method="stabilizer", model=self.pnm)
+        failures = 0
+        for faultpath in fe.generate():
+            outcome = faultpath[3]
+            corrected_outcomes = dec.process(outcome)
+            fail = temp_syndrome(corrected_outcomes, self.z_logical)
+            failures += fail[0]
+        self.assertEqual(failures, 152)
+
     def test_error_pairs_propagator_pymatching(self):
         """Test the case with two faults using error propagator and pymatching."""
         dec = ThreeBitDecoder(
+            3,
             self.x_stabilizers,
             self.x_stabilizers,
             self.x_boundary,
@@ -239,6 +325,34 @@ class TestCircuitMatcher(unittest.TestCase):
             fail = temp_syndrome(corrected_outcomes, self.z_logical)
             failures += fail[0]
         self.assertEqual(failures, 128)
+
+    def test_error_pairs_propagator_pymatching_uniform(self):
+        """Test the case with two faults using error propagator and pymatching."""
+        dec = ThreeBitDecoder(
+            3,
+            self.x_stabilizers,
+            self.x_stabilizers,
+            self.x_boundary,
+            self.z_stabilizers,
+            self.z_stabilizers,
+            self.z_boundary,
+            self.qc,
+            self.pnm,
+            "z",
+            "z",
+            2,
+            "pymatching",
+            True,
+        )
+        dec.update_edge_weights(self.pnm)
+        fe = FaultEnumerator(self.qc, order=2, method="propagator", model=self.pnm)
+        failures = 0
+        for faultpath in fe.generate():
+            outcome = faultpath[3]
+            corrected_outcomes = dec.process(outcome)
+            fail = temp_syndrome(corrected_outcomes, self.z_logical)
+            failures += fail[0]
+        self.assertEqual(failures, 156)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ class ThreeBitDecoder(CircuitModelMatchingDecoder):
 
     def __init__(
         self,
+        n: int,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[Tuple[int]],
@@ -29,6 +30,7 @@ class ThreeBitDecoder(CircuitModelMatchingDecoder):
         """Constructor."""
         self.bits_per_round = 2
         super().__init__(
+            n,
             css_x_gauge_ops,
             css_x_stabilizer_ops,
             css_x_boundary,
