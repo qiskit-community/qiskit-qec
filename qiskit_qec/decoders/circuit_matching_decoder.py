@@ -1,25 +1,21 @@
-"""Abstract object to construct CSS matching decoders for circuit noise."""
+"""Abstract object for matching decoders for CSS codes and circuit noise."""
 
-from copy import deepcopy, copy
-from math import log
-from abc import ABC, abstractmethod
-from typing import List, Tuple, Dict, Set
 import logging
+from abc import ABC, abstractmethod
+from copy import copy
+from math import log
+from typing import Dict, List, Tuple
+from sympy import Poly, Symbol, symbols
 
-import json
-
-from sympy import Poly, symbols, Symbol
-from qiskit import QuantumCircuit
 import retworkx as rx
-import networkx as nx
-from pymatching import Matching
-
-from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.utils.indexer import Indexer
-from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
+from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.decoding_graph import DecodingGraph, CSSDecodingGraph
-from qiskit_qec.decoders.temp_code_util import temp_syndrome, temp_gauge_products
+from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
+from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
+from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
+from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
+from qiskit_qec.exceptions import QiskitQECError
+from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
 class CircuitModelMatchingDecoder(ABC):
@@ -31,6 +27,7 @@ class CircuitModelMatchingDecoder(ABC):
 
     def __init__(
         self,
+        n: int,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],
@@ -45,6 +42,7 @@ class CircuitModelMatchingDecoder(ABC):
         method: str,
         uniform: bool,
         decoding_graph: DecodingGraph = None,
+        annotate: bool = False,
     ):
         """Create a matching decoder.
 
@@ -52,6 +50,7 @@ class CircuitModelMatchingDecoder(ABC):
         and quantum circuits that prepare and measure in the Z or X basis
         and do repeated Pauli measurements.
 
+        n : block size of quantum code
         css_x_gauge_ops : list of supports of X gauge operators
         css_x_stabilizer_ops : list of supports of X stabilizers
         css_x_boundary : list of qubits along the X-type boundary
@@ -65,8 +64,9 @@ class CircuitModelMatchingDecoder(ABC):
         blocks : number of measurement blocks
         method : matching implementation
         uniform : use same edge weight everywhere?
-
+        annotate : for retworkx method, compute self.matcher.annotated_graph
         """
+        self.n = n
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
         self.css_x_boundary = css_x_boundary
@@ -90,10 +90,11 @@ class CircuitModelMatchingDecoder(ABC):
         if method not in self.AVAILABLE_METHODS:
             raise QiskitQECError("fmethod {method} is not supported.")
         self.method = method
-        if self.method == "METHOD_PYMATCHING":
-            self.usepymatching = True
+        self.matcher = None
+        if self.method == self.METHOD_PYMATCHING:
+            self.matcher = PyMatchingMatcher()
         else:
-            self.usepymatching = False
+            self.matcher = RetworkXMatcher(annotate)
 
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
@@ -103,7 +104,6 @@ class CircuitModelMatchingDecoder(ABC):
                 self.idxmap,
                 self.node_layers,
                 self.graph,
-                self.pymatching_indexer,
                 self.layer_types,
             ) = self._process_graph(decoding_graph.graph, blocks, round_schedule, basis)
         else:
@@ -123,9 +123,8 @@ class CircuitModelMatchingDecoder(ABC):
                 self.idxmap,
                 self.node_layers,
                 self.graph,
-                self.pymatching_indexer,
                 self.layer_types,
-            ) = (dg.idxmap, dg.node_layers, dg.graph, dg.pymatching_indexer, dg.layer_types)
+            ) = (dg.idxmap, dg.node_layers, dg.graph, dg.layer_types)
 
         logging.debug("layer_types = %s", self.layer_types)
 
@@ -163,13 +162,10 @@ class CircuitModelMatchingDecoder(ABC):
                 self.idxmap, self.graph, self.edge_weight_polynomials
             )
 
-        self.length = {}  # recomputed in update_edge_weights
-        self.path = {}  # recomputed in update_edge_weights
-        self.pymatching = None  # constructed in update_edge_weights
-
-    def _process_graph(self, graph, blocks, round_schedule, basis):
-
-        pymatching_indexer = Indexer()
+    def _process_graph(
+        self, graph: DecodingGraph, blocks: int, round_schedule: str, basis: str
+    ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], DecodingGraph, List[str]]:
+        """Process a decoding graph to add required attributes."""
 
         # symmetrize hook errors
         for j, edge in enumerate(graph.edges()):
@@ -197,11 +193,6 @@ class CircuitModelMatchingDecoder(ABC):
             # highlighted', 'measurement_error','qubit_id' and 'error_probability'
             edge["highlighted"] = False
             edge["measurement_error"] = int(source["time"] != target["time"])
-            if edge["qubits"]:
-                edge["qubit_id"] = pymatching_indexer[edge["qubits"][0]]
-            else:
-                edge["qubit_id"] = -1
-            edge["error_probability"] = 0.01 * edge["weight"]
 
             # make it so times of boundary/boundary nodes agree
             if source["is_boundary"] and not target["is_boundary"]:
@@ -228,15 +219,10 @@ class CircuitModelMatchingDecoder(ABC):
                                 "measurement_error": 0,
                                 "weight": 0,
                                 "highlighted": False,
-                                "error_probability": 0.0,
                             }
                             edge["qubits"] = list(
                                 set(source["qubits"]).intersection((set(target["qubits"])))
                             )
-                            if edge["qubits"]:
-                                edge["qubit_id"] = pymatching_indexer[edge["qubit_id"][0]]
-                            else:
-                                edge["qubit_id"] = -1
                             if (n0, n1) not in graph.edge_list():
                                 graph.add_edge(n0, n1, edge)
 
@@ -245,11 +231,9 @@ class CircuitModelMatchingDecoder(ABC):
                     if source["qubits"] == target["qubits"] == [0]:
                         edge = {
                             "qubits": [],
-                            "qubit_id": -1,
                             "measurement_error": 0,
                             "weight": 0,
                             "highlighted": False,
-                            "error_probability": 0.0,
                         }
                         if (n0, n1) not in graph.edge_list():
                             graph.add_edge(n0, n1, edge)
@@ -291,7 +275,7 @@ class CircuitModelMatchingDecoder(ABC):
         else:
             layer_types.append("s")
 
-        return idxmap, node_layers, graph, pymatching_indexer, layer_types
+        return idxmap, node_layers, graph, layer_types
 
     def _revise_decoding_graph(
         self,
@@ -312,9 +296,8 @@ class CircuitModelMatchingDecoder(ABC):
                 if s2 not in idxmap:
                     raise QiskitQECError(f"vertex {s2} not in decoding graph")
                 if not graph.has_edge(idxmap[s1], idxmap[s2]):
+                    # TODO: new edges may be needed for hooks, but raise exception for now
                     raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
-                    # TODO: new edges may be needed for hooks, but raise exception if we're surprised
-
                 data = graph.get_edge_data(idxmap[s1], idxmap[s2])
                 data["weight_poly"] = wpoly
         remove_list = []
@@ -326,12 +309,7 @@ class CircuitModelMatchingDecoder(ABC):
                 ) or (
                     "is_boundary" in graph.nodes()[target] and graph.nodes()[target]["is_boundary"]
                 ):
-                    # pymatching requires all qubit_ids from 0 to
-                    # n-1 to appear as edge properties. If we
-                    # remove too many edges, not all qubit_ids will
-                    # be present. We solve this by keeping unweighted
-                    # that are edges connected to the boundary. Instead
-                    # we increase their weight to a large value.
+                    # TODO: we could consider removing the edge
                     edge_data["weight"] = 1000000
                     logging.info("increase edge weight (%d, %d)", source, target)
                 else:
@@ -354,14 +332,7 @@ class CircuitModelMatchingDecoder(ABC):
         previously assigned. The probabilities are then assigned to
         the variables in self.symbols.
 
-        Updates properties of self.graph.
-        If not using pymatching, updates sets self.length and self.path.
-        If using pymatching, constructs a pymatching object self.pymatching.
-
-        Note that if self.uniform is True, it is still necessary to call
-        this function to construct the matching decoder object (pymatching)
-        or compute the shortest paths between vertices in the decoding
-        graph (retworkx).
+        Updates properties of matcher.
 
         Args:
             model: moise model
@@ -391,18 +362,7 @@ class CircuitModelMatchingDecoder(ABC):
                     p = edge_data["weight_poly"].eval(restriction).evalf()
                     assert p < 0.5, "edge flip probability too large"
                     edge_data["weight"] = log((1 - p) / p)
-                    edge_data["error_probability"] = p
-        if not self.usepymatching:
-            # Recompute the shortest paths between pairs of vertices
-            # in the decoding graph
-            edge_cost_fn = lambda edge: edge["weight"]
-            length = rx.all_pairs_dijkstra_path_lengths(self.graph, edge_cost_fn)
-            self.length = {s: dict(length[s]) for s in length}
-            path = rx.all_pairs_dijkstra_shortest_paths(self.graph, edge_cost_fn)
-            self.path = {s: {t: list(path[s][t]) for t in path[s]} for s in path}
-        else:
-            nxgraph = ret2net(self.graph)
-            self.pymatching = Matching(nxgraph)
+        self.matcher.preprocess(self.graph)
 
     def _enumerate_events(
         self,
@@ -565,11 +525,11 @@ class CircuitModelMatchingDecoder(ABC):
                 map1[n2] = Poly(expr)
         return symbs, edge_weight_expressions
 
-    def process(self, outcomes, export=False, filename="decoding.json"):
+    def process(self, outcomes: List[int]) -> List[int]:
         """Process a set of outcomes and return corrected final outcomes.
 
         Be sure to have called update_edge_weights for the
-        noise parameters so that the edge weights are updated.
+        noise parameters.
 
         The result is a list of code.n integers that are 0 or 1.
         These are the corrected values of the final transversal
@@ -600,35 +560,7 @@ class CircuitModelMatchingDecoder(ABC):
         logging.info("process: final_outcomes = %s", final_outcomes)
         logging.info("process: highlighted = %s", highlighted)
 
-        if not self.usepymatching:
-            matching = self._compute_matching(self.idxmap, self.length, highlighted)
-            logging.info("process: matching = %s", matching)
-            qubit_errors, measurement_errors = self._compute_error_correction(
-                self.graph,
-                self.idxmap,
-                self.path,
-                matching,
-                highlighted,
-                export,
-                filename,
-            )
-            logging.info("process: qubit_errors = %s", qubit_errors)
-            logging.debug("process: measurement_errors = %s", measurement_errors)
-        else:
-            # Input: highlighted (list of highlighted vertices)
-            # Output: qubit_errors (list of qubits to flip)
-            syndrome = [0] * len(self.idxmap)
-            for vertex in highlighted:
-                syndrome[self.idxmap[vertex]] = 1
-            try:
-                correction = self.pymatching.decode(syndrome)
-            except AttributeError as attrib_error:
-                raise QiskitQECError("Did you call update_edge_weights?") from attrib_error
-            qubit_errors = []
-            for i, corr in enumerate(correction):
-                if corr == 1:
-                    qubit_errors.append(self.pymatching_indexer.rlookup(i))
-            logging.info("process: qubit_errors = %s", qubit_errors)
+        qubit_errors, _ = self.matcher.find_errors(self.graph, self.idxmap, highlighted)
 
         corrected_outcomes = copy(final_outcomes)
         for i in qubit_errors:
@@ -718,148 +650,3 @@ class CircuitModelMatchingDecoder(ABC):
             highlighted.append((0, tuple(boundary[0])))
         logging.debug("highlighted = %s", highlighted)
         return gauge_outcomes, highlighted
-
-    def _compute_matching(
-        self,
-        idxmap: Dict[Tuple[int, List[int]], int],
-        length: Dict[int, Dict[int, int]],
-        highlighted: List[Tuple[int, Tuple[int]]],
-    ) -> Set[Tuple[int, int]]:
-        """Compute a min. weight perfect matching of highlighted vertices.
-
-        highlighted is a list of highlighted vertices given as tuples
-        (t, qubit_set).
-        Return the matching.
-        """
-        gm = rx.PyGraph(multigraph=False)  # matching graph
-        idx = 0  # vertex index in matching graph
-        midxmap = {}  # map from (t, qubit_tuple) to vertex index
-        for v in highlighted:
-            gm.add_node({"dvertex": v})
-            midxmap[v] = idx
-            idx += 1
-        for i, high_i in enumerate(highlighted):
-            for j in range(i + 1, len(highlighted)):
-                vi = midxmap[high_i]
-                vj = midxmap[highlighted[j]]
-                vip = idxmap[high_i]
-                vjp = idxmap[highlighted[j]]
-                gm.add_edge(vi, vj, {"weight": -length[vip][vjp]})
-
-        def weight_fn(edge):
-            return int(edge["weight"])
-
-        matching = rx.max_weight_matching(gm, max_cardinality=True, weight_fn=weight_fn)
-        return matching
-
-    def _error_chain_for_vertex_path(
-        self, graph: rx.PyGraph, vertex_path: List[int]
-    ) -> Tuple[Set[int], Set[int]]:
-        """Return a chain of qubit and measurement errors for a vertex path.
-
-        Examine the edges along the path to extract the error chain.
-        Store error chains as sets and merge using symmetric difference.
-        The vertex_path is a list of retworkx node indices.
-        """
-        qubit_errors = set([])
-        measurement_errors = set([])
-        logging.debug("_error_chain_for_vertex_path %s", vertex_path)
-        for i in range(len(vertex_path) - 1):
-            v0 = vertex_path[i]
-            v1 = vertex_path[i + 1]
-            if graph.get_edge_data(v0, v1)["measurement_error"] == 1:
-                measurement_errors ^= set(
-                    [(graph.nodes()[v0]["time"], tuple(graph.nodes()[v0]["qubits"]))]
-                )
-            qubit_errors ^= set(graph.get_edge_data(v0, v1)["qubits"])
-            logging.debug(
-                "_error_chain_for_vertex_path q = %s, m = %s",
-                qubit_errors,
-                measurement_errors,
-            )
-        return qubit_errors, measurement_errors
-
-    def _compute_error_correction(
-        self,
-        gin: rx.PyGraph,
-        idxmap: Dict[Tuple[int, List[int]], int],
-        paths: Dict[int, Dict[int, List[int]]],
-        matching,
-        highlighted,
-        export: bool = False,
-        filename: str = "graphFile.json",
-    ) -> Tuple[Set[int], Set[int]]:
-        """Compute the qubit and measurement corrections.
-
-        gin is the decoding graph.
-        idxmap maps (t, qubit_idx) to vertex index.
-        paths is all pairs shortest paths between vertices.
-        matching is the perfect matching computed by _compute_matching.
-        highlighted is the list of highlighted vertices computed by
-        _highlighted_vertices.
-        if export is True, write the decoding graph to filename with
-        the corrective paths highlighted.
-        Returns a tuple of sets, (qubit_errors, measurement_errors) where
-        qubit_errors contains the indices of qubits with errors and
-        measurement_errors contains tuples (t, qubit_set) indicating the
-        failed measurement.
-        """
-        used_paths = []
-        qubit_errors = set([])
-        measurement_errors = set([])
-        for p in matching:
-            v0 = idxmap[highlighted[p[0]]]
-            v1 = idxmap[highlighted[p[1]]]
-            # Use the shortest paths between the matched vertices to
-            # identify all of the qubits in the error chains
-            path = paths[v0][v1]
-            q, m = self._error_chain_for_vertex_path(gin, path)
-            # Add the error chains modulo two to get the total correction
-            # (uses set symmetric difference)
-            qubit_errors ^= q
-            measurement_errors ^= m
-            used_paths.append(path)
-        if export:
-            self._highlight_vertex_paths_export_json(gin, used_paths, filename)
-        return qubit_errors, measurement_errors
-
-    def _highlight_vertex_paths_export_json(
-        self, gin: rx.PyGraph, paths: List[List[int]], filename: str
-    ):
-        """Highlight the vertex paths and export JSON to file.
-
-        paths is a list of vertex paths, each given as a list of
-        vertex indices in the decoding graph.
-        """
-        graph = deepcopy(gin)
-        for path in paths:
-            # Highlight the endpoints of the path
-            for i in [0, -1]:
-                graph.nodes()[i]["highlighted"] = True
-            # Highlight the edges along the path
-            for i in range(len(path) - 1):
-                idx = list(graph.graph.edge_list()).index((i, i + 1))
-                graph.edges[idx]["highlighted"] = True
-        self._export_json(graph, filename)
-
-    def _export_json(self, graph: nx.Graph, filename: str):
-        """Export a JSON formatted file with the graph data."""
-        with open(filename, "w", encoding="utf-8") as fp:
-            # The sympy fields are not serializable, so we
-            # include the default function that casts to a string
-            json.dump(nx.node_link_data(graph), fp, indent=4, default=str)
-        fp.close()
-
-
-def ret2net(graph):
-    """Convert retworkx graph to equivalent networx graph."""
-    nx_graph = nx.Graph()
-    for j, node in enumerate(graph.nodes()):
-        nx_graph.add_node(j)
-        for k, v in node.items():
-            nx.set_node_attributes(nx_graph, {j: v}, k)
-    for j, (n0, n1) in enumerate(graph.edge_list()):
-        nx_graph.add_edge(n0, n1)
-        for k, v in graph.edges()[j].items():
-            nx.set_edge_attributes(nx_graph, {(n0, n1): v}, k)
-    return nx_graph

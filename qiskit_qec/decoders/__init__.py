@@ -23,4 +23,13 @@ Decoders module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
+    DecodingGraph
+    CircuitModelMatchingDecoder
+    RepetitionDecoder
+    ThreeBitDecoder
 """
+
+from .decoding_graph import DecodingGraph
+from .circuit_matching_decoder import CircuitModelMatchingDecoder
+from .repetition_decoder import RepetitionDecoder
+from .three_bit_decoder import ThreeBitDecoder

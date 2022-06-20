@@ -25,12 +25,17 @@ Analysis module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
+    ErrorPropagator
+    CErrorPropagator
     PyErrorPropagator
+    EPSelector
+    FaultEnumerator
+    minimum_distance
 """
 
-from . import cerrorpropagator
-from . import epselector
-from . import errorpropagator
-from . import pyerrorpropagator
-
 from .pyerrorpropagator import PyErrorPropagator
+from .cerrorpropagator import CErrorPropagator
+from .epselector import EPSelector
+from .errorpropagator import ErrorPropagator
+from .properties import minimum_distance
+from .faultenumerator import FaultEnumerator
