@@ -21,7 +21,7 @@ class HHC:
             raise QiskitQECError("require distance > 2")
         self.d = distance
         self.k = 1
-        self.n = int(distance**2)
+        self.n = int(distance ** 2)
         self.x_gauges = self._x_gauge_generators(self.d)
         self.z_gauges = self._z_gauge_generators(self.d)
         self.x_stabilizers = self._x_stabilizer_generators(self.d)
@@ -145,11 +145,11 @@ class HHC:
 
     def _logical_z(self, n: int) -> List[List[int]]:
         """Return the support of the logical Z operators."""
-        return list(range(n))
+        return [list(range(n))]
 
     def _logical_x(self, n: int) -> List[List[int]]:
         """Return the support of the logical X operators."""
-        return list(range(n))
+        return [list(range(n))]
 
     def _z_boundary_qubits(self, d: int) -> List[List[int]]:
         """Return a list of singletons each containing a Z boundary qubit.
