@@ -9,6 +9,7 @@
 #include "productiterator.h"
 
 int minimum_distance(std::vector<std::vector<int> > &symplectic_vectors,
+                     std::vector<std::vector<int> > &symplectic_gauge_vectors,
                      int max_weight=10);
 
 #endif

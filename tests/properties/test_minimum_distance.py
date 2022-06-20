@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 
 from qiskit_qec.analysis.properties import minimum_distance
+from qiskit_qec.linear.symplectic import normalizer
 
 
 def strarray(label: str) -> np.ndarray:
@@ -74,6 +75,51 @@ class TestMinimumDistance(unittest.TestCase):
         stabilizer = np.asarray(list(map(strarray, paulis)))
         d = minimum_distance(stabilizer)
         self.assertEqual(d, 4)
+
+    def test_minimum_distance_subsystem(self):
+        """Test [[9,1,4,3]] Bacon-Shor code."""
+        # Overcomplete generating set of gauge group
+        paulis = [
+            "xiixiiiii",
+            "ixiixiiii",
+            "iixiixiii",
+            "iiixiixii",
+            "iiiixiixi",
+            "iiiiixiix",
+            "zziiiiiii",
+            "izziiiiii",
+            "iiizziiii",
+            "iiiizziii",
+            "iiiiiizzi",
+            "iiiiiiizz",
+        ]
+        gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
+        stabilizer, _, _ = normalizer(gauge)
+        d = minimum_distance(stabilizer, gauge)
+        self.assertEqual(d, 3)
+
+    def test_minimum_distance_subsystem_2(self):
+        """Test [[9,0,4,2]] Bacon-Shor code state."""
+        # Overcomplete generating set of gauge group
+        paulis = [
+            "xiixiiiii",
+            "ixiixiiii",
+            "iixiixiii",
+            "iiixiixii",
+            "iiiixiixi",
+            "iiiiixiix",
+            "zziiiiiii",
+            "izziiiiii",
+            "iiizziiii",
+            "iiiizziii",
+            "iiiiiizzi",
+            "iiiiiiizz",
+            "zzzzzzzzz",
+        ]
+        gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
+        stabilizer, _, _ = normalizer(gauge)
+        d = minimum_distance(stabilizer, gauge)
+        self.assertEqual(d, 2)
 
 
 if __name__ == "__main__":
