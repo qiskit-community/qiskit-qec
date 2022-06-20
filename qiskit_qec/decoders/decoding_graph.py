@@ -17,13 +17,12 @@
 """
 Graph used as the basis of decoders.
 """
-from typing import List, Tuple
-
 import itertools
 import logging
+from typing import List, Tuple
+
 import numpy as np
 import retworkx as rx
-
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 

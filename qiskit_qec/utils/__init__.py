@@ -16,6 +16,8 @@ Utils (:mod:`qiskit_qec.utils`)
 ===============================
 
 .. currentmodule:: qiskit_qec.utils
+=======
+.. currentmodule:: qiskit_qec.utils
 
 
 Utils module classes and functions
@@ -28,5 +30,4 @@ Utils module classes and functions
     pauli_rep
 """
 
-from . import pauli_rep
-from . import indexer
+from . import indexer, pauli_rep
