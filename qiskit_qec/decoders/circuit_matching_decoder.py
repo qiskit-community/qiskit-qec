@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from copy import copy
 from math import log
 from typing import Dict, List, Tuple
+from sympy import Poly, Symbol, symbols
 
 import retworkx as rx
 from qiskit import QuantumCircuit
@@ -15,7 +16,6 @@ from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
-from sympy import Poly, Symbol, symbols
 
 
 class CircuitModelMatchingDecoder(ABC):
