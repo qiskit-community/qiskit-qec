@@ -1,13 +1,18 @@
+"""Test heavy-hexagon code family definition."""
 import unittest
 from qiskit_qec.codes.hhc import HHC
 
 
 class TestHHC(unittest.TestCase):
+    """Test heavy-hexagon code family."""
+
     def test_even_distance(self):
+        """Only odd distance implemented."""
         with self.assertRaises(Exception):
             HHC(4)
 
     def test_d3(self):
+        """Check d=3 output."""
         c = HHC(3)
         self.assertEqual(c.n, 9)
         self.assertEqual(c.k, 1)
@@ -22,6 +27,7 @@ class TestHHC(unittest.TestCase):
         self.assertEqual(c.z_stabilizers, [[0, 1, 3, 4, 6, 7], [1, 2, 4, 5, 7, 8]])
 
     def test_d5(self):
+        """Check d=5 output."""
         c = HHC(5)
         self.assertEqual(c.n, 25)
         self.assertEqual(c.k, 1)

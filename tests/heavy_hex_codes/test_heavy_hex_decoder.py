@@ -1,3 +1,4 @@
+"""Test a heavy-hexagon code decoder"""
 import unittest
 
 from qiskit import execute, Aer
@@ -54,10 +55,14 @@ def make_model(p):
 
 
 class TestHHCDecoder(unittest.TestCase):
+    """Tests for a heavy-hexagon code decoder."""
+
     def setUp(self) -> None:
+        """Work we can do once."""
         self.model = make_model(0.0001)
 
     def correct_all_1(self, code, circ, dec, model, good=0, xbasis=False, method="propagator"):
+        """Test if we can correct all single-location faults."""
         dec.update_edge_weights(model)
         fe = FaultEnumerator(circ, method=method, model=model)
         failures = 0
@@ -74,6 +79,7 @@ class TestHHCDecoder(unittest.TestCase):
         self.assertEqual(failures, 0)
 
     def no_faults_success(self, code, circ, dec, model, good=0, xbasis=False):
+        """Test for correct behavior without faults."""
         shots = 10
         seed = 100
         result = execute(
@@ -99,7 +105,8 @@ class TestHHCDecoder(unittest.TestCase):
                 failures += 1
         self.assertEqual(failures, 0)
 
-    def test_d3_2(self):  # 3 zx z pymatching
+    def test_d3_2(self):
+        """Check 3, zx, z, pymatching."""
         blocks = 3
         round_schedule = "zx"
         basis = "z"
@@ -141,7 +148,8 @@ class TestHHCDecoder(unittest.TestCase):
         self.no_faults_success(c, circ, dec, self.model)
         self.correct_all_1(c, circ, dec, self.model)
 
-    def test_d3_3(self):  # 3 zx z retworkx
+    def test_d3_3(self):
+        """Check 3, zx, z, retworkx."""
         blocks = 3
         round_schedule = "zx"
         basis = "z"
@@ -183,7 +191,8 @@ class TestHHCDecoder(unittest.TestCase):
         # self.no_faults_success(c, circ, dec, self.model)
         self.correct_all_1(c, circ, dec, self.model)
 
-    def test_d3_5(self):  # 1 zxzxzx z pymatching logical=xyzxyz
+    def test_d3_5(self):
+        """Check 1, zxzxzx, z, pymatching, logical=xyzxyz."""
         blocks = 1
         round_schedule = "zxzxzx"
         basis = "z"
@@ -225,7 +234,8 @@ class TestHHCDecoder(unittest.TestCase):
         self.no_faults_success(c, circ, dec, self.model)
         self.correct_all_1(c, circ, dec, self.model)
 
-    def test_d3_7(self):  # 3 zx z pymatching -1 eigenstate
+    def test_d3_7(self):
+        """Check 3, zx, z, pymatching, -1 eigenstate."""
         blocks = 3
         round_schedule = "zx"
         basis = "z"
@@ -269,49 +279,8 @@ class TestHHCDecoder(unittest.TestCase):
         # errors, so the observed outcomes are not flipped (0 in arguments)
         self.correct_all_1(c, circ, dec, self.model, 0, False, "propagator")
 
-    def test_d3_8(self):  # 3 zx z pymatching uniform
-        blocks = 3
-        round_schedule = "zx"
-        basis = "z"
-        logical_paulis = "ii"
-        c = HHC(3)
-        gen = HHCCircuit(
-            c,
-            barriers=True,
-            idles=True,
-            distinct_measurement_idle=True,
-            init_error=True,
-            group_meas=False,
-            xprs=False,
-            blocks=blocks,
-            round_schedule=round_schedule,
-            basis=basis,
-            initial_state="+",
-            logical_paulis=logical_paulis,
-            num_initialize=1,
-            idle_before_measure=False,
-        )
-        circ = gen.syndrome_measurement()
-        dec = HHCDecoder(
-            n=c.n,
-            css_x_gauge_ops=c.x_gauges,
-            css_x_stabilizer_ops=c.x_stabilizers,
-            css_x_boundary=c.x_boundary,
-            css_z_gauge_ops=c.z_gauges,
-            css_z_stabilizer_ops=c.z_stabilizers,
-            css_z_boundary=c.z_boundary,
-            circuit=circ,
-            model=self.model,
-            basis=basis,
-            round_schedule=round_schedule,
-            blocks=blocks,
-            method="pymatching",
-            uniform=True,
-        )
-        # self.no_faults_success(c, circ, dec, self.model)
-        self.correct_all_1(c, circ, dec, self.model)
-
-    def test_d3_10(self):  # 3 zx x pymatching
+    def test_d3_10(self):
+        """Check 3, zx, x, pymatching."""
         blocks = 3
         round_schedule = "zx"
         basis = "x"
