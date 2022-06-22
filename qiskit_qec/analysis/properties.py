@@ -24,12 +24,7 @@ def attempt_import(module_name: str):
         return True
 
 
-# TODO: wrap minimum distance test into a min. dist. method
-# TODO: from symplectic import normalizer
-# TODO: implement distance_test in C
-
-
-def distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
+def _distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
     """Tests if a low weight logical Pauli operator exists.
 
     Tests whether there exists a Pauli operator with Hamming weight <= wt
@@ -97,7 +92,23 @@ def distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
     return any(elem in T1c for elem in T2a) or any(elem in T1a for elem in T2c)
 
 
-def min_distance_core(
+# TODO: also implement in C++
+def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10) -> int:
+    """Minimum distance of (subsystem) stabilizer code.
+
+    stabilizer is a symplectic matrix generating the stabilizer group.
+    gauge is a symplectic matrix generating the gauge group, if any.
+
+    Second method based on parititioning errors.
+
+    Returns the minimum distance of the code, or 0 if greater than max_weight.
+    """
+    # TODO: need basis of N(S) - G
+    test = _distance_test(stab, logicOp, wt)
+    pass
+
+
+def _minimum_distance_1_python_core(
     n: int,
     n_minus_k_plus_r: int,
     k: int,
@@ -105,8 +116,8 @@ def min_distance_core(
     max_weight: int,
     stabilizer: np.ndarray,
     gauge: np.ndarray,
-):
-    """Core of minimum distance algorithm."""
+) -> int:
+    """Core of minimum distance algorithm that enumerates errors."""
     for weight in range(1, min(n, max_weight) + 1):
         iterable = [pauli] * weight
         for combination in combinations(list(range(n)), weight):
@@ -128,13 +139,15 @@ def min_distance_core(
     return 0
 
 
-def minimum_distance_python(
+def _minimum_distance_1_python(
     stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10
 ) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
     stabilizer is a symplectic matrix generating the stabilizer group.
     gauge is a symplectic matrix generating the gauge group, if any.
+
+    Method enumerates all errors up to weight d.
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
@@ -147,7 +160,7 @@ def minimum_distance_python(
     n_minus_k = (n_minus_k_minus_r + n_minus_k_plus_r) / 2
     k = n - n_minus_k
     pauli = ["x", "y", "z"]
-    distance = min_distance_core(n, n_minus_k_plus_r, k, pauli, max_weight, stabilizer, gauge)
+    distance = _minimum_distance_1_python_core(n, n_minus_k_plus_r, k, pauli, max_weight, stabilizer, gauge)
     return distance
 
 
@@ -168,5 +181,5 @@ def minimum_distance(stabilizer: np.ndarray, gauge: np.ndarray = None, max_weigh
         inputform2 = gauge.astype(np.int32).tolist()
         distance = compiledextension.minimum_distance(inputform1, inputform2, max_weight)
     else:
-        distance = minimum_distance_python(stabilizer, gauge, max_weight)
+        distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
     return distance
