@@ -214,18 +214,12 @@ class RepetitionCodeCircuit:
 
         self.T += 1
 
-    def readout(self, barrier: bool = False):
+    def readout(self):
         """
         Readout of all code qubits, which corresponds to a logical measurement
         as well as allowing for a measurement of the syndrome to be inferred.
-        
-        Args:
-            barrier (bool): Boolean denoting whether to include a barrier at the start.
         """
-        barrier = barrier or self._barriers
         for log in ["0", "1"]:
-            if barrier:
-                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)
             self.circuit[log].add_register(self.code_bit)
