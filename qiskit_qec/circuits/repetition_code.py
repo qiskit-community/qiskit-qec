@@ -31,6 +31,7 @@ class RepetitionCodeCircuit:
         xbasis: bool = False,
         resets: bool = False,
         delay: Optional[int] = None,
+        barriers: bool = False
     ):
         """
         Creates the circuits corresponding to a logical 0 and 1 encoded
@@ -45,6 +46,7 @@ class RepetitionCodeCircuit:
             xbasis (bool): Whether to use the X basis to use for encoding (Z basis used by default).
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
+            barriers (bool): Whether to include barriers between different sections of the code.
 
 
         Additional information:
@@ -71,6 +73,7 @@ class RepetitionCodeCircuit:
 
         self._xbasis = xbasis
         self._resets = resets
+        self._barriers = barriers
 
         self._preparation()
 
@@ -131,27 +134,24 @@ class RepetitionCodeCircuit:
             logs (list or tuple): List or tuple of logical values expressed as
                 strings.
             barrier (bool): Boolean denoting whether to include a barrier at
-                the end.
+                the start.
         """
+        barrier = barrier or self._barriers
         for log in logs:
+            if barrier and (log=='1' or self._xbasis):
+                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].z(self.code_qubit)
             else:
                 self.circuit[log].x(self.code_qubit)
-            if barrier:
-                self.circuit[log].barrier()
 
-    def _preparation(self, barrier=False):
+    def _preparation(self):
         """Prepares logical bit states by applying an x to the circuit that will
         encode a 1.
         """
-
         for log in ["0", "1"]:
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)
-            if barrier:
-                self.circuit[log].barrier()
-
         self.x(["1"])
 
     def syndrome_measurement(self, final: bool = False, barrier: bool = False, delay: int = 0):
@@ -160,52 +160,72 @@ class RepetitionCodeCircuit:
         Args:
             final (bool): Whether to disregard the reset (if applicable) due to this
             being the final syndrome measurement round.
-            barrier (bool): Boolean denoting whether to include a barrier at the end.
+            barrier (bool): Boolean denoting whether to include a barrier at the start.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
         """
+        barrier = barrier or self._barriers
+
         self.link_bits.append(ClassicalRegister((self.d - 1), "round_" + str(self.T) + "_link_bit"))
 
         for log in ["0", "1"]:
 
             self.circuit[log].add_register(self.link_bits[-1])
 
+            # entangling gates
+            if barrier:
+                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].h(self.link_qubit)
-
             for j in range(self.d - 1):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j])
                 else:
                     self.circuit[log].cx(self.code_qubit[j], self.link_qubit[j])
-
             for j in range(self.d - 1):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j + 1])
                 else:
                     self.circuit[log].cx(self.code_qubit[j + 1], self.link_qubit[j])
-
             if self._xbasis:
                 self.circuit[log].h(self.link_qubit)
 
-            for j in range(self.d - 1):
-                self.circuit[log].measure(self.link_qubit[j], self.link_bits[self.T][j])
-                if self._resets and not final:
-                    self.circuit[log].reset(self.link_qubit[j])
-                if delay > 0 and not final:
-                    self.circuit[log].delay(delay, self.link_qubit[j])
-
+            # measurement
             if barrier:
                 self.circuit[log].barrier()
+            for j in range(self.d - 1):
+                self.circuit[log].measure(
+                    self.link_qubit[j], self.link_bits[self.T][j])
+
+            # resets
+            if self._resets and not final:
+                if barrier:
+                    self.circuit[log].barrier()
+                for j in range(self.d - 1): 
+                        self.circuit[log].reset(self.link_qubit[j])
+
+            # delay
+            if delay > 0 and not final:
+                if barrier:
+                    self.circuit[log].barrier()
+                for j in range(self.d - 1): 
+                        self.circuit[log].delay(delay, self.link_qubit[j])
+
+
 
         self.T += 1
 
-    def readout(self):
+    def readout(self, barrier: bool = False):
         """
         Readout of all code qubits, which corresponds to a logical measurement
         as well as allowing for a measurement of the syndrome to be inferred.
+        
+        Args:
+            barrier (bool): Boolean denoting whether to include a barrier at the start.
         """
-
+        barrier = barrier or self._barriers
         for log in ["0", "1"]:
+            if barrier:
+                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)
             self.circuit[log].add_register(self.code_bit)
