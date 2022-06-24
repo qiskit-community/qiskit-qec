@@ -37,11 +37,12 @@ class DecodingGraph:
     def __init__(self, code):
         """
         Args:
-            code (CodeCircuit): The QEC code circuit object for which this decoder
-                will be used.
+            code (CodeCircuit): The QEC code circuit object for which this decoding
+                graph will be create. If None, graph will initialized as empty.
         """
 
-        self.code = code
+        if code:
+            self.code = code
 
         self.graph = self._make_syndrome_graph()
 
@@ -49,29 +50,30 @@ class DecodingGraph:
 
         S = rx.PyGraph(multigraph=False)
 
-        qc = self.code.circuit["0"]
-        fe = FaultEnumerator(qc, method="stabilizer")
-        blocks = list(fe.generate_blocks())
-        fault_paths = list(itertools.chain(*blocks))
+        if 'code' in dir(self):
+            qc = self.code.circuit["0"]
+            fe = FaultEnumerator(qc, method="stabilizer")
+            blocks = list(fe.generate_blocks())
+            fault_paths = list(itertools.chain(*blocks))
 
-        for _, _, _, output in fault_paths:
-            string = "".join([str(c) for c in output[::-1]])
-            nodes = self.code.string2nodes(string)
-            for node in nodes:
-                if node not in S.nodes():
-                    S.add_node(node)
-            for source in nodes:
-                for target in nodes:
-                    if target != source:
-                        n0 = S.nodes().index(source)
-                        n1 = S.nodes().index(target)
-                        qubits = []
-                        if not (source["is_boundary"] and target["is_boundary"]):
-                            qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-                        if source["time"] != target["time"] and len(qubits) > 1:
+            for _, _, _, output in fault_paths:
+                string = "".join([str(c) for c in output[::-1]])
+                nodes = self.code.string2nodes(string)
+                for node in nodes:
+                    if node not in S.nodes():
+                        S.add_node(node)
+                for source in nodes:
+                    for target in nodes:
+                        if target != source:
+                            n0 = S.nodes().index(source)
+                            n1 = S.nodes().index(target)
                             qubits = []
-                        edge = {"qubits": qubits, "weight": 1}
-                        S.add_edge(n0, n1, edge)
+                            if not (source["is_boundary"] and target["is_boundary"]):
+                                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+                            if source["time"] != target["time"] and len(qubits) > 1:
+                                qubits = []
+                            edge = {"qubits": qubits, "weight": 1}
+                            S.add_edge(n0, n1, edge)
 
         return S
 
