@@ -3,7 +3,6 @@ import unittest
 import numpy as np
 
 from qiskit_qec.analysis.properties import minimum_distance
-from qiskit_qec.linear.symplectic import normalizer
 
 
 def strarray(label: str) -> np.ndarray:
@@ -25,21 +24,33 @@ class TestMinimumDistance(unittest.TestCase):
         """Test Steane code."""
         paulis = ["iiixxxx", "ixxiixx", "xixixix", "iiizzzz", "izziizz", "ziziziz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=False)
+        self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=False)
+        self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_2(self):
         """Test four qubit code."""
         paulis = ["xxxx", "zzzz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=False)
+        self.assertEqual(d, 2)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=False)
+        self.assertEqual(d, 2)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
         self.assertEqual(d, 2)
 
     def test_minimum_distance_3(self):
         """Test five qubit code."""
         paulis = ["xzzxi", "ixzzx", "xixzz", "zxixz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=False)
+        self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=False)
+        self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_4(self):
@@ -55,8 +66,13 @@ class TestMinimumDistance(unittest.TestCase):
             "zzzzzziiii",
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=False)
         self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=False)
+        self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 4)
+
 
     def test_minimum_distance_4_overcomplete(self):
         """Test [[10,2,4]] code from codetables.de, overcomplete version."""
@@ -73,12 +89,17 @@ class TestMinimumDistance(unittest.TestCase):
             "ziiziixxzz",
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
-        d = minimum_distance(stabilizer)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=False)
         self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=False)
+        self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 4)
+
 
     def test_minimum_distance_subsystem(self):
         """Test [[9,1,4,3]] Bacon-Shor code."""
-        # Overcomplete generating set of gauge group
+        # Generating set of gauge group
         paulis = [
             "xiixiiiii",
             "ixiixiiii",
@@ -94,13 +115,17 @@ class TestMinimumDistance(unittest.TestCase):
             "iiiiiiizz",
         ]
         gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
-        stabilizer, _, _ = normalizer(gauge)
-        d = minimum_distance(stabilizer, gauge)
+        d = minimum_distance(gauge, method="enumerate", try_compiled=False)
         self.assertEqual(d, 3)
+        d = minimum_distance(gauge, method="partition", try_compiled=False)
+        self.assertEqual(d, 3)
+        d = minimum_distance(gauge, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 3)
+
 
     def test_minimum_distance_subsystem_2(self):
         """Test [[9,0,4,2]] Bacon-Shor code state."""
-        # Overcomplete generating set of gauge group
+        # Generating set of gauge group
         paulis = [
             "xiixiiiii",
             "ixiixiiii",
@@ -117,8 +142,11 @@ class TestMinimumDistance(unittest.TestCase):
             "zzzzzzzzz",
         ]
         gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
-        stabilizer, _, _ = normalizer(gauge)
-        d = minimum_distance(stabilizer, gauge)
+        d = minimum_distance(gauge, method="enumerate", try_compiled=False)
+        self.assertEqual(d, 2)
+        d = minimum_distance(gauge, method="partition", try_compiled=False)
+        self.assertEqual(d, 2)
+        d = minimum_distance(gauge, method="enumerate", try_compiled=True)
         self.assertEqual(d, 2)
 
 

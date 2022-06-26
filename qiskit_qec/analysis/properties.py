@@ -5,8 +5,9 @@ import functools
 import logging
 import numpy as np
 
+from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.linear.matrix import rank
-from qiskit_qec.linear.symplectic import all_commute, is_stabilizer_group
+import qiskit_qec.linear.symplectic as symplectic
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +93,7 @@ def _distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
     return any(elem in T1c for elem in T2a) or any(elem in T1a for elem in T2c)
 
 
-# TODO: also implement in C++
-def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10) -> int:
+def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_weight) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
     stabilizer is a symplectic matrix generating the stabilizer group.
@@ -103,9 +103,36 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray = None,
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
-    # TODO: need basis of N(S) - G
-    test = _distance_test(stab, logicOp, wt)
-    pass
+    if symplectic.is_stabilizer_group(gauge):
+        _, xl, zl = symplectic.normalizer(stabilizer.astype(bool))
+    else:
+        center, x, z = symplectic.symplectic_gram_schmidt(gauge)
+        _, xp, zp = symplectic.normalizer(center, x, z)
+        x_rows = x.view([('',x.dtype)] * x.shape[1])
+        xp_rows = xp.view([('',xp.dtype)] * xp.shape[1])
+        xl = np.setdiff1d(xp_rows, x_rows).view(xp.dtype).reshape(-1, xp.shape[1])
+        z_rows = z.view([('',z.dtype)] * z.shape[1])
+        zp_rows = zp.view([('',zp.dtype)] * zp.shape[1])
+        zl = np.setdiff1d(zp_rows, z_rows).view(zp.dtype).reshape(-1, zp.shape[1])
+    if xl.shape[0] == 0:  # k = 0, fall back to first method
+        return _minimum_distance_1_python(stabilizer, gauge, max_weight)
+    weight = max_weight + 1
+    for row in range(xl.shape[0]):
+        for w in range(1, max_weight+1):
+            if _distance_test(stabilizer.astype(int), xl[row].astype(int), w):
+                if w < weight:
+                    weight = w
+                break
+    for row in range(zl.shape[0]):
+        for w in range(1, max_weight+1):
+            if _distance_test(stabilizer.astype(int), zl[row].astype(int), w):
+                if w < weight:
+                    weight = w
+                break
+    if weight < max_weight + 1:
+        return weight
+    else:
+        return 0
 
 
 def _minimum_distance_1_python_core(
@@ -130,7 +157,7 @@ def _minimum_distance_1_python_core(
                         error[combination[i] + n] = 1
                 test_matrix = np.vstack([stabilizer, error])
                 test_matrix_2 = np.vstack([gauge, error])
-                commutes = all_commute(test_matrix)
+                commutes = symplectic.all_commute(test_matrix)
                 in_gauge = rank(test_matrix_2) == n_minus_k_plus_r
                 if commutes:
                     if (k > 0 and not in_gauge) or (k == 0 and in_gauge):
@@ -140,20 +167,17 @@ def _minimum_distance_1_python_core(
 
 
 def _minimum_distance_1_python(
-    stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10
+    stabilizer: np.ndarray, gauge: np.ndarray, max_weight
 ) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
     stabilizer is a symplectic matrix generating the stabilizer group.
-    gauge is a symplectic matrix generating the gauge group, if any.
+    gauge is a symplectic matrix generating the gauge group.
 
     Method enumerates all errors up to weight d.
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
-    assert is_stabilizer_group(stabilizer)
-    if gauge is None:
-        gauge = stabilizer
     n = int(stabilizer.shape[1] / 2)
     n_minus_k_minus_r = rank(stabilizer)
     n_minus_k_plus_r = rank(gauge)
@@ -164,22 +188,38 @@ def _minimum_distance_1_python(
     return distance
 
 
-def minimum_distance(stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10) -> int:
+def minimum_distance(stabilizer_or_gauge: np.ndarray, max_weight: int = 10, method: str = "enumerate", try_compiled: bool = True) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
-    stabilizer is a symplectic matrix generating the stabilizer group.
-    gauge is a symplectic matrix generating the gauge group, if any.
+    stabilizer_or_gauge is a symplectic matrix generating
+    either the stabilizer or gauge group.
+
+    method and try_compiled select an algorithm and implementation.
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
-    if gauge is None:
-        gauge = stabilizer
-    if attempt_import("qiskit_qec.extensions.compiledextension"):
+    METHOD_ENUMERATE: str = "enumerate"
+    METHOD_PARTITION: str = "partition"
+    AVAILABLE_METHODS = {METHOD_ENUMERATE, METHOD_PARTITION}
+    if method not in AVAILABLE_METHODS:
+        raise QiskitQECError("fmethod {method} is not supported.")
+    if symplectic.is_stabilizer_group(stabilizer_or_gauge):
+        stabilizer = stabilizer_or_gauge
+        gauge = stabilizer_or_gauge
+    else:
+        stabilizer = symplectic.center(stabilizer_or_gauge)
+        gauge = stabilizer_or_gauge
+    if try_compiled and attempt_import("qiskit_qec.extensions.compiledextension"):
         from qiskit_qec.extensions import compiledextension
-
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
-        distance = compiledextension.minimum_distance(inputform1, inputform2, max_weight)
+        if method == METHOD_ENUMERATE:
+            distance = compiledextension.minimum_distance(inputform1, inputform2, max_weight)
+        elif method == METHOD_PARTITION:
+            raise QiskitQECError("not implemented")  # TODO: implement
     else:
-        distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
+        if method == METHOD_ENUMERATE:
+            distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
+        elif method == METHOD_PARTITION:
+            distance = _minimum_distance_2_python(stabilizer, gauge, max_weight)
     return distance

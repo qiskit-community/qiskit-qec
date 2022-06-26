@@ -2,14 +2,14 @@
 import unittest
 import numpy as np
 
-from qiskit_qec.analysis.properties import minimum_distance_python
+from qiskit_qec.analysis.properties import _minimum_distance_1_python
 from qiskit_qec.linear.symplectic import normalizer
-
 
 def minimum_distance(stabilizer: np.ndarray, gauge: np.ndarray = None, max_weight: int = 10) -> int:
     """Wrapper for python minimum distance."""
-    return minimum_distance_python(stabilizer, gauge, max_weight)
-
+    if gauge is None:
+        gauge = stabilizer
+    return _minimum_distance_1_python(stabilizer, gauge, max_weight)
 
 def strarray(label: str) -> np.ndarray:
     """Convert a Pauli label string into a symplectic vector."""
