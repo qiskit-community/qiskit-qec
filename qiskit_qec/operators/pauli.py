@@ -212,7 +212,7 @@ class Pauli(BasePauli):
 
     def __str__(self):
         """Print representation."""
-        if self._truncate__ and self.num_qubits > self._truncate__:
+        if self._truncate__ and self.num_qubits > self._truncate__ and BasePauli.EXTERNAL_SYNTAX == pauli_rep.PRODUCT_SYNTAX:
             front = self[-self._truncate__ :].to_label()
             return front + "..."
         return self.to_label()
