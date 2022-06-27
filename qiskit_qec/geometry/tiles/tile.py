@@ -9,12 +9,23 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Module for Tile"""
+"""Tile base class"""
 
 
-class Tile:
-    """Base class for all geometric tiles"""
+from abc import ABC
 
-    def __init__(self) -> None:
-        """Init tile"""
-        pass
+from qiskit_qec.geometry.model.qubit_count import QubitCount
+from qiskit_qec.geometry.model.qubit_data import QubitData
+from qiskit_qec.geometry.model.shell import Shell
+
+class Tile(ABC):
+    """Base class for Tiles"""
+
+    @classmethod
+    def draw(cls)->None:
+        """Display the tile"""
+        qubit_count = QubitCount()
+        qubit_data = QubitData()
+        shell:Shell = cls(origin=(0,0), qubit_count=qubit_count, qubit_data=qubit_data)
+        # pylint: disable=unexpected-keyword-arg
+        shell.draw(qubit_data=qubit_data, show_axis=False, figsize=(2,2), face_colors=True)
