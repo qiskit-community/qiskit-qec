@@ -38,7 +38,7 @@ class DecodingGraph:
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
-                graph will be create. If None, graph will initialized as empty.
+                graph will be created. If None, graph will initialized as empty.
         """
 
         if code:
