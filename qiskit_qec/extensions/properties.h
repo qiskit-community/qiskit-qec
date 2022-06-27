@@ -1,6 +1,7 @@
 #ifndef __Properties__
 #define __Properties__
 
+#include <algorithm>
 #include <vector>
 #include <set>
 #include <exception>
