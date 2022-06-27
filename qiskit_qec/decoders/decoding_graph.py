@@ -41,8 +41,7 @@ class DecodingGraph:
                 graph will be created. If None, graph will initialized as empty.
         """
 
-        if code:
-            self.code = code
+        self.code = code
 
         self.graph = self._make_syndrome_graph()
 
@@ -50,7 +49,7 @@ class DecodingGraph:
 
         S = rx.PyGraph(multigraph=False)
 
-        if "code" in dir(self):
+        if self.code is not None:
             qc = self.code.circuit["0"]
             fe = FaultEnumerator(qc, method="stabilizer")
             blocks = list(fe.generate_blocks())
