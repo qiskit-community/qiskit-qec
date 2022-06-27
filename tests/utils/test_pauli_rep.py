@@ -297,7 +297,7 @@ class TestPauliRep(TestCase):
         )
 
         matrix, phase_exp = str2symplectic("iXXXIZYZ")
-        self.assertTrue(phase_exp, 2)
+        self.assertEqual(phase_exp, 0)
         self.assertTrue(
             np.array_equal(np.array([[0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]]), matrix)
         )

@@ -25,7 +25,6 @@ from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
 
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.decoders.graph_decoder import GraphDecoder
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
 sys.path.append("../../")
@@ -159,43 +158,13 @@ class TestCodes(unittest.TestCase):
         dec = DecodingGraph(code)
         test_results = {"000 00": 1024, "010 11": 512}
         p = dec.get_error_probs(test_results)
-        n0 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 0})
-        n1 = dec.S.nodes().index({"time": 0, "is_logical": False, "element": 1})
+        n0 = dec.graph.nodes().index(
+            {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
+        )
+        n1 = dec.graph.nodes().index(
+            {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
+        )
         self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
-
-    def test_rep_probs(self):
-        """Repetition code test."""
-        matching_probs = {}
-
-        max_dist = 5
-
-        noise_model = get_noise(0.02, 0.02)
-
-        for d in range(3, max_dist + 1, 2):
-
-            code = RepetitionCode(d, 2)
-
-            results = get_syndrome(code, noise_model=noise_model, shots=8192)
-
-            dec = DecodingGraph(code)
-            decode = GraphDecoder(dec)
-
-            for log in ["0", "1"]:
-                logical_prob_match = decode.get_logical_prob(results[log], logical=log)
-                matching_probs[(d, log)] = logical_prob_match
-
-        for d in range(3, max_dist - 1, 2):
-            for log in ["0", "1"]:
-                m_down = matching_probs[(d, log)] > matching_probs[(d + 2, log)]
-
-                m_error = (
-                    f"Error: Matching decoder does not improve logical "
-                    f"error rate between repetition codes of distance {d} and {d + 2}\n."
-                    f"For d={d}: {matching_probs[(d, log)]} \n."
-                    f"For d={d + 2}: {matching_probs[(d + 2, log)]}."
-                )
-
-                self.assertTrue(m_down or matching_probs[(d, log)] == 0.0, m_error)
 
 
 if __name__ == "__main__":

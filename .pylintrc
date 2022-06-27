@@ -248,7 +248,9 @@ expected-line-ending-format=
 # Logging modules to check that the string format arguments are in logging
 # function parameter format
 logging-modules=logging
-
+# new string format
+logging-format-style=old
+disable=logging-too-many-args
 
 [MISCELLANEOUS]
 
@@ -426,3 +428,5 @@ analyse-fallback-blocks=no
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
 overgeneral-exceptions=Exception
+
+

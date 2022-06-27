@@ -867,7 +867,7 @@ def count_num_y(matrix: np.ndarray, scalar: bool = True) -> Union[np.ndarray, in
 
     Returns:
         result: number of positions with 1's in k and n+k positions
-                for matrices/vectors of width 2n for all k.
+    for matrices/vectors of width 2n for all k.
 
     Examples:
         >>> a = np.array([1,0,1,1], dtype=np.bool_)
@@ -1561,7 +1561,7 @@ def hyperbolic_basis_for_pauli_group(
                                [0,0,0,0,1,1,0,1],
                                [1,1,1,0,0,1,0,0],
                                [1,1,0,1,0,0,0,0]], dtype=numpy.bool_)
-        >>> center_, x, z = smake_isotropic_hyperbolic_form(matrix)
+        >>> center_, x, z = make_isotropic_hyperbolic_form(matrix)
         >>> nx, nz = sysp.hyperbolic_basis_for_pauli_group(center_, x, z)
         >>> nx.astype(int)
         array([[0, 1, 0, 0, 1, 0, 1, 0],

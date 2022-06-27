@@ -1,10 +1,12 @@
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-informational)
 [![Python](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-informational)](https://www.python.org/)
 [![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%200.34.2-6133BD)](https://github.com/Qiskit/qiskit)
-[![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](https://github.com/Qiskit/qiskit-qec/blob/main/LICENSE.txt)
+[![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](./LICENSE.txt)
 [![Code style: Black](https://img.shields.io/badge/Code%20style-Black-000.svg)](https://github.com/psf/black)
-[![Tests, linter and coverage](https://github.com/Qiskit/qiskit-qec/actions/workflows/tests.yml/badge.svg)](https://github.com/Qiskit/qiskit-qec/actions/workflows/tests.yml)
+[![Tests, linter and coverage](https://github.com/qiskit-community/qiskit-qec/actions/workflows/tests.yml/badge.svg)](https://github.com/qiskit-community/qiskit-qec/actions/workflows/tests.yml)
 
+| WARNING: qiskit-qec is still in the early stages of development and it is very likely that there will be breaking API changes in future releases. If you encounter any bugs please open an issue. |
+| --- |
 
 # Qiskit QEC
 
@@ -55,10 +57,13 @@ For information on how to contribute to this project, please take a look at our 
 
 ----------------------------------------------------------------------------------------------------
 
-## References and Acknowledgements
+## References
 [1] Diátaxis Technical Documentation Framework \
     https://diataxis.fr/
 
+## Acknowledgements
+
+Development was partially supported by IARPA under contract W911NF-16-1-0114. All statements of fact, opinion or conclusions contained herein are those of the authors and should not be construed as representing the official views or policies of the US Government.
 
 ----------------------------------------------------------------------------------------------------
 

@@ -23,11 +23,14 @@ Codes module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
-    Code
     QECCode
-    SubSystemCode
+    StabSubSystemCode
+    CodeLibrary
+    CodeLibrarian
+    small_code
+    all_small_codes
 """
 
-from .code import Code
 from .qec_code import QECCode
-from .subsystemcodes import SubSystemCode
+from .stabsubsystemcodes import StabSubSystemCode
+from .codebase import CodeLibrary, CodeLibrarian, small_code, all_small_codes
