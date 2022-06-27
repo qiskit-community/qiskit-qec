@@ -27,6 +27,9 @@ class Vertex(ShapeObject):
         self.pos = pos
         super().__init__()
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def __str__(self)->str:
         return self.pos.__str__()
 
@@ -44,4 +47,11 @@ class Vertex(ShapeObject):
         return self.pos
 
     def shallowcopy(self) -> "Vertex":
+        """Returns a shallow copy of the Vertex.
+
+        A shallow copy creates a new Vertex with only the position being copied
+
+        Returns:
+            Vertex:  Shallow copy of vertex
+        """
         return Vertex(self.pos)

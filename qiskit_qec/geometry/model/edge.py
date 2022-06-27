@@ -10,8 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Edge Module"""
-from typing import List
-from ctypes import c_long
+from typing import List, Optional
 
 from qiskit_qec.geometry.model.shape_object import ShapeObject
 from qiskit_qec.geometry.model.vertex import Vertex
@@ -21,7 +20,10 @@ from qiskit_qec.geometry.model.vertex import Vertex
 class Edge(ShapeObject):
     """Edge"""
 
-    def __init__(self, vertices: List[Vertex]) -> None:
+    def __init__(self,
+                 vertices: List[Vertex], 
+                 next:Optional["Edge"]=None,
+                 previous:Optional["Edge"]=None) -> None:
         """Inits Edge
 
         Args:
@@ -29,7 +31,24 @@ class Edge(ShapeObject):
         """
         super().__init__()
         self.vertices = vertices
+        self.coincident_edges = []
+        self.next = next
+        self.previous = previous
+
         
-        for item in self.vertices: 
+        for item in self.vertices:
             item.add_parent(self)
+
+    def __repr__(self) -> str:
+        string = 'Edge' + self.__str__()
+        return string
+
+    def __str__(self):
+        string='['
+        for vertex in self.vertices[:-1]:
+            string += vertex.__str__()
+            string += ","
+        string += self.vertices[-1].__str__()
+        string += ']'
+        return string
 
