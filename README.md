@@ -57,10 +57,13 @@ For information on how to contribute to this project, please take a look at our 
 
 ----------------------------------------------------------------------------------------------------
 
-## References and Acknowledgements
+## References
 [1] Diátaxis Technical Documentation Framework \
     https://diataxis.fr/
 
+## Acknowledgements
+
+Development was partially supported by IARPA under contract W911NF-16-1-0114. All statements of fact, opinion or conclusions contained herein are those of the authors and should not be construed as representing the official views or policies of the US Government.
 
 ----------------------------------------------------------------------------------------------------
 
