@@ -18,10 +18,10 @@ import os
 import shutil
 import uuid
 from typing import Any, Dict, List, Set, Union
-from qiskit_qec.codes.subsystemcodes import SubSystemCode
-from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.operators.pauli_list import PauliList
-from qiskit_qec.structures.gauge import GaugeGroup
+from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode  # pylint: disable=import-error
+from qiskit_qec.exceptions import QiskitQECError  # pylint: disable=import-error
+from qiskit_qec.operators.pauli_list import PauliList  # pylint: disable=import-error
+from qiskit_qec.structures.gauge import GaugeGroup  # pylint: disable=import-error
 
 
 class QECCodeBase:
@@ -33,17 +33,7 @@ class QECCodeBase:
     N = "n"  # pylint: disable=invalid-name
     K = "k"  # pylint: disable=invalid-name
     D = "d"  # pylint: disable=invalid-name
-    AUT_GROUP_SIZE = "aut_group_size"
-    IS_CSS = "is_css"
-    IS_DECOMPOSABLE = "is_decomposable"
-    IS_DEGENERATE = "is_degenerate"
-    IS_GF4LINEAR = "is_gf4linear"
-    IS_TRIORTHOGONAL = "is_triorthogonal"
-    IS_SUBSYSTEM = "is_subsystem"
-    LOGICAL_OPS = "logical_ops"
-    STABILIZER = "stabilizer"
-    WEIGHT_ENUMERATOR = "weight_enumerator"
-    GAUGE_GROUP = "gauge_group"
+
     CITATION = "citation"
     NAME = "name"
     QEC_UUID = "uuid"
@@ -152,7 +142,7 @@ class QECCodeBase:
         allow_standard_db=True,
         allow_playground=True,
         **additional_params,  # pylint: disable=missing-param-doc
-    ) -> (List[SubSystemCode]):
+    ) -> (List[StabSubSystemCode]):
         """
         Args:
             n_len (Union[List[int]],int]): length of the code
@@ -221,7 +211,7 @@ class QECCodeBase:
 
     def store_new_subsystem_code(
         self,
-        code: SubSystemCode,
+        code: StabSubSystemCode,
         force=False,
         keep_uuid=False,
         allow_new_fields=False,
@@ -232,7 +222,7 @@ class QECCodeBase:
         """Store new subsystem code in playground codebase
 
         Args:
-            code (SubSystemCode): code to be saved
+            code (StabSubSystemCode): code to be saved
             force (bool, optional): Override all checks and force code
             to be saved to playground. Defaults to False.
             keep_uuid (bool, optional): Use the same the uuid already stored
@@ -260,11 +250,11 @@ class QECCodeBase:
             self.flush_cache()
         return retval
 
-    def delete_subsystem_code_from_playground(self, code: SubSystemCode):
+    def delete_subsystem_code_from_playground(self, code: StabSubSystemCode):
         """Delete subsystem code from playground codebase
 
         Args:
-            code (SubSystemCode): code to be deleted
+            code (StabSubSystemCode): code to be deleted
 
         Raises:
             QiskitQECError: if deletion is unsuccessful
@@ -326,7 +316,7 @@ class QECCodeBase:
 
     def _convert_code_subsystem_to_storage_format(
         self,
-        code: SubSystemCode,
+        code: StabSubSystemCode,
         keep_uuid=False,
     ):
         print("NOTICE. All uppercase letters will be forced into lowercase for storage")
@@ -423,7 +413,7 @@ class QECCodeBase:
 
     def _convert_codes_storage_format_to_subsystem_codes(
         self, qec_code_jsons: Dict
-    ) -> List[SubSystemCode]:
+    ) -> List[StabSubSystemCode]:
         """
 
         Args:
@@ -435,7 +425,9 @@ class QECCodeBase:
         qec_code_list = []
         for cur_code_json in qec_code_jsons.values():
             a_stabilizer = cur_code_json[self.STABILIZER][0].upper()
-            cur_code = SubSystemCode(GaugeGroup(PauliList(a_stabilizer)), parameters=cur_code_json)
+            cur_code = StabSubSystemCode(
+                GaugeGroup(PauliList(a_stabilizer)), parameters=cur_code_json
+            )
 
             qec_code_list.append(cur_code)
         return qec_code_list

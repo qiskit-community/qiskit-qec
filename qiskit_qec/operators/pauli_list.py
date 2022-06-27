@@ -156,9 +156,12 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         matrix = np.zeros((num_paulis, num_qubits << 1), dtype=bool)
         phase_exp = np.zeros(num_paulis, dtype=int)
 
-        for pauli_data, pauli in enumerate(paulis):
-            matrix[pauli_data] = pauli.matrix
-            phase_exp[pauli_data] = pauli._phase_exp
+        for index, pauli in enumerate(paulis):
+            matrix[index][: pauli.num_qubits] = pauli.matrix[0][: pauli.num_qubits]
+            matrix[index][num_qubits : num_qubits + pauli.num_qubits] = pauli.matrix[0][
+                pauli.num_qubits :
+            ]
+            phase_exp[index] = pauli._phase_exp
         return matrix, phase_exp
 
     # ---------------------------------------------------------------------
@@ -750,6 +753,12 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         Returns:
             PauliList: the concatenated list self + other.
         """
+
+        if self.num_qubits == 0:
+            return other.copy()
+        if other.num_qubits == 0:
+            return self.copy()
+
         if qargs is None:
             qargs = getattr(other, "qargs", None)
 

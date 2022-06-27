@@ -15,17 +15,14 @@
 # pylint: disable=invalid-name
 
 """Generates circuits for quantum error correction."""
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from qiskit import QuantumRegister, ClassicalRegister
 from qiskit import QuantumCircuit
 
 
 class RepetitionCodeCircuit:
-    """
-    Implementation of a distance d repetition code, implemented over
-    T syndrome measurement rounds.
-    """
+    """RepetitionCodeCircuit class."""
 
     def __init__(
         self,
@@ -38,6 +35,9 @@ class RepetitionCodeCircuit:
         """
         Creates the circuits corresponding to a logical 0 and 1 encoded
         using a repetition code.
+
+        Implementation of a distance d repetition code, implemented over
+        T syndrome measurement rounds.
 
         Args:
             d (int): Number of code qubits (and hence repetitions) used.
@@ -54,6 +54,7 @@ class RepetitionCodeCircuit:
             syndrome measurement round).
         """
 
+        self.n = d
         self.d = d
         self.T = 0
 
@@ -114,18 +115,17 @@ class RepetitionCodeCircuit:
         self.delay = delay
 
     def get_circuit_list(self) -> List[QuantumCircuit]:
-        """
-        Returns:
-            circuit_list: self.circuit as a list, with
-            circuit_list[0] = circuit['0']
-            circuit_list[1] = circuit['1']
+        """Returns circuit list.
+
+        circuit_list: self.circuit as a list, with
+        circuit_list[0] = circuit['0']
+        circuit_list[1] = circuit['1']
         """
         circuit_list = [self.circuit[log] for log in ["0", "1"]]
         return circuit_list
 
     def x(self, logs=("0", "1"), barrier=False):
-        """
-        Applies a logical x to the circuits for the given logical values.
+        """Applies a logical x to the circuits for the given logical values.
 
         Args:
             logs (list or tuple): List or tuple of logical values expressed as
@@ -142,8 +142,7 @@ class RepetitionCodeCircuit:
                 self.circuit[log].barrier()
 
     def _preparation(self, barrier=False):
-        """
-        Prepares logical bit states by applying an x to the circuit that will
+        """Prepares logical bit states by applying an x to the circuit that will
         encode a 1.
         """
 
@@ -156,8 +155,7 @@ class RepetitionCodeCircuit:
         self.x(["1"])
 
     def syndrome_measurement(self, final: bool = False, barrier: bool = False, delay: int = 0):
-        """
-        Application of a syndrome measurement round.
+        """Application of a syndrome measurement round.
 
         Args:
             final (bool): Whether to disregard the reset (if applicable) due to this
@@ -290,11 +288,22 @@ class RepetitionCodeCircuit:
                         if syn_type == 0:
                             elem_num = syn_round
                             syn_round = 0
-                        node = {
-                            "time": syn_round,
-                            "is_logical": syn_type == 0,
-                            "element": elem_num,
-                        }
+                        node = {"time": syn_round}
+                        is_boundary = syn_type == 0
+                        if is_boundary:
+                            i = [0, -1][elem_num]
+                            if self.basis == "z":
+                                qubits = [self.css_x_logical[i]]
+                            else:
+                                qubits = [self.css_z_logical[i]]
+                        else:
+                            if self.basis == "z":
+                                qubits = self.css_z_gauge_ops[elem_num]
+                            else:
+                                qubits = self.css_x_gauge_ops[elem_num]
+                        node["qubits"] = qubits
+                        node["is_boundary"] = is_boundary
+                        node["element"] = elem_num
                         nodes.append(node)
         return nodes
 
@@ -307,3 +316,30 @@ class RepetitionCodeCircuit:
             list: Raw values for logical operators that correspond to nodes.
         """
         return self._separate_string(self._process_string(string))[0]
+
+    def partition_outcomes(
+        self, round_schedule: str, outcome: List[int]
+    ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
+        """Extract measurement outcomes."""
+        # split into gauge and final outcomes
+        outcome = "".join([str(c) for c in outcome])
+        outcome = outcome.split(" ")
+        gs = outcome[0:-1]
+        gauge_outcomes = [[int(c) for c in r] for r in gs]
+        finals = outcome[-1]
+        # if circuit did not use resets, construct standard output
+        if not self.resets:
+            for i, layer in enumerate(gauge_outcomes):
+                for j, gauge_op in enumerate(layer):
+                    if i > 0:
+                        gauge_outcomes[i][j] = (gauge_op + gauge_outcomes[i - 1][j]) % 2
+        # assign outcomes to the correct gauge ops
+        if round_schedule == "z":
+            x_gauge_outcomes = []
+            z_gauge_outcomes = gauge_outcomes
+        else:
+            x_gauge_outcomes = gauge_outcomes
+            z_gauge_outcomes = []
+        final_outcomes = [int(c) for c in finals]
+
+        return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
