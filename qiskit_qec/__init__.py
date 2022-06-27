@@ -16,7 +16,6 @@ from . import (
     codes,
     decoders,
     exceptions,
-    factory,
     geometry,
     info,
     linear,
