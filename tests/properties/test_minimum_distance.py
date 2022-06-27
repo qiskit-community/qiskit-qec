@@ -30,6 +30,8 @@ class TestMinimumDistance(unittest.TestCase):
         self.assertEqual(d, 3)
         d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
         self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=True)
+        self.assertEqual(d, 3)
 
     def test_minimum_distance_2(self):
         """Test four qubit code."""
@@ -41,6 +43,8 @@ class TestMinimumDistance(unittest.TestCase):
         self.assertEqual(d, 2)
         d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
         self.assertEqual(d, 2)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=True)
+        self.assertEqual(d, 2)
 
     def test_minimum_distance_3(self):
         """Test five qubit code."""
@@ -51,6 +55,8 @@ class TestMinimumDistance(unittest.TestCase):
         d = minimum_distance(stabilizer, method="partition", try_compiled=False)
         self.assertEqual(d, 3)
         d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 3)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=True)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_4(self):
@@ -71,6 +77,8 @@ class TestMinimumDistance(unittest.TestCase):
         d = minimum_distance(stabilizer, method="partition", try_compiled=False)
         self.assertEqual(d, 4)
         d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=True)
         self.assertEqual(d, 4)
 
 
@@ -94,6 +102,8 @@ class TestMinimumDistance(unittest.TestCase):
         d = minimum_distance(stabilizer, method="partition", try_compiled=False)
         self.assertEqual(d, 4)
         d = minimum_distance(stabilizer, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 4)
+        d = minimum_distance(stabilizer, method="partition", try_compiled=True)
         self.assertEqual(d, 4)
 
 
@@ -120,6 +130,8 @@ class TestMinimumDistance(unittest.TestCase):
         d = minimum_distance(gauge, method="partition", try_compiled=False)
         self.assertEqual(d, 3)
         d = minimum_distance(gauge, method="enumerate", try_compiled=True)
+        self.assertEqual(d, 3)
+        d = minimum_distance(gauge, method="partition", try_compiled=True)
         self.assertEqual(d, 3)
 
 
@@ -148,6 +160,32 @@ class TestMinimumDistance(unittest.TestCase):
         self.assertEqual(d, 2)
         d = minimum_distance(gauge, method="enumerate", try_compiled=True)
         self.assertEqual(d, 2)
+        d = minimum_distance(gauge, method="partition", try_compiled=True)
+        self.assertEqual(d, 2)
+
+    def test_minimum_distance_large(self):
+        """Test a code with relatively large distance from codetables.de."""
+        paulis = [
+            "yzizzzizizizzzizy",
+            "ixzziizzzzzziizzx",
+            "zzxiiziiziziiziix",
+            "zizyzzzziiiizzzzy",
+            "iiiixizizzizzizix",
+            "zzizzyiiiizziiiiy",
+            "iizziiyziziiizizy",
+            "iziiizixzzzzzzzzx",
+            "zzzzzzzzxiziiizix",
+            "ziziiizizyiizziiy",
+            "iiiizziiiiyzzizzy",
+            "izizzizzizixiiiix",
+            "zzzziiiizzzzyzizy",
+            "iiziiziziiziixzzx",
+            "zziizzzzzziizzxix",
+            "zizzzizizizzzizyy"
+        ]
+        gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
+        d = minimum_distance(gauge, method="partition", try_compiled=True)
+        self.assertEqual(d, 7)
 
 
 if __name__ == "__main__":

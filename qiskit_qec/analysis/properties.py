@@ -188,6 +188,39 @@ def _minimum_distance_1_python(
     return distance
 
 
+def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_weight) -> int:
+    """Minimum distance of (subsystem) stabilizer code.
+
+    stabilizer is a symplectic matrix generating the stabilizer group.
+    gauge is a symplectic matrix generating the gauge group, if any.
+
+    Second method based on parititioning errors, using compiled implementation.
+
+    Returns the minimum distance of the code, or 0 if greater than max_weight.
+    """
+    from qiskit_qec.extensions import compiledextension
+    if symplectic.is_stabilizer_group(gauge):
+        _, xl, zl = symplectic.normalizer(stabilizer.astype(bool))
+    else:
+        center, x, z = symplectic.symplectic_gram_schmidt(gauge)
+        _, xp, zp = symplectic.normalizer(center, x, z)
+        x_rows = x.view([('',x.dtype)] * x.shape[1])
+        xp_rows = xp.view([('',xp.dtype)] * xp.shape[1])
+        xl = np.setdiff1d(xp_rows, x_rows).view(xp.dtype).reshape(-1, xp.shape[1])
+        z_rows = z.view([('',z.dtype)] * z.shape[1])
+        zp_rows = zp.view([('',zp.dtype)] * zp.shape[1])
+        zl = np.setdiff1d(zp_rows, z_rows).view(zp.dtype).reshape(-1, zp.shape[1])
+    
+    inputform1 = stabilizer.astype(np.int32).tolist()
+    inputform1p = gauge.astype(np.int32).tolist()
+    inputform2 = xl.astype(np.int32).tolist()
+    inputform3 = zl.astype(np.int32).tolist()
+    if xl.shape[0] == 0:  # k = 0, fall back to first method
+        return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
+    else:
+        return compiledextension.minimum_distance_by_tests(inputform1, inputform2, inputform3, max_weight)
+
+
 def minimum_distance(stabilizer_or_gauge: np.ndarray, max_weight: int = 10, method: str = "enumerate", try_compiled: bool = True) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
@@ -216,7 +249,7 @@ def minimum_distance(stabilizer_or_gauge: np.ndarray, max_weight: int = 10, meth
         if method == METHOD_ENUMERATE:
             distance = compiledextension.minimum_distance(inputform1, inputform2, max_weight)
         elif method == METHOD_PARTITION:
-            raise QiskitQECError("not implemented")  # TODO: implement
+            distance = _minimum_distance_2_compiled(stabilizer, gauge, max_weight)
     else:
         if method == METHOD_ENUMERATE:
             distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
