@@ -19,6 +19,8 @@ from qiskit_qec.geometry.two_manifold import TwoManifold
 
 class Plane(TwoManifold):
     """`Plane` inherits from `TwoManifold`"""
+    def __init__(self):
+        super().__init__()
 
     def ison(self, point):
         """Check that point is on the plane"""
