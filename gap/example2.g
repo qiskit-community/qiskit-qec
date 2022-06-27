@@ -1,10 +1,10 @@
 #
-# Example: 4-qubit code
+# Example: 5-qubit code
 #
 Read("aut.g");
 
-genmat := StringsToGF4(["xxxx", "zzzz"]);
-nq := 4;
+genmat := StringsToGF4(["xzzxi", "ixzzx", "xixzz", "zxixz"]);
+nq := 5;
 
 t1 := NanosecondsSinceEpoch();
 A := GF4AdditiveAutGroup(genmat);
