@@ -50,7 +50,7 @@ class DecodingGraph:
 
         S = rx.PyGraph(multigraph=False)
 
-        if 'code' in dir(self):
+        if "code" in dir(self):
             qc = self.code.circuit["0"]
             fe = FaultEnumerator(qc, method="stabilizer")
             blocks = list(fe.generate_blocks())

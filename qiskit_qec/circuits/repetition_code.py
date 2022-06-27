@@ -31,7 +31,7 @@ class RepetitionCodeCircuit:
         xbasis: bool = False,
         resets: bool = False,
         delay: Optional[int] = None,
-        barriers: bool = False
+        barriers: bool = False,
     ):
         """
         Creates the circuits corresponding to a logical 0 and 1 encoded
@@ -138,7 +138,7 @@ class RepetitionCodeCircuit:
         """
         barrier = barrier or self._barriers
         for log in logs:
-            if barrier and (log=='1' or self._xbasis):
+            if barrier and (log == "1" or self._xbasis):
                 self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].z(self.code_qubit)
@@ -193,24 +193,21 @@ class RepetitionCodeCircuit:
             if barrier:
                 self.circuit[log].barrier()
             for j in range(self.d - 1):
-                self.circuit[log].measure(
-                    self.link_qubit[j], self.link_bits[self.T][j])
+                self.circuit[log].measure(self.link_qubit[j], self.link_bits[self.T][j])
 
             # resets
             if self._resets and not final:
                 if barrier:
                     self.circuit[log].barrier()
-                for j in range(self.d - 1): 
-                        self.circuit[log].reset(self.link_qubit[j])
+                for j in range(self.d - 1):
+                    self.circuit[log].reset(self.link_qubit[j])
 
             # delay
             if delay > 0 and not final:
                 if barrier:
                     self.circuit[log].barrier()
-                for j in range(self.d - 1): 
-                        self.circuit[log].delay(delay, self.link_qubit[j])
-
-
+                for j in range(self.d - 1):
+                    self.circuit[log].delay(delay, self.link_qubit[j])
 
         self.T += 1
 
