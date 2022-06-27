@@ -1902,7 +1902,7 @@ def _encode_of_phase_str(phase_str: str) -> np.ndarray:
         for encoding in PHASE_ENCODINGS:
             if _is_pattern(p_str, pattern=PHASE_PATTERN[encoding]):
                 return encoding
-        raise QiskitError("Unknown phase encoding")
+        raise QiskitError(f"Unknown phase encoding: {encoding}")
 
     return np.array([_find_encode(item) for item in phase_str])
 
