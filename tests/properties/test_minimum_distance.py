@@ -81,7 +81,6 @@ class TestMinimumDistance(unittest.TestCase):
         d = minimum_distance(stabilizer, method="partition", try_compiled=True)
         self.assertEqual(d, 4)
 
-
     def test_minimum_distance_4_overcomplete(self):
         """Test [[10,2,4]] code from codetables.de, overcomplete version."""
         paulis = [
@@ -105,7 +104,6 @@ class TestMinimumDistance(unittest.TestCase):
         self.assertEqual(d, 4)
         d = minimum_distance(stabilizer, method="partition", try_compiled=True)
         self.assertEqual(d, 4)
-
 
     def test_minimum_distance_subsystem(self):
         """Test [[9,1,4,3]] Bacon-Shor code."""
@@ -133,7 +131,6 @@ class TestMinimumDistance(unittest.TestCase):
         self.assertEqual(d, 3)
         d = minimum_distance(gauge, method="partition", try_compiled=True)
         self.assertEqual(d, 3)
-
 
     def test_minimum_distance_subsystem_2(self):
         """Test [[9,0,4,2]] Bacon-Shor code state."""
@@ -181,7 +178,7 @@ class TestMinimumDistance(unittest.TestCase):
             "zzzziiiizzzzyzizy",
             "iiziiziziiziixzzx",
             "zziizzzzzziizzxix",
-            "zizzzizizizzzizyy"
+            "zizzzizizizzzizyy",
         ]
         gauge = np.asarray(list(map(strarray, paulis)), dtype=bool)
         d = minimum_distance(gauge, method="partition", try_compiled=True)

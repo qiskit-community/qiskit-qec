@@ -108,23 +108,23 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_we
     else:
         center, x, z = symplectic.symplectic_gram_schmidt(gauge)
         _, xp, zp = symplectic.normalizer(center, x, z)
-        x_rows = x.view([('',x.dtype)] * x.shape[1])
-        xp_rows = xp.view([('',xp.dtype)] * xp.shape[1])
+        x_rows = x.view([("", x.dtype)] * x.shape[1])
+        xp_rows = xp.view([("", xp.dtype)] * xp.shape[1])
         xl = np.setdiff1d(xp_rows, x_rows).view(xp.dtype).reshape(-1, xp.shape[1])
-        z_rows = z.view([('',z.dtype)] * z.shape[1])
-        zp_rows = zp.view([('',zp.dtype)] * zp.shape[1])
+        z_rows = z.view([("", z.dtype)] * z.shape[1])
+        zp_rows = zp.view([("", zp.dtype)] * zp.shape[1])
         zl = np.setdiff1d(zp_rows, z_rows).view(zp.dtype).reshape(-1, zp.shape[1])
     if xl.shape[0] == 0:  # k = 0, fall back to first method
         return _minimum_distance_1_python(stabilizer, gauge, max_weight)
     weight = max_weight + 1
     for row in range(xl.shape[0]):
-        for w in range(1, max_weight+1):
+        for w in range(1, max_weight + 1):
             if _distance_test(stabilizer.astype(int), xl[row].astype(int), w):
                 if w < weight:
                     weight = w
                 break
     for row in range(zl.shape[0]):
-        for w in range(1, max_weight+1):
+        for w in range(1, max_weight + 1):
             if _distance_test(stabilizer.astype(int), zl[row].astype(int), w):
                 if w < weight:
                     weight = w
@@ -166,9 +166,7 @@ def _minimum_distance_1_python_core(
     return 0
 
 
-def _minimum_distance_1_python(
-    stabilizer: np.ndarray, gauge: np.ndarray, max_weight
-) -> int:
+def _minimum_distance_1_python(stabilizer: np.ndarray, gauge: np.ndarray, max_weight) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
     stabilizer is a symplectic matrix generating the stabilizer group.
@@ -184,7 +182,9 @@ def _minimum_distance_1_python(
     n_minus_k = (n_minus_k_minus_r + n_minus_k_plus_r) / 2
     k = n - n_minus_k
     pauli = ["x", "y", "z"]
-    distance = _minimum_distance_1_python_core(n, n_minus_k_plus_r, k, pauli, max_weight, stabilizer, gauge)
+    distance = _minimum_distance_1_python_core(
+        n, n_minus_k_plus_r, k, pauli, max_weight, stabilizer, gauge
+    )
     return distance
 
 
@@ -199,18 +199,19 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
     from qiskit_qec.extensions import compiledextension
+
     if symplectic.is_stabilizer_group(gauge):
         _, xl, zl = symplectic.normalizer(stabilizer.astype(bool))
     else:
         center, x, z = symplectic.symplectic_gram_schmidt(gauge)
         _, xp, zp = symplectic.normalizer(center, x, z)
-        x_rows = x.view([('',x.dtype)] * x.shape[1])
-        xp_rows = xp.view([('',xp.dtype)] * xp.shape[1])
+        x_rows = x.view([("", x.dtype)] * x.shape[1])
+        xp_rows = xp.view([("", xp.dtype)] * xp.shape[1])
         xl = np.setdiff1d(xp_rows, x_rows).view(xp.dtype).reshape(-1, xp.shape[1])
-        z_rows = z.view([('',z.dtype)] * z.shape[1])
-        zp_rows = zp.view([('',zp.dtype)] * zp.shape[1])
+        z_rows = z.view([("", z.dtype)] * z.shape[1])
+        zp_rows = zp.view([("", zp.dtype)] * zp.shape[1])
         zl = np.setdiff1d(zp_rows, z_rows).view(zp.dtype).reshape(-1, zp.shape[1])
-    
+
     inputform1 = stabilizer.astype(np.int32).tolist()
     inputform1p = gauge.astype(np.int32).tolist()
     inputform2 = xl.astype(np.int32).tolist()
@@ -218,10 +219,17 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     if xl.shape[0] == 0:  # k = 0, fall back to first method
         return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
     else:
-        return compiledextension.minimum_distance_by_tests(inputform1, inputform2, inputform3, max_weight)
+        return compiledextension.minimum_distance_by_tests(
+            inputform1, inputform2, inputform3, max_weight
+        )
 
 
-def minimum_distance(stabilizer_or_gauge: np.ndarray, max_weight: int = 10, method: str = "enumerate", try_compiled: bool = True) -> int:
+def minimum_distance(
+    stabilizer_or_gauge: np.ndarray,
+    max_weight: int = 10,
+    method: str = "enumerate",
+    try_compiled: bool = True,
+) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
     stabilizer_or_gauge is a symplectic matrix generating
@@ -244,6 +252,7 @@ def minimum_distance(stabilizer_or_gauge: np.ndarray, max_weight: int = 10, meth
         gauge = stabilizer_or_gauge
     if try_compiled and attempt_import("qiskit_qec.extensions.compiledextension"):
         from qiskit_qec.extensions import compiledextension
+
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
         if method == METHOD_ENUMERATE:
