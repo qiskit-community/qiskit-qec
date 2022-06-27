@@ -25,7 +25,7 @@ def attempt_import(module_name: str):
         return True
 
 
-def _distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
+def _distance_test(stab: np.ndarray, logicOp: np.ndarray, weight: int) -> bool:
     """Tests if a low weight logical Pauli operator exists.
 
     Tests whether there exists a Pauli operator with Hamming weight <= wt
@@ -41,56 +41,56 @@ def _distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
     n = int(stab.shape[1] / 2)
     m = stab.shape[0]
     pow2 = np.array([2**i for i in range(m + 1)], dtype=int)
-    if (wt % 2) == 0:
-        w1 = int(wt / 2)
-        w2 = int(wt / 2)
+    if (weight % 2) == 0:
+        w1 = int(weight / 2)
+        w2 = int(weight / 2)
     else:
-        w1 = int((wt + 1) / 2)
-        w2 = int((wt - 1) / 2)
-    assert (w1 + w2) == wt
+        w1 = int((weight + 1) / 2)
+        w2 = int((weight - 1) / 2)
+    assert (w1 + w2) == weight
 
     # Compute syndromes of all single-qubit errors
     single_qubit_synd = []
     for q in range(n):
         # single-qubit X error
-        syndX = np.append(stab[:, n + q], logicOp[n + q])
-        single_qubit_synd.append(np.dot(pow2, syndX))
+        syndx = np.append(stab[:, n + q], logicOp[n + q])
+        single_qubit_synd.append(np.dot(pow2, syndx))
         # single-qubit Z error
-        syndZ = np.append(stab[:, q], logicOp[q])
-        single_qubit_synd.append(np.dot(pow2, syndZ))
+        syndz = np.append(stab[:, q], logicOp[q])
+        single_qubit_synd.append(np.dot(pow2, syndz))
         # single-qubit Y error
-        single_qubit_synd.append(np.dot(pow2, syndX) ^ np.dot(pow2, syndZ))
+        single_qubit_synd.append(np.dot(pow2, syndx) ^ np.dot(pow2, syndz))
 
     # examine all errors with the weight w1
     mask1 = 2**m
-    T1c = []
-    T1a = []
+    t1c = []
+    t1a = []
     if w1 > 0:
         for err in combinations(single_qubit_synd, w1):
             synd = functools.reduce(lambda i, j: int(i) ^ int(j), err)
             if synd & mask1:
-                T1a.append(synd ^ mask1)
+                t1a.append(synd ^ mask1)
             else:
-                T1c.append(synd)
-    T1c = set(T1c)
-    T1a = set(T1a)
+                t1c.append(synd)
+    t1c = set(t1c)
+    t1a = set(t1a)
 
     if w1 != w2:
         # examine all errors with the weight w2
-        T2c = []
-        T2a = []
+        t2c = []
+        t2a = []
         if w2 > 0:
             for err in combinations(single_qubit_synd, w2):
                 synd = functools.reduce(lambda i, j: int(i) ^ int(j), err)
                 if synd & mask1:
-                    T2a.append(synd ^ mask1)
+                    t2a.append(synd ^ mask1)
                 else:
-                    T2c.append(synd)
+                    t2c.append(synd)
     else:
-        T2c = T1c
-        T2a = T1a
+        t2c = t1c
+        t2a = t1a
 
-    return any(elem in T1c for elem in T2a) or any(elem in T1a for elem in T2c)
+    return any(elem in t1c for elem in t2a) or any(elem in t1a for elem in t2c)
 
 
 def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_weight) -> int:
@@ -217,13 +217,13 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     inputform2 = xl.astype(np.int32).tolist()
     inputform3 = zl.astype(np.int32).tolist()
     if xl.shape[0] == 0:  # k = 0, fall back to first method
-        # pylint: disable=c-extension-no-member
-        return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
+        return compiledextension.minimum_distance(
+            inputform1, inputform1p, max_weight
+        )  # pylint: disable=c-extension-no-member
     else:
-        # pylint: disable=c-extension-no-member
         return compiledextension.minimum_distance_by_tests(
             inputform1, inputform2, inputform3, max_weight
-        )
+        )  # pylint: disable=c-extension-no-member
 
 
 def minimum_distance(
