@@ -1,13 +1,12 @@
-##################
+#############
 QEC Tutorials
-##################
+#############
 
 
-.. toctree::
-   :maxdepth: 1
+.. nbgallery::
+   :glob:
 
-   example.rst
-
+   *
 
 .. Hiding - Indices and tables
    :ref:`genindex`

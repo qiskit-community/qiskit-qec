@@ -16,29 +16,20 @@
 
 ##### For Users
 
-1.  [About the Project](./docs/project_overview.md)
-2.  [Beginner's Guide](./docs/beginners_guide.md)
-3.  [Installation](#installation)
-4.  [Tutorials](./docs/tutorials)
-5.  [How-Tos](./docs/how_tos)
-6.  [How to Give Feedback](#how-to-give-feedback)
-7.  [Contribution Guidelines](#contribution-guidelines)
-8. [References and Acknowledgements](#references-and-acknowledgements)
+1. [About the Project](./docs/project_overview.md)
+2. [Beginner's Guide](./docs/beginners_guide.md)
+3. [Installation](./docs/installation.md)
+4. [Tutorials](./docs/tutorials)
+5. [How-Tos](./docs/how_tos)
+6. [How to Give Feedback](#how-to-give-feedback)
+7. [Contribution Guidelines](#contribution-guidelines)
+8. [Acknowledgements](#acknowledgements)
 9. [License](#license)
 
 ##### For Developers/Contributors
 
 1. [Contribution Guide](CONTRIBUTING.md)
 2. [Technical Docs](docs/apidocs)
-
-
-----------------------------------------------------------------------------------------------------
-
-### Installation
-
-```shell
-pip install qiskit_qec
-```
 
 ----------------------------------------------------------------------------------------------------
 
@@ -56,10 +47,6 @@ For information on how to contribute to this project, please take a look at our 
 
 
 ----------------------------------------------------------------------------------------------------
-
-## References
-[1] Diátaxis Technical Documentation Framework \
-    https://diataxis.fr/
 
 ## Acknowledgements
 

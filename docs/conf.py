@@ -69,6 +69,6 @@ nbsphinx_timeout = 180
 # TODO: swap this with always if tutorial execution is too slow for ci and needs
 # a separate job
 # nbsphinx_execute = os.getenv('QISKIT_DOCS_BUILD_TUTORIALS', 'never')
-nbsphinx_execute = "always"
+nbsphinx_execute = "never"
 nbsphinx_widgets_path = ""
 exclude_patterns = ["_build", "**.ipynb_checkpoints"]

@@ -1,15 +1,11 @@
-.. _qiskit-dynamics-userguide:
+========================
+Qiskit QEC How-to guides
+========================
 
-.. module:: qiskit_dynamics_userguide
+.. nbgallery::
+   :glob:
 
-==========================
-Qiskit Dynamics User Guide
-==========================
-
-.. toctree::
-   :maxdepth: 2
-
-   how_to_example.rst
+   *
 
 
 .. Hiding - Indices and tables
