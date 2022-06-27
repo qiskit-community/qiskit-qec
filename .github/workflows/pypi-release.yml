@@ -13,9 +13,7 @@
 name: Release to PyPi
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
 
 jobs:
   publish_to_pypi:
