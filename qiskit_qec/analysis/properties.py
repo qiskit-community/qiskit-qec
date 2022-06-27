@@ -7,7 +7,7 @@ import numpy as np
 
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.linear.matrix import rank
-import qiskit_qec.linear.symplectic as symplectic
+from qiskit_qec.linear import symplectic
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def _distance_test(stab: np.ndarray, logicOp: np.ndarray, wt: int) -> bool:
     T1c = set(T1c)
     T1a = set(T1a)
 
-    if not (w1 == w2):
+    if w1 != w2:
         # examine all errors with the weight w2
         T2c = []
         T2a = []
@@ -217,8 +217,10 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     inputform2 = xl.astype(np.int32).tolist()
     inputform3 = zl.astype(np.int32).tolist()
     if xl.shape[0] == 0:  # k = 0, fall back to first method
+        # pylint: disable=c-extension-no-member
         return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
     else:
+        # pylint: disable=c-extension-no-member
         return compiledextension.minimum_distance_by_tests(
             inputform1, inputform2, inputform3, max_weight
         )
@@ -239,10 +241,10 @@ def minimum_distance(
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
-    METHOD_ENUMERATE: str = "enumerate"
-    METHOD_PARTITION: str = "partition"
-    AVAILABLE_METHODS = {METHOD_ENUMERATE, METHOD_PARTITION}
-    if method not in AVAILABLE_METHODS:
+    method_enumerate: str = "enumerate"
+    method_partition: str = "partition"
+    available_methods = {method_enumerate, method_partition}
+    if method not in available_methods:
         raise QiskitQECError("fmethod {method} is not supported.")
     if symplectic.is_stabilizer_group(stabilizer_or_gauge):
         stabilizer = stabilizer_or_gauge
@@ -255,13 +257,14 @@ def minimum_distance(
 
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
-        if method == METHOD_ENUMERATE:
+        if method == method_enumerate:
+            # pylint: disable=c-extension-no-member
             distance = compiledextension.minimum_distance(inputform1, inputform2, max_weight)
-        elif method == METHOD_PARTITION:
+        elif method == method_partition:
             distance = _minimum_distance_2_compiled(stabilizer, gauge, max_weight)
     else:
-        if method == METHOD_ENUMERATE:
+        if method == method_enumerate:
             distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
-        elif method == METHOD_PARTITION:
+        elif method == method_partition:
             distance = _minimum_distance_2_python(stabilizer, gauge, max_weight)
     return distance
