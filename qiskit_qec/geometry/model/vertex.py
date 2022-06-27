@@ -30,7 +30,7 @@ class Vertex(ShapeObject):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __str__(self)->str:
+    def __str__(self) -> str:
         return self.pos.__str__()
 
     def set_position(self, pos: List[Union[float, int]]):

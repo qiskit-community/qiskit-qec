@@ -24,16 +24,18 @@ from qiskit_qec.geometry.plane import Plane
 from qiskit_qec.geometry.tiles.tile import Tile
 from qiskit_qec.geometry.lattice import Lattice
 
+
 class TileCodeConfig:
     """Tile Code Config Class for regalar tiling codes"""
-    def __init__(self, name:Optional[str]=None, manifold:Optional[Manifold]=Plane()):
+
+    def __init__(self, name: Optional[str] = None, manifold: Optional[Manifold] = Plane()):
         """Initializes the TileCodeConfig class
 
         Args:
             name optional): Name for TileCode. Defaults to None.
             manifold (optional): Manifold that tile code will live on. Defaults to Plane().
         """
-        self.name = name                    # Name 
+        self.name = name  # Name
         self.manifold = manifold
         self.cutter = None
         self.tile = None
@@ -52,11 +54,11 @@ class TileCodeConfig:
         self.tiling_view = None
         self.cutter_color = None
 
-
-    def set_cutter(self,
-                   points:Optional[List]=None,
-                   cutter:Optional[Shape]=None,
-                   )->None:
+    def set_cutter(
+        self,
+        points: Optional[List] = None,
+        cutter: Optional[Shape] = None,
+    ) -> None:
         """Sets the cutter for the tiling
 
         Args:
@@ -68,8 +70,7 @@ class TileCodeConfig:
         if cutter is not None:
             self.cutter = cutter
 
-
-    def set_tile(self, tile:Tile)->None:
+    def set_tile(self, tile: Tile) -> None:
         """Set the Tile for the tile code
 
         Args:
@@ -77,10 +78,12 @@ class TileCodeConfig:
         """
         self.tile = tile
 
-    def set_boundary_strategy(self,
-                              boundary_strategy:Optional[str]="combine",
-                              on_boundary:Optional[bool]=True,
-                              levels:Optional[List]=None)->None:
+    def set_boundary_strategy(
+        self,
+        boundary_strategy: Optional[str] = "combine",
+        on_boundary: Optional[bool] = True,
+        levels: Optional[List] = None,
+    ) -> None:
         """Sets how the boundary for the cutter behaves on stabilizers
 
         Args:
@@ -93,24 +96,25 @@ class TileCodeConfig:
         self.boundary_strategy = boundary_strategy
         self.on_boundary = on_boundary
         if levels is None:
-            levels = [2,3,4]
+            levels = [2, 3, 4]
         self.levels = levels
 
-    def set_cutter_process(self,
-                           expand_value:Union[List,np.ndarray]=None)->None:
-        """Sets how the cutter is 
+    def set_cutter_process(self, expand_value: Union[List, np.ndarray] = None) -> None:
+        """Sets how the cutter is
 
         Args:
             expand_value (pptional): Sets how the cutter is expanded. Defaults to [1,1]
         """
         if expand_value is None:
-            expand_value = [1,1]
+            expand_value = [1, 1]
         self.expand_value = np.array(expand_value)
-    
-    def set_post_process(self,
-                         rotate:Optional[int]=0,
-                         scale:Optional[float]=1,
-                         integer_snap:Optional[bool]=False)->None:
+
+    def set_post_process(
+        self,
+        rotate: Optional[int] = 0,
+        scale: Optional[float] = 1,
+        integer_snap: Optional[bool] = False,
+    ) -> None:
         """Sets how to post process the code
 
         Args:
@@ -123,7 +127,9 @@ class TileCodeConfig:
         self.scale = scale
         self.integer_snap = integer_snap
 
-    def set_lattice(self, *, lattice:Optional[Lattice]=None, basis:Optional[List[List]]=None)->None:
+    def set_lattice(
+        self, *, lattice: Optional[Lattice] = None, basis: Optional[List[List]] = None
+    ) -> None:
         """Set the lattice for the tile code
 
         Args:
@@ -137,13 +143,14 @@ class TileCodeConfig:
             lattice = Lattice(u_vec, v_vec)
         self.lattice = lattice
 
-    def set_view_options(self,
-                         lattice_view:Optional[bool]=False,
-                         precut_tiling_view:Optional[bool]=False,
-                         final_view:Optional[bool]=False,
-                         show_qubit_indices:Optional[bool]=False,
-                         tiling_view:Optional[bool]=False
-                         )->None:
+    def set_view_options(
+        self,
+        lattice_view: Optional[bool] = False,
+        precut_tiling_view: Optional[bool] = False,
+        final_view: Optional[bool] = False,
+        show_qubit_indices: Optional[bool] = False,
+        tiling_view: Optional[bool] = False,
+    ) -> None:
         """Sets the viewing options for debugging and viewing final code graphically
 
         Args:
@@ -162,7 +169,5 @@ class TileCodeConfig:
         self.show_qubit_indices = show_qubit_indices
         self.tiling_view = tiling_view
 
-    def set_colors(self,
-                   cutter_color:Optional[str]=None)->None:
+    def set_colors(self, cutter_color: Optional[str] = None) -> None:
         self.cutter_color = cutter_color
-

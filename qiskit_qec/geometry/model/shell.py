@@ -72,14 +72,15 @@ class Shell(ShapeObject):
         """Delete subcomponents of self"""
         pass
 
-    def extract(self,
-                is_inside:Dict[Vertex,bool],
-                qubit_data:QubitData,
-                qubit_count:QubitCount,
-                levels:Optional[List[int]]=None,
-                exclude:Optional[Callable]=None,
-                boundary_strategy:str="combine"
-                )->Tuple["Shell", QubitData, QubitCount]:
+    def extract(
+        self,
+        is_inside: Dict[Vertex, bool],
+        qubit_data: QubitData,
+        qubit_count: QubitCount,
+        levels: Optional[List[int]] = None,
+        exclude: Optional[Callable] = None,
+        boundary_strategy: str = "combine",
+    ) -> Tuple["Shell", QubitData, QubitCount]:
         """Extracts the subshell defined by in_vertices and is_inside
 
         Args:
@@ -93,15 +94,17 @@ class Shell(ShapeObject):
             Tuple[Shell, QubitData, QubitCount]: _description_
         """
         _DEBUG = False
+
         def dprint(string):
             if _DEBUG:
                 print(string)
 
         if exclude is None:
-            def exclude(vertex_paths:List[List[Vertex]], qubit_data:QubitData)->bool:
+
+            def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -> bool:
                 return False
 
-        def _other_vertex(parent:Edge, try_avoid:Vertex)->Vertex:
+        def _other_vertex(parent: Edge, try_avoid: Vertex) -> Vertex:
             next_vertex = parent.vertices[0]
             if next_vertex == try_avoid:
                 try:
@@ -114,14 +117,13 @@ class Shell(ShapeObject):
         new_qubit_data = QubitData()
 
         if levels is None:
-            levels = [2,3,4]
+            levels = [2, 3, 4]
 
-        if not isinstance(levels,list):
+        if not isinstance(levels, list):
             raise QiskitError(f"levels must be None of a list on integers: {levels}")
 
-
-        def _find_restricted_path(s_vertex:Vertex)->List[Vertex]:
-            vertex_path =[s_vertex]
+        def _find_restricted_path(s_vertex: Vertex) -> List[Vertex]:
+            vertex_path = [s_vertex]
             edges_of_s_vertex = s_vertex.parents
             if len(edges_of_s_vertex) == 1:
                 if len(edges_of_s_vertex[0].vertices) == 1:
@@ -137,16 +139,16 @@ class Shell(ShapeObject):
                 if n_vertex == v_start:
                     # Path is a cycle returing to start
                     return vertex_path
-                
+
                 edges_of_n_vertex = n_vertex.parents
                 if len(edges_of_n_vertex) == 1:
                     # End of path reached (not a loop)
                     return vertex_path
-                
+
                 e_nr = edges_of_n_vertex[0]
                 if e_nr == e_sn:
                     e_nr = edges_of_n_vertex[1]
-                
+
                 r_vertex = _other_vertex(e_nr, try_avoid=n_vertex)
 
                 if r_vertex == n_vertex:
@@ -159,21 +161,21 @@ class Shell(ShapeObject):
                 n_vertex = r_vertex
                 e_sn = e_nr
 
-        def _weight_len(path:List)->int:
+        def _weight_len(path: List) -> int:
             length = len(path)
             if path[0] == path[-1] and length > 1:
-                return length -1
+                return length - 1
             return length
 
         face_list = []
- 
+
         for face in self.faces:
             edges = []
             vertex_paths = []
             rd_vertices = {item for item in face.vertices if is_inside[item]}
 
             dprint(f"\n\nrd_vertices start = {rd_vertices} for face: {face.id} : {face.vertices}")
-            while len(rd_vertices)>0:
+            while len(rd_vertices) > 0:
                 s_vertex = rd_vertices.pop()
                 path = _find_restricted_path(s_vertex)
                 dprint(f"Found path={path}")
@@ -183,7 +185,7 @@ class Shell(ShapeObject):
 
             dprint(f"Final Vertex paths for face={face.id}:\n{vertex_paths}")
             # Process the set of vertex paths to create edges
-            if boundary_strategy=="combine":
+            if boundary_strategy == "combine":
                 weights = [_weight_len(path) for path in vertex_paths]
                 weight = sum(weights)
                 dprint(f"Weight={weight}")
@@ -214,13 +216,15 @@ class Shell(ShapeObject):
                         # Copy over the qubit data for the vertices
                         for new_vertex, old_vertex in zip(new_path, short_path):
                             # Set the qubit for new vertex to the same qubit as old vertex
-                            new_qubit_data.qubit[new_vertex.id]=qubit_data.qubit[old_vertex.id]
+                            new_qubit_data.qubit[new_vertex.id] = qubit_data.qubit[old_vertex.id]
 
                             # Record the use of the qubit
                             qubit_count.increment_qubit(new_qubit_data.qubit[new_vertex.id])
 
                             # Set the vertex operator
-                            new_qubit_data.operator[new_vertex.id] = qubit_data.operator[old_vertex.id]
+                            new_qubit_data.operator[new_vertex.id] = qubit_data.operator[
+                                old_vertex.id
+                            ]
 
                         # Create the new edges
                         if len(path) == 1:
@@ -230,16 +234,18 @@ class Shell(ShapeObject):
                         else:
                             dprint("Path is length > 1")
                             for index, vertex in enumerate(new_path[:-1]):
-                                edges.append(Edge([vertex, new_path[index+1]]))
+                                edges.append(Edge([vertex, new_path[index + 1]]))
                             if len(path) == len(short_path) + 1:
-                                dprint("Have a loop with len(path) == len(short_path) + 1: - adding extra edge")
+                                dprint(
+                                    "Have a loop with len(path) == len(short_path) + 1: - adding extra edge"
+                                )
                                 if len(short_path) > 2:
                                     # Loop
                                     edges.append(Edge([new_path[-1], new_path[0]]))
 
             else:
                 raise QiskitError(f"Unknown boundary strategy {boundary_strategy}")
-            
+
             # Create the wireframe and face
             if len(edges) > 0:
                 dprint("Create Wireframe and face with edges:")
@@ -260,10 +266,10 @@ class Shell(ShapeObject):
 
                 # Set face data (Keep orientation even if face is strict subface)
                 try:
-                    new_qubit_data.orientation[new_face.id]=qubit_data.orientation[face.id]
+                    new_qubit_data.orientation[new_face.id] = qubit_data.orientation[face.id]
                 except AttributeError:
                     pass
-                        
+
         # Create the new shell
         new_shell = Shell(face_list)
 
@@ -274,11 +280,13 @@ class Shell(ShapeObject):
         return new_shell, new_qubit_data, qubit_count
 
     @staticmethod
-    def shell2symplectic(shell: "Shell",
-                         qubit_data:QubitData, 
-                         qubit_count:QubitCount, 
-                         from_index:Optional[Dict[int,int]]=None,
-                         from_qubit:Optional[Dict[int,int]]=None)->Tuple[PauliList, QubitData]:
+    def shell2symplectic(
+        shell: "Shell",
+        qubit_data: QubitData,
+        qubit_count: QubitCount,
+        from_index: Optional[Dict[int, int]] = None,
+        from_qubit: Optional[Dict[int, int]] = None,
+    ) -> Tuple[PauliList, QubitData]:
         """Converts a shell into a symplectic matrix given the qubit data and counts
 
         Args:
@@ -292,39 +300,47 @@ class Shell(ShapeObject):
             PauliList: _description_
         """
         if from_index is None:
-            from_index = [qubit_id for qubit_id, count in qubit_count.qubits_count.items() if count != 0]
-            from_index = {index:qubit_id for index, qubit_id in enumerate(from_index)}
+            from_index = [
+                qubit_id for qubit_id, count in qubit_count.qubits_count.items() if count != 0
+            ]
+            from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}
         if from_qubit is None:
-            from_qubit = {qubit_id:index for index, qubit_id in from_index.items()}
+            from_qubit = {qubit_id: index for index, qubit_id in from_index.items()}
 
         # TODO: Make this a copy that is changed and then returned instead of doing in place and returning
         qubit_data.qubit_to_index = from_qubit
         qubit_data.index_to_qubit = from_index
-        qubit_data.index = {vertex.id:from_qubit[qubit_data.qubit[vertex.id]] for vertex in shell.vertices}
+        qubit_data.index = {
+            vertex.id: from_qubit[qubit_data.qubit[vertex.id]] for vertex in shell.vertices
+        }
 
         pauli_str_list = []
         for face in shell.faces:
             num_stacked_operators = len(qubit_data.operator[face.vertices[0].id])
             for i in range(num_stacked_operators):
-                pauli_str = ''
+                pauli_str = ""
                 for vertex in face.vertices:
-                    pauli_str += qubit_data.operator[vertex.id][i].__str__() + str(qubit_data.index[vertex.id])
+                    pauli_str += qubit_data.operator[vertex.id][i].__str__() + str(
+                        qubit_data.index[vertex.id]
+                    )
                 pauli_str_list.append(pauli_str)
         return PauliList(pauli_str_list), qubit_data
 
-    def draw(self,
-             qubit_data: Optional[QubitData]=None,
-             show_index:bool=False,
-             show_face_ids:bool=False,
-             show_axis:bool=True,
-             face_colors:bool=False,
-             show_qubits:bool=True,
-             figsize:Optional[Tuple[float, float]]=None,
-             point_size:Optional[int]=50,
-             xcolor:str="tomato",
-             zcolor:str="yellowgreen",
-             ycolor:str="steelblue",
-             **kwargs)->None:
+    def draw(
+        self,
+        qubit_data: Optional[QubitData] = None,
+        show_index: bool = False,
+        show_face_ids: bool = False,
+        show_axis: bool = True,
+        face_colors: bool = False,
+        show_qubits: bool = True,
+        figsize: Optional[Tuple[float, float]] = None,
+        point_size: Optional[int] = 50,
+        xcolor: str = "tomato",
+        zcolor: str = "yellowgreen",
+        ycolor: str = "steelblue",
+        **kwargs,
+    ) -> None:
         """Draws the shell
 
         Coloring nly works at the moment for CSS codes.
@@ -346,22 +362,22 @@ class Shell(ShapeObject):
             _type_: _description_
         """
         if figsize is None:
-            figsize=(10,10)
+            figsize = (10, 10)
         stab = []
         for face in self.faces:
             verts = []
             for vertex in face.vertices:
                 verts.append(list(vertex.pos))
             # The following only works for CSS codes. If there are two
-            # operators for a given face then only on of the operators 
+            # operators for a given face then only on of the operators
             # will be used.
             pauli = qubit_data.operator[face.vertices[0].id][0]
             if face_colors:
                 stab.append([verts, qubit_data.face_colors[face.id]])
             else:
-                if pauli == Pauli('X'):
+                if pauli == Pauli("X"):
                     stab.append([verts, xcolor])
-                elif pauli == Pauli('Z'):
+                elif pauli == Pauli("Z"):
                     stab.append([verts, zcolor])
                 else:
                     stab.append([verts, ycolor])
@@ -378,10 +394,12 @@ class Shell(ShapeObject):
                 ax.add_patch(plt.Polygon(stabilizer[0], facecolor=stabilizer[1], edgecolor="black"))
 
         if show_index and qubit_data is not None:
-            offset = min(figsize)*0.01
+            offset = min(figsize) * 0.01
             # Change to run over quibits and not vertices as not to print multple times on the same spot
             for vertex in self.vertices:
-                plt.text(vertex.pos[0]+offset,vertex.pos[1]+offset,qubit_data.index[vertex.id])
+                plt.text(
+                    vertex.pos[0] + offset, vertex.pos[1] + offset, qubit_data.index[vertex.id]
+                )
 
         if show_face_ids and qubit_data is not None:
             from shapely.geometry import Polygon
@@ -396,8 +414,8 @@ class Shell(ShapeObject):
                 points = [vertex.pos for vertex in face.vertices]
                 if len(points) > 1:
                     if len(points) == 2:
-                        mid_point = (points[0]+points[1])/2
-                        #points.append(np.array([points[0][0], points[1][1]]))
+                        mid_point = (points[0] + points[1]) / 2
+                        # points.append(np.array([points[0][0], points[1][1]]))
                         plt.text(mid_point[0], mid_point[1], face.id)
                     else:
                         plt.text(*get_representative_point(points), face.id)
@@ -413,11 +431,11 @@ class Shell(ShapeObject):
 
             plt.scatter(qubits_x, qubits_y, s=point_size, label="qubits", color="black")
 
-        plt.axis('equal')
+        plt.axis("equal")
 
-    def rotate2d(self,
-               angle:Optional[float]=90,
-               about_point:Optional[Tuple[float]]=None)->None:
+    def rotate2d(
+        self, angle: Optional[float] = 90, about_point: Optional[Tuple[float]] = None
+    ) -> None:
         """Inplace rotation of shell
 
         Args:
@@ -425,22 +443,21 @@ class Shell(ShapeObject):
             about_point (Optional[Tuple[float]], optional): _description_. Defaults to None.
         """
         if about_point is None:
-            about_point = np.array((0,0))
+            about_point = np.array((0, 0))
         for vertex in self.vertices:
             vertex.pos = Plane.rotate(angle, vertex.pos - about_point) + about_point
 
-
-    def scale(self, scale:float=1)->None:
+    def scale(self, scale: float = 1) -> None:
         for vertex in self.vertices:
             vertex.pos = scale * vertex.pos
 
-    def integer_snap(self)->None:
+    def integer_snap(self) -> None:
         for vertex in self.vertices:
             vertex.pos = np.rint(vertex.pos)
 
-    def shift(self, vector:Union[None, np.ndarray,Tuple[int]]=None)->None:
+    def shift(self, vector: Union[None, np.ndarray, Tuple[int]] = None) -> None:
         if vector is None:
-            vector = (0,0)
+            vector = (0, 0)
         vector = np.asarray(vector)
         for vertex in self.vertices:
             vertex.pos = vertex.pos + vector

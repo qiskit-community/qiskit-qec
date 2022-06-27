@@ -30,7 +30,7 @@ class CheckerBoardTile(Tile):
       o-----o      o-----o
     v2       v3  v2       v3
     q3       q4  q4       q5
-     
+
                 .(0,0)
 
     q3       q4  q4       q5
@@ -51,25 +51,55 @@ class CheckerBoardTile(Tile):
     """
 
     wf_operator_dict = {
-        "pXZXZ": [PauliList(["XXXX"]), PauliList(["ZZZZ"]), PauliList(["ZZZZ"]), PauliList(["XXXX"])],
-        "pZXZX": [PauliList(["ZZZZ"]), PauliList(["XXXX"]), PauliList(["XXXX"]), PauliList(["ZZZZ"])],
-        "cXXXX": [PauliList(["XXXX"]), PauliList(["XXXX"]), PauliList(["XXXX"]), PauliList(["XXXX"])],
-        "cZZZZ": [PauliList(["ZZZZ"]), PauliList(["ZZZZ"]), PauliList(["ZZZZ"]), PauliList(["ZZZZ"])],
-        "cXZZX": [PauliList(["XZZX"]), PauliList(["XZZX"]), PauliList(["XZZX"]), PauliList(["XZZX"])],
-        "cZXXZ": [PauliList(["ZXXZ"]), PauliList(["ZXXZ"]), PauliList(["ZXXZ"]), PauliList(["ZXXZ"])]
+        "pXZXZ": [
+            PauliList(["XXXX"]),
+            PauliList(["ZZZZ"]),
+            PauliList(["ZZZZ"]),
+            PauliList(["XXXX"]),
+        ],
+        "pZXZX": [
+            PauliList(["ZZZZ"]),
+            PauliList(["XXXX"]),
+            PauliList(["XXXX"]),
+            PauliList(["ZZZZ"]),
+        ],
+        "cXXXX": [
+            PauliList(["XXXX"]),
+            PauliList(["XXXX"]),
+            PauliList(["XXXX"]),
+            PauliList(["XXXX"]),
+        ],
+        "cZZZZ": [
+            PauliList(["ZZZZ"]),
+            PauliList(["ZZZZ"]),
+            PauliList(["ZZZZ"]),
+            PauliList(["ZZZZ"]),
+        ],
+        "cXZZX": [
+            PauliList(["XZZX"]),
+            PauliList(["XZZX"]),
+            PauliList(["XZZX"]),
+            PauliList(["XZZX"]),
+        ],
+        "cZXXZ": [
+            PauliList(["ZXXZ"]),
+            PauliList(["ZXXZ"]),
+            PauliList(["ZXXZ"]),
+            PauliList(["ZXXZ"]),
+        ],
     }
 
     # Descriptions of wireframes
     # qubit indices for each wireframe
     wf_q_indices = [[0, 1, 4, 3], [1, 2, 5, 4], [3, 4, 7, 6], [4, 5, 8, 7]]
 
-    # coordinates for each wireframe vertex in path list form to enable the 
+    # coordinates for each wireframe vertex in path list form to enable the
     # creation of the associate edges
     wf_coordinates = [
-        [[-1, 1], [0, 1], [0,  0], [-1, 0]],
-        [[ 0, 1], [1, 1], [1,  0], [ 0, 0]],
-        [[-1, 0], [0, 0], [0, -1], [-1,-1]],
-        [[ 0, 0], [1, 0], [1, -1], [ 0, -1]]
+        [[-1, 1], [0, 1], [0, 0], [-1, 0]],
+        [[0, 1], [1, 1], [1, 0], [0, 0]],
+        [[-1, 0], [0, 0], [0, -1], [-1, -1]],
+        [[0, 0], [1, 0], [1, -1], [0, -1]],
     ]
 
     # If the wf's are closed loops or not
@@ -78,17 +108,17 @@ class CheckerBoardTile(Tile):
     # How wireframes components combine into faces/operators
     faces_wf_components = [[0], [1], [2], [3]]
 
-    # Face colors (wf's inherit colors from faces)    
+    # Face colors (wf's inherit colors from faces)
     face_colors = ["yellowgreen", "tomato", "tomato", "yellowgreen"]
 
     num_faces = 4
 
-    size = np.array([2,2])
+    size = np.array([2, 2])
 
     num_qubits = 9
 
-    u_vec = np.array([2,0])
-    v_vec = np.array([0,2])
+    u_vec = np.array([2, 0])
+    v_vec = np.array([0, 2])
 
     def __new__(
         cls,
@@ -97,7 +127,7 @@ class CheckerBoardTile(Tile):
         qubit_data=None,
         operators=None,
         optype="pXZXZ",
-        ) -> Shell:
+    ) -> Shell:
         """Creates a Checker Board Tile (Shell)
 
             q0       q1  q1       q2
@@ -127,7 +157,7 @@ class CheckerBoardTile(Tile):
 
         Face colors for faces [0,1,2,3] are ["yellowgreen", "tomato", "tomato", "yellowgreen"]
 
-        Preformatted operators are stored in CheckerBoardTile.op_dict. Keys for op_dict are of the 
+        Preformatted operators are stored in CheckerBoardTile.op_dict. Keys for op_dict are of the
         form [p|c]PPPP where p = pattern and c = copy and P is a Pauli opertor X, Z or Y.
 
         "pXZXZ" -> #0 face is Pauli("XXXX") operator, #1 face is Pauli("ZZZZ"), etc.
@@ -139,9 +169,9 @@ class CheckerBoardTile(Tile):
         "cXXXX", "cZZZZ", "cXZZX", "cZXXZ"
 
         The operator variable may be used to define the operators specifically. The operator must be
-        a list of PauliList objects where each PauliList describes the opertors to be built for the 
+        a list of PauliList objects where each PauliList describes the opertors to be built for the
         faces as indexed above 0,1,2,3, ... If the PauliList contains k Paulis then k operators will
-        be created for the given face. 
+        be created for the given face.
 
         Args:
             origin (np.array): Coordinates of origin of tile (shell)
@@ -150,7 +180,7 @@ class CheckerBoardTile(Tile):
             operators: Operators for tile faces. Defaults to None.
             optype (optional): Which of the listed opertor mapppings to used. Defaults to "pXZXZ".
 
-        A appropriately scalled lattice basis for tiling with the CheckerBoardTile can be accessed 
+        A appropriately scalled lattice basis for tiling with the CheckerBoardTile can be accessed
         from [CheckerBoardTile.u_vec, CheckerBoardTile.v_vec]
 
         Raises:
@@ -166,15 +196,15 @@ class CheckerBoardTile(Tile):
             except KeyError as key_error:
                 raise QiskitError(f"Unsupported operator type: {optype}") from key_error
 
-        return TileFactory(origin=origin,
-                           wf_coordinates=CheckerBoardTile.wf_coordinates,
-                           wf_q_indices=CheckerBoardTile.wf_q_indices,
-                           wf_loop_indicator=CheckerBoardTile.wf_loop_indicator,
-                           faces_wf_components=CheckerBoardTile.faces_wf_components,
-                           num_qubits=CheckerBoardTile.num_qubits,
-                           face_colors=CheckerBoardTile.face_colors,
-                           qubit_count=qubit_count,
-                           qubit_data=qubit_data,
-                           operators=operators,
-                           )
-    
+        return TileFactory(
+            origin=origin,
+            wf_coordinates=CheckerBoardTile.wf_coordinates,
+            wf_q_indices=CheckerBoardTile.wf_q_indices,
+            wf_loop_indicator=CheckerBoardTile.wf_loop_indicator,
+            faces_wf_components=CheckerBoardTile.faces_wf_components,
+            num_qubits=CheckerBoardTile.num_qubits,
+            face_colors=CheckerBoardTile.face_colors,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
+            operators=operators,
+        )

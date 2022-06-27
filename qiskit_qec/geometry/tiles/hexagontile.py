@@ -57,34 +57,42 @@ class HexagonTile(Tile):
     """
 
     wf_operator_dict = {
-        "cX" : [PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXX"], input_qubit_order="left-to-right")],
-        "cZ" : [PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZ"], input_qubit_order="left-to-right")],
-        "dXZ": [PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right")],
-        "dZX": [PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right")]     
+        "cX": [
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
+        ],
+        "cZ": [
+            PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
+        ],
+        "dXZ": [
+            PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
+        ],
+        "dZX": [
+            PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
+        ],
     }
 
     # Descriptions of wireframes
     # qubit indices for each wireframe
-    wf_q_indices = [[0,1,4,7,6,3],[2,3,6,9,8,5],[6,7,10,12,11,9]]
+    wf_q_indices = [[0, 1, 4, 7, 6, 3], [2, 3, 6, 9, 8, 5], [6, 7, 10, 12, 11, 9]]
 
     # pylint: disable=invalid-name
-    r = sqrt(3)/2
-    h = 1/2
+    r = sqrt(3) / 2
+    h = 1 / 2
 
-    # coordinates for each wireframe vertex in path list form to enable the 
+    # coordinates for each wireframe vertex in path list form to enable the
     # creation of the associate edges
     wf_coordinates = [
-        [[0 , 2 * r], [2 * h, 2 * r], [1 + h, r], [1, 0], [0, 0], [-h, r]],
-        [[-1 - h, r],[-h, r], [0, 0],[-h,-r],[-1-h,-r],[-2,0]],
-        [[0,0],[1,0],[1+h,-r],[2*h,-2*r],[0,-2*r],[-h,-r]]
+        [[0, 2 * r], [2 * h, 2 * r], [1 + h, r], [1, 0], [0, 0], [-h, r]],
+        [[-1 - h, r], [-h, r], [0, 0], [-h, -r], [-1 - h, -r], [-2, 0]],
+        [[0, 0], [1, 0], [1 + h, -r], [2 * h, -2 * r], [0, -2 * r], [-h, -r]],
     ]
 
     # If the wf's are closed loops or not
@@ -94,7 +102,7 @@ class HexagonTile(Tile):
     faces_wf_components = [[0], [1], [2]]
 
     # Face colors (wf's inherit colors from faces)
-    face_colors = ["yellowgreen","tomato","steelblue"]
+    face_colors = ["yellowgreen", "tomato", "steelblue"]
 
     num_faces = 3
 
@@ -103,7 +111,7 @@ class HexagonTile(Tile):
     num_qubits = 13
 
     u_vec = np.array([3, 0])
-    v_vec = np.array([3/2,3*r])
+    v_vec = np.array([3 / 2, 3 * r])
 
     def __new__(
         cls,
@@ -185,14 +193,15 @@ class HexagonTile(Tile):
             except KeyError as key_error:
                 raise QiskitError(f"Unsupported operator type: {optype}") from key_error
 
-        return TileFactory(origin=origin,
-                           wf_coordinates=HexagonTile.wf_coordinates,
-                           wf_q_indices=HexagonTile.wf_q_indices,
-                           wf_loop_indicator=HexagonTile.wf_loop_indicator,
-                           faces_wf_components=HexagonTile.faces_wf_components,
-                           num_qubits=HexagonTile.num_qubits,
-                           face_colors=HexagonTile.face_colors,
-                           qubit_count=qubit_count,
-                           qubit_data=qubit_data,
-                           operators=operators,
-                           )
+        return TileFactory(
+            origin=origin,
+            wf_coordinates=HexagonTile.wf_coordinates,
+            wf_q_indices=HexagonTile.wf_q_indices,
+            wf_loop_indicator=HexagonTile.wf_loop_indicator,
+            faces_wf_components=HexagonTile.faces_wf_components,
+            num_qubits=HexagonTile.num_qubits,
+            face_colors=HexagonTile.face_colors,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
+            operators=operators,
+        )

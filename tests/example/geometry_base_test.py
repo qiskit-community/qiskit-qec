@@ -36,7 +36,7 @@ class TestGeometry(TestCase):
 
         # Create the bounding or cutter shape
         cutter = Shape.square(
-            origin=(0, -1), direction=(1, 1), length=d - 1, manifold=manifold, dtype=int
+            origin=(0, -1), direction=(1, 1), scale=d - 1, manifold=manifold, dtype=int
         )
 
         # Set up the qubit counter and aux data structures

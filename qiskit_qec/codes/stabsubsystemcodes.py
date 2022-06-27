@@ -27,12 +27,14 @@ from qiskit_qec.operators.pauli_list import PauliList
 class StabSubSystemCode(Code):
     """The "StabSubSystemCode" inherits the "Code" class"""
 
-    def __init__(self,
-                 gauge_group:Optional[GaugeGroup]=None,
-                 *,
-                 shell:Optional[Shell]=None,
-                 qubit_data:Optional[QubitData]=None,
-                 qubit_count:Optional[QubitCount]=None) -> None:
+    def __init__(
+        self,
+        gauge_group: Optional[GaugeGroup] = None,
+        *,
+        shell: Optional[Shell] = None,
+        qubit_data: Optional[QubitData] = None,
+        qubit_count: Optional[QubitCount] = None,
+    ) -> None:
         """Stabilizer Subsystem System Code Class
 
         A stabilizer subsystem code can be initialized by providing either a gauge group
@@ -67,18 +69,18 @@ class StabSubSystemCode(Code):
 
         if gauge_group is not None and shell is not None:
             raise QiskitError("Only one of gauge_group or shell should be provided")
-        
+
         if shell is not None:
             if qubit_data is None or qubit_count is None:
                 raise QiskitError("Both qubit_data and qubit_count inputs are needed for a shell")
 
-            self.shell=shell
-            self.qubit_data=qubit_data
-            self.qubit_count=qubit_count
+            self.shell = shell
+            self.qubit_data = qubit_data
+            self.qubit_count = qubit_count
 
-            generators, self.qubit_data = Shell.shell2symplectic(self.shell,
-                                                                 self.qubit_data,
-                                                                 self.qubit_count)
+            generators, self.qubit_data = Shell.shell2symplectic(
+                self.shell, self.qubit_data, self.qubit_count
+            )
 
             gauge_group = GaugeGroup(generators)
             self.gauge_group = gauge_group
@@ -96,7 +98,7 @@ class StabSubSystemCode(Code):
         return self._n
 
     @property
-    def generators(self)->PauliList:
+    def generators(self) -> PauliList:
         """Returns the Pauli generators for the subsystem"""
         return self.gauge_group.generators
 
@@ -105,6 +107,4 @@ class StabSubSystemCode(Code):
         if self.shell is None:
             return None
         else:
-            self.shell.draw(qubit_data=self.qubit_data,
-                            qubit_count=self.qubit_count,
-                            **kwargs)
+            self.shell.draw(qubit_data=self.qubit_data, qubit_count=self.qubit_count, **kwargs)

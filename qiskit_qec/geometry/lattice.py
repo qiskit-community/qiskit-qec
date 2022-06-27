@@ -61,18 +61,16 @@ class Lattice:
         else:
             self.points = points
 
-
-    def __str__(self)->str:
+    def __str__(self) -> str:
         if self.points is None:
             return f"Lattice(u_vec={np.array2string(self.u_vec, separator=', ')}, v_vec={np.array2string(self.v_vec, separator=', ')})"
         outstr = "Lattive["
         for point in self.points[:-1]:
-            outstr += np.array2string(point, separator=', ')
+            outstr += np.array2string(point, separator=", ")
             outstr += ", "
-        outstr += np.array2string(self.points[-1], separator=', ')
+        outstr += np.array2string(self.points[-1], separator=", ")
         outstr += "]"
         return outstr
-        
 
     @classmethod
     def make_transform(cls, u_vec, v_vec):
@@ -152,10 +150,10 @@ class Lattice:
         region: Shape,
         *,
         tile: Optional[Tile] = None,
-        size: List[Union[float, int]]=None,
-        expand_value: np.array=None,
-        in_place: bool=False,
-        alpha:float=1
+        size: List[Union[float, int]] = None,
+        expand_value: np.array = None,
+        in_place: bool = False,
+        alpha: float = 1,
     ) -> List:
         """Given a Shape to tile based on the lattice (self), restrict lattice (self) to
         the provided shape such that a tiling of that shape with the given tile will
@@ -197,7 +195,7 @@ class Lattice:
 
         extended_aabb.expand(expand_value)
 
-        #print(extended_aabb)
+        # print(extended_aabb)
 
         # Choose vert_vec so that it has some y component and that horz_vec has some x component
         if abs(self.v_vec[1]) > 0.1:
@@ -212,24 +210,26 @@ class Lattice:
                 vert_vec = self.u_vec
                 horz_vec = self.v_vec
             else:
-                raise QiskitError("Lattice basis not independent or too skewed or vector lengths \
-            to small. Resize and/or run LLL to improve basis before continuing")
+                raise QiskitError(
+                    "Lattice basis not independent or too skewed or vector lengths \
+            to small. Resize and/or run LLL to improve basis before continuing"
+                )
 
-        assert horz_vec[0] !=0, "Division by zero - error in lattice basis selection"
+        assert horz_vec[0] != 0, "Division by zero - error in lattice basis selection"
 
         def _find_points(aabb, u, v, pt, pts, direction="up"):
-            #print(f"{direction}")
+            # print(f"{direction}")
             while True:
                 if direction == "up":
                     pt = pt + v
                 else:
                     pt = pt - v
-                #print(f"Working with {pt}")
-                m = u[1]/u[0]
+                # print(f"Working with {pt}")
+                m = u[1] / u[0]
                 c = pt[1] - m * pt[0]
                 line = [-m, 1, c]
                 intersects = aabb.intercepts(line)
-                #print(f"Intersects at {intersects}")
+                # print(f"Intersects at {intersects}")
                 if len(intersects) != 2:
                     break
                 x0, y0 = intersects[0]
@@ -237,16 +237,16 @@ class Lattice:
 
                 min_x = min(x0, x1)
                 max_x = max(x0, x1)
-                
-                ta_min = ceil((min_x  - pt[0]) / u[0])
-                ta_max = floor((max_x  - pt[0]) / u[0])
+
+                ta_min = ceil((min_x - pt[0]) / u[0])
+                ta_max = floor((max_x - pt[0]) / u[0])
 
                 if u[1] != 0:
                     min_y = min(y0, y1)
                     max_y = max(y0, y1)
 
-                    tb_min = ceil((min_y  - pt[1]) / u[1])
-                    tb_max = floor((max_y  - pt[1]) / u[1])
+                    tb_min = ceil((min_y - pt[1]) / u[1])
+                    tb_max = floor((max_y - pt[1]) / u[1])
 
                     t_min = max(ta_min, tb_min)
                     t_max = min(ta_max, tb_max)
@@ -258,23 +258,23 @@ class Lattice:
                 for t in t_range:
                     new_pt = pt + t * u
                     pts.append(new_pt.copy())
-                    #print(f"Adding {new_pt} from line")
+                    # print(f"Adding {new_pt} from line")
 
             return pts
-        
+
         # Step One: find points on lattice on vert_vec line that are in AABB (and one just outside)
-        origin = np.array((0,0))
+        origin = np.array((0, 0))
         point = origin - vert_vec
         points = []
         points = _find_points(extended_aabb, horz_vec, vert_vec, point, points, direction="up")
         point = origin.copy()
         points = _find_points(extended_aabb, horz_vec, vert_vec, point, points, direction="down")
 
-        #print(points)
+        # print(points)
 
         # Create a lattice with points generated
 
-        lattice_l = Lattice(u_vec=horz_vec, v_vec=vert_vec, points = points)
+        lattice_l = Lattice(u_vec=horz_vec, v_vec=vert_vec, points=points)
 
         if in_place:
             self.points = lattice_l.points
@@ -319,8 +319,6 @@ class Lattice:
 
         # # Mask the lattice with the expanded AABB
         # lattice_l.restrict(extended_aabb, in_place=True)
-
-        
 
         # if in_place:
         #     self.points = lattice_l.points

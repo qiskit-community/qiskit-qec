@@ -20,10 +20,12 @@ from qiskit_qec.geometry.tiles.hexagontile import HexagonTile
 from qiskit_qec.geometry.lattice import Lattice
 from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
 
+
 class TriangularColorCodeBuilder(Builder):
     """Triangular Color Code Builder Class"""
+
     # pylint: disable=anomalous-backslash-in-string
-    def __init__(self, d:int)->None:
+    def __init__(self, d: int) -> None:
         """Initializes a triangular color code builder
 
         Example:d=3
@@ -48,35 +50,36 @@ class TriangularColorCodeBuilder(Builder):
         # Create cutter
         if not bool(d % 2) or d < 3:
             raise QiskitError(f"Distance d={d} must be an odd positive integer ≥ 3")
-        scale = 3*(d - 1)/2
+        scale = 3 * (d - 1) / 2
         delta = 0.02
-        points = [[-delta, -delta], [scale * HexagonTile.h, scale * HexagonTile.r+delta], [scale+delta, -delta]]
+        points = [
+            [-delta, -delta],
+            [scale * HexagonTile.h, scale * HexagonTile.r + delta],
+            [scale + delta, -delta],
+        ]
         self.cutter = Shape(points=points)
 
-    def build(self)->StabSubSystemCode:
+    def build(self) -> StabSubSystemCode:
         """Builds a triangular color code"""
         # Create a code factory
         triangular_code_factory = TileCodeFactory()
 
         # Configure the code factory
-        triangular_code_factory.set_parameters(manifold=Plane(),
-                                tile=HexagonTile,
-                                lattice = Lattice(u_vec=HexagonTile.u_vec, v_vec=HexagonTile.v_vec),
-                                cutter=self.cutter,
-                                on_boundary=False,
-                                boundary_strategy="combine",
-                                levels=[4,6],
-                                tile_optype="dXZ"
-                                )
+        triangular_code_factory.set_parameters(
+            manifold=Plane(),
+            tile=HexagonTile,
+            lattice=Lattice(u_vec=HexagonTile.u_vec, v_vec=HexagonTile.v_vec),
+            cutter=self.cutter,
+            on_boundary=False,
+            boundary_strategy="combine",
+            levels=[4, 6],
+            tile_optype="dXZ",
+        )
 
         # Update the factory is_configure check. This is used since we
-        # directly updated the TileCodeFactory configuration instead of 
+        # directly updated the TileCodeFactory configuration instead of
         # using the individual TileCodeFactory configuration methods.
         triangular_code_factory.update_is_configure()
 
         # Create the base triangular color code
-        return  triangular_code_factory.make_code()
-
-
-
-
+        return triangular_code_factory.make_code()

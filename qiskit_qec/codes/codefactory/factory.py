@@ -11,8 +11,9 @@
 # that they have been altered from the originals.
 """Base Code Factory Class"""
 
+
 class Factory:
     """Base Code Factory Class"""
+
     def __init__(self) -> None:
         pass
-        

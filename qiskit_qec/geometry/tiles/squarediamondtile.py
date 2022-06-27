@@ -23,73 +23,61 @@ from qiskit_qec.operators.pauli_list import PauliList
 # pylint: disable=anomalous-backslash-in-string)
 class SquareDiamondTile(Tile):
     """Square Diamond Tile
-        (Square or non-Rotated orientation)
+    (Square or non-Rotated orientation)
 
-         q0    q1  q1   q2
-         v0    v1  v0   v1
-           o--o     o--o
-           |0/       \1|
-           |/         \|
-           o           o
-         v2             v2
-         q3             q4
-                .(0,0)
-         q3            q4
-         v0            v0
-           o           o
-           |\         /|
-           |2\       /3|
-           o--o     o--o
-         v1    v2 v1    v2
-         q5    q6 q6    q7
+     q0    q1  q1   q2
+     v0    v1  v0   v1
+       o--o     o--o
+       |0/       \1|
+       |/         \|
+       o           o
+     v2             v2
+     q3             q4
+            .(0,0)
+     q3            q4
+     v0            v0
+       o           o
+       |\         /|
+       |2\       /3|
+       o--o     o--o
+     v1    v2 v1    v2
+     q5    q6 q6    q7
 
-           o--o--o
-           |0/ \1|
-           |/   \|
-           o     o
-           |\   /|
-           |2\ /3|
-           o--o--o
+       o--o--o
+       |0/ \1|
+       |/   \|
+       o     o
+       |\   /|
+       |2\ /3|
+       o--o--o
 
     """
 
     wf_operator_dict = {
-        "pXZXZ": [PauliList(["XXX"]),
-                PauliList(["ZZZ"]),
-                PauliList(["ZZZ"]),
-                PauliList(["XXX"])],
-        "pZXZX": [PauliList(["ZZZ"]),
-                PauliList(["XXX"]),
-                PauliList(["XXX"]),
-                PauliList(["ZZZ"])],
-        "cXXXX": [PauliList(["XXX"]),
-                PauliList(["XXX"]),
-                PauliList(["XXX"]),
-                PauliList(["XXX"])],
-        "cZZZZ": [PauliList(["ZZZ"]),
-                PauliList(["ZZZ"]),
-                PauliList(["ZZZ"]),
-                PauliList(["ZZZ"])]
+        "pXZXZ": [PauliList(["XXX"]), PauliList(["ZZZ"]), PauliList(["ZZZ"]), PauliList(["XXX"])],
+        "pZXZX": [PauliList(["ZZZ"]), PauliList(["XXX"]), PauliList(["XXX"]), PauliList(["ZZZ"])],
+        "cXXXX": [PauliList(["XXX"]), PauliList(["XXX"]), PauliList(["XXX"]), PauliList(["XXX"])],
+        "cZZZZ": [PauliList(["ZZZ"]), PauliList(["ZZZ"]), PauliList(["ZZZ"]), PauliList(["ZZZ"])],
     }
 
     # Descriptions of wireframes
     # qubit indices for each wireframe
     wf_q_indices = [[0, 1, 3], [1, 2, 4], [3, 5, 6], [4, 6, 7]]
 
-    # coordinates for each wireframe vertex in path list form to enable the 
+    # coordinates for each wireframe vertex in path list form to enable the
     # creation of the associate edges
     wf_coordinates = [
         [[-1, 1], [0, 1], [-1, 0]],
         [[0, 1], [1, 1], [1, 0]],
         [[-1, 0], [-1, -1], [0, -1]],
-        [[1, 0], [0, -1], [1, -1]]
+        [[1, 0], [0, -1], [1, -1]],
     ]
 
     # If the wf's are closed loops or not
     wf_loop_indicator = [True, True, True, True]
 
     # Wireframe orientations
-    wf_orientation = [[-1,1], [1,1], [-1,-1], [1,-1]]
+    wf_orientation = [[-1, 1], [1, 1], [-1, -1], [1, -1]]
 
     # How wireframes components combine into faces/operators
     faces_wf_components = [[0], [1], [2], [3]]
@@ -103,8 +91,8 @@ class SquareDiamondTile(Tile):
 
     num_qubits = 8
 
-    u_vec = np.array([0,2])
-    v_vec = np.array([2,0])
+    u_vec = np.array([0, 2])
+    v_vec = np.array([2, 0])
 
     def __new__(
         cls,
@@ -113,9 +101,9 @@ class SquareDiamondTile(Tile):
         qubit_data=None,
         operators=None,
         optype="pXZXZ",
-        ) -> Shell:
+    ) -> Shell:
         """Square Diamond Tile
-        
+
          q0    q1  q1   q2
          v0    v1  v0   v1
            o--o     o--o
@@ -178,7 +166,6 @@ class SquareDiamondTile(Tile):
         Returns:
             Shell: Returns a Square Diamond tile (shell) with provided origin
         """
-   
 
         if operators is None:
             try:
@@ -186,15 +173,16 @@ class SquareDiamondTile(Tile):
             except KeyError as key_error:
                 raise QiskitError(f"Unsupported operator type: {optype}") from key_error
 
-        return TileFactory(origin=origin,
-                           wf_coordinates=SquareDiamondTile.wf_coordinates,
-                           wf_q_indices=SquareDiamondTile.wf_q_indices,
-                           wf_loop_indicator=SquareDiamondTile.wf_loop_indicator,
-                           faces_wf_components=SquareDiamondTile.faces_wf_components,
-                           num_qubits=SquareDiamondTile.num_qubits,
-                           face_colors=SquareDiamondTile.face_colors,
-                           qubit_count=qubit_count,
-                           qubit_data=qubit_data,
-                           operators=operators,
-                           wf_orientation=SquareDiamondTile.wf_orientation
-                           )
+        return TileFactory(
+            origin=origin,
+            wf_coordinates=SquareDiamondTile.wf_coordinates,
+            wf_q_indices=SquareDiamondTile.wf_q_indices,
+            wf_loop_indicator=SquareDiamondTile.wf_loop_indicator,
+            faces_wf_components=SquareDiamondTile.faces_wf_components,
+            num_qubits=SquareDiamondTile.num_qubits,
+            face_colors=SquareDiamondTile.face_colors,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
+            operators=operators,
+            wf_orientation=SquareDiamondTile.wf_orientation,
+        )

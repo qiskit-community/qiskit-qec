@@ -28,15 +28,19 @@ from qiskit_qec.geometry.tiles.squarediamondtile import SquareDiamondTile
 from qiskit_qec.geometry.lattice import Lattice
 from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
 
+
 class RotatedSubsystemSurfaceCodeBuilder(Builder):
     """Rotated Subsystem Surface Code Builder Class"""
+
     # pylint: disable=anomalous-backslash-in-string
-    def __init__(self,
-                 d:Optional[int]=None,
-                 *,
-                 dx:Optional[int]=None,
-                 dz:Optional[int]=None,
-                 w3_op:Optional[Pauli]=Pauli('Z'))->None:
+    def __init__(
+        self,
+        d: Optional[int] = None,
+        *,
+        dx: Optional[int] = None,
+        dz: Optional[int] = None,
+        w3_op: Optional[Pauli] = Pauli("Z"),
+    ) -> None:
         """Initializes a Rotated Subsystem Surface Code builder
 
         If d is specified then dx and dz are ignored.
@@ -52,7 +56,7 @@ class RotatedSubsystemSurfaceCodeBuilder(Builder):
             or Pauli('X') choosen to be whatever w2_op are not.
 
         Examples:
-    
+
 
         """
         # Create cutter
@@ -66,46 +70,47 @@ class RotatedSubsystemSurfaceCodeBuilder(Builder):
         elif not bool(dx % 2) or dx < 3 or not bool(dz % 2) or dz < 3:
             raise QiskitError(f"dx:{dx} and dz:{dz} must be odd positive integers ≥ 3")
 
-        if w3_op == Pauli('Z'):
+        if w3_op == Pauli("Z"):
             self.optype = "pZXZX"
         else:
             self.optype = "pXZXZ"
 
         delta = 0.2
-        self.cutter = Shape.rect(origin=(0, -1),
-                                 direction=(1,1),
-                                 scale1=dx-1,
-                                 scale2=dz-1,
-                                 manifold=Plane(),
-                                 delta=delta,
-                                 dtype=float)
+        self.cutter = Shape.rect(
+            origin=(0, -1),
+            direction=(1, 1),
+            scale1=dx - 1,
+            scale2=dz - 1,
+            manifold=Plane(),
+            delta=delta,
+            dtype=float,
+        )
 
-
-    def build(self)->StabSubSystemCode:
+    def build(self) -> StabSubSystemCode:
         """Builds a rotated subsystem surface code"""
         # Create a code factory
         rss_code_factory = TileCodeFactory()
 
         # Configure the code factory
-        rss_code_factory.set_parameters(manifold=Plane(),
-                                tile=SquareDiamondTile,
-                                tile_optype=self.optype,
-                                lattice = Lattice(u_vec=SquareDiamondTile.u_vec,
-                                                  v_vec=SquareDiamondTile.v_vec),
-                                cutter=self.cutter,
-                                on_boundary=False,
-                                boundary_strategy="combine",
-                                levels=[2, 3],
-                                integer_snap=True,
-                                lattice_view=False,
-                                precut_tiling_view=False,
-                                show_qubit_indices=False,
-                                rotate = -45,
-                                scale = sqrt(2)
-                                )
+        rss_code_factory.set_parameters(
+            manifold=Plane(),
+            tile=SquareDiamondTile,
+            tile_optype=self.optype,
+            lattice=Lattice(u_vec=SquareDiamondTile.u_vec, v_vec=SquareDiamondTile.v_vec),
+            cutter=self.cutter,
+            on_boundary=False,
+            boundary_strategy="combine",
+            levels=[2, 3],
+            integer_snap=True,
+            lattice_view=False,
+            precut_tiling_view=False,
+            show_qubit_indices=False,
+            rotate=-45,
+            scale=sqrt(2),
+        )
 
         # Update the factory is_configure check. This is used since we
-        # directly updated the TileCodeFactory configuration instead of 
+        # directly updated the TileCodeFactory configuration instead of
         # using the individual TileCodeFactory configuration methods.
         rss_code_factory.update_is_configure()
 

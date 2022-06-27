@@ -29,14 +29,16 @@ from qiskit_qec.geometry.lattice import Lattice
 from qiskit_qec.geometry.tiles.tiling import Tiling
 from qiskit_qec.geometry.model.shell import Shell
 
+
 class TileCodeFactory:
-    """ Tile Code Factory Class"""
-    def __new__(cls, tile_config:TileCodeConfig) -> None:
+    """Tile Code Factory Class"""
+
+    def __new__(cls, tile_config: TileCodeConfig) -> None:
 
         return cls.make_code(tile_config)
 
     @classmethod
-    def make_code(cls, tile_config:TileCodeConfig)->StabSubSystemCode:
+    def make_code(cls, tile_config: TileCodeConfig) -> StabSubSystemCode:
         """_summary_
 
         Args:
@@ -50,45 +52,50 @@ class TileCodeFactory:
         qubit_data = QubitData()
 
         # Resrict the lattice for tiling
-        lattice = tile_config.lattice.restrict_for_tiling(tile_config.cutter,
-                                              tile=tile_config.tile,
-                                              expand_value=tile_config.expand_value)
+        lattice = tile_config.lattice.restrict_for_tiling(
+            tile_config.cutter, tile=tile_config.tile, expand_value=tile_config.expand_value
+        )
 
         # Display lattice_view if required
         if tile_config.lattice_view:
             if tile_config.cutter_color is None:
-                cutter_color="red"
+                cutter_color = "red"
             else:
-                cutter_color=tile_config.cutter_color
-            cls.plot(lattice = lattice, cutter=tile_config.cutter, cutter_color=cutter_color)
+                cutter_color = tile_config.cutter_color
+            cls.plot(lattice=lattice, cutter=tile_config.cutter, cutter_color=cutter_color)
 
         # Tile the restriced lattice with SquareDiamondTile
-        tiling = Tiling(tile_type=tile_config.tile,
-                        lattice=lattice,
-                        qubit_count=qubit_count,
-                        qubit_data=qubit_data)
+        tiling = Tiling(
+            tile_type=tile_config.tile,
+            lattice=lattice,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
+        )
 
         # Find the Tiles inside the cutter
         is_inside = tile_config.cutter.inside(tiling, on_boundary=tile_config.on_boundary)
-        
+
         # Display the precut tiling view if required
         if tile_config.precut_tiling_view:
-            cls.plot(shell=tiling,
-                     qubit_data=qubit_data,
-                     is_inside=is_inside,
-                     show_index=False,
-                     face_colors=True,
-                     show_inside=True,
-                     cutter=tile_config.cutter,
-                     cutter_color=tile_config.cutter_color)
+            cls.plot(
+                shell=tiling,
+                qubit_data=qubit_data,
+                is_inside=is_inside,
+                show_index=False,
+                face_colors=True,
+                show_inside=True,
+                cutter=tile_config.cutter,
+                cutter_color=tile_config.cutter_color,
+            )
 
         # pylint: disable=no-member
-        new_shell, new_qubit_data, qubit_count = tiling.extract(is_inside,
-                                                               qubit_data,
-                                                               qubit_count,
-                                                               tile_config.levels,
-                                                               boundary_strategy=tile_config.boundary_strategy)
-
+        new_shell, new_qubit_data, qubit_count = tiling.extract(
+            is_inside,
+            qubit_data,
+            qubit_count,
+            tile_config.levels,
+            boundary_strategy=tile_config.boundary_strategy,
+        )
 
         if tile_config.rotate:
             new_shell.rotate2d(tile_config.rotate)
@@ -99,32 +106,31 @@ class TileCodeFactory:
         if tile_config.integer_snap:
             new_shell.integer_snap()
 
-        generators, qubit_data = Shell.shell2symplectic(new_shell,
-                                                        new_qubit_data,
-                                                        qubit_count)
+        generators, qubit_data = Shell.shell2symplectic(new_shell, new_qubit_data, qubit_count)
 
         gauge_group = GaugeGroup(generators)
 
-        return StabSubSystemCode(gauge_group,
-                                 shell=new_shell,
-                                 qubit_data=new_qubit_data,
-                                 qubit_count=qubit_count)
+        return StabSubSystemCode(
+            gauge_group, shell=new_shell, qubit_data=new_qubit_data, qubit_count=qubit_count
+        )
 
     @classmethod
-    def plot(cls,
-             lattice:Optional[Lattice]=None,
-             cutter:Optional[Shape]=None,
-             shell:Optional[Shell]=None,
-             qubit_data:Optional[QubitData]=None,
-             is_inside:Dict=None,
-             show_index:bool=False,
-             face_colors:bool=False,
-             show_inside:bool=False,
-             figsize:Optional[Tuple[float, float]]=None,
-             xcolor:str="red",
-             zcolor:str="green",
-             ycolor:str="blue",
-             cutter_color:str="magenta")->None:
+    def plot(
+        cls,
+        lattice: Optional[Lattice] = None,
+        cutter: Optional[Shape] = None,
+        shell: Optional[Shell] = None,
+        qubit_data: Optional[QubitData] = None,
+        is_inside: Dict = None,
+        show_index: bool = False,
+        face_colors: bool = False,
+        show_inside: bool = False,
+        figsize: Optional[Tuple[float, float]] = None,
+        xcolor: str = "red",
+        zcolor: str = "green",
+        ycolor: str = "blue",
+        cutter_color: str = "magenta",
+    ) -> None:
         """Plots the intermediate and final stages of tile code generation
 
         Args:
@@ -147,7 +153,7 @@ class TileCodeFactory:
             return None
 
         if figsize is None:
-            figsize=(10,10)
+            figsize = (10, 10)
 
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(1, 1, 1)
@@ -156,16 +162,16 @@ class TileCodeFactory:
             data_in = [list(item) for item in lattice.points]
             in_x = [v[0] for v in data_in]
             in_y = [v[1] for v in data_in]
-            
+
             plt.scatter(in_x, in_y, s=100, label="in")
-        
+
         if cutter is not None:
 
             border = list(cutter.points)
             border.append(border[0])
             xs, ys = zip(*border)
 
-            plt.plot(xs,ys, color=cutter_color, linestyle="-.")
+            plt.plot(xs, ys, color=cutter_color, linestyle="-.")
 
         if shell is not None:
             stab = []
@@ -177,9 +183,9 @@ class TileCodeFactory:
                 if face_colors and qubit_data.face_colors != {}:
                     stab.append([verts, qubit_data.face_colors[face.id]])
                 else:
-                    if pauli == Pauli('X'):
+                    if pauli == Pauli("X"):
                         stab.append([verts, xcolor])
-                    elif pauli == Pauli('Z'):
+                    elif pauli == Pauli("Z"):
                         stab.append([verts, zcolor])
                     else:
                         stab.append([verts, ycolor])
@@ -196,11 +202,11 @@ class TileCodeFactory:
                 out_x = [v[0] for v in data_out]
                 out_y = [v[1] for v in data_out]
 
-                plt.scatter(in_x, in_y, s=100, label="in", color='black')
+                plt.scatter(in_x, in_y, s=100, label="in", color="black")
                 plt.scatter(out_x, out_y, s=100, label="out")
 
             if show_index:
                 for vertex in shell.vertices:
-                    plt.text(vertex.pos[0],vertex.pos[1],qubit_data.index[vertex.id])
+                    plt.text(vertex.pos[0], vertex.pos[1], qubit_data.index[vertex.id])
 
-        plt.axis('equal')
+        plt.axis("equal")

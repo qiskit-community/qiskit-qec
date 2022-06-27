@@ -66,31 +66,49 @@ q11  |         |  q12         |  3  |
     """
 
     wf_operator_dict = {
-        "cXZZX" : [PauliList(["XXXX"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["XXXX"], input_qubit_order="left-to-right")],
-        "cZXXZ" : [PauliList(["ZZZZ"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["XXXXXXXX"], input_qubit_order="left-to-right"),
-                PauliList(["ZZZZ"], input_qubit_order="left-to-right")],
+        "cXZZX": [
+            PauliList(["XXXX"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["XXXX"], input_qubit_order="left-to-right"),
+        ],
+        "cZXXZ": [
+            PauliList(["ZZZZ"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["ZZZZ"], input_qubit_order="left-to-right"),
+        ],
     }
 
     # Descriptions of wireframes
     # qubit indices for each wireframe
-    wf_q_indices = [[2, 3, 6, 5], [0, 1, 4, 7, 10, 9, 6, 3], [5, 6, 9, 12, 15, 14, 11, 8], [9, 10, 13, 12]]
+    wf_q_indices = [
+        [2, 3, 6, 5],
+        [0, 1, 4, 7, 10, 9, 6, 3],
+        [5, 6, 9, 12, 15, 14, 11, 8],
+        [9, 10, 13, 12],
+    ]
 
     # pylint: disable=invalid-name
-    s8 = sqrt(2-sqrt(2))/2
-    c8 = sqrt(2+sqrt(2))/2
+    s8 = sqrt(2 - sqrt(2)) / 2
+    c8 = sqrt(2 + sqrt(2)) / 2
 
-    # coordinates for each wireframe vertex in path list form to enable the 
+    # coordinates for each wireframe vertex in path list form to enable the
     # creation of the associate edges
     wf_coordinates = [
-        [[-s8,c8+2*s8], [s8, c8+2*s8], [s8, c8], [-s8, c8]],
-        [[c8, 2*c8 + s8], [c8+ 2*s8, 2*c8+s8], [2*c8+s8, c8+2*s8], [2*c8+s8, c8], [c8+2*s8, s8], [c8, s8], [s8, c8], [s8, c8+2*s8]],
-        [[-s8,c8],[s8,c8], [c8, s8], [c8,-s8], [s8, -c8], [-s8,-c8], [-c8, -s8], [-c8, s8]],
-        [[c8,s8], [c8+2*s8, s8], [c8+2*s8, -s8], [c8, -s8]]
+        [[-s8, c8 + 2 * s8], [s8, c8 + 2 * s8], [s8, c8], [-s8, c8]],
+        [
+            [c8, 2 * c8 + s8],
+            [c8 + 2 * s8, 2 * c8 + s8],
+            [2 * c8 + s8, c8 + 2 * s8],
+            [2 * c8 + s8, c8],
+            [c8 + 2 * s8, s8],
+            [c8, s8],
+            [s8, c8],
+            [s8, c8 + 2 * s8],
+        ],
+        [[-s8, c8], [s8, c8], [c8, s8], [c8, -s8], [s8, -c8], [-s8, -c8], [-c8, -s8], [-c8, s8]],
+        [[c8, s8], [c8 + 2 * s8, s8], [c8 + 2 * s8, -s8], [c8, -s8]],
     ]
 
     # If the wf's are closed loops or not
@@ -100,16 +118,16 @@ q11  |         |  q12         |  3  |
     faces_wf_components = [[0], [1], [2], [3]]
 
     # Face colors (wf's inherit colors from faces)
-    face_colors = ["yellowgreen","tomato", "tomato", "yellowgreen"]
+    face_colors = ["yellowgreen", "tomato", "tomato", "yellowgreen"]
 
     num_faces = 4
 
-    size = np.array([3*c8+s8, 3*c8+s8])
+    size = np.array([3 * c8 + s8, 3 * c8 + s8])
 
     num_qubits = 16
 
-    u_vec = np.array([2*(c8+s8), 0])
-    v_vec = np.array([0,2*(c8+s8)])
+    u_vec = np.array([2 * (c8 + s8), 0])
+    v_vec = np.array([0, 2 * (c8 + s8)])
 
     def __new__(
         cls,
@@ -201,14 +219,15 @@ q11  |         |  q12         |  3  |
             except KeyError as key_error:
                 raise QiskitError(f"Unsupported operator type: {optype}") from key_error
 
-        return TileFactory(origin=origin,
-                           wf_coordinates=OctaSquareTile.wf_coordinates,
-                           wf_q_indices=OctaSquareTile.wf_q_indices,
-                           wf_loop_indicator=OctaSquareTile.wf_loop_indicator,
-                           faces_wf_components=OctaSquareTile.faces_wf_components,
-                           num_qubits=OctaSquareTile.num_qubits,
-                           face_colors=OctaSquareTile.face_colors,
-                           qubit_count=qubit_count,
-                           qubit_data=qubit_data,
-                           operators=operators,
-                           )
+        return TileFactory(
+            origin=origin,
+            wf_coordinates=OctaSquareTile.wf_coordinates,
+            wf_q_indices=OctaSquareTile.wf_q_indices,
+            wf_loop_indicator=OctaSquareTile.wf_loop_indicator,
+            faces_wf_components=OctaSquareTile.faces_wf_components,
+            num_qubits=OctaSquareTile.num_qubits,
+            face_colors=OctaSquareTile.face_colors,
+            qubit_count=qubit_count,
+            qubit_data=qubit_data,
+            operators=operators,
+        )

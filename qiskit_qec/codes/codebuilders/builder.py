@@ -12,6 +12,7 @@
 """"Builder base class"""
 from abc import ABC, abstractmethod
 
+
 class Builder(ABC):
     """Base Builder class"""
 

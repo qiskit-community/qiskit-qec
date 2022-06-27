@@ -20,23 +20,26 @@ from qiskit_qec.geometry.model.vertex import Vertex
 from qiskit_qec.geometry.model.wireframe import WireFrame
 from qiskit_qec.geometry.model.qubit_count import QubitCount
 from qiskit_qec.geometry.model.qubit_data import QubitData
+
+
 class TileFactory:
     """Base class for all geometric tiles"""
 
-    def __new__(cls,
-                *,
-                origin: np.ndarray,
-                wf_coordinates:List,
-                wf_q_indices:List,
-                wf_loop_indicator:List[bool],
-                faces_wf_components: List[List],
-                num_qubits:int,
-                face_colors:List,
-                qubit_count:Optional[QubitCount]=None,
-                qubit_data:Optional[QubitData]=None,
-                operators:Optional[List]=None,
-                **kwargs
-                ) ->Shell:
+    def __new__(
+        cls,
+        *,
+        origin: np.ndarray,
+        wf_coordinates: List,
+        wf_q_indices: List,
+        wf_loop_indicator: List[bool],
+        faces_wf_components: List[List],
+        num_qubits: int,
+        face_colors: List,
+        qubit_count: Optional[QubitCount] = None,
+        qubit_data: Optional[QubitData] = None,
+        operators: Optional[List] = None,
+        **kwargs,
+    ) -> Shell:
         """Create tile"""
 
         # Qubits
@@ -52,11 +55,13 @@ class TileFactory:
         for wf_list in faces_wf_components:
             wfs = []
             for wf_index in wf_list:
-                wf = cls._make_wireframe(vertices=wf_coordinates[wf_index],
-                                         origin=origin,
-                                         loop_indicator=wf_loop_indicator[wf_index])
+                wf = cls._make_wireframe(
+                    vertices=wf_coordinates[wf_index],
+                    origin=origin,
+                    loop_indicator=wf_loop_indicator[wf_index],
+                )
                 wfs.append(wf)
-                wf_id_to_index[wf.id]=wf_index
+                wf_id_to_index[wf.id] = wf_index
 
             faces.append(Face(wfs))
 
@@ -82,8 +87,8 @@ class TileFactory:
         # TODO:  Add code to add edge data
 
         # Wireframe Data
-        prefix="wf_"
-        object_arrays = {key:array for key, array in kwargs.items() if key.startswith(prefix)}
+        prefix = "wf_"
+        object_arrays = {key: array for key, array in kwargs.items() if key.startswith(prefix)}
         for name in object_arrays.keys():
             qubit_data.add_data_array(data_array={}, name=name)
         for wf in shell.wireframes:
@@ -96,7 +101,6 @@ class TileFactory:
             qubit_data.face_colors[face.id] = face_colors[index]
 
         # TODO: Add code to add extra face data (if exists)
-
 
         # Shell Data
         # TODO:  Add code to add shell data
@@ -117,6 +121,3 @@ class TileFactory:
 
         # Wireframe
         return WireFrame(edges)
-
-
-

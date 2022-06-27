@@ -14,6 +14,7 @@ from typing import Union, List, Tuple
 from numpy import ndarray
 from qiskit import QiskitError
 
+
 class QubitData:
     """Class for containing qubit information"""
 
@@ -21,27 +22,25 @@ class QubitData:
         """Init Qubit Data"""
 
         # Vertex Data
-        self.operator = {} # Vertex_id to operator list for given vertex
-        self.qubit = {} # vertex_id to qubit_id
+        self.operator = {}  # Vertex_id to operator list for given vertex
+        self.qubit = {}  # vertex_id to qubit_id
 
-        self.index = {} # vertex_id to PauliList index
+        self.index = {}  # vertex_id to PauliList index
         # Edge Data
-
 
         # Wireframe Data
 
-
         # Face Data
-        self.face_colors = {} # Face id to color str
+        self.face_colors = {}  # Face id to color str
 
         # Other
 
-        self.qubit_to_index = {} # qubit_id to PauliList index
-        self.index_to_qubit = {} # PauliList index to qubit_id
+        self.qubit_to_index = {}  # qubit_id to PauliList index
+        self.index_to_qubit = {}  # PauliList index to qubit_id
 
         self.data_arrays = {}
 
-    def add_data_array(self, data_array:Union[List, Tuple, ndarray], name:str)->None:
+    def add_data_array(self, data_array: Union[List, Tuple, ndarray], name: str) -> None:
         """Adds a data array to the QubitData class instance
 
         Args:
@@ -50,8 +49,7 @@ class QubitData:
         """
         self.data_arrays[name] = data_array
 
-
-    def del_data_array(self, name:str):
+    def del_data_array(self, name: str):
         """Deletes a given data_array from the QubitData class instance
 
         Args:

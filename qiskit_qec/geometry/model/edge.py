@@ -20,10 +20,12 @@ from qiskit_qec.geometry.model.vertex import Vertex
 class Edge(ShapeObject):
     """Edge"""
 
-    def __init__(self,
-                 vertices: List[Vertex], 
-                 next:Optional["Edge"]=None,
-                 previous:Optional["Edge"]=None) -> None:
+    def __init__(
+        self,
+        vertices: List[Vertex],
+        next: Optional["Edge"] = None,
+        previous: Optional["Edge"] = None,
+    ) -> None:
         """Inits Edge
 
         Args:
@@ -35,20 +37,18 @@ class Edge(ShapeObject):
         self.next = next
         self.previous = previous
 
-        
         for item in self.vertices:
             item.add_parent(self)
 
     def __repr__(self) -> str:
-        string = 'Edge' + self.__str__()
+        string = "Edge" + self.__str__()
         return string
 
     def __str__(self):
-        string='['
+        string = "["
         for vertex in self.vertices[:-1]:
             string += vertex.__str__()
             string += ","
         string += self.vertices[-1].__str__()
-        string += ']'
+        string += "]"
         return string
-

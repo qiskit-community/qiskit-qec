@@ -142,7 +142,7 @@ class GeometryBounds:
 
         return bounds
 
-    def intercepts(self, line:List[float])->List:
+    def intercepts(self, line: List[float]) -> List:
         """Returns the intercepts of the input line with the aabb.
 
         The line is inputed as a vector [a,b,c] which represents the
@@ -155,34 +155,34 @@ class GeometryBounds:
             List: _description_
         """
 
-        a,b,c = line
+        a, b, c = line
 
         xmin, ymin = self.min
         xmax, ymax = self.max
-        
+
         intercepts = []
 
-        if abs(b) <  0.0000001:
+        if abs(b) < 0.0000001:
             if abs(c - xmin) < 0.0000001:
-                intercepts.append([xmin,ymin])
-                intercepts.append([xmin,ymax])
+                intercepts.append([xmin, ymin])
+                intercepts.append([xmin, ymax])
             elif xmin <= c and c <= xmax:
-                intercepts.append([c,ymin])
-                intercepts.append([c,ymax])
+                intercepts.append([c, ymin])
+                intercepts.append([c, ymax])
             elif abs(c - xmax) < 0.0000001:
-                intercepts.append([xmax,ymin])
-                intercepts.append([xmax,ymax])
+                intercepts.append([xmax, ymin])
+                intercepts.append([xmax, ymax])
         else:
             # |.
-            y = (c - a*xmin)/b
+            y = (c - a * xmin) / b
             if ymin <= y and y <= ymax:
                 intercepts.append([xmin, y])
             # .|
-            y = (c - a*xmax)/b
+            y = (c - a * xmax) / b
             if ymin <= y and y <= ymax:
                 intercepts.append([xmax, y])
             # ‾
-            if abs(a) < 0.0000001 and abs(c/b - ymax) < 0.0000001:
+            if abs(a) < 0.0000001 and abs(c / b - ymax) < 0.0000001:
                 intercepts.append([xmin, ymax])
                 intercepts.append([xmax, ymax])
             elif abs(a) > 0.0000001:
@@ -190,7 +190,7 @@ class GeometryBounds:
                 if xmin <= x and x <= xmax:
                     intercepts.append([x, ymax])
             # _
-            if abs(a) < 0.0000001 and abs(c/b - ymin) < 0.0000001:
+            if abs(a) < 0.0000001 and abs(c / b - ymin) < 0.0000001:
                 intercepts.append([xmin, ymin])
                 intercepts.append([xmax, ymin])
             elif abs(a) > 0.0000001:
@@ -202,14 +202,9 @@ class GeometryBounds:
             for item in intercepts:
                 flag = True
                 for value in result:
-                    if abs(item[0]-value[0]) < 0.0000001 and abs(item[1]-value[1]) < 0.0000001:
+                    if abs(item[0] - value[0]) < 0.0000001 and abs(item[1] - value[1]) < 0.0000001:
                         flag = False
                         continue
                 if flag:
                     result.append(item)
         return result
-
-
-
-
-

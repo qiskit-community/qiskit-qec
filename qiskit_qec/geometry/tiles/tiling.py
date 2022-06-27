@@ -41,15 +41,19 @@ class Tiling:
         qubit_count: QubitCount = None,
         qubit_data: QubitData = None,
         epsilon: float = 0.01,
-        ):
+    ):
         if lattice.points is None:
             raise QiskitError("Infinite lattices not yet supported")
 
         point = lattice.points[0]
-        shell = tile_type(origin=point, optype=tile_optype, qubit_count=qubit_count, qubit_data=qubit_data)
+        shell = tile_type(
+            origin=point, optype=tile_optype, qubit_count=qubit_count, qubit_data=qubit_data
+        )
 
         for point in lattice.points[1:]:
-            tile = tile_type(origin=point, optype=tile_optype, qubit_count=qubit_count, qubit_data=qubit_data)
+            tile = tile_type(
+                origin=point, optype=tile_optype, qubit_count=qubit_count, qubit_data=qubit_data
+            )
             i_vertices_num = len(shell.vertices)
             shell.union(tile)
 

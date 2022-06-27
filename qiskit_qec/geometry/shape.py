@@ -25,12 +25,15 @@ from qiskit_qec.geometry.manifold import Manifold
 from qiskit_qec.geometry.plane import Plane
 from qiskit_qec.geometry.model.shell import Shell
 
+
 class Shape:
     """This class is used to store a boundary shape on a given manifold that is used to
     select sublattices.
     """
+
     _DEBUG = False
-    def __init__(self, points: List, lines: Optional[List[List]]=None, indices: List=None):
+
+    def __init__(self, points: List, lines: Optional[List[List]] = None, indices: List = None):
         """Init shape
 
         Args:
@@ -67,21 +70,16 @@ class Shape:
             bounds = GeometryBounds.combine(bounds, bounds2)
         return bounds
 
-    def create_lines(self, points:List):
+    def create_lines(self, points: List):
         """Creates Lines from a set of points"""
         num_points = len(points)
-        lines = [[index, (index + 1)%num_points] for index in range(num_points)]
+        lines = [[index, (index + 1) % num_points] for index in range(num_points)]
         return lines
 
-
     @classmethod
-    def square(cls,
-               origin: List,
-               direction: List,
-               scale,
-               manifold: Manifold,
-               delta:float=0,
-               dtype=int):
+    def square(
+        cls, origin: List, direction: List, scale, manifold: Manifold, delta: float = 0, dtype=int
+    ):
         """Create a square (2d) shape on the 2-manifold.
 
         The square has one corner placed at the origin (origin must be on the plane). The the
@@ -113,14 +111,16 @@ class Shape:
         )
 
     @classmethod
-    def rect(cls,
-             origin:Union[List, Tuple, np.ndarray],
-             direction:Union[List, Tuple, np.ndarray],
-             scale1:Union[int, float],
-             scale2:Union[int, float],
-             manifold:Manifold=Plane(),
-             delta:float=0,
-             dtype=float):
+    def rect(
+        cls,
+        origin: Union[List, Tuple, np.ndarray],
+        direction: Union[List, Tuple, np.ndarray],
+        scale1: Union[int, float],
+        scale2: Union[int, float],
+        manifold: Manifold = Plane(),
+        delta: float = 0,
+        dtype=float,
+    ):
         r"""Create a rectangle on a manifold
 
                       r2
@@ -169,8 +169,8 @@ class Shape:
             r3 = r3.astype(dtype)
 
             # scale up the rectangle to have diagonal lenths + 2 * delta
-            center = (r1  + r3)/2
-            scale = 1 + delta/np.linalg.norm(r1)
+            center = (r1 + r3) / 2
+            scale = 1 + delta / np.linalg.norm(r1)
             r0 = scale * r0 + (1 - scale) * center
             r1 = scale * r1 + (1 - scale) * center
             r2 = scale * r2 + (1 - scale) * center
@@ -183,13 +183,13 @@ class Shape:
 
         else:
             raise QiskitError(f"Manifold {manifold} not yet supported")
-    
-    @staticmethod
-    def _l2distance(p:Tuple, q:Tuple)->Real:
-        return sqrt((p[0]-q[0])**2 + (p[1]-q[1])**2)
 
     @staticmethod
-    def is_between(p, a, b, strict=False, epsilon:Real = 0.0):
+    def _l2distance(p: Tuple, q: Tuple) -> Real:
+        return sqrt((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2)
+
+    @staticmethod
+    def is_between(p, a, b, strict=False, epsilon: Real = 0.0):
         """is p between a and b: a <= p < =b
 
         Args:
@@ -201,34 +201,32 @@ class Shape:
         Returns:
             bool: True is a is between a and b, False if not
         """
-        #print(f"y={p}, y0={a}, y1={b}, epsilon={epsilon}")
+        # print(f"y={p}, y0={a}, y1={b}, epsilon={epsilon}")
 
         if strict:
             if a == b:
                 return False
             if a < b:
-                return a+epsilon < p and p < b-epsilon
+                return a + epsilon < p and p < b - epsilon
             else:
-                return b+epsilon < p and p < a-epsilon
+                return b + epsilon < p and p < a - epsilon
         else:
             if a == b:
-                return (p ==a)
+                return p == a
             if a < b:
-                #print("a<b")
-                return a+epsilon <= p and p <= b-epsilon
+                # print("a<b")
+                return a + epsilon <= p and p <= b - epsilon
             else:
-                #print("b<a")
-                return b+epsilon <= p and p <= a-epsilon
-
+                # print("b<a")
+                return b + epsilon <= p and p <= a - epsilon
 
         ## pylint: disable=chained-comparison
-        #if strict:
+        # if strict:
         #    return (((a <= b) * a + (b < a) * b) < p) and (p < ((a > b) * a + (b >= a) * b))
         #
-        #return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
+        # return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
 
-
-    def contains(self, point, on_boundary=True, epsilon=0.01, method="winding")->bool:
+    def contains(self, point, on_boundary=True, epsilon=0.01, method="winding") -> bool:
         """
 
         Args:
@@ -241,13 +239,15 @@ class Shape:
             bool: _description_
         """
         if method == "winding":
-            return self.contains_quad_winding_number(point, on_boundary=on_boundary, epsilon=epsilon)
+            return self.contains_quad_winding_number(
+                point, on_boundary=on_boundary, epsilon=epsilon
+            )
         elif method == "raytracing":
             return self.contains_ray_trace(point, on_boundary=on_boundary, epsilon=epsilon)
         else:
             raise QiskitError(f"Unknown contains method: {method}")
-    
-    def contains_quad_winding_number(self, point, on_boundary:bool=False, epsilon:float=0.01):
+
+    def contains_quad_winding_number(self, point, on_boundary: bool = False, epsilon: float = 0.01):
         """Deterine if a point is inside a polygon.
 
         Algorithm from Hornmann and Agathos, Computational Geometry 20 (2001) 131-144
@@ -263,7 +263,7 @@ class Shape:
 
         Args:
             point: Point to check if inside the given shape
-            on_boundary: Set True to include the boundary. Slow for larger boundaries. 
+            on_boundary: Set True to include the boundary. Slow for larger boundaries.
                 Default is False. Points will be included if with epsilon of the boundary.
             epsilon: Value used to indicate if a point is close enough to the boundary to be
                 included. Default is 0.01
@@ -276,23 +276,25 @@ class Shape:
 
         if on_boundary:
             # Determine if the given point is within (l2 distance) epsilon of the shape boundary.
-            d = 3*epsilon
+            d = 3 * epsilon
             for index, line in enumerate(self.lines):
                 [x0, y0] = self.points[line[0]]
                 [x1, y1] = self.points[line[1]]
 
-                if abs(x0-x1) < 0.000000001: # It is assumed that the line sigement is not enormous!
+                if (
+                    abs(x0 - x1) < 0.000000001
+                ):  # It is assumed that the line sigement is not enormous!
                     # m = float('inf')
                     if Shape.is_between(y, y0, y1):
-                        d = min(d, abs(x-x0))
+                        d = min(d, abs(x - x0))
                     else:
-                        if y-y0 > y-y1:
-                            d = min(d, Shape._l2distance((x,y),(x1,y1)))
+                        if y - y0 > y - y1:
+                            d = min(d, Shape._l2distance((x, y), (x1, y1)))
                         else:
-                            d = min(d, Shape._l2distance((x,y),(x0,y0)))
+                            d = min(d, Shape._l2distance((x, y), (x0, y0)))
                 else:
                     m = (y0 - y1) / (x0 - x1)
-                    c  = y0 - m * x0
+                    c = y0 - m * x0
                     c0 = y0 + m * x0
                     c1 = y1 + m * x1
                     yp = m * x + c
@@ -300,29 +302,30 @@ class Shape:
                     yp1 = -m * x + c1
                     if abs(m) < 0.000000001:
                         if Shape.is_between(x, x0, x1):
-                            d = min(d, abs(y-y0))
+                            d = min(d, abs(y - y0))
                         else:
                             if x - x0 > x - x1:
-                                d = min(d, Shape._l2distance((x,y),(x1,y1)))
+                                d = min(d, Shape._l2distance((x, y), (x1, y1)))
                             else:
-                                d = min(d, Shape._l2distance((x,y),(x0,y0)))
+                                d = min(d, Shape._l2distance((x, y), (x0, y0)))
                     else:
                         if self.is_between(y, yp0, yp1):
-                            d = min(d, abs(m * x - y + c)/sqrt(m**2+1))
+                            d = min(d, abs(m * x - y + c) / sqrt(m**2 + 1))
                         else:
                             if y > yp0 and y > yp1:
-                                d=min(d,Shape._l2distance((x,y),(x0,y0)))
+                                d = min(d, Shape._l2distance((x, y), (x0, y0)))
                             else:
-                                d=min(d,Shape._l2distance((x,y),(x1,y1)))
+                                d = min(d, Shape._l2distance((x, y), (x1, y1)))
             if bool(d < epsilon):
                 return True
 
         def det(point, start, end):
-            return (start[0]-point[0]) * (end[1]-point[1])\
-                - (end[0]-point[0]) * (start[1]-point[1])
-        
+            return (start[0] - point[0]) * (end[1] - point[1]) - (end[0] - point[0]) * (
+                start[1] - point[1]
+            )
+
         # Determine which quandrant each defining path point is in
-        quadrants = [0]*len(self.points)
+        quadrants = [0] * len(self.points)
         for index, line_point in enumerate(self.points):
             if line_point[0] > x and line_point[1] >= y:
                 quadrants[index] = 0
@@ -338,15 +341,14 @@ class Shape:
         # Calculate winding number
         for index, value in enumerate(quadrants):
             val = quadrants[(index + 1) % n] - quadrants[index]
-            if val in [1,-3]:
+            if val in [1, -3]:
                 omega = omega + 1
-            elif val in [-1,3]:
+            elif val in [-1, 3]:
                 omega = omega - 1
             elif val in [2, -2]:
                 val_det = det(point, self.points[index], self.points[(index + 1) % n])
                 omega = omega + copysign(2, val_det)
-        return bool(omega/4)
-
+        return bool(omega / 4)
 
     def contains_ray_trace(self, point, on_boundary=True, epsilon=0.01):
         """Check if inside the bounded region using an infinite horizontal line from the point
@@ -365,41 +367,41 @@ class Shape:
         Returns: (bool) Check if inside the bounded region using an infinite
                         horizontal line from the point to +infinity
         """
-        epsilon=0.01
+        epsilon = 0.01
         x = point[0]
         y = point[1]
         count = 0
         k = len(self.lines)
 
         # First check if point lines on the boundary. Here a point is defined to lie
-        # on the boundary if dist(p,P)<epsilon where p is the point and P is the path 
+        # on the boundary if dist(p,P)<epsilon where p is the point and P is the path
         # of the boundary. When P consists of a collection of line segments then
         # dist(p,P) = min dist(p,l) for l in P where l is a line segement of P.
 
         def dprint(string):
             if Shape._DEBUG:
                 print(string)
-    
-        d = 3*epsilon
+
+        d = 3 * epsilon
         dprint(f"Processing point [{x},{y}]")
         for index, line in enumerate(self.lines):
             dprint(f"Processing line {index}")
             [x0, y0] = self.points[line[0]]
             [x1, y1] = self.points[line[1]]
             dprint(f"{[x0, y0]} to {[x1, y1]}")
-            if abs(x0-x1) < 0.000000001: # It is assumed that the line sigement is not enormous!
-                m = float('inf')
+            if abs(x0 - x1) < 0.000000001:  # It is assumed that the line sigement is not enormous!
+                m = float("inf")
                 if on_boundary:
                     if Shape.is_between(y, y0, y1):
-                        d = min(d, abs(x-x0))
+                        d = min(d, abs(x - x0))
                     else:
-                        if y-y0 > y-y1:
-                            d = min(d, Shape._l2distance((x,y),(x1,y1)))
+                        if y - y0 > y - y1:
+                            d = min(d, Shape._l2distance((x, y), (x1, y1)))
                         else:
-                            d = min(d, Shape._l2distance((x,y),(x0,y0)))
+                            d = min(d, Shape._l2distance((x, y), (x0, y0)))
             else:
                 m = (y0 - y1) / (x0 - x1)
-                c  = y0 - m * x0
+                c = y0 - m * x0
                 c0 = y0 + m * x0
                 c1 = y1 + m * x1
                 yp = m * x + c
@@ -408,22 +410,22 @@ class Shape:
                 if on_boundary:
                     if abs(m) < 0.000000001:
                         if Shape.is_between(x, x0, x1):
-                            d = min(d, abs(y-y0))
+                            d = min(d, abs(y - y0))
                         else:
                             if x - x0 > x - x1:
-                                d = min(d, Shape._l2distance((x,y),(x1,y1)))
+                                d = min(d, Shape._l2distance((x, y), (x1, y1)))
                             else:
-                                d = min(d, Shape._l2distance((x,y),(x0,y0)))
+                                d = min(d, Shape._l2distance((x, y), (x0, y0)))
                     else:
                         if self.is_between(y, yp0, yp1):
-                            d = min(d, abs(m * x - y + c)/sqrt(m**2+1))
+                            d = min(d, abs(m * x - y + c) / sqrt(m**2 + 1))
                         else:
                             if y > yp0 and y > yp1:
-                                d=min(d,Shape._l2distance((x,y),(x0,y0)))
+                                d = min(d, Shape._l2distance((x, y), (x0, y0)))
                             else:
-                                d=min(d,Shape._l2distance((x,y),(x1,y1)))
+                                d = min(d, Shape._l2distance((x, y), (x1, y1)))
 
-            if m == float('inf'):
+            if m == float("inf"):
                 if Shape.is_between(y, y0, y1, epsilon=0.000000001, strict=True) and x < x0:
                     count += 1
                     dprint(f"m=inf inside count = {count}")
@@ -448,11 +450,11 @@ class Shape:
                 if y1 > max(y0, y2) or y1 < min(y0, y2):
                     dprint(f"/\ or \/ vertex count")
                     pass
-                elif self.is_between(y1, y0, y2,epsilon=0, strict=True):
-                    if x <= x1: 
+                elif self.is_between(y1, y0, y2, epsilon=0, strict=True):
+                    if x <= x1:
                         count += 1
                         dprint(f"| vertex count = {count}")
-                elif abs(y1-y2) < 0.000001:
+                elif abs(y1 - y2) < 0.000001:
                     if y1 > max(y0, y3) or y1 < min(y0, y3):
                         dprint(f"/_\ or \_/ vertex count")
                         pass
@@ -464,8 +466,7 @@ class Shape:
         dprint(f"d<epsilon = {d < epsilon} and count %2 = {count %2}")
         return bool(d < epsilon) or bool(int(count) % 2)
 
-    
-    def inside(self, tiling:Shell, on_boundary=False, epsilon:Real=0.1) -> Dict[Any, bool]:
+    def inside(self, tiling: Shell, on_boundary=False, epsilon: Real = 0.1) -> Dict[Any, bool]:
         """Returns the inout data for a shape and a tiling
 
         Args:
@@ -477,6 +478,8 @@ class Shape:
         inout = {}
         for vertex in tiling.vertices:
             if Shape._DEBUG:
-                print(f"Vertex id: {vertex.id} of face :{vertex.parents[0].parents[0].parents[0].id}")
+                print(
+                    f"Vertex id: {vertex.id} of face :{vertex.parents[0].parents[0].parents[0].id}"
+                )
             inout[vertex] = self.contains(vertex.pos, on_boundary=on_boundary, epsilon=epsilon)
         return inout
