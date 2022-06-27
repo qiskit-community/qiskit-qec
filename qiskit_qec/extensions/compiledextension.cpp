@@ -42,8 +42,10 @@ PYBIND11_MODULE(compiledextension, m)
       .def("get_index", &FaultEnumerator::get_index)
       .def("get_state", &FaultEnumerator::get_state)
       .def("done", &FaultEnumerator::done);
-  m.def("minimum_distance", &minimum_distance, "compute minimum distance of stabilizer code",
-        py::arg("symplectic_vectors"), py::arg("max_weight") = 10);
+  m.def("minimum_distance", &minimum_distance, "compute minimum distance of subsystem stabilizer code",
+        py::arg("symplectic_vectors"), py::arg("symplectic_gauge_vectors"), py::arg("max_weight") = 10);
+  m.def("minimum_distance_by_tests", &minimum_distance_by_tests, "compute minimum distance of subsystem stabilizer code",
+        py::arg("symplectic_vectors"), py::arg("symplectic_xl"), py::arg("symplectic_zl"), py::arg("max_weight") = 10);
   m.def("rank", &rank, "compute rank of set of vectors", py::arg("vectors"));
   m.def("isotropic", &is_isotropic, "test if set of symplectic vectors is isotropic", py::arg("symplectic_vectors"));
 }

@@ -22,10 +22,7 @@ from qiskit import QuantumCircuit
 
 
 class RepetitionCodeCircuit:
-    """
-    Implementation of a distance d repetition code, implemented over
-    T syndrome measurement rounds.
-    """
+    """RepetitionCodeCircuit class."""
 
     def __init__(
         self,
@@ -34,10 +31,14 @@ class RepetitionCodeCircuit:
         xbasis: bool = False,
         resets: bool = False,
         delay: Optional[int] = None,
+        barriers: bool = False,
     ):
         """
         Creates the circuits corresponding to a logical 0 and 1 encoded
         using a repetition code.
+
+        Implementation of a distance d repetition code, implemented over
+        T syndrome measurement rounds.
 
         Args:
             d (int): Number of code qubits (and hence repetitions) used.
@@ -45,6 +46,7 @@ class RepetitionCodeCircuit:
             xbasis (bool): Whether to use the X basis to use for encoding (Z basis used by default).
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
+            barriers (bool): Whether to include barriers between different sections of the code.
 
 
         Additional information:
@@ -54,6 +56,7 @@ class RepetitionCodeCircuit:
             syndrome measurement round).
         """
 
+        self.n = d
         self.d = d
         self.T = 0
 
@@ -70,6 +73,7 @@ class RepetitionCodeCircuit:
 
         self._xbasis = xbasis
         self._resets = resets
+        self._barriers = barriers
 
         self._preparation()
 
@@ -114,90 +118,96 @@ class RepetitionCodeCircuit:
         self.delay = delay
 
     def get_circuit_list(self) -> List[QuantumCircuit]:
-        """
-        Returns:
-            circuit_list: self.circuit as a list, with
-            circuit_list[0] = circuit['0']
-            circuit_list[1] = circuit['1']
+        """Returns circuit list.
+
+        circuit_list: self.circuit as a list, with
+        circuit_list[0] = circuit['0']
+        circuit_list[1] = circuit['1']
         """
         circuit_list = [self.circuit[log] for log in ["0", "1"]]
         return circuit_list
 
     def x(self, logs=("0", "1"), barrier=False):
-        """
-        Applies a logical x to the circuits for the given logical values.
+        """Applies a logical x to the circuits for the given logical values.
 
         Args:
             logs (list or tuple): List or tuple of logical values expressed as
                 strings.
             barrier (bool): Boolean denoting whether to include a barrier at
-                the end.
+                the start.
         """
+        barrier = barrier or self._barriers
         for log in logs:
+            if barrier and (log == "1" or self._xbasis):
+                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].z(self.code_qubit)
             else:
                 self.circuit[log].x(self.code_qubit)
-            if barrier:
-                self.circuit[log].barrier()
 
-    def _preparation(self, barrier=False):
-        """
-        Prepares logical bit states by applying an x to the circuit that will
+    def _preparation(self):
+        """Prepares logical bit states by applying an x to the circuit that will
         encode a 1.
         """
-
         for log in ["0", "1"]:
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)
-            if barrier:
-                self.circuit[log].barrier()
-
         self.x(["1"])
 
     def syndrome_measurement(self, final: bool = False, barrier: bool = False, delay: int = 0):
-        """
-        Application of a syndrome measurement round.
+        """Application of a syndrome measurement round.
 
         Args:
             final (bool): Whether to disregard the reset (if applicable) due to this
             being the final syndrome measurement round.
-            barrier (bool): Boolean denoting whether to include a barrier at the end.
+            barrier (bool): Boolean denoting whether to include a barrier at the start.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
         """
+        barrier = barrier or self._barriers
+
         self.link_bits.append(ClassicalRegister((self.d - 1), "round_" + str(self.T) + "_link_bit"))
 
         for log in ["0", "1"]:
 
             self.circuit[log].add_register(self.link_bits[-1])
 
+            # entangling gates
+            if barrier:
+                self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].h(self.link_qubit)
-
             for j in range(self.d - 1):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j])
                 else:
                     self.circuit[log].cx(self.code_qubit[j], self.link_qubit[j])
-
             for j in range(self.d - 1):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j + 1])
                 else:
                     self.circuit[log].cx(self.code_qubit[j + 1], self.link_qubit[j])
-
             if self._xbasis:
                 self.circuit[log].h(self.link_qubit)
 
-            for j in range(self.d - 1):
-                self.circuit[log].measure(self.link_qubit[j], self.link_bits[self.T][j])
-                if self._resets and not final:
-                    self.circuit[log].reset(self.link_qubit[j])
-                if delay > 0 and not final:
-                    self.circuit[log].delay(delay, self.link_qubit[j])
-
+            # measurement
             if barrier:
                 self.circuit[log].barrier()
+            for j in range(self.d - 1):
+                self.circuit[log].measure(self.link_qubit[j], self.link_bits[self.T][j])
+
+            # resets
+            if self._resets and not final:
+                if barrier:
+                    self.circuit[log].barrier()
+                for j in range(self.d - 1):
+                    self.circuit[log].reset(self.link_qubit[j])
+
+            # delay
+            if delay > 0 and not final:
+                if barrier:
+                    self.circuit[log].barrier()
+                for j in range(self.d - 1):
+                    self.circuit[log].delay(delay, self.link_qubit[j])
 
         self.T += 1
 
@@ -206,7 +216,6 @@ class RepetitionCodeCircuit:
         Readout of all code qubits, which corresponds to a logical measurement
         as well as allowing for a measurement of the syndrome to be inferred.
         """
-
         for log in ["0", "1"]:
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)

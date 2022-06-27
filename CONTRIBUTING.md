@@ -21,7 +21,7 @@ conda activate MYCONDA
 1. Install [git](https://git-scm.com/) and then close/reopen your terminal and clone the Qiskit QEC repo 
 
 ```
-git clone git@github.com:Qiskit/qiskit-qec.git
+git clone git@github.com:qiskit-community/qiskit-qec.git
 ```
 
 2. Cloning the repository creates a local folder called `qiskit-qec`. Change directory (cd) into this folder.
@@ -61,7 +61,7 @@ pip install -e .
 
 Working on an Issue 
 
-0. Make sure there is an issue in [Issues](https://github.com/Qiskit/qiskit-qec/issues) for the changes you plan to make. If there is not an issue listed already, create one and remember the issue's number. 
+0. Make sure there is an issue in [Issues](https://github.com/qiskit-community/qiskit-qec/issues) for the changes you plan to make. If there is not an issue listed already, create one and remember the issue's number. 
 
 1.  In your terminal, checkout the `main` branch and then create a new branch with the name in the format: issue-number_brief-description.  This might look like: `branch -b 93_update_readme` 
 
@@ -221,7 +221,7 @@ as:
 fixes:
   - |
     Fixes a race condition in the function ``foo()``. Refer to
-    `#12345 <https://github.com/Qiskit/qiskit-qec/issues/12345>` for more
+    `#12345 <https://github.com/qiskit-community/qiskit-qec/issues/12345>` for more
     details.
 ```
 
@@ -244,7 +244,7 @@ it has been tagged::
 At release time ``reno report`` is used to generate the release notes for the
 release and the output will be submitted as a pull request to the documentation
 repository's [release notes file](
-https://github.com/Qiskit/qiskit/blob/master/docs/release_notes.rst)
+https://github.com/qiskit-community/qiskit/blob/master/docs/release_notes.rst)
 
 #### Building release notes locally
 

@@ -17,15 +17,13 @@
 """
 Graph used as the basis of decoders.
 """
-from typing import List, Tuple, Dict
-
 import itertools
 import logging
+from typing import List, Tuple
+
 import numpy as np
 import retworkx as rx
-
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.utils.indexer import Indexer
 
 
 class DecodingGraph:
@@ -39,8 +37,8 @@ class DecodingGraph:
     def __init__(self, code):
         """
         Args:
-            code (CodeCircuit): The QEC code circuit object for which this decoder
-                will be used.
+            code (CodeCircuit): The QEC code circuit object for which this decoding
+                graph will be created. If None, graph will initialized as empty.
         """
 
         self.code = code
@@ -51,35 +49,36 @@ class DecodingGraph:
 
         S = rx.PyGraph(multigraph=False)
 
-        qc = self.code.circuit["0"]
-        fe = FaultEnumerator(qc, method="stabilizer")
-        blocks = list(fe.generate_blocks())
-        fault_paths = list(itertools.chain(*blocks))
+        if self.code is not None:
+            qc = self.code.circuit["0"]
+            fe = FaultEnumerator(qc, method="stabilizer")
+            blocks = list(fe.generate_blocks())
+            fault_paths = list(itertools.chain(*blocks))
 
-        for _, _, _, output in fault_paths:
-            string = "".join([str(c) for c in output[::-1]])
-            nodes = self.code.string2nodes(string)
-            for node in nodes:
-                if node not in S.nodes():
-                    S.add_node(node)
-            for source in nodes:
-                for target in nodes:
-                    if target != source:
-                        n0 = S.nodes().index(source)
-                        n1 = S.nodes().index(target)
-                        qubits = []
-                        if not (source["is_boundary"] and target["is_boundary"]):
-                            qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-                        if source["time"] != target["time"] and len(qubits) > 1:
+            for _, _, _, output in fault_paths:
+                string = "".join([str(c) for c in output[::-1]])
+                nodes = self.code.string2nodes(string)
+                for node in nodes:
+                    if node not in S.nodes():
+                        S.add_node(node)
+                for source in nodes:
+                    for target in nodes:
+                        if target != source:
+                            n0 = S.nodes().index(source)
+                            n1 = S.nodes().index(target)
                             qubits = []
-                        edge = {"qubits": qubits, "weight": 1}
-                        S.add_edge(n0, n1, edge)
+                            if not (source["is_boundary"] and target["is_boundary"]):
+                                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+                            if source["time"] != target["time"] and len(qubits) > 1:
+                                qubits = []
+                            edge = {"qubits": qubits, "weight": 1}
+                            S.add_edge(n0, n1, edge)
 
         return S
 
     def get_error_probs(self, results, logical="0"):
-        """
-        Generate probabilities of single error events from result counts.
+        """Generate probabilities of single error events from result counts.
+
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
@@ -189,13 +188,14 @@ class DecodingGraph:
                 w = -np.log(p / (1 - p))
             self.graph.update_edge(edge[0], edge[1], w)
 
-    def make_error_graph(self, string):
-        """
+    def make_error_graph(self, string: str):
+        """Returns error graph.
+
         Args:
             string (str): A string describing the output from the code.
 
         Returns:
-            E: The subgraph of S which corresponds to the non-trivial
+            The subgraph of S which corresponds to the non-trivial
             syndrome elements in the given string.
         """
 
@@ -243,7 +243,7 @@ class CSSDecodingGraph:
         blocks: int,
         round_schedule: str,
         basis: str,
-    ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], rx.PyGraph, Indexer]:
+    ):
 
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
@@ -289,7 +289,7 @@ class CSSDecodingGraph:
         This method sets edge weights all to 1 and is based on
         computing intersections of operator supports.
 
-        Returns a tuple (idxmap, node_layers, G, pymatching_indexer)
+        Returns a tuple (idxmap, node_layers, G)
         where idxmap is a dict
         mapping tuples (t, qubit_set) to integer vertex indices in the
         decoding graph G. The list node_layers contains lists of nodes
@@ -307,8 +307,6 @@ class CSSDecodingGraph:
             gauges = self.css_x_gauge_ops
             stabilizers = self.css_x_stabilizer_ops
             boundary = self.css_x_boundary
-
-        pymatching_indexer = Indexer()
 
         # Construct the decoding graph
         idx = 0  # vertex index counter
@@ -366,17 +364,14 @@ class CSSDecodingGraph:
                             "measurement_error": 0,
                             "weight": 1,
                             "highlighted": False,
-                            "qubit_id": pymatching_indexer[com[0]],
-                            "error_probability": 0.01,
                         }
                         graph.add_edge(
                             idxmap[(time, tuple(op_g))], idxmap[(time, tuple(op_h))], edge
                         )
                         logging.debug("spacelike t=%d (%s, %s)", time, op_g, op_h)
                         logging.debug(
-                            " qubits %s qubit_id %s",
+                            " qubits %s",
                             [com[0]],
-                            pymatching_indexer[com[0]],
                         )
 
             # Add boundary space-like edges
@@ -392,8 +387,6 @@ class CSSDecodingGraph:
                     "measurement_error": 0,
                     "weight": 0,
                     "highlighted": False,
-                    "qubit_id": -1,
-                    "error_probability": 0.0,
                 }
                 graph.add_edge(idxmap[(time, tuple(bound_g))], idxmap[(time, tuple(bound_h))], edge)
                 logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
@@ -438,8 +431,6 @@ class CSSDecodingGraph:
                                     "measurement_error": 1,
                                     "weight": 1,
                                     "highlighted": False,
-                                    "qubit_id": -1,
-                                    "error_probability": 0.01,
                                 }
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
@@ -448,14 +439,11 @@ class CSSDecodingGraph:
                                 )
                                 logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
                             else:  # Case (b)
-                                q_idx = pymatching_indexer[com[0]]
                                 edge = {
                                     "qubits": [com[0]],
                                     "measurement_error": 1,
                                     "weight": 1,
                                     "highlighted": False,
-                                    "qubit_id": q_idx,
-                                    "error_probability": 0.01,
                                 }
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
@@ -463,7 +451,7 @@ class CSSDecodingGraph:
                                     edge,
                                 )
                                 logging.debug("spacetime hook t=%d (%s, %s)", time, op_g, op_h)
-                                logging.debug(" qubits %s qubit_id %s", [com[0]], q_idx)
+                                logging.debug(" qubits %s", [com[0]])
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
                 edge = {
@@ -471,16 +459,12 @@ class CSSDecodingGraph:
                     "measurement_error": 0,
                     "weight": 0,
                     "highlighted": False,
-                    "qubit_id": -1,
-                    "error_probability": 0.0,
                 }
                 graph.add_edge(
                     idxmap[(time - 1, tuple(boundary[0]))], idxmap[(time, tuple(boundary[0]))], edge
                 )
                 logging.debug("boundarylink t=%d", time)
-        logging.debug("indexer %s", pymatching_indexer)
 
         self.idxmap = idxmap
         self.node_layers = node_layers
         self.graph = graph
-        self.pymatching_indexer = pymatching_indexer

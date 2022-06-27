@@ -14,7 +14,6 @@ Qiskit QEC API Reference
    codes
    decoders
    extensions
-   factory
    geometry
    info
    linear

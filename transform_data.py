@@ -133,23 +133,31 @@ def convert_jsons(data, i, csvfile):
         elif OLD_logicals in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_logicals]
 
-        # Convert strings to upper case and then into index syntax with XZY 
+        # Convert strings to upper case and then into index syntax with XZY
         # (also YZX as phases are ignored) tensor form
         new_code_info[ISOTROPIC_GEN] = [item.upper() for item in new_code_info[ISOTROPIC_GEN]]
-        matrix_iso, phase_exp = rep.str2symplectic(new_code_info[ISOTROPIC_GEN], qubit_order="left-to-right")
-        temp = rep.symplectic2str(matrix_iso, phase_exp, syntax=1, qubit_order="left-to-right", same_type=False)
+        matrix_iso, phase_exp = rep.str2symplectic(
+            new_code_info[ISOTROPIC_GEN], qubit_order="left-to-right"
+        )
+        temp = rep.symplectic2str(
+            matrix_iso, phase_exp, syntax=1, qubit_order="left-to-right", same_type=False
+        )
         new_code_info[ISOTROPIC_GEN] = list(temp)
 
         if LOGICAL_OPS in new_code_info:
-            # Convert strings to upper case and then into index syntax with XZY 
+            # Convert strings to upper case and then into index syntax with XZY
             # (also YZX as phases are ignored) tensor form
             new_code_info[LOGICAL_OPS] = [item.upper() for item in new_code_info[LOGICAL_OPS]]
-            matrix_logical, _ = rep.str2symplectic(new_code_info[LOGICAL_OPS], qubit_order="left-to-right")
-            new_code_info[LOGICAL_OPS] = list(rep.symplectic2str(matrix_logical, syntax=1,qubit_order="left-to-right"))
+            matrix_logical, _ = rep.str2symplectic(
+                new_code_info[LOGICAL_OPS], qubit_order="left-to-right"
+            )
+            new_code_info[LOGICAL_OPS] = list(
+                rep.symplectic2str(matrix_logical, syntax=1, qubit_order="left-to-right")
+            )
 
             for s_index, stab in enumerate(matrix_iso):
                 for l_index, log in enumerate(matrix_logical):
-                    if symplectic_product(stab,log):
+                    if symplectic_product(stab, log):
                         problem = f"CODE {code_str}: Logical operators not commuting with stabilizers \
                             - stabilizer: {new_code_info[ISOTROPIC_GEN][s_index]} and \
                             logical: {new_code_info[LOGICAL_OPS][l_index]} do not commute"
