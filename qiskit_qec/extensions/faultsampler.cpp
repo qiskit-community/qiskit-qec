@@ -58,13 +58,12 @@ std::vector<FaultPath> FaultSampler::sample(int blocksize)
       if (r < _label_to_error_probability[label])
         locations.push_back(j);
     }
-    // Remove this shortly ...
     std::vector<int> indices;
     std::vector<std::string> labels;
     std::vector<std::string> error;
     for(int j=0; j<locations.size(); j++) {
-      int index = _faulty_ops_indices[j];
-      std::string label = _faulty_ops_labels[j];
+      int index = _faulty_ops_indices[locations[j]];
+      std::string label = _faulty_ops_labels[locations[j]];
       indices.push_back(index);
       labels.push_back(label);
       int p = _label_to_dist[label](*_generator);
