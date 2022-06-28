@@ -399,14 +399,22 @@ class TileCodeFactory:
                     plt.text(vertex.pos[0], vertex.pos[1], qubit_data.qubit[vertex.id])
 
             if show_face_ids and qubit_data is not None:
-                from shapely.geometry import Polygon
-
                 def get_representative_point(points):
-                    poly = Polygon(points)
-                    # pylint: disable=no-member
-                    cx = poly.representative_point().x
-                    cy = poly.representative_point().y
-                    return cx, cy
+                    # Just uses the centroid for the moment
+                    # This needs to be replaced for irregular
+                    # polygons
+                    xs = [point[0] for point in points]
+                    zs = [point[1] for point in points]
+                    return sum(xs) / len(xs), sum(zs) / len(zs)
+    
+                # Shapely version
+                # from shapely.geometry import Polygon
+                # def get_representative_point(points):
+                #     poly = Polygon(points)
+                #     # pylint: disable=no-member
+                #     cx = poly.representative_point().x
+                #     cy = poly.representative_point().y
+                #     return cx, cy
 
                 for face in shell.faces:
                     points = [vertex.pos for vertex in face.vertices]
