@@ -57,6 +57,10 @@ class FaultSampler:
             }
             for label in self.faulty_ops_labels
         }
+        self.label_to_pauli_weight_tuple = {
+            label: [(pauli, weight) for pauli, weight in pdict.items()]
+            for label, pdict in self.label_to_pauli_weight.items()
+        }
         self.label_to_error_probability = {
             label: self.model.get_error_probability(label) for label in self.faulty_ops_labels
         }
@@ -84,7 +88,7 @@ class FaultSampler:
                     self.propagator.encoded_circ,
                     self.faulty_ops_indices,
                     self.faulty_ops_labels,
-                    self.label_to_pauli_weight,
+                    self.label_to_pauli_weight_tuple,
                     self.label_to_error_probability,
                     self.sim_seed,
                 )
