@@ -313,7 +313,7 @@ class Shell(ShapeObject):
                 qubit_id for qubit_id, count in qubit_count.qubits_count.items() if count != 0
             ]
             from_index = dict(enumerate(from_index))
-            #from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}
+            # from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}
         if from_qubit is None:
             from_qubit = {qubit_id: index for index, qubit_id in from_index.items()}
 
@@ -402,13 +402,9 @@ class Shell(ShapeObject):
 
         for stabilizer in stab:
             if len(stabilizer[0]) == 2:
-                ax.add_patch(plt.Polygon(stabilizer[0],
-                                         color=stabilizer[1],
-                                         linewidth=7))
+                ax.add_patch(plt.Polygon(stabilizer[0], color=stabilizer[1], linewidth=7))
             else:
-                ax.add_patch(plt.Polygon(stabilizer[0],
-                                         facecolor=stabilizer[1],
-                                         edgecolor="black"))
+                ax.add_patch(plt.Polygon(stabilizer[0], facecolor=stabilizer[1], edgecolor="black"))
 
         if show_index and qubit_data is not None:
             offset = min(figsize) * 0.01
@@ -416,8 +412,7 @@ class Shell(ShapeObject):
             # print multple times on the same spot
             for vertex in self.vertices:
                 plt.text(
-                    vertex.pos[0] + offset, vertex.pos[1]
-                        + offset, qubit_data.index[vertex.id]
+                    vertex.pos[0] + offset, vertex.pos[1] + offset, qubit_data.index[vertex.id]
                 )
 
         if show_face_ids and qubit_data is not None:

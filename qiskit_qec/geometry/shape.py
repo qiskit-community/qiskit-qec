@@ -119,8 +119,8 @@ class Shape:
         scale2: Union[int, float],
         manifold: Manifold = Plane(),
         delta: float = 0,
-        dtype: type=float
-        )->"Shape":
+        dtype: type = float,
+    ) -> "Shape":
         r"""Create a rectangle on a manifold
 
                       r2
@@ -194,7 +194,7 @@ class Shape:
         return sqrt((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2)
 
     @staticmethod
-    def is_between(p:Real, a:Real, b:Real, strict:bool=False, epsilon:Real = 0.0):
+    def is_between(p: Real, a: Real, b: Real, strict: bool = False, epsilon: Real = 0.0):
         """is p between a and b: a <= p < =b
 
         Args:
@@ -244,10 +244,9 @@ class Shape:
         else:
             raise QiskitError(f"Unknown contains method: {method}")
 
-    def contains_quad_winding_number(self,
-                                     point:Union[list, np.ndarray],
-                                     on_boundary: bool = False,
-                                     epsilon: float = 0.01):
+    def contains_quad_winding_number(
+        self, point: Union[list, np.ndarray], on_boundary: bool = False, epsilon: float = 0.01
+    ):
         """Deterine if a point is inside a polygon (PIP Problem)
 
         On or near boundary method uses l2 distances and interior method uses
@@ -298,7 +297,7 @@ class Shape:
                     c = y0 - m * x0
                     c0 = y0 + m * x0
                     c1 = y1 + m * x1
-                    #yp = m * x + c
+                    # yp = m * x + c
                     yp0 = -m * x + c0
                     yp1 = -m * x + c1
                     if abs(m) < 0.000000001:
@@ -467,7 +466,9 @@ class Shape:
         dprint(f"d<epsilon = {d < epsilon} and count %2 = {count %2}")
         return bool(d < epsilon) or bool(int(count) % 2)
 
-    def inside(self, tiling: Shell, on_boundary:bool=False, epsilon: Real = 0.1) -> Dict[Any, bool]:
+    def inside(
+        self, tiling: Shell, on_boundary: bool = False, epsilon: Real = 0.1
+    ) -> Dict[Any, bool]:
         """Returns the in-out data for a shape and a tiling
 
         Args:

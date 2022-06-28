@@ -102,7 +102,7 @@ class StabSubSystemCode(Code):
         """Returns the Pauli generators for the subsystem"""
         return self.gauge_group.generators
 
-    def draw(self, **kwargs)->None:
+    def draw(self, **kwargs) -> None:
         """Draws the subsytem code if a shell exists"""
         if self.shell is not None:
             self.shell.draw(qubit_data=self.qubit_data, qubit_count=self.qubit_count, **kwargs)

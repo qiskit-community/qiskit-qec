@@ -265,7 +265,6 @@ class Lattice:
         point = origin.copy()
         points = _find_points(extended_aabb, horz_vec, vert_vec, point, points, direction="down")
 
-
         # Create a lattice with points generated
 
         lattice_l = Lattice(u_vec=horz_vec, v_vec=vert_vec, points=points)
