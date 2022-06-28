@@ -218,9 +218,7 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     inputform3 = zl.astype(np.int32).tolist()
     if xl.shape[0] == 0:  # k = 0, fall back to first method
         # pylint: disable=c-extension-no-member
-        return compiledextension.minimum_distance(
-            inputform1, inputform1p, max_weight
-        )
+        return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
     else:
         # pylint: disable=c-extension-no-member
         return compiledextension.minimum_distance_by_tests(
