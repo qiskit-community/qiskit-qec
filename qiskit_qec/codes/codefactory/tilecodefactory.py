@@ -21,7 +21,6 @@ import matplotlib.pyplot as plt
 from qiskit import QiskitError
 
 from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
-from qiskit_qec.structures.gauge import GaugeGroup
 from qiskit_qec.operators.pauli import Pauli
 
 from qiskit_qec.geometry.model.qubit_count import QubitCount
@@ -322,16 +321,19 @@ class TileCodeFactory:
             face_colors (bool, optional): _description_. Defaults to False.
             show_inside (bool, optional): _description_. Defaults to False.
             figsize (Optional[Tuple[float, float]], optional): _description_. Defaults to None.
+            show_qubit_ids: Show qubit ids
+            show_face_ids: Show face ids
             xcolor (str, optional): _description_. Defaults to "red".
             zcolor (str, optional): _description_. Defaults to "green".
             ycolor (str, optional): _description_. Defaults to "blue".
             cutter_color (str, optional): _description_. Defaults to "magenta".
 
-        Returns:
-            _type_: _description_
+        Raises:
+            QiskitError: No shell, cutter or lattive provided
+
         """
         if lattice is None and cutter is None and shell is None:
-            return None
+            raise QiskitError("No shell, cutter or lattive provided")
 
         if figsize is None:
             figsize = (10, 10)
@@ -401,6 +403,7 @@ class TileCodeFactory:
 
                 def get_representative_point(points):
                     poly = Polygon(points)
+                    # pylint: disable=no-member
                     cx = poly.representative_point().x
                     cy = poly.representative_point().y
                     return cx, cy

@@ -12,7 +12,6 @@
 """Module for Shell"""
 
 from typing import List, Dict, Tuple, Optional, Union, Callable
-from warnings import warn
 
 import numpy as np
 
@@ -88,19 +87,28 @@ class Shell(ShapeObject):
             qubit_data (QubitData): _description_
             qubit_count (QubitCount): _description_
             levels (Optional[List[int]], optional): _description_. Defaults to None.
+            exclude (optional): method used to determine which boundary operators
+                are to be used. Must be of the form
+
+                def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -> bool:
+                    pass
+
+                Will return a True value if the given operator (given by the vertex_paths)
+                is to be excluded. Deflault always returns False. That is exlude nothing
+                extra.
             boundary_strategy (str, optional): _description_. Defaults to "combine".
 
         Returns:
             Tuple[Shell, QubitData, QubitCount]: _description_
         """
-        _DEBUG = False
+        _debug = False
 
         def dprint(string):
-            if _DEBUG:
+            if _debug:
                 print(string)
 
         if exclude is None:
-
+            # pylint: disable=unused-argument
             def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -> bool:
                 return False
 
@@ -237,7 +245,8 @@ class Shell(ShapeObject):
                                 edges.append(Edge([vertex, new_path[index + 1]]))
                             if len(path) == len(short_path) + 1:
                                 dprint(
-                                    "Have a loop with len(path) == len(short_path) + 1: - adding extra edge"
+                                    "Have a loop with len(path) == len(short_path) + 1:"
+                                    + " - adding extra edge"
                                 )
                                 if len(short_path) > 2:
                                     # Loop
@@ -303,11 +312,13 @@ class Shell(ShapeObject):
             from_index = [
                 qubit_id for qubit_id, count in qubit_count.qubits_count.items() if count != 0
             ]
-            from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}
+            from_index = dict(enumerate(from_index))
+            #from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}
         if from_qubit is None:
             from_qubit = {qubit_id: index for index, qubit_id in from_index.items()}
 
-        # TODO: Make this a copy that is changed and then returned instead of doing in place and returning
+        # TODO: Make this a copy that is changed and then returned instead of
+        # doing in place and returning
         qubit_data.qubit_to_index = from_qubit
         qubit_data.index_to_qubit = from_index
         qubit_data.index = {
@@ -326,6 +337,7 @@ class Shell(ShapeObject):
                 pauli_str_list.append(pauli_str)
         return PauliList(pauli_str_list), qubit_data
 
+    # pylint: disable=unused-argument
     def draw(
         self,
         qubit_data: Optional[QubitData] = None,
@@ -343,7 +355,7 @@ class Shell(ShapeObject):
     ) -> None:
         """Draws the shell
 
-        Coloring nly works at the moment for CSS codes.
+        Coloring only works at the moment for CSS codes.
 
         Args:
             qubit_data (Optional[QubitData], optional): _description_. Defaults to None.
@@ -357,6 +369,7 @@ class Shell(ShapeObject):
             xcolor (str, optional): _description_. Defaults to "tomato".
             zcolor (str, optional): _description_. Defaults to "yellowgreen".
             ycolor (str, optional): _description_. Defaults to "steelblue".
+            kwargs: other options
 
         Returns:
             _type_: _description_
@@ -389,16 +402,22 @@ class Shell(ShapeObject):
 
         for stabilizer in stab:
             if len(stabilizer[0]) == 2:
-                ax.add_patch(plt.Polygon(stabilizer[0], color=stabilizer[1], linewidth=7))
+                ax.add_patch(plt.Polygon(stabilizer[0],
+                                         color=stabilizer[1],
+                                         linewidth=7))
             else:
-                ax.add_patch(plt.Polygon(stabilizer[0], facecolor=stabilizer[1], edgecolor="black"))
+                ax.add_patch(plt.Polygon(stabilizer[0],
+                                         facecolor=stabilizer[1],
+                                         edgecolor="black"))
 
         if show_index and qubit_data is not None:
             offset = min(figsize) * 0.01
-            # Change to run over quibits and not vertices as not to print multple times on the same spot
+            # Change to run over quibits and not vertices as not to
+            # print multple times on the same spot
             for vertex in self.vertices:
                 plt.text(
-                    vertex.pos[0] + offset, vertex.pos[1] + offset, qubit_data.index[vertex.id]
+                    vertex.pos[0] + offset, vertex.pos[1]
+                        + offset, qubit_data.index[vertex.id]
                 )
 
         if show_face_ids and qubit_data is not None:
@@ -406,6 +425,7 @@ class Shell(ShapeObject):
 
             def get_representative_point(points):
                 poly = Polygon(points)
+                # pylint: disable=no-member
                 cx = poly.representative_point().x
                 cy = poly.representative_point().y
                 return cx, cy
@@ -448,14 +468,25 @@ class Shell(ShapeObject):
             vertex.pos = Plane.rotate(angle, vertex.pos - about_point) + about_point
 
     def scale(self, scale: float = 1) -> None:
+        """Scale the shell by scale
+
+        Args:
+            scale (float, optional): Scaling value. Defaults to 1.
+        """
         for vertex in self.vertices:
             vertex.pos = scale * vertex.pos
 
     def integer_snap(self) -> None:
+        """Snap vertex components to integers"""
         for vertex in self.vertices:
             vertex.pos = np.rint(vertex.pos)
 
     def shift(self, vector: Union[None, np.ndarray, Tuple[int]] = None) -> None:
+        """Shift/traslate the shell by vector
+
+        Args:
+            vector (optional): Shift/traslate the shell by vector. Defaults to None.
+        """
         if vector is None:
             vector = (0, 0)
         vector = np.asarray(vector)

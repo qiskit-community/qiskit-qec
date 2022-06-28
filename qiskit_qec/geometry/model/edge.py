@@ -23,19 +23,21 @@ class Edge(ShapeObject):
     def __init__(
         self,
         vertices: List[Vertex],
-        next: Optional["Edge"] = None,
-        previous: Optional["Edge"] = None,
+        next_edge: Optional["Edge"] = None,
+        previous_edge: Optional["Edge"] = None,
     ) -> None:
         """Inits Edge
 
         Args:
             vertices (Tuple[Vertex, Vertex]): Endpoints of the edge.
+            next_edge: Next edge
+            previous_edge: Previous edge
         """
         super().__init__()
         self.vertices = vertices
         self.coincident_edges = []
-        self.next = next
-        self.previous = previous
+        self.next = next_edge
+        self.previous = previous_edge
 
         for item in self.vertices:
             item.add_parent(self)

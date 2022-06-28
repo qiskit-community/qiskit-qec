@@ -22,7 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class OctaSquareTile(Tile):
-    """Octa-Square Tile
+    r"""Octa-Square Tile
                             q0        q1
                             v0        v1
       q2     q3               o------o
@@ -34,7 +34,7 @@ class OctaSquareTile(Tile):
       v3     v4              \        /
       q5     q6          q9   o-----o  q10
                          v5            v4
-     q5        q6           
+     q5        q6
      v0        v1
        o-----o               q9      q10
  q8   /       \   q9         v0      v1
@@ -137,7 +137,7 @@ q11  |         |  q12         |  3  |
         operators=None,
         optype="cXZZX",
     ) -> Shell:
-        """Octa Square Tile
+        r"""Octa Square Tile
                                     q0        q1
                                     v0        v1
               q2     q3               o------o
@@ -149,7 +149,7 @@ q11  |         |  q12         |  3  |
               v3     v4              \        /
               q5     q6          q9   o-----o  q10
                                  v5            v4
-             q5        q6           
+             q5        q6
              v0        v1
                o-----o               q9      q10
          q8   /       \   q9         v0      v1

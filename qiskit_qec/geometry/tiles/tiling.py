@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Module for Tile Generation"""
-from typing import Type, Optional
+from typing import Type
 
 import numpy as np
 from qiskit.exceptions import QiskitError

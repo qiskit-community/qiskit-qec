@@ -14,8 +14,6 @@
 from typing import Optional
 from math import sqrt
 
-import numpy as np
-
 from qiskit import QiskitError
 
 from qiskit_qec.operators.pauli import Pauli

@@ -57,6 +57,5 @@ class QubitData:
         """
         try:
             del self.data_arrays[name]
-            del self.data_arrays_descriptions[name]
         except KeyError as keyerror:
             raise QiskitError(f"Data array {name} does not exist") from keyerror

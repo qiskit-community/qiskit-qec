@@ -166,7 +166,7 @@ class GeometryBounds:
             if abs(c - xmin) < 0.0000001:
                 intercepts.append([xmin, ymin])
                 intercepts.append([xmin, ymax])
-            elif xmin <= c and c <= xmax:
+            elif xmin <= c <= xmax:
                 intercepts.append([c, ymin])
                 intercepts.append([c, ymax])
             elif abs(c - xmax) < 0.0000001:
@@ -175,11 +175,11 @@ class GeometryBounds:
         else:
             # |.
             y = (c - a * xmin) / b
-            if ymin <= y and y <= ymax:
+            if ymin <= y <= ymax:
                 intercepts.append([xmin, y])
             # .|
             y = (c - a * xmax) / b
-            if ymin <= y and y <= ymax:
+            if ymin <= y <= ymax:
                 intercepts.append([xmax, y])
             # ‾
             if abs(a) < 0.0000001 and abs(c / b - ymax) < 0.0000001:
@@ -187,7 +187,7 @@ class GeometryBounds:
                 intercepts.append([xmax, ymax])
             elif abs(a) > 0.0000001:
                 x = (c - b * ymax) / a
-                if xmin <= x and x <= xmax:
+                if xmin <= x <= xmax:
                     intercepts.append([x, ymax])
             # _
             if abs(a) < 0.0000001 and abs(c / b - ymin) < 0.0000001:
@@ -195,7 +195,7 @@ class GeometryBounds:
                 intercepts.append([xmax, ymin])
             elif abs(a) > 0.0000001:
                 x = (c - b * ymin) / a
-                if xmin <= x and x <= xmax:
+                if xmin <= x <= xmax:
                     intercepts.append([x, ymin])
         result = []
         if len(intercepts) > 0:

@@ -18,8 +18,8 @@ from qiskit_qec.geometry.two_manifold import TwoManifold
 
 
 class Plane(TwoManifold):
-    """`Plane` inherits from `TwoManifold`"""
-
+    """Represents a R2 plane two manifold"""
+    # pylint: disable=useless-super-delegation
     def __init__(self):
         super().__init__()
 

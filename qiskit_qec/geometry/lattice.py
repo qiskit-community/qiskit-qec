@@ -12,7 +12,7 @@
 # Part of the QEC framework
 """Module for lattice"""
 
-from typing import Union, List, Tuple, Optional
+from typing import Union, List, Optional
 
 from math import ceil, floor
 
@@ -63,7 +63,8 @@ class Lattice:
 
     def __str__(self) -> str:
         if self.points is None:
-            return f"Lattice(u_vec={np.array2string(self.u_vec, separator=', ')}, v_vec={np.array2string(self.v_vec, separator=', ')})"
+            return f"Lattice(u_vec={np.array2string(self.u_vec, separator=', ')},\
+                 v_vec={np.array2string(self.v_vec, separator=', ')})"
         outstr = "Lattive["
         for point in self.points[:-1]:
             outstr += np.array2string(point, separator=", ")
@@ -195,8 +196,6 @@ class Lattice:
 
         extended_aabb.expand(expand_value)
 
-        # print(extended_aabb)
-
         # Choose vert_vec so that it has some y component and that horz_vec has some x component
         if abs(self.v_vec[1]) > 0.1:
             if abs(self.u_vec[0]) > 0.1:
@@ -217,19 +216,16 @@ class Lattice:
 
         assert horz_vec[0] != 0, "Division by zero - error in lattice basis selection"
 
-        def _find_points(aabb, u, v, pt, pts, direction="up"):
-            # print(f"{direction}")
+        def _find_points(aabb, u_vec, v_vec, point, pts, direction="up"):
             while True:
                 if direction == "up":
-                    pt = pt + v
+                    point = point + v_vec
                 else:
-                    pt = pt - v
-                # print(f"Working with {pt}")
-                m = u[1] / u[0]
-                c = pt[1] - m * pt[0]
+                    point = point - v_vec
+                m = u_vec[1] / u_vec[0]
+                c = point[1] - m * point[0]
                 line = [-m, 1, c]
                 intersects = aabb.intercepts(line)
-                # print(f"Intersects at {intersects}")
                 if len(intersects) != 2:
                     break
                 x0, y0 = intersects[0]
@@ -238,15 +234,15 @@ class Lattice:
                 min_x = min(x0, x1)
                 max_x = max(x0, x1)
 
-                ta_min = ceil((min_x - pt[0]) / u[0])
-                ta_max = floor((max_x - pt[0]) / u[0])
+                ta_min = ceil((min_x - point[0]) / u_vec[0])
+                ta_max = floor((max_x - point[0]) / u_vec[0])
 
-                if u[1] != 0:
+                if u_vec[1] != 0:
                     min_y = min(y0, y1)
                     max_y = max(y0, y1)
 
-                    tb_min = ceil((min_y - pt[1]) / u[1])
-                    tb_max = floor((max_y - pt[1]) / u[1])
+                    tb_min = ceil((min_y - point[1]) / u_vec[1])
+                    tb_max = floor((max_y - point[1]) / u_vec[1])
 
                     t_min = max(ta_min, tb_min)
                     t_max = min(ta_max, tb_max)
@@ -255,14 +251,13 @@ class Lattice:
                     t_max = ta_max
 
                 t_range = range(t_min, t_max + 1)
-                for t in t_range:
-                    new_pt = pt + t * u
-                    pts.append(new_pt.copy())
-                    # print(f"Adding {new_pt} from line")
+                for t_val in t_range:
+                    new_point = point + t_val * u_vec
+                    pts.append(new_point.copy())
 
             return pts
 
-        # Step One: find points on lattice on vert_vec line that are in AABB (and one just outside)
+        # find points on lattice on vert_vec line that are in AABB (and one just outside)
         origin = np.array((0, 0))
         point = origin - vert_vec
         points = []
@@ -270,7 +265,6 @@ class Lattice:
         point = origin.copy()
         points = _find_points(extended_aabb, horz_vec, vert_vec, point, points, direction="down")
 
-        # print(points)
 
         # Create a lattice with points generated
 
@@ -281,47 +275,3 @@ class Lattice:
             return self
 
         return lattice_l
-
-        # # Create an extended bounding box AABB
-        # extended_aabb = region.bounds.copy()
-
-        # # Determine the size of tile expected
-
-        # if tile is not None:
-        #     tile_size = alpha * tile.size
-        # elif size is not None:
-        #     tile_size = np.array(size)
-        # else:
-        #     tile_size = np.array((self.unorm, self.vnorm))
-
-        # # Determine how much to expand the region's AABB by
-
-        # if expand_value is None:
-        #     expand_value = tile_size
-
-        # extended_aabb.expand(expand_value)
-
-        # # Calculate pre-transform length
-        # _len = self.find_pre_transform_length(extended_aabb.size)
-
-        # # Create standard _len x _len lattice to be transformed
-        # standard_lattice_l = Lattice(size=(_len, _len))
-
-        # # Transform the standard lattice into a sublattice of self
-        # lattice_l = standard_lattice_l.apply_transform_from(self)
-
-        # # Shift center of lattice to center of AABB
-        # if shift is None:
-        #     shift = (0,0)
-        # shift = np.array(shift)
-
-        # lattice_l.points = [point + extended_aabb.center + shift for point in lattice_l.points]
-
-        # # Mask the lattice with the expanded AABB
-        # lattice_l.restrict(extended_aabb, in_place=True)
-
-        # if in_place:
-        #     self.points = lattice_l.points
-        #     return self
-
-        # return lattice_l

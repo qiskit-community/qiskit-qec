@@ -21,7 +21,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class DiagonalHourGlassTile(Tile):
-    """Diagonal Hour Glass Tile
+    r"""Diagonal Hour Glass Tile
 
     q0           q1     q1           q2
     v0           v0     v0           v1
@@ -109,7 +109,7 @@ class DiagonalHourGlassTile(Tile):
         operators=None,
         optype="pXXZZXX",
     ) -> Shell:
-        """Diagonal Hour Glass Tile
+        r"""Diagonal Hour Glass Tile
 
 
             o- - - - - -o- - - - - -o
@@ -156,26 +156,31 @@ class DiagonalHourGlassTile(Tile):
         Face colors for faces [0,1,2,3,4,5] are ["yellowgreen", "yellowgreen",
         "tomato", "tomato", "yellowgreen","yellowgreen"]
 
-        Preformatted operators are stored in DiagonalHourGlassTile.op_dict. Keys for op_dict are of the
-        form [p|c]PPPP... where p = pattern and c = copy and P is a Pauli opertor X, Z, Y.
+        Preformatted operators are stored in DiagonalHourGlassTile.op_dict.
+        Keys for op_dict are of the form [p|c]PPPP... where p = pattern and
+        c = copy and P is a Pauli opertor X, Z, Y.
 
-        "pXXZZXX" -> #0 face is Pauli('XXX') operator, #1 face is Pauli('XXX'), #3 face is Pauli('ZZZZ') etc.
+        "pXXZZXX" -> #0 face is Pauli('XXX') operator,
+                     #1 face is Pauli('XXX'),
+                     #3 face is Pauli('ZZZZ') etc.
 
         Available precomputed operator layouts are:
 
         "pXXZZXX", "pZZXXZZ"
 
-        The operator variable may be used to define the operators specifically. The operator must be
-        a list of PauliList objects where each PauliList describes the opertors to be built for the
-        faces as indexed above 0,1,2,3, ... If the PauliList contains k Paulis then k operators will
-        be created for the given face.
+        The operator variable may be used to define the operators specifically.
+        The operator must be a list of PauliList objects where each PauliList
+        describes the opertors to be built for the faces as indexed above 0,1,2,3, ...
+        If the PauliList contains k Paulis then k operators will be created for
+        the given face.
 
         Args:
             origin (np.array): Coordinates of origin of tile (shell)
             qubit_count: Qubit counter. Defaults to None.
             qubit_data: Qubit data. Defaults to None.
             operators: Operators for tile faces. Defaults to None.
-            optype (optional): Which of the listed opertor mapppings to used. Defaults to "pXXZZXX".
+            optype (optional): Which of the listed opertor mapppings to used.
+                Defaults to "pXXZZXX".
 
         Raises:
             QiskitError: Unsupported operator type

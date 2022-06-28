@@ -47,7 +47,7 @@ class Shape:
         self.points = points
         if lines is None:
             if lines is None and indices is not None:
-                raise QiskitError(f"If <indices> are defined then lines must also be defined")
+                raise QiskitError("If <indices> are defined then lines must also be defined")
             lines = self.create_lines(points)
         self.lines = lines
         if indices is not None:
@@ -119,8 +119,8 @@ class Shape:
         scale2: Union[int, float],
         manifold: Manifold = Plane(),
         delta: float = 0,
-        dtype=float,
-    ):
+        dtype: type=float
+        )->"Shape":
         r"""Create a rectangle on a manifold
 
                       r2
@@ -136,18 +136,23 @@ class Shape:
             scale2 = scale(r1,r2)
 
         Args:
-            origin ([]): [description]
-            direction ([type]): [description]
-            scale1 ([type]): [description]
-            scale2 ([type]): [description]
-            manifold: Manifold for rectangle. Defaults to Plane
-            dtype ([type], optional): [description]. Defaults to float.
-
-        Returns:
-            (Shape): rectangle
+            origin : Origin (r0) of rectangle. The origin is one of the
+                corners of the rectangle.
+            direction: Direction vector from r0 to r1
+            scale1: how large to scale up (r0,r1) side
+            scale2: how large to scale up (r1,r2) side
+            manifold: Manifold that rectangle lives on. Defaults to Plane().
+            delta (optional): How large to increase the rectangle by. Defaults to 0.
+            dtype (type, optional): type of entries for definiting points to use.
+                Defaults to float.
 
         Raises:
-            QiskitError: qiskit error
+            QiskitError: Rectangle scales must be positive
+            QiskitError: Origin must be on the surface if the manifold
+            QiskitError: Manifold not yet supported
+
+        Returns:
+            rect: rectangle of given parameters
         """
         origin = np.asarray(origin)
         direction = np.asarray(direction)
@@ -189,42 +194,34 @@ class Shape:
         return sqrt((p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2)
 
     @staticmethod
-    def is_between(p, a, b, strict=False, epsilon: Real = 0.0):
+    def is_between(p:Real, a:Real, b:Real, strict:bool=False, epsilon:Real = 0.0):
         """is p between a and b: a <= p < =b
 
         Args:
-            p (real): point
-            a (real): end point
-            b (real): end point
-            strict (bool): is strict comparison
+            p: point
+            a: end point
+            b: end point
+            strict: is strict comparison. Default is False
+            epsilon: Will squeeze inequality by epsilon
 
         Returns:
             bool: True is a is between a and b, False if not
         """
-        # print(f"y={p}, y0={a}, y1={b}, epsilon={epsilon}")
 
         if strict:
             if a == b:
                 return False
             if a < b:
-                return a + epsilon < p and p < b - epsilon
+                return a + epsilon < p < b - epsilon
             else:
-                return b + epsilon < p and p < a - epsilon
+                return b + epsilon < p < a - epsilon
         else:
             if a == b:
                 return p == a
             if a < b:
-                # print("a<b")
-                return a + epsilon <= p and p <= b - epsilon
+                return a + epsilon <= p <= b - epsilon
             else:
-                # print("b<a")
-                return b + epsilon <= p and p <= a - epsilon
-
-        ## pylint: disable=chained-comparison
-        # if strict:
-        #    return (((a <= b) * a + (b < a) * b) < p) and (p < ((a > b) * a + (b >= a) * b))
-        #
-        # return (((a <= b) * a + (b < a) * b) <= p) and (p <= ((a > b) * a + (b >= a) * b))
+                return b + epsilon <= p <= a - epsilon
 
     def contains(self, point, on_boundary=True, epsilon=0.01, method="winding") -> bool:
         """
@@ -247,10 +244,14 @@ class Shape:
         else:
             raise QiskitError(f"Unknown contains method: {method}")
 
-    def contains_quad_winding_number(self, point, on_boundary: bool = False, epsilon: float = 0.01):
-        """Deterine if a point is inside a polygon.
+    def contains_quad_winding_number(self,
+                                     point:Union[list, np.ndarray],
+                                     on_boundary: bool = False,
+                                     epsilon: float = 0.01):
+        """Deterine if a point is inside a polygon (PIP Problem)
 
-        Algorithm from Hornmann and Agathos, Computational Geometry 20 (2001) 131-144
+        On or near boundary method uses l2 distances and interior method uses
+        algorithm from Hornmann and Agathos, Computational Geometry 20 (2001) 131-144
 
         With optional on_boundary set to False (default) the boundary is not included
         on the inside. If on_boundary is False then points positioned on the boundary
@@ -269,7 +270,7 @@ class Shape:
                 included. Default is 0.01
 
         Returns:
-            _type_: _description_
+            bool: True is point in on the polygon and False otherwise.
         """
         x = point[0]
         y = point[1]
@@ -297,7 +298,7 @@ class Shape:
                     c = y0 - m * x0
                     c0 = y0 + m * x0
                     c1 = y1 + m * x1
-                    yp = m * x + c
+                    #yp = m * x + c
                     yp0 = -m * x + c0
                     yp1 = -m * x + c1
                     if abs(m) < 0.000000001:
@@ -339,7 +340,7 @@ class Shape:
         n = len(quadrants)
 
         # Calculate winding number
-        for index, value in enumerate(quadrants):
+        for index, _ in enumerate(quadrants):
             val = quadrants[(index + 1) % n] - quadrants[index]
             if val in [1, -3]:
                 omega = omega + 1
@@ -442,13 +443,13 @@ class Shape:
                     dprint(f"m<0 inside count = {count}")
 
             [x2, y2] = self.points[self.lines[(index + 1) % k][1]]
-            [x3, y3] = self.points[self.lines[(index + 2) % k][1]]
+            [_, y3] = self.points[self.lines[(index + 2) % k][1]]
 
             # Does ray pass though a vertex
 
             if abs(y - y1) < epsilon:
                 if y1 > max(y0, y2) or y1 < min(y0, y2):
-                    dprint(f"/\ or \/ vertex count")
+                    dprint(r"/\ or \/ vertex count")
                     pass
                 elif self.is_between(y1, y0, y2, epsilon=0, strict=True):
                     if x <= x1:
@@ -456,24 +457,28 @@ class Shape:
                         dprint(f"| vertex count = {count}")
                 elif abs(y1 - y2) < 0.000001:
                     if y1 > max(y0, y3) or y1 < min(y0, y3):
-                        dprint(f"/_\ or \_/ vertex count")
+                        dprint(r"/_\ or \_/ vertex count")
                         pass
                     elif self.is_between(y1, y0, y3, epsilon=0, strict=True):
-                        if (x <= x1 and x1 < x2) or (x1 > x2 and x2 >= x):
+                        if (x <= x1 < x2) or (x1 > x2 >= x):
                             count += 1
-                            dprint(f"/_/ or \_\ vertex count = {count}")
+                            dprint(r"/_/ or \_\ vertex count =" + f"{count}")
 
         dprint(f"d<epsilon = {d < epsilon} and count %2 = {count %2}")
         return bool(d < epsilon) or bool(int(count) % 2)
 
-    def inside(self, tiling: Shell, on_boundary=False, epsilon: Real = 0.1) -> Dict[Any, bool]:
-        """Returns the inout data for a shape and a tiling
+    def inside(self, tiling: Shell, on_boundary:bool=False, epsilon: Real = 0.1) -> Dict[Any, bool]:
+        """Returns the in-out data for a shape and a tiling
 
         Args:
-            tiling (Shell): _description_
+            tiling: Input Tiling (shell)
+            on_boundary: If True then the in-out data will include those vertices within epsilon of
+                the boundary. This is more expensive. It is better to use a shape which is slightly
+                larger. Default is False.
+            epsilon: Real number use when on_boundary is True. Default is 0.1
 
         Returns:
-            Dict[bool]: _description_
+            Dict[bool]: vertex -> bool dictionary. True for inside the shape and False otherwise
         """
         inout = {}
         for vertex in tiling.vertices:
