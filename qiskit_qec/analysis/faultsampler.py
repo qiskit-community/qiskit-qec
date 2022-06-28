@@ -1,8 +1,11 @@
 """Quantum circuit fault path sampler."""
 from itertools import combinations, product
-from typing import Tuple
+from typing import Tuple, List
+
+import numpy as np
 
 from qiskit import QuantumCircuit
+from qiskit.dagcircuit.dagnode import DAGNode
 from qiskit.converters import circuit_to_dag
 from qiskit.circuit.library import IGate, XGate, YGate, ZGate
 from qiskit import execute, Aer
@@ -21,8 +24,8 @@ class FaultSampler:
 
     def __init__(
         self,
-        circ,
-        model,
+        circ: QuantumCircuit,
+        model: PauliNoiseModel,
         method: str = METHOD_PROPAGATOR,
         sim_seed: int = 0,
     ):
@@ -40,10 +43,24 @@ class FaultSampler:
         if method not in self.AVAILABLE_METHODS:
             raise QiskitQECError("fmethod {methid} is not supported.")
         self.method = method
+
         self.location_types = self.model.get_operations()
         self.pauli_error_types = self.model.get_pauli_error_types()
         self.sim_seed = sim_seed
         self._process_circuit(circ)
+        self.faulty_nodes = list(filter(lambda x: x[1], self.tagged_nodes))
+        self.faulty_ops_indices = [x[2] for x in self.faulty_nodes]
+        self.faulty_ops_labels = [self._node_name_label(x[0]) for x in self.faulty_nodes]
+        self.label_to_pauli_weight = {
+            label: {
+                pauli: self.model.get_pauli_weight(label, pauli)
+                for pauli in self.pauli_error_types[label]
+            }
+            for label in self.faulty_ops_labels
+        }
+        self.label_to_error_probability = {
+            label: self.model.get_error_probability(label) for label in self.faulty_ops_labels
+        }
         self.propagator = None
         self.use_compiled = False
         self.faultsamp = None
@@ -60,23 +77,20 @@ class FaultSampler:
                 self.use_compiled = False
             else:
                 self.use_compiled = True
-                #### TODO: get the right data into the constructor
-                faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
-                faulty_ops_indices = [x[2] for x in faulty_nodes]
-                faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
-                faulty_ops_labels = [self._node_name_label(x[0]) for x in faulty_nodes]
-                faulty_ops_pauli_errors = [self.pauli_error_types[x] for x in faulty_ops_labels]
 
+                # pylint: disable=c-extension-no-member
                 self.faultsamp = compiledFaultSampler(
                     len(self.propagator.get_error()),
                     len(self.propagator.get_bit_array()),
                     self.propagator.encoded_circ,
-                    faulty_ops_indices,
-                    faulty_ops_labels,
-                    faulty_ops_pauli_errors,
+                    self.faulty_ops_indices,
+                    self.faulty_ops_labels,
+                    self.label_to_pauli_weight,
+                    self.label_to_error_probability,
+                    self.sim_seed,
                 )
 
-    def _node_name_label(self, node):
+    def _node_name_label(self, node: DAGNode) -> str:
         """Form an identifier string for a node's operation.
 
         Use node.op._label if it exists. Otherwise use node.name.
@@ -88,7 +102,7 @@ class FaultSampler:
             name_label = node.name
         return name_label
 
-    def _process_circuit(self, circ):
+    def _process_circuit(self, circ: QuantumCircuit):
         """Precompute some data about a circuit."""
         self.dag = circuit_to_dag(circ)
         # Construct list of tuples of topologically sorted nodes
@@ -102,7 +116,7 @@ class FaultSampler:
                 self.tagged_nodes.append((node, False, index))
             index += 1
 
-    def _faulty_circuit(self, comb, error: Tuple[str]):
+    def _faulty_circuit(self, comb: Tuple[DAGNode], error: Tuple[str]) -> QuantumCircuit:
         """Construct faulty QuantumCircuit with the given faults.
 
         comb = tuple of DAG nodes
@@ -134,7 +148,7 @@ class FaultSampler:
         circ.unit = self.dag.unit
         return circ
 
-    def _stabilizer_simulation(self, circ):
+    def _stabilizer_simulation(self, circ: QuantumCircuit) -> List[int]:
         """Run stabilizer simulation.
 
         circ = input QuantumCircuit
@@ -161,72 +175,66 @@ class FaultSampler:
         outcome = list(map(gint, raw_outcome[::-1]))
         return outcome
 
-    def generate(self):
-        """Generator to iterate over faults in a quantum circuit.
+    def sample_one(self):
+        """Sample faults in the quantum circuit.
 
         Note: The bit order of outcome is reversed from Qiskit.
 
-        Yields (index, labels, error, outcome).
+        Returns (index, labels, error, outcome).
         """
-        index = 0
+        # sample faulty nodes according to model
+        failed_nodes = []
+        errors = []
+        indices = []
+        uniform_samples = np.random.uniform(low=0.0, high=1.0, size=len(self.faulty_nodes))
+        for i, node_dat in enumerate(self.faulty_nodes):
+            label = self._node_name_label(node_dat[0])
+            if uniform_samples[i] < self.label_to_error_probability[label]:
+                failed_nodes.append(node_dat[0])
+                indices.append(node_dat[2])
+                paulis = []
+                probs = []
+                for pauli, prob in self.label_to_pauli_weight[label].items():
+                    paulis.append(pauli)
+                    probs.append(prob)
+                errors.append("".join(np.random.choice(paulis, 1, p=probs)))
+        labels = [self._node_name_label(x) for x in failed_nodes]
         if self.method == "stabilizer":
-            faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
-            for comb in combinations(faulty_nodes, self.order):
-                nodes = [x[0] for x in comb]
-                labels = [self._node_name_label(x) for x in nodes]
-                iterable = [self.pauli_error_types[x] for x in labels]
-                for error in product(*iterable):
-                    fcirc = self._faulty_circuit(nodes, error)
-                    outcome = self._stabilizer_simulation(fcirc)
-                    yield (index, labels, list(error), outcome)
-                    index += 1
+            fcirc = self._faulty_circuit(failed_nodes, errors)
+            outcome = self._stabilizer_simulation(fcirc)
+            return (-1, labels, errors, outcome)
         elif self.method == "propagator":
-            faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
-            for comb in combinations(faulty_nodes, self.order):
-                nodes = [x[0] for x in comb]
-                labels = [self._node_name_label(x) for x in nodes]
-                indices = [x[2] for x in comb]
-                iterable = [self.pauli_error_types[x] for x in labels]
-                for error in product(*iterable):
-                    raw_outcome = self.propagator.propagate_faults(indices, error)
-                    if len(self.reg_sizes) == 1:
-                        outcome = raw_outcome
-                    else:
-                        outcome = []
-                        j = 0
-                        for reg_size in self.reg_sizes:
-                            for _ in range(reg_size):
-                                outcome.append(raw_outcome[j])
-                                j += 1
-                            outcome.append(" ")
-                        outcome.pop(-1)
-                    yield (index, labels, list(error), outcome)
-                    index += 1
+            raw_outcome = self.propagator.propagate_faults(indices, errors)
+            if len(self.reg_sizes) == 1:
+                outcome = raw_outcome
+            else:
+                outcome = []
+                j = 0
+                for reg_size in self.reg_sizes:
+                    for _ in range(reg_size):
+                        outcome.append(raw_outcome[j])
+                        j += 1
+                    outcome.append(" ")
+                outcome.pop(-1)
+            return (-1, labels, errors, outcome)
 
-    def generate_blocks(self, blocksize: int = 10000):
-        """Generator to iterate over sequences of faults in a quantum circuit.
+    def sample(self, blocksize: int = 10000):
+        """Sample faults in a quantum circuit.
 
-        blocksize = number of faults to process per call
+        blocksize = number of samples to produce per call
 
         Note: The bit order of outcome is reversed from Qiskit.
 
-        Yields [(index, labels, error, outcome), ...] with approximately
+        Returns [(index, labels, error, outcome), ...] with approximately
         blocksize elements. May be slightly more per call, or less on the
         final call.
         """
         if self.use_compiled:
-            while not self.faultenum.done():
-                block = self.faultenum.enumerate(blocksize)
-                yield block
+            return self.faultsamp.sample(blocksize)
         else:
-            # Fall back to calling the generate() method repeatedly
             block = []
             count = 0
-            for x in self.generate():
-                block.append(x)
+            while count < blocksize:
+                block.append(self.sample_one())
                 count += 1
-                if count >= blocksize:
-                    yield block
-                    block = []
-                    count = 0
-            yield block
+            return block
