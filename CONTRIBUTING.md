@@ -1,69 +1,36 @@
 # Contributing
 
 First read the overall project contributing guidelines. These are all
-included in the qiskit documentation (please note qiskit-qec links have not yet been added but general guidelines still apply):
+included in the qiskit documentation:
 
 https://qiskit.org/documentation/contributing_to_qiskit.html
 
-## Contributing to Qiskit QEC
+## Contributing to QEC
 
 In addition to the general guidelines there are specific details for
-contributing to qisk-qec, these are documented below.
+contributing to QEC, these are documented below.
 
-## Installing Qiskit QEC from source
+### Contents
+* [Choose an issue to work on](#Choose-an-issue-to-work-on)
+* [Pull request checklist](#pull-request-checklist)
+* [Release Notes](#release-notes)
+* [Installing Qiskit QEC from source](#installing-qiskit-qec-from-source)
+* [Test](#test)
+* [Style and Lint](#style-and-lint)
+* [Development Cycle](#development-cycle)
+  * [Branches](#branches)
+* [Adding deprecation warnings](#adding-deprecation-warnings)
+* [Using dependencies](#using-dependencies)
+  * [Adding a requirement](#adding-a-requirement)
+* [Dealing with git blame ignore list](#dealing-with-the-git-blame-ignore-list)
 
-0. Download/Install [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) and then open your terminal and create a new conda environment as follows:
-```
-conda create -y -n MYCONDA python=3.9
-conda activate MYCONDA
-```
+### Choose an issue to work on
+Qiskit QEC uses the following labels to help non-maintainers find issues best suited to their interests and experience level:
 
-1. Install [git](https://git-scm.com/) and then close/reopen your terminal and clone the Qiskit QEC repo 
+* [good first issue](https://github.com/qiskit-community/qiskit-qec/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) - these issues are typically the simplest available to work on, perfect for newcomers. They should already be fully scoped, with a clear approach outlined in the descriptions.
+* [help wanted](https://github.com/qiskit-community/qiskit-qec/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) - these issues are generally more complex than good first issues. They typically cover work that core maintainers don't currently have capacity to implement and may require more investigation/discussion. These are a great option for experienced contributors looking for something a bit more challenging.
 
-```
-git clone git@github.com:qiskit-community/qiskit-qec.git
-```
-
-2. Cloning the repository creates a local folder called `qiskit-qec`. Change directory (cd) into this folder.
-
-```
-cd qiskit-qec
-```
-
-4. If you want to run tests or linting checks, also install the developer requirements.
-
-```
-pip install -r requirements-dev.txt
-```
-
-5. Install `qiskit-qec`.
-
-```
-pip install .
-```
-
-6. Begin using qiskit-qec
-
-```
-python
-from qiskit_qec import heat_waves
-heat_waves.lyrics()
-```
-
-Alternatively, if you want to install it in editable mode, meaning that code changes to the project don’t require a reinstall to be applied, instead of #5 you should run:
-
-```
-pip install -e .
-```
-
-
-### Working on Issues and making a Pull Request  
-
-Working on an Issue 
-
-0. Make sure there is an issue in [Issues](https://github.com/qiskit-community/qiskit-qec/issues) for the changes you plan to make. If there is not an issue listed already, create one and remember the issue's number. 
-
-1.  In your terminal, checkout the `main` branch and then create a new branch with the name in the format: issue-number_brief-description.  This might look like: `branch -b 93_update_readme` 
+### Pull request checklist
 
 When submitting a pull request and you feel it is ready for review,
 please ensure that:
@@ -73,7 +40,7 @@ please ensure that:
    which will run these checks and report any issues.
 
    If your code fails the local style checks (specifically the black
-   code formatting check) then you can use `tox -eblack` to automatically
+   code formatting check) you can use `tox -eblack` to automatically
    fix update the code formatting.
 2. The documentation has been updated accordingly. In particular, if a
    function or class has been modified during the PR, please update the
@@ -88,37 +55,11 @@ please ensure that:
 
 
 3. If it makes sense for your change that you have added new tests that
-   cover the changes. **Make sure any new test directories have a `__init__.py` or else they won't be run!**
-
+   cover the changes.
 4. Ensure that if your change has an end user facing impact (new feature,
-   deprecation, removal, etc.) that you have added a reno release note for that
+   deprecation, removal etc) that you have added a reno release note for that
    change and that the PR is tagged for the changelog.
-
-5. When you have finished your changes, you should [squash](https://www.git-tower.com/learn/git/faq/git-squash) your commits and then pull/merge `main` into your branch.
-
-### Changelog generation
-
-The changelog is automatically generated as part of the release process
-automation. This works through a combination of the git log and the pull
-request. When a release is tagged and pushed to github the release automation
-bot looks at all commit messages from the git log for the release. It takes the
-PR numbers from the git log (assuming a squash merge) and checks if that PR had
-a `Changelog:` label on it. If there is a label it will add the git commit
-message summary line from the git log for the release to the changelog.
-
-If there are multiple `Changelog:` tags on a PR the git commit message summary
-line from the git log will be used for each changelog category tagged.
-
-The current categories for each label are as follows:
-
-| PR Label               | Changelog Category |
-| -----------------------|--------------------|
-| Changelog: Deprecation | Deprecated         |
-| Changelog: New Feature | Added              |
-| Changelog: API Change  | Changed            |
-| Changelog: Removal     | Removed            |
-| Changelog: Bugfix      | Fixed              |
-
+   
 ### Release Notes
 
 When making any end user facing changes in a contribution we have to make sure
@@ -142,12 +83,12 @@ workflow for writing and compiling release notes.
 #### Adding a new release note
 
 Making a new release note is quite straightforward. Ensure that you have reno
-installed with::
+installed with:
 
     pip install -U reno
 
 Once you have reno installed you can make a new release note by running in
-your local repository checkout's root::
+your local repository checkout's root:
 
     reno new short-description-string
 
@@ -164,13 +105,13 @@ changes. When you open the newly created file it will be a full template of
 the different categories with a description of a category as a single entry
 in each category. You'll want to delete all the sections you aren't using and
 update the contents for those you are. For example, the end result should
-look something like::
+look something like:
 
 ```yaml
 features:
   - |
     Introduced a new feature foo, that adds support for doing something to
-    ``QuantumCircuit`` objects. It can be used by using the foo function,
+    :class:`.QuantumCircuit` objects. It can be used by using the foo function,
     for example::
 
       from qiskit import foo
@@ -178,10 +119,10 @@ features:
       foo(QuantumCircuit())
 
   - |
-    The ``qiskit.QuantumCircuit`` module has a new method ``foo()``. This is
-    the equivalent of calling the ``qiskit.foo()`` to do something to your
-    QuantumCircuit. This is the equivalent of running ``qiskit.foo()`` on
-    your circuit, but provides the convenience of running it natively on
+    The :class:`.QuantumCircuit` class has a new method :meth:`~.QuantumCircuit.foo`. 
+    This is the equivalent of calling the :func:`~qiskit.foo` to do something to your
+    :class:`.QuantumCircuit`. This is the equivalent of running :func:`~qiskit.foo` 
+    on your circuit, but provides the convenience of running it natively on
     an object. For example::
 
       from qiskit import QuantumCircuit
@@ -193,14 +134,15 @@ deprecations:
   - |
     The ``qiskit.bar`` module has been deprecated and will be removed in a
     future release. Its sole function, ``foobar()`` has been superseded by the
-    ``qiskit.foo()`` function which provides similar functionality but with
-    more accurate results and better performance. You should update your calls
-    ``qiskit.bar.foobar()`` calls to ``qiskit.foo()``.
+    :func:`~qiskit.foo` function which provides similar functionality but with
+    more accurate results and better performance. You should update your
+    :func:`~qiskit.bar.foobar` calls to :func:`~qiskit.foo`.
 ```
 
-You can also look at other release notes for other examples.
+You can also look at other release notes for other examples. 
 
-You can use any restructured text feature in them (code sections, tables,
+Note that you can use sphinx [restructured text syntax](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html).
+In fact, you can use any restructured text feature in them (code sections, tables,
 enumerated lists, bulleted list, etc) to express what is being changed as
 needed. In general you want the release notes to include as much detail as
 needed so that users will understand what has changed, why it changed, and how
@@ -227,17 +169,17 @@ fixes:
 
 #### Generating the release notes
 
-After release notes have been added if you want to see what the full output of
-the release notes. In general the output from reno that we'll get is a rst
+After release notes have been added, you can use reno to see what the full output
+of the release notes is. In general the output from reno that we'll get is a rst
 (ReStructuredText) file that can be compiled by
 [sphinx](https://www.sphinx-doc.org/en/master/). To generate the rst file you
 use the ``reno report`` command. If you want to generate the full qec release
-notes for all releases you just run:
+notes for all releases (since we started using reno during 0.9) you just run:
 
     reno report
 
 but you can also use the ``--version`` argument to view a single release (after
-it has been tagged::
+it has been tagged:
 
     reno report --version 0.9.0
 
@@ -248,11 +190,31 @@ https://github.com/qiskit-community/qiskit/blob/master/docs/release_notes.rst)
 
 #### Building release notes locally
 
-Building the release notes are part of the standard qiskit-qec documentation
+Building The release notes are part of the standard qiskit-qec documentation
 builds. To check what the rendered html output of the release notes will look
 like for the current state of the repo you can run: `tox -edocs` which will
 build all the documentation into `docs/_build/html` and the release notes in
 particular will be located at `docs/_build/html/release_notes.html`
+
+## Installing Qiskit QEC from source
+
+Qiskit QRC is primarily written in Python. For the released versions of
+qiskit-qec we publish precompiled binaries on the
+[Python Package Index](https://pypi.org/) for all the supported platforms
+which only requires a functional Python environment to install.
+Qiskit QEC has a minimum supported Rust version (MSRV) of 1.56.1. This means
+to build Qiskit QEC from source you must have at least rustc version 1.56.1
+installed, older versions will not be able to compile Qiskit.
+
+Once you have a rust compiler installed you can rely on the normal Python
+build/install steps to install Qiskit QEC. This means you just run
+`pip install .` in your local git clone to build and install Qiskit QEC.
+
+Do note that if you do use develop mode/editable install (via `python setup.py develop` or `pip install -e .`) the Rust extension will be built in debug mode
+without any optimizations enabled. This will result in poor runtime performance.
+If you'd like to use an editable install with an optimized binary you can
+run `python setup.py build_rust --release --inplace` after you install in
+editable mode to recompile the rust extensions in release mode.
 
 
 ## Test
@@ -303,6 +265,32 @@ to run a method:
 tox -epy37 -- -n test.python.test_examples.TestPythonExamples.test_all_examples
 ```
 
+Alternatively there is a makefile provided to run tests, however this
+does not perform any environment setup. It also doesn't run tests in
+parallel and doesn't provide an option to easily modify the tests run.
+For executing the tests with the makefile, a `make test` target is available.
+The execution of the tests (both via the make target and during manual
+invocation) takes into account the `LOG_LEVEL` environment variable. If
+present, a `.log` file will be created on the test directory with the
+output of the log calls, which will also be printed to stdout. You can
+adjust the verbosity via the content of that variable, for example:
+
+Linux and Mac:
+
+``` {.bash}
+$ cd out
+out$ LOG_LEVEL="DEBUG" ARGS="-V" make test
+```
+
+Windows:
+
+``` {.bash}
+$ cd out
+C:\..\out> set LOG_LEVEL="DEBUG"
+C:\..\out> set ARGS="-V"
+C:\..\out> make test
+```
+
 For executing a simple python test manually, we don\'t need to change
 the directory to `out`, just run this command:
 
@@ -319,9 +307,42 @@ C:\..\> set LOG_LEVEL="INFO"
 C:\..\> python -m unittest test/python/circuit/test_circuit_operations.py
 ```
 
+##### STDOUT/STDERR and logging capture
+
+When running tests in parallel using `stestr` either via tox, the Makefile
+(`make test_ci`), or in CI we set the env variable
+`QISKIT_TEST_CAPTURE_STREAMS` which will capture any text written to stdout,
+stderr, and log messages and add them as attachments to the tests run so
+output can be associated with the test case it originated from. However, if
+you run tests with `stestr` outside of these mechanisms by default the streams
+are not captured. To enable stream capture just set the
+`QISKIT_TEST_CAPTURE_STREAMS` env variable to `1`. If this environment
+variable is set outside of running with `stestr` the streams (STDOUT, STDERR,
+and logging) will still be captured but **not** displayed in the test runners
+output. If you are using the stdlib unittest runner a similar result can be
+accomplished by using the
+[`--buffer`](https://docs.python.org/3/library/unittest.html#command-line-options)
+option (e.g. `python -m unittest discover --buffer ./test/python`).
+
+##### Test Skip Options
+
+How and which tests are executed is controlled by an environment
+variable, `QISKIT_TESTS`:
+
+Option | Description | Default
+------ | ----------- | -------
+`run_slow` | It runs tests tagged as *slow*. | `False`
+
+It is possible to provide more than one option separated with commas.
+
+Alternatively, the `make test_ci` target can be used instead of
+`make test` in order to run in a setup that replicates the configuration
+we used in our CI systems more closely.
+
+
 ## Style and lint
 
-Qiskit QEC uses 2 tools to verify code formatting and do lint checking. The
+Qiskit QEC uses 2 tools for verify code formatting and lint checking. The
 first tool is [black](https://github.com/psf/black) which is a code formatting
 tool that will automatically update the code formatting to a consistent style.
 The second tool is [pylint](https://www.pylint.org/) which is a code linter
@@ -330,16 +351,7 @@ potential bugs and other common issues in Python.
 
 You can check that your local modifications conform to the style rules
 by running `tox -elint` which will run `black` and `pylint` to check the local
-code formatting and lint. If black returns a code formatting error you can
-run `tox -eblack` to automatically update the code formatting to conform to
-the style. However, if `pylint` returns any error you will have to fix these
-issues by manually updating your code.
-
-Because `pylint` analysis can be slow, there is also a `tox -elint-incr` target, which only applies
-`pylint` to files which have changed from the source github. On rare occasions this will miss some
-issues that would have been caught by checking the complete source tree, but makes up for this by
-being much faster (and those rare oversights will still be caught by the CI after you open a pull
-request).
+code formatting and lint.
 
 ## Development Cycle
 
@@ -364,27 +376,7 @@ It contains the version of the code corresponding to the latest release for
 that minor version on pypi. For example, stable/0.8 contains the code for the
 0.8.2 release on pypi. The API on these branches are stable and the only changes
 merged to it are bugfixes.
-
-### Release cycle
-
-When it is time to release a new minor version of qiskit-qec we will:
-
-1.  Create a new tag with the version number and push it to github
-2.  Change the `main` version to the next release version.
-
-The release automation processes will be triggered by the new tag and perform
-the following steps:
-
-1.  Create a stable branch for the new minor version from the release tag
-    on the `main` branch
-2.  Build and upload binary wheels to pypi
-3.  Create a github release page with a generated changelog
-4.  Generate a PR on the meta-repository to bump the qec version and
-    meta-package version.
-
-The `stable/*` branches should only receive changes in the form of bug
-fixes.
-
+  
 ## Adding deprecation warnings
 The qiskit-qec code is part of Qiskit and, therefore, the [Qiskit Deprecation Policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy) fully applies here. Additionally, qiskit-qec does not allow `DeprecationWarning`s in its testsuite. If you are deprecating code, you should add a test to use the new/non-deprecated method (most of the time based on the existing test of the deprecated method) and alter the existing test to check that the deprecated method still works as expected, [using `assertWarns`](https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertWarns). The `assertWarns` context will silence the deprecation warning while checking that it raises.
 
@@ -411,3 +403,42 @@ def test_method2(self):
 ```
 
 `test_method1_deprecated` can be removed after `Obj.method1` is removed (following the [Qiskit Deprecation Policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy)).
+
+## Using dependencies
+
+We distinguish between "requirements" and "optional dependencies" in qiskit-qec.
+A requirement is a package that is absolutely necessary for core functionality in qiskit-qec, such as Numpy or Scipy.
+An optional dependency is a package that is used for specialized functionality, which might not be needed by all users.
+If a new feature has a new dependency, it is almost certainly optional.
+
+### Adding a requirement
+
+Any new requirement must have broad system support; it needs to be supported on all the Python versions and operating systems that qiskit-qec supports.
+It also cannot impose many version restrictions on other packages.
+Users often install qiskit-qec into virtual environments with many different packages in, and we need to ensure that neither we, nor any of our requirements, conflict with their other packages.
+When adding a new requirement, you must add it to [`requirements.txt`](requirements.txt) with as loose a constraint on the allowed versions as possible.
+
+## Dealing with the git blame ignore list
+
+In the qiskit-qec repository we maintain a list of commits for git blame
+to ignore. This is mostly commits that are code style changes that don't
+change the functionality but just change the code formatting (for example,
+when we migrated to use black for code formatting). This file,
+`.git-blame-ignore-revs` just contains a list of commit SHA1s you can tell git
+to ignore when using the `git blame` command. This can be done one time
+with something like
+
+```
+git blame --ignore-revs-file .git-blame-ignore-revs qiskit/version.py
+
+```
+
+from the root of the repository. If you'd like to enable this by default you
+can update your local repository's configuration with:
+
+```
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
+which will update your local repositories configuration to use the ignore list
+by default.

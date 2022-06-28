@@ -10,8 +10,6 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# currently used for backwards compatibility
-# and to allow for editable code for development mode
 import os
 import re
 from glob import glob
@@ -24,6 +22,10 @@ ext_modules = [
         sorted(glob("qiskit_qec/extensions/*.cpp")),
     ),
 ]
+
+VERSION_PATH = os.path.join(os.path.dirname(__file__), "qiskit_qec", "VERSION.txt")
+with open(VERSION_PATH, "r") as version_file:
+    VERSION = version_file.read().strip()
 
 with open("requirements.txt") as f:
     REQUIREMENTS = f.read().splitlines()
@@ -40,15 +42,31 @@ with open(README_PATH) as readme_file:
 
 setup(
     name="qiskit_qec",
-    version="v0.0.0-alpha",
-    description="Quantum Error Correcting Package",
+    version=VERSION,
+    description="Qiskit quantum error correcting (QEC) package",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/Qiskit/qiskit-qec",
     author="Qiskit Development Team",
     author_email="hello@qiskit.org",
     license="Apache 2.0",
-    python_requires=">=3.6",
+    classifiers=[
+        "Environment :: Console",
+        "License :: OSI Approved :: Apache Software License",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: C++",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Scientific/Engineering",
+    ],
+    python_requires=">=3.7",
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
     packages=find_packages(exclude=["test*", "qiskit_qec/extensions"]),
