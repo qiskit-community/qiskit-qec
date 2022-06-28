@@ -58,8 +58,7 @@ class FaultSampler:
             for label in self.faulty_ops_labels
         }
         self.label_to_pauli_weight_tuple = {
-            label: list(pdict.items())
-            for label, pdict in self.label_to_pauli_weight.items()
+            label: list(pdict.items()) for label, pdict in self.label_to_pauli_weight.items()
         }
         self.label_to_error_probability = {
             label: self.model.get_error_probability(label) for label in self.faulty_ops_labels
