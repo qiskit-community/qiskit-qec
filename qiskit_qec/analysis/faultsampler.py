@@ -1,5 +1,4 @@
 """Quantum circuit fault path sampler."""
-from itertools import combinations, product
 from typing import Tuple, List
 
 import numpy as np
@@ -202,7 +201,6 @@ class FaultSampler:
         if self.method == "stabilizer":
             fcirc = self._faulty_circuit(failed_nodes, errors)
             outcome = self._stabilizer_simulation(fcirc)
-            return (-1, labels, errors, outcome)
         elif self.method == "propagator":
             raw_outcome = self.propagator.propagate_faults(indices, errors)
             if len(self.reg_sizes) == 1:
@@ -216,7 +214,7 @@ class FaultSampler:
                         j += 1
                     outcome.append(" ")
                 outcome.pop(-1)
-            return (-1, labels, errors, outcome)
+        return (-1, labels, errors, outcome)
 
     def sample(self, blocksize: int = 10000):
         """Sample faults in a quantum circuit.
