@@ -29,14 +29,6 @@ Geometry module classes and functions
     Plane
     Shape
     TwoManifold
-    
-    Shape
-    GeometryBounds
-    Lattice
-    Tile
-    Manifold
-    TwoManifold
-    Plane
     Edge
     Face
     QubitCount
@@ -45,6 +37,15 @@ Geometry module classes and functions
     Shell
     Vertex
     WireFrame
+    Tile
+    CheckerBoardTile
+    DiagonalBarTile
+    DiagonalHourGlassTile
+    HexagonTile
+    OctaSquareTile
+    SquareDiamondTile
+    Tiling
+    TileFactory
 """
 
 from .bounds import GeometryBounds
