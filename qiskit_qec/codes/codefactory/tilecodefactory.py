@@ -399,6 +399,7 @@ class TileCodeFactory:
                     plt.text(vertex.pos[0], vertex.pos[1], qubit_data.qubit[vertex.id])
 
             if show_face_ids and qubit_data is not None:
+
                 def get_representative_point(points):
                     # Just uses the centroid for the moment
                     # This needs to be replaced for irregular
@@ -406,7 +407,7 @@ class TileCodeFactory:
                     xs = [point[0] for point in points]
                     zs = [point[1] for point in points]
                     return sum(xs) / len(xs), sum(zs) / len(zs)
-    
+
                 # Shapely version
                 # from shapely.geometry import Polygon
                 # def get_representative_point(points):
