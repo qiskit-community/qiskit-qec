@@ -423,7 +423,7 @@ class Shell(ShapeObject):
                 # polygons
                 xs = [point[0] for point in points]
                 zs = [point[1] for point in points]
-                return sum(xs)/len(xs), sum(zs)/len(zs)
+                return sum(xs) / len(xs), sum(zs) / len(zs)
 
             # Shapely version
             # from shapely.geometry import Polygon
