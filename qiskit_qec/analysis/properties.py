@@ -220,7 +220,7 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
         # pylint: disable=c-extension-no-member
         return compiledextension.minimum_distance(inputform1, inputform1p, max_weight)
     else:
-        return compiledextension.minimum_distance_by_tests( # pylint: disable=c-extension-no-member
+        return compiledextension.minimum_distance_by_tests(  # pylint: disable=c-extension-no-member
             inputform1, inputform2, inputform3, max_weight
         )
 

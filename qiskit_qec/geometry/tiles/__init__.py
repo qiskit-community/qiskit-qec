@@ -11,14 +11,3 @@
 # that they have been altered from the originals.
 
 """Tiles."""
-
-# from .checkerboardtile import CheckerBoardTile
-# from .diagonalbartile import DiagonalBarTile
-# from .diagonalhourglasstile import DiagonalHourGlassTile
-# from .hexagontile import HexagonTile
-# from .octasquaretile import OctaSquareTile
-# from .squarediamondtile import SquareDiamondTile
-
-# from .tile import Tile
-# from .tilefactory import TileFactory
-# from .tiling import Tiling
