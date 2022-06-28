@@ -15,7 +15,7 @@ Next, we assume that [Python](https://www.python.org/) 3.6 or higher is installe
 
 Install [conda](https://docs.conda.io/en/latest/).
 
-The following commands create and activate a conda virtual environment named `qrao_env`:
+The following commands create and activate a conda virtual environment named `qiskit_qec_env`:
 
 ```sh
 $ conda create -n qiskit_qec_env python=3
@@ -47,11 +47,13 @@ git clone https://github.com/qiskit-community/qiskit-qec
 cd qiskit-qec
 ```
 
-2. Install from source
+2. Install from source using the following command.
 
 ```shell
 pip install -e .
 ```
+
+Note that some alternative commands to install from source, or to install directly from github, may not work properly. So if you have problems, make sure to use the exact command shown above.
 
 ### Installing optional dependencies
 
