@@ -1954,7 +1954,7 @@ def _min_generating_matrix(matrix: np.ndarray) -> np.ndarray:
     Returns:
         matrix: submatrix of input matrix with full rank
     """
-    heads, _, _, rank_ = mt.rref_complete(matrix)
+    heads, _, _, rank_ = mt.rref_complete(matrix.T)
     if rank_ == matrix.shape[0]:
         return matrix
 

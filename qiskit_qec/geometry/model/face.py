@@ -10,6 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 """Module for Face"""
+from typing import List
 
 from qiskit_qec.geometry.model.shape_object import ShapeObject
 from qiskit_qec.geometry.model.wireframe import WireFrame
@@ -18,15 +19,17 @@ from qiskit_qec.geometry.model.wireframe import WireFrame
 class Face(ShapeObject):
     """`Face` inherits from `ShapeObject`"""
 
-    def __init__(self, wireframe: WireFrame) -> None:
+    def __init__(self, wireframes: List[WireFrame]) -> None:
         """Inits Face
 
         Args:
             wireframe (WireFrame): Wireframe for face
         """
         super().__init__()
-        self.wireframe = wireframe
-        self.edges = wireframe.edges
-        self.vertices = wireframe.vertices
-
-        wireframe.add_parent(self)
+        self.wireframes = wireframes
+        self.edges = []
+        self.vertices = []
+        for wf in self.wireframes:
+            self.edges += wf.edges
+            self.vertices += wf.vertices
+            wf.add_parent(self)

@@ -9,12 +9,11 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Module for Factory"""
+"""Base Code Factory Class"""
 
 
 class Factory:
-    """`Factory` for generating Codes based on various inputs"""
+    """Base Code Factory Class"""
 
     def __init__(self) -> None:
-        """Init factory"""
         pass

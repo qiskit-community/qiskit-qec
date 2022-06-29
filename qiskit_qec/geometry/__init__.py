@@ -23,13 +23,12 @@ Geometry module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
-    Shape
     GeometryBounds
     Lattice
-    Tile
     Manifold
-    TwoManifold
     Plane
+    Shape
+    TwoManifold
     Edge
     Face
     QubitCount
@@ -38,14 +37,24 @@ Geometry module classes and functions
     Shell
     Vertex
     WireFrame
+    Tile
+    CheckerBoardTile
+    DiagonalBarTile
+    DiagonalHourGlassTile
+    HexagonTile
+    OctaSquareTile
+    SquareDiamondTile
+    Tiling
+    TileFactory
 """
 
-from .shape import Shape
 from .bounds import GeometryBounds
-from .lattice import Lattice, Tile
+from .lattice import Lattice
 from .manifold import Manifold
 from .plane import Plane
+from .shape import Shape
 from .two_manifold import TwoManifold
+
 from .model.edge import Edge
 from .model.face import Face
 from .model.qubit_count import QubitCount
@@ -54,3 +63,13 @@ from .model.shape_object import ShapeObject
 from .model.shell import Shell
 from .model.vertex import Vertex
 from .model.wireframe import WireFrame
+
+from .tiles.tile import Tile
+from .tiles.checkerboardtile import CheckerBoardTile
+from .tiles.diagonalbartile import DiagonalBarTile
+from .tiles.diagonalhourglasstile import DiagonalHourGlassTile
+from .tiles.hexagontile import HexagonTile
+from .tiles.octasquaretile import OctaSquareTile
+from .tiles.squarediamondtile import SquareDiamondTile
+from .tiles.tiling import Tiling
+from .tiles.tilefactory import TileFactory

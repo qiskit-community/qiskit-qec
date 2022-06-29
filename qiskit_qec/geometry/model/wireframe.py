@@ -22,6 +22,9 @@ class WireFrame(ShapeObject):
     def __init__(self, edges: List[Edge]) -> None:
         """Inits WireFrame
 
+        A wireframe should have only a single connected component (but are not
+        linited to having a single component)
+
         Args:
             edges (List[Edge]): Edges that comprise the WireFrame
         """

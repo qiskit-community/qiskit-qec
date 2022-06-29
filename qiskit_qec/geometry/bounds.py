@@ -12,6 +12,7 @@
 
 # Part of the QEC framework
 """Module for Geometry Bounds"""
+from typing import List
 import copy
 
 import numpy as np
@@ -19,7 +20,7 @@ from qiskit.exceptions import QiskitError
 
 
 class GeometryBounds:
-    """A simple Bounding Box class for an AABB in Rn"""
+    """A simple Bounding Box class for an AABB in R^n"""
 
     def __init__(self, center=None, size=None, dim: int = None) -> None:
         """Initialize Geometry Bounds
@@ -52,6 +53,14 @@ class GeometryBounds:
 
         self.min = self.center - self.size / 2
         self.max = self.center + self.size / 2
+
+    def __str__(self):
+        retstr = "GeometryBounds\n"
+        retstr += f"center ={self.center}\n"
+        retstr += f"size   ={self.size}\n"
+        retstr += f"min    = {self.min}\n"
+        retstr += f"max    = {self.max}"
+        return retstr
 
     def copy(self):
         """Copying self"""
@@ -132,3 +141,70 @@ class GeometryBounds:
         bounds.set_min_max(new_min, new_max)
 
         return bounds
+
+    def intercepts(self, line: List[float]) -> List:
+        """Returns the intercepts of the input line with the aabb.
+
+        The line is inputed as a vector [a,b,c] which represents the
+        line given by ax+by=c
+
+        Args:
+            line (List[float, float, float]): _description_
+
+        Returns:
+            List: _description_
+        """
+
+        a, b, c = line
+
+        xmin, ymin = self.min
+        xmax, ymax = self.max
+
+        intercepts = []
+
+        if abs(b) < 0.0000001:
+            if abs(c - xmin) < 0.0000001:
+                intercepts.append([xmin, ymin])
+                intercepts.append([xmin, ymax])
+            elif xmin <= c <= xmax:
+                intercepts.append([c, ymin])
+                intercepts.append([c, ymax])
+            elif abs(c - xmax) < 0.0000001:
+                intercepts.append([xmax, ymin])
+                intercepts.append([xmax, ymax])
+        else:
+            # |.
+            y = (c - a * xmin) / b
+            if ymin <= y <= ymax:
+                intercepts.append([xmin, y])
+            # .|
+            y = (c - a * xmax) / b
+            if ymin <= y <= ymax:
+                intercepts.append([xmax, y])
+            # ‾
+            if abs(a) < 0.0000001 and abs(c / b - ymax) < 0.0000001:
+                intercepts.append([xmin, ymax])
+                intercepts.append([xmax, ymax])
+            elif abs(a) > 0.0000001:
+                x = (c - b * ymax) / a
+                if xmin <= x <= xmax:
+                    intercepts.append([x, ymax])
+            # _
+            if abs(a) < 0.0000001 and abs(c / b - ymin) < 0.0000001:
+                intercepts.append([xmin, ymin])
+                intercepts.append([xmax, ymin])
+            elif abs(a) > 0.0000001:
+                x = (c - b * ymin) / a
+                if xmin <= x <= xmax:
+                    intercepts.append([x, ymin])
+        result = []
+        if len(intercepts) > 0:
+            for item in intercepts:
+                flag = True
+                for value in result:
+                    if abs(item[0] - value[0]) < 0.0000001 and abs(item[1] - value[1]) < 0.0000001:
+                        flag = False
+                        continue
+                if flag:
+                    result.append(item)
+        return result
