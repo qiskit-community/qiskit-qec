@@ -1,5 +1,6 @@
 #include "errorpropagator.h"
 #include "faultenumerator.h"
+#include "faultsampler.h"
 #include "properties.h"
 #include "linear.h"
 
@@ -42,6 +43,13 @@ PYBIND11_MODULE(compiledextension, m)
       .def("get_index", &FaultEnumerator::get_index)
       .def("get_state", &FaultEnumerator::get_state)
       .def("done", &FaultEnumerator::done);
+  py::class_<FaultSampler>(m, "FaultSampler")
+      .def(py::init<int, int, std::vector<std::vector<int> >&,
+                    std::vector<int>&, std::vector<std::string>&,
+                    LabelToPauliWeightMap&,
+                    std::map<std::string, double>&,
+                    unsigned int>())
+      .def("sample", &FaultSampler::sample);
   m.def("minimum_distance", &minimum_distance, "compute minimum distance of subsystem stabilizer code",
         py::arg("symplectic_vectors"), py::arg("symplectic_gauge_vectors"), py::arg("max_weight") = 10);
   m.def("minimum_distance_by_tests", &minimum_distance_by_tests, "compute minimum distance of subsystem stabilizer code",
