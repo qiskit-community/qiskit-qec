@@ -64,8 +64,7 @@ VALID_CODE_INFO_FIELDS = {
 }
 PARENT = "/Users/dsvandet/Software/Private/qiskit-qec/qiskit_qec"
 file_name_template = os.path.join(
-    PARENT,
-    "codes/codebase/data/base/base_data/n_{}/codes_n_{}_k_{}.json"
+    PARENT, "codes/codebase/data/base/base_data/n_{}/codes_n_{}_k_{}.json"
 )  # n,n,k
 
 OLD_GROUPSIZE_2 = "group_size_2"
@@ -107,28 +106,18 @@ def convert_jsons(data, i, csvfile):
         if OLD_low_weight_form not in code_info:
             print(f"LOW WEIGHT FORM MISSING FOR: {code_str}")
             problem = "LOW WEIGHT FORM MISSING"
-            with open(
-                "fails.csv",
-                "a",
-                newline="",
-                encoding="utf-8"
-            ) as csvfile:
+            with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
                 csvwriter = csv.writer(
                     csvfile, delimiter=" ", quotechar="|", quoting=csv.QUOTE_MINIMAL
                 )
 
-                csvwriter.writerow(
-                    [code_info[N], code_info[K], index, problem]
-                )
+                csvwriter.writerow([code_info[N], code_info[K], index, problem])
             continue
 
         new_code_info[ISOTROPIC_GEN] = code_info[OLD_low_weight_form]
         if code_info.get(IS_CSS, False) == 1 and OLD_css_logicals in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_css_logicals]
-        elif (
-            code_info.get(IS_GF4LINEAR, False) == 1
-            and OLD_gf4linear_logicals in code_info
-        ):
+        elif code_info.get(IS_GF4LINEAR, False) == 1 and OLD_gf4linear_logicals in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_gf4linear_logicals]
         elif OLD_logicals in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_logicals]
@@ -162,12 +151,7 @@ def convert_jsons(data, i, csvfile):
                             - stabilizer: {new_code_info[ISOTROPIC_GEN][s_index]} and \
                             logical: {new_code_info[LOGICAL_OPS][l_index]} do not commute"
                         print(problem)
-                        with open(
-                            "fails.csv",
-                            "a",
-                            newline="",
-                            encoding="utf-8"
-                        ) as csvfile:
+                        with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
                             csvwriter = csv.writer(
                                 csvfile,
                                 delimiter=" ",
@@ -206,6 +190,7 @@ def convert_jsons(data, i, csvfile):
 
     return new_data, i
 
+
 def remove_new_dirs():
     """Remove directories to start again"""
     for n_len in range(11):  # test
@@ -216,6 +201,7 @@ def remove_new_dirs():
                 os.remove(new_json_file_name)
             except FileNotFoundError:
                 pass
+
 
 def process_files():
     """Process Files"""
@@ -234,9 +220,9 @@ def process_files():
                 updated_data, i = convert_jsons(data, i, csvfile)
                 new_file_name = cur_file_name.split(".")[0] + "-NEW.json"
                 with open(new_file_name, "w", encoding="utf-8") as file_to_overwrite:
-                    json.dump(updated_data, file_to_overwrite, indent=1)        
+                    json.dump(updated_data, file_to_overwrite, indent=1)
+
 
 if __name__ == "__main__":
     remove_new_dirs()
     process_files()
-    
