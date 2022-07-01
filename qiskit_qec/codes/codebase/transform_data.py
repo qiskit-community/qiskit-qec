@@ -106,7 +106,11 @@ def convert_jsons(data, i, csvfile="fails.csv"):
         if OLD_LOW_WEIGHT_FORM not in code_info:
             print(f"LOW WEIGHT FORM MISSING FOR: {code_str}")
             problem = "LOW WEIGHT FORM MISSING"
+<<<<<<< HEAD:qiskit_qec/codes/codebase/transform_data.py
             with open(csvfile, "a", newline="", encoding="utf-8") as cur_csvfile:
+=======
+            with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
+>>>>>>> main:transform_data.py
                 csvwriter = csv.writer(
                     cur_csvfile, delimiter=" ", quotechar="|", quoting=csv.QUOTE_MINIMAL
                 )
@@ -114,6 +118,7 @@ def convert_jsons(data, i, csvfile="fails.csv"):
                 csvwriter.writerow([code_info[N], code_info[K], index, problem])
             continue
 
+<<<<<<< HEAD:qiskit_qec/codes/codebase/transform_data.py
         new_code_info[ISOTROPIC_GEN] = code_info[OLD_LOW_WEIGHT_FORM]
         if code_info.get(IS_CSS, False) == 1 and OLD_CSS_LOGICALS in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_CSS_LOGICALS]
@@ -121,6 +126,15 @@ def convert_jsons(data, i, csvfile="fails.csv"):
             new_code_info[LOGICAL_OPS] = code_info[OLD_GF4_LINEAR_LOGICALS]
         elif OLD_LOGICALS in code_info:
             new_code_info[LOGICAL_OPS] = code_info[OLD_LOGICALS]
+=======
+        new_code_info[ISOTROPIC_GEN] = code_info[OLD_low_weight_form]
+        if code_info.get(IS_CSS, False) == 1 and OLD_css_logicals in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_css_logicals]
+        elif code_info.get(IS_GF4LINEAR, False) == 1 and OLD_gf4linear_logicals in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_gf4linear_logicals]
+        elif OLD_logicals in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_logicals]
+>>>>>>> main:transform_data.py
 
         # Convert strings to upper case and then into index syntax with XZY
         # (also YZX as phases are ignored) tensor form
@@ -151,7 +165,11 @@ def convert_jsons(data, i, csvfile="fails.csv"):
                             - stabilizer: {new_code_info[ISOTROPIC_GEN][s_index]} and \
                             logical: {new_code_info[LOGICAL_OPS][l_index]} do not commute"
                         print(problem)
+<<<<<<< HEAD:qiskit_qec/codes/codebase/transform_data.py
                         with open(csvfile, "a", newline="", encoding="utf-8") as cur_csvfile:
+=======
+                        with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
+>>>>>>> main:transform_data.py
                             csvwriter = csv.writer(
                                 cur_csvfile,
                                 delimiter=" ",
@@ -203,7 +221,11 @@ def remove_new_dirs():
                 pass
 
 
+<<<<<<< HEAD:qiskit_qec/codes/codebase/transform_data.py
 def process_files(csvfile="fails.csv"):
+=======
+def process_files():
+>>>>>>> main:transform_data.py
     """Process Files"""
     with open(csvfile, "w", encoding="utf-8") as cur_csvfile:
         pass
