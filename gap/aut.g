@@ -181,37 +181,37 @@ end;
 # code space to itself. In the returned record, the Clifford
 # gates are encoded as:
 # 'i': identity
-# 'a': 1 -> \omega -> \omega^2 (x -> z -> y)
-# 'b': 1 -> \omega^2 -> \omega (x -> y -> z)
-# '1': \omega <-> \omega^2 (y <-> z)
-# '2': 1 <-> \omega^2 (x <-> y)
-# '3': 1 <-> \omega (x <-> z)
+# 'r': 1 -> \omega -> \omega^2 (x -> z -> y)
+# 'R': 1 -> \omega^2 -> \omega (x -> y -> z)
+# 'V': \omega <-> \omega^2 (y <-> z)
+# 'S': 1 <-> \omega^2 (x <-> y)
+# 'H': 1 <-> \omega (x <-> z)
 reformat := function(A, n)
-  local autgens, g, img, perm, sing, tup, permlist, lclist;
+  local autgens, g, img, perm, sing, tup, permlist, lclist, i;
   autgens := GeneratorsOfGroup(A);
   permlist := [];
   lclist := [];
   for g in autgens do
     img := OnTuples([1..3*n], g);
-    perm := [];
+    perm := [1..n];
     sing := [];
     for i in [1..n] do
-      Append(perm, [QuoInt(img[3*(i-1)+1]-1, 3)+1]);
+      perm[QuoInt(img[3*(i-1)+1]-1, 3)+1] := i;
       tup := [RemInt(img[3*(i-1)+1]-1, 3),
               RemInt(img[3*(i-1)+2]-1, 3),
               RemInt(img[3*(i-1)+3]-1, 3)];
       if tup = [0, 1, 2] then
-        Append(sing, "i");  # *1
+        Append(sing, "I");  # *1
       elif tup = [1, 2, 0] then
-        Append(sing, "b");  # *a^2 = *Z(4)^2 = b
+        Append(sing, "R");  # *a^2 = *Z(4)^2 = b
       elif tup = [2, 0, 1] then
-        Append(sing, "a");  # *a = *Z(4)
+        Append(sing, "r");  # *a = *Z(4)
       elif tup = [1, 0, 2] then
-        Append(sing, "3");  # exchange 1 and a, fix a^2
+        Append(sing, "H");  # exchange 1 and a, fix a^2
       elif tup = [0, 2, 1] then
-        Append(sing, "1");  # exchange a and a^2, fix 1
+        Append(sing, "V");  # exchange a and a^2, fix 1
       elif tup = [2, 1, 0] then
-        Append(sing, "2");  # exchange 1 and a^2, fix a
+        Append(sing, "S");  # exchange 1 and a^2, fix a
       fi;
     od;
     Add(permlist, perm);
