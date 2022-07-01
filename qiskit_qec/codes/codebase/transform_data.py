@@ -10,12 +10,12 @@
 # that they have been altered from the originals.
 """ This is the code to transform the stabilizer code database """
 
+import csv
 import json
 import os
-import csv
-from qiskit_qec.linear.symplectic import symplectic_product
-import qiskit_qec.utils.pauli_rep as rep
 
+import qiskit_qec.utils.pauli_rep as rep
+from qiskit_qec.linear.symplectic import symplectic_product
 
 # standard arguments
 N = "n"  # pylint: disable=invalid-name
@@ -70,12 +70,12 @@ file_name_template = os.path.join(
 OLD_GROUPSIZE_2 = "group_size_2"
 OLD_GROUPSIZE_1 = "group_size_1"
 OLD_CSS_FORM = "css_form"
-OLD_gf4_linear_form = "gf4linear_form"
-OLD_low_weight_form = "low_weight_form"
-OLD_gottesman_form = "gottesman_form"
-OLD_css_logicals = "css_logicals"
-OLD_gf4linear_logicals = "gf4linear_logicals"
-OLD_logicals = "logicals"
+OLD_GF4_LINEAR_FORM = "gf4linear_form"
+OLD_LOW_WEIGHT_FORM = "low_weight_form"
+OLD_GOTTESMAN_FORM = "gottesman_form"
+OLD_CSS_LOGICALS = "css_logicals"
+OLD_GF4_LINEAR_LOGICALS = "gf4linear_logicals"
+OLD_LOGICALS = "logicals"
 OLD_STABILIZER = "stabilizer"
 
 COPY_OVER_DIRECTLY = {
@@ -103,24 +103,24 @@ def convert_jsons(data, i, csvfile):
         new_code_info = {}
         # create any new fields that are missing/require old fields
 
-        if OLD_low_weight_form not in code_info:
+        if OLD_LOW_WEIGHT_FORM not in code_info:
             print(f"LOW WEIGHT FORM MISSING FOR: {code_str}")
             problem = "LOW WEIGHT FORM MISSING"
-            with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
+            with open(csvfile, "a", newline="", encoding="utf-8") as cur_csvfile:
                 csvwriter = csv.writer(
-                    csvfile, delimiter=" ", quotechar="|", quoting=csv.QUOTE_MINIMAL
+                    cur_csvfile, delimiter=" ", quotechar="|", quoting=csv.QUOTE_MINIMAL
                 )
 
                 csvwriter.writerow([code_info[N], code_info[K], index, problem])
             continue
 
-        new_code_info[ISOTROPIC_GEN] = code_info[OLD_low_weight_form]
-        if code_info.get(IS_CSS, False) == 1 and OLD_css_logicals in code_info:
-            new_code_info[LOGICAL_OPS] = code_info[OLD_css_logicals]
-        elif code_info.get(IS_GF4LINEAR, False) == 1 and OLD_gf4linear_logicals in code_info:
-            new_code_info[LOGICAL_OPS] = code_info[OLD_gf4linear_logicals]
-        elif OLD_logicals in code_info:
-            new_code_info[LOGICAL_OPS] = code_info[OLD_logicals]
+        new_code_info[ISOTROPIC_GEN] = code_info[OLD_LOW_WEIGHT_FORM]
+        if code_info.get(IS_CSS, False) == 1 and OLD_CSS_LOGICALS in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_CSS_LOGICALS]
+        elif code_info.get(IS_GF4LINEAR, False) == 1 and OLD_GF4_LINEAR_LOGICALS in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_GF4_LINEAR_LOGICALS]
+        elif OLD_LOGICALS in code_info:
+            new_code_info[LOGICAL_OPS] = code_info[OLD_LOGICALS]
 
         # Convert strings to upper case and then into index syntax with XZY
         # (also YZX as phases are ignored) tensor form
@@ -151,9 +151,9 @@ def convert_jsons(data, i, csvfile):
                             - stabilizer: {new_code_info[ISOTROPIC_GEN][s_index]} and \
                             logical: {new_code_info[LOGICAL_OPS][l_index]} do not commute"
                         print(problem)
-                        with open("fails.csv", "a", newline="", encoding="utf-8") as csvfile:
+                        with open("fails.csv", "a", newline="", encoding="utf-8") as cur_csvfile:
                             csvwriter = csv.writer(
-                                csvfile,
+                                cur_csvfile,
                                 delimiter=" ",
                                 quotechar="|",
                                 quoting=csv.QUOTE_MINIMAL,
@@ -179,7 +179,7 @@ def convert_jsons(data, i, csvfile):
             # auto_group size
             new_code_info[AUT_GROUP_SIZE] = int(
                 code_info[OLD_GROUPSIZE_1]
-            )  # if float isn't whole number already then group_size_2 shouldn't == 0 then there was already corruption of the data.
+            )  # if float isn't whole number already then group_size_2 shouldn't == 0 then there was already corruption of the data. #pylint: disable=line-too-long
 
         for key_field in COPY_OVER_DIRECTLY:
             if key_field in code_info:
@@ -205,7 +205,7 @@ def remove_new_dirs():
 
 def process_files():
     """Process Files"""
-    with open("fails.csv", "w", encoding="utf-8") as csvfile:
+    with open("fails.csv", "w", encoding="utf-8") as cur_csvfile:
         pass
 
     # raise Exception("Has andrew approved LOGICAL OPS q")
@@ -217,7 +217,7 @@ def process_files():
                 with open(cur_file_name, "r", encoding="utf-8") as curfile:
                     data = json.load(curfile)
 
-                updated_data, i = convert_jsons(data, i, csvfile)
+                updated_data, i = convert_jsons(data, i, cur_csvfile)
                 new_file_name = cur_file_name.split(".")[0] + "-NEW.json"
                 with open(new_file_name, "w", encoding="utf-8") as file_to_overwrite:
                     json.dump(updated_data, file_to_overwrite, indent=1)
