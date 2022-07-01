@@ -92,7 +92,7 @@ COPY_OVER_DIRECTLY = {
 }
 
 
-def convert_jsons(data, i, csvfile):
+def convert_jsons(data, i, csvfile="fails.csv"):
     """Convert the data"""
     new_data = {}
 
@@ -151,7 +151,7 @@ def convert_jsons(data, i, csvfile):
                             - stabilizer: {new_code_info[ISOTROPIC_GEN][s_index]} and \
                             logical: {new_code_info[LOGICAL_OPS][l_index]} do not commute"
                         print(problem)
-                        with open("fails.csv", "a", newline="", encoding="utf-8") as cur_csvfile:
+                        with open(csvfile, "a", newline="", encoding="utf-8") as cur_csvfile:
                             csvwriter = csv.writer(
                                 cur_csvfile,
                                 delimiter=" ",
@@ -203,9 +203,9 @@ def remove_new_dirs():
                 pass
 
 
-def process_files():
+def process_files(csvfile="fails.csv"):
     """Process Files"""
-    with open("fails.csv", "w", encoding="utf-8") as cur_csvfile:
+    with open(csvfile, "w", encoding="utf-8") as cur_csvfile:
         pass
 
     # raise Exception("Has andrew approved LOGICAL OPS q")
