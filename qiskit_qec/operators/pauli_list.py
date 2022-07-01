@@ -11,13 +11,12 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module fo Pauli List"""
-from typing import Union, Tuple, Iterable, List
-from collections import defaultdict
 import numbers
+from collections import defaultdict
+from typing import Iterable, List, Tuple, Union
 
 import numpy as np
 import retworkx as rx
-
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.custom_iterator import CustomIterator
 from qiskit.quantum_info.operators.mixins import GroupMixin, LinearMixin
@@ -783,7 +782,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         return PauliList(BasePauli(matrix, phase_exp=base_phase_exp))
 
-    def _multiply(self, other):
+    def _multiply(self, phase):
         """Multiply each Pauli in the list by a phase.
 
         Args:
@@ -795,7 +794,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         Raises:
             QiskitError: if the phase is not in the set [1, -1j, -1, 1j].
         """
-        return PauliList(super()._multiply(other))
+        return PauliList(super()._multiply(phase))
 
     def conjugate(self):
         """Return the conjugate of each Pauli in the list."""

@@ -11,21 +11,20 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for Pauli"""
-from typing import Union, Optional, List, Any, Dict
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 from qiskit.circuit import Instruction, QuantumCircuit
-from qiskit.exceptions import QiskitError
 from qiskit.circuit.barrier import Barrier
 from qiskit.circuit.delay import Delay
 from qiskit.circuit.library.generalized_gates import PauliGate
 from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
-from qiskit.quantum_info.operators.scalar_op import ScalarOp
+from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.mixins import generate_apidocs
+from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.utils.deprecation import deprecate_function
-
-from qiskit_qec.utils import pauli_rep
 from qiskit_qec.operators.base_pauli import BasePauli
+from qiskit_qec.utils import pauli_rep
 
 
 class Pauli(BasePauli):
@@ -604,8 +603,8 @@ class Pauli(BasePauli):
             other = Pauli(other)
         return Pauli(super().expand(other))
 
-    def _multiply(self, other: Union["Pauli", BasePauli]) -> "Pauli":
-        return Pauli(super()._multiply(other))
+    def _multiply(self, phase: Union["Pauli", BasePauli]) -> "Pauli":
+        return Pauli(super()._multiply(phase))
 
     def conjugate(self):
         return Pauli(super().conjugate())
@@ -1059,9 +1058,7 @@ class Pauli(BasePauli):
             Pauli: the random pauli
         """
         # pylint: disable=cyclic-import
-        from qiskit.quantum_info.operators.symplectic.random import (
-            random_pauli,
-        )
+        from qiskit.quantum_info.operators.symplectic.random import random_pauli
 
         return random_pauli(num_qubits, group_phase=False, seed=seed)
 
