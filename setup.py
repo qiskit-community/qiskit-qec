@@ -13,8 +13,9 @@
 import os
 import re
 from glob import glob
-from setuptools import find_packages, setup
+
 from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import find_packages, setup
 
 ext_modules = [
     Pybind11Extension(
@@ -23,7 +24,7 @@ ext_modules = [
     ),
 ]
 
-VERSION_PATH = os.path.join(os.path.dirname(__file__), "qiskit_qec", "VERSION.txt")
+VERSION_PATH = os.path.join(os.path.dirname(__file__),"VERSION.txt")
 with open(VERSION_PATH, "r") as version_file:
     VERSION = version_file.read().strip()
 
