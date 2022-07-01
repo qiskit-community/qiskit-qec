@@ -205,10 +205,9 @@ def remove_new_dirs():
 
 def process_files(csvfile="fails.csv"):
     """Process Files"""
-    with open(csvfile, "w", encoding="utf-8") as cur_csvfile:
+    with open(csvfile, "w", encoding="utf-8"):
         pass
 
-    # raise Exception("Has andrew approved LOGICAL OPS q")
     i = 0
     for n_length in range(6):
         for k_dim in range(n_length):
