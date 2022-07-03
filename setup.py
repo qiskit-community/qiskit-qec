@@ -13,8 +13,9 @@
 import os
 import re
 from glob import glob
-from setuptools import find_packages, setup
+
 from pybind11.setup_helpers import Pybind11Extension, build_ext
+from setuptools import find_packages, setup
 
 ext_modules = [
     Pybind11Extension(
