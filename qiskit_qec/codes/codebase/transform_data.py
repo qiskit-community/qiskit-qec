@@ -62,9 +62,10 @@ VALID_CODE_INFO_FIELDS = {
     CODE_TYPE,
     UUID,
 }
-PARENT = "/Users/dsvandet/Software/Private/qiskit-qec/qiskit_qec"
+
+PARENT = os.path.dirname(os.path.realpath(__file__))
 file_name_template = os.path.join(
-    PARENT, "codes/codebase/data/base/base_data/n_{}/codes_n_{}_k_{}.json"
+    PARENT, "data", "base", "base_data", "n_{}", "codes_n_{}_k_{}.json"
 )  # n,n,k
 
 OLD_GROUPSIZE_2 = "group_size_2"
