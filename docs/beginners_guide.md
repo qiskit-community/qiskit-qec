@@ -23,7 +23,8 @@ Refer to [installation guide](./installation.md).
 ### Running examples
 
 ```python
-from qiskit_qec.codes.hhc import HHC
+from qiskit_qec.codes.codebuilders.triangular_color_code_builder import TriangularColorCodeBuilder
 
-code = HHC(3)
+code = TriangularColorCodeBuilder(d=3).build()
+code.draw(face_colors=True, show_index=True)
 ```
