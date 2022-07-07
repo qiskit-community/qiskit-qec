@@ -71,7 +71,7 @@ setup(
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
     packages=find_packages(exclude=["test*", "qiskit_qec/extensions"]),
-    package_data={"": ["*.ini"]},
+    package_data={"": ["*.ini", "*.json"]},
     cmdclass={"build_ext": build_ext},
     ext_modules=ext_modules,
 )
