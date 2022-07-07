@@ -14,11 +14,13 @@
 """Module for base pauli"""
 
 import copy
-from typing import Union, Optional, List
 import numbers
+from typing import List, Optional, Union
 
 import numpy as np
 
+# Must be imported as follows to avoid circular import errors
+import qiskit.quantum_info.operators.symplectic.clifford
 from qiskit import QiskitError
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.barrier import Barrier
@@ -26,13 +28,9 @@ from qiskit.circuit.delay import Delay
 from qiskit.circuit.instruction import Instruction
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
-
-# Must be imported as follows to avoid circular import errors
-import qiskit.quantum_info.operators.symplectic.clifford
-
+from qiskit_qec.linear import matrix as mt
 from qiskit_qec.linear.symplectic import symplectic_product
 from qiskit_qec.utils import pauli_rep
-from qiskit_qec.linear import matrix as mt
 
 
 # pylint: disable=no-member
