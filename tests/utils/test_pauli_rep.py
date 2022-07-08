@@ -414,6 +414,22 @@ class TestPauliRep(TestCase):
                 np.array(["iY9Y4X3X1", "-iZ10X8Y7Y6X3"], dtype="<U13"),
             )
         )
+
+        self.assertTrue(
+            np.array_equal(
+                symplectic2str(
+                    matrix,
+                    phase_exp,
+                    input_encoding="iXZ",
+                    output_phase_encoding=None,
+                    output_tensor_encoding="XZY",
+                    syntax=LATEX_SYNTAX,
+                ),
+                np.array(["iY_{9}Y_{4}X_{3}X_{1}",
+                         "-iZ_{10}X_{8}Y_{7}Y_{6}X_{3}"], dtype="<U40"),
+            )
+        )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(
@@ -430,6 +446,25 @@ class TestPauliRep(TestCase):
                 ),
             )
         )
+
+        self.assertTrue(
+            np.array_equal(
+                symplectic2str(
+                    matrix,
+                    phase_exp,
+                    input_encoding="iXZ",
+                    output_phase_encoding=None,
+                    output_tensor_encoding="XZ",
+                    syntax=LATEX_SYNTAX,
+                ),
+                np.array(
+                    ["-i(X_{9}Z_{9})(X_{4}Z_{4})(X_{3})(X_{1})",
+                     "i(Z_{10})(X_{8})(X_{7}Z_{7})(X_{6}Z_{6})(X_{3})"],
+                    dtype="<U50",
+                ),
+            )
+        )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(
@@ -478,7 +513,8 @@ class TestPauliRep(TestCase):
                     index_str="_",
                 ),
                 np.array(
-                    ["(-i,1)(-1,1)X_2X_4Y_5Y_10", "(-i,1)(-1,0)X_4Y_7Y_8X_9Z_11"],
+                    ["(-i,1)(-1,1)X_2X_4Y_5Y_10", 
+                    "(-i,1)(-1,0)X_4Y_7Y_8X_9Z_11"],
                     dtype="<U28",
                 ),
             )

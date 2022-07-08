@@ -2495,20 +2495,20 @@ def symplectic2str(
                                     tmp_tensor_str += (
                                         "(X"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + "Z"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + ")"
                                     )
                                 else:
                                     tmp_tensor_str = (
                                         "(X"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + "Z"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + ")"
                                         + tmp_tensor_str
                                     )
@@ -2517,20 +2517,20 @@ def symplectic2str(
                                     tmp_tensor_str += (
                                         "(Z"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + "X"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + ")"
                                     )
                                 else:
                                     tmp_tensor_str = (
                                         "(Z"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + "X"
                                         + index_str
-                                        + str(index + index_start)
+                                        + str_repr_index(index + index_start)
                                         + ")"
                                         + tmp_tensor_str
                                     )
@@ -2538,14 +2538,14 @@ def symplectic2str(
                             if qubit_order == "left-to-right":
                                 tmp_tensor_str += (
                                     "(" + _YENC[mark] + index_str +
-                                    str(index + index_start) + ")"
+                                    str_repr_index(index + index_start) + ")"
                                 )
                             else:
                                 tmp_tensor_str = (
                                     "("
                                     + _YENC[mark]
                                     + index_str
-                                    + str(index + index_start)
+                                    + str_repr_index(index + index_start)
                                     + ")"
                                     + tmp_tensor_str
                                 )
