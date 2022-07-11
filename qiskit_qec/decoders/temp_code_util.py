@@ -1,6 +1,6 @@
 """Temporary module with methods for codes."""
-from typing import List
 from functools import partial
+from typing import List
 
 
 def temp_gauge_products(stabilizers: List[List[int]], gauges: List[List[int]]) -> List[List[int]]:

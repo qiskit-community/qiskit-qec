@@ -1,11 +1,10 @@
 """RetworkX matching object."""
 
-from copy import deepcopy
-from typing import List, Tuple, Dict, Set
 import logging
+from copy import deepcopy
+from typing import Dict, List, Set, Tuple
 
 import retworkx as rx
-
 from qiskit_qec.decoders.base_matcher import BaseMatcher
 
 

@@ -11,21 +11,18 @@
 # that they have been altered from the originals.
 """Module for Shell"""
 
-from typing import List, Dict, Tuple, Optional, Union, Callable
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
-
 from qiskit.exceptions import QiskitError
-
-from qiskit_qec.geometry.model.shape_object import ShapeObject
-from qiskit_qec.geometry.plane import Plane
+from qiskit_qec.geometry.model.edge import Edge
+from qiskit_qec.geometry.model.face import Face
 from qiskit_qec.geometry.model.qubit_count import QubitCount
 from qiskit_qec.geometry.model.qubit_data import QubitData
-from qiskit_qec.geometry.model.face import Face
-from qiskit_qec.geometry.model.wireframe import WireFrame
-from qiskit_qec.geometry.model.edge import Edge
+from qiskit_qec.geometry.model.shape_object import ShapeObject
 from qiskit_qec.geometry.model.vertex import Vertex
-
+from qiskit_qec.geometry.model.wireframe import WireFrame
+from qiskit_qec.geometry.plane import Plane
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
 
@@ -369,7 +366,7 @@ class Shell(ShapeObject):
             xcolor (str, optional): _description_. Defaults to "tomato".
             zcolor (str, optional): _description_. Defaults to "yellowgreen".
             ycolor (str, optional): _description_. Defaults to "steelblue".
-            kwargs: other options
+            **kwargs: other options
 
         Returns:
             _type_: _description_
