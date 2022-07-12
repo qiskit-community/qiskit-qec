@@ -277,7 +277,6 @@ class TestPauliRep(TestCase):
             output_encoding="-iXZY",
         )
         self.assertTrue(np.array_equal(np.array([3, 1, 0]), phase_exp))
-        print(matrix, "matrix")
         self.assertTrue(
             np.array_equal(
                 np.array([[1, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 1], [0, 1, 0, 0, 0, 1]]),
@@ -525,4 +524,36 @@ class TestPauliRep(TestCase):
                 qubit_order_output="left-to-right",
             ),
             "YY",
+        )
+        self.assertEqual(
+            str2str(
+                "iIYY",
+                LATEX_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_input="left-to-right",
+                qubit_order_output="left-to-right",
+            ),
+            "iY_{1}Y_{2}",
+        )
+        self.assertEqual(
+            str2str(
+                "iIYY",
+                LATEX_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_input="right-to-left",
+                qubit_order_output="left-to-right",
+            ),
+            "iY_{0}Y_{1}",
+        )
+        self.assertEqual(
+            str2str(
+                "Y3Y4",
+                PRODUCT_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_output="left-to-right",
+            ),
+            "IIIYY",
         )

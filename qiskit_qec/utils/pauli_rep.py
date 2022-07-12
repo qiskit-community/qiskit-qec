@@ -2207,8 +2207,6 @@ def _str2symplectic(
             indices = list(map(int, re.findall("\d+", tensor)))
             num_qubits = max(indices) - index_start + 1
             new_tensor = re.findall(f"{PAULI_REGEX}+", tensor)
-            print(new_tensor, "new tensor")
-            print(indices, "ind")
         elif syntax == LATEX_SYNTAX:
             if "XZ" in tensor_encodings:
                 new_tensor = re.sub(r"X_\{([0-9]+\{)Z_\{[0-9]+\}", r"Y\1", tensor)
@@ -2222,8 +2220,6 @@ def _str2symplectic(
             indices = list(map(int, re.findall("\d+", tensor)))
             num_qubits = max(indices) - index_start + 1
             new_tensor = re.findall(f"{PAULI_REGEX}+", tensor)
-            print(new_tensor, "new tensor")
-            print(indices, "ind")
         else:
             QiskitError(f"Unknown input syntax: {syntax}")
         index_store.append(indices)
@@ -2240,8 +2236,7 @@ def _str2symplectic(
             if syntax == PRODUCT_SYNTAX:
                 index = indices[i]
             else:
-                index = indices[i] - index_start  # * \
-                # syntax  # ah here's the problem
+                index = indices[i] - index_start
             if char == "X":
                 matrix[row_index, index] = True
             elif char == "Z":
@@ -2439,9 +2434,9 @@ def symplectic2str(
             tensor_str.append(tmp_tensor_str)
     elif syntax in (INDEX_SYNTAX, LATEX_SYNTAX):
         if syntax == LATEX_SYNTAX:
-            str_repr_index = _ind_to_latex_repr
+            str_repr = _ind_to_latex_repr
         else:
-            str_repr_index = str
+            str_repr = str
 
         for pauli in matrix:
             tmp_tensor_str = ""
@@ -2453,13 +2448,13 @@ def symplectic2str(
                             tmp_tensor_str += (
                                 _ENC[output_tensor_encoding][mark]
                                 + index_str
-                                + str_repr_index(index + index_start)
+                                + str_repr(index + index_start)
                             )
                         else:
                             tmp_tensor_str = (
                                 _ENC[output_tensor_encoding][mark]
                                 + index_str
-                                + str_repr_index(index + index_start)
+                                + str_repr(index + index_start)
                                 + tmp_tensor_str
                             )
             else:
@@ -2471,20 +2466,20 @@ def symplectic2str(
                                     tmp_tensor_str += (
                                         "(X"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + "Z"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + ")"
                                     )
                                 else:
                                     tmp_tensor_str = (
                                         "(X"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + "Z"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + ")"
                                         + tmp_tensor_str
                                     )
@@ -2493,20 +2488,20 @@ def symplectic2str(
                                     tmp_tensor_str += (
                                         "(Z"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + "X"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + ")"
                                     )
                                 else:
                                     tmp_tensor_str = (
                                         "(Z"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + "X"
                                         + index_str
-                                        + str_repr_index(index + index_start)
+                                        + str_repr(index + index_start)
                                         + ")"
                                         + tmp_tensor_str
                                     )
@@ -2516,7 +2511,7 @@ def symplectic2str(
                                     "("
                                     + _YENC[mark]
                                     + index_str
-                                    + str_repr_index(index + index_start)
+                                    + str_repr(index + index_start)
                                     + ")"
                                 )
                             else:
@@ -2524,7 +2519,7 @@ def symplectic2str(
                                     "("
                                     + _YENC[mark]
                                     + index_str
-                                    + str_repr_index(index + index_start)
+                                    + str_repr(index + index_start)
                                     + ")"
                                     + tmp_tensor_str
                                 )
@@ -2544,6 +2539,7 @@ def symplectic2str(
 def str2str(
     pauli_str: Union[np.ndarray, str],
     syntax_output: str,
+    qubit_order_input: str = "right-to-left",
     qubit_order_output: str = "right-to-left",
     index_start_input: int = 0,
     index_start_output: int = 0,
@@ -2554,8 +2550,11 @@ def str2str(
         pauli_str: Strings representing Pauli group elements
         syntax_output (optional): Syntax of output pauli tensor. Values are
             PRODUCT_SYNTAX = 0, INDEX_SYNTAX=1 and LATEX_SYNTAX=2. Defaults to INDEX_SYNTAX.
-        qubit_order_output (optional): order in which to read product representation Paulis.
-            Defaults to "right-to-left". Alternative is "left-to-right".
+        qubit_order_input (optional): order in which to read product representation Paulis of the input.
+            Defaults to "right-to-left". Alternative is "left-to-right". Only relevatent if the syntax of
+            the input is in PRODUCT_SYNTAX.
+        qubit_order_output (optional): order in which to read product representation Paulis of the
+            output. Defaults to "right-to-left". Alternative is "left-to-right".
         index_start_input (optional): Lowest value for index in index syntax tensors for the input.
             Defaults to 0
         index_start_output (optional): Lowest value for index in index syntax tensors for the output.
@@ -2566,7 +2565,9 @@ def str2str(
         pauli_str: Pauli strings
     """
 
-    matrix, new_phase_exp = str2symplectic(pauli_str, index_start=index_start_input)
+    matrix, new_phase_exp = str2symplectic(
+        pauli_str, index_start=index_start_input, qubit_order=qubit_order_input
+    )
     return symplectic2str(
         matrix,
         new_phase_exp,
