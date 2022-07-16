@@ -74,6 +74,8 @@ class Shell(ShapeObject):
         qubit_data: QubitData,
         qubit_count: QubitCount,
         levels: Optional[List[int]] = None,
+        inside_levels: Optional[List[int]] = None,
+        boundary_levels: Optional[List[int]] = None,
         exclude: Optional[Callable] = None,
         boundary_strategy: str = "combine",
     ) -> Tuple["Shell", QubitData, QubitCount]:
@@ -83,7 +85,11 @@ class Shell(ShapeObject):
             is_inside (Dict[Vertex,bool]): _description_
             qubit_data (QubitData): _description_
             qubit_count (QubitCount): _description_
-            levels (Optional[List[int]], optional): _description_. Defaults to None.
+            levels (Optional[List[int]], optional): _description_. Defaults to [2,3,4]
+            inside_levels (optional): Which operator weights to include for operators
+                inside the cutter region. Default is `levels`
+            boundary_levels (optional): Which operator weights to include for operators
+                cut by the cutter region (on the boundary). Default is `levels`
             exclude (optional): method used to determine which boundary operators
                 are to be used. Must be of the form
 
@@ -100,9 +106,14 @@ class Shell(ShapeObject):
         """
         _debug = False
 
-        def dprint(string):
-            if _debug:
-                print(string)
+        if levels is None:
+            levels = [2, 3, 4]
+
+        if inside_levels is None:
+            inside_levels = levels
+
+        if boundary_levels is None:
+            boundary_levels = levels
 
         if exclude is None:
             # pylint: disable=unused-argument
@@ -120,9 +131,6 @@ class Shell(ShapeObject):
 
         # Set up new data store
         new_qubit_data = QubitData()
-
-        if levels is None:
-            levels = [2, 3, 4]
 
         if not isinstance(levels, list):
             raise QiskitError(f"levels must be None of a list on integers: {levels}")
@@ -175,48 +183,71 @@ class Shell(ShapeObject):
         face_list = []
 
         for face in self.faces:
+            face_inside = False
             edges = []
             vertex_paths = []
             rd_vertices = {item for item in face.vertices if is_inside[item]}
 
-            dprint(f"\n\nrd_vertices start = {rd_vertices} for face: {face.id} : {face.vertices}")
+            if len(rd_vertices) == len(face.vertices):
+                face_inside = True
+
+            if _debug:
+                print(
+                    f"\n\nrd_vertices start = {rd_vertices} for face: {face.id} : {face.vertices}"
+                )
+
             while len(rd_vertices) > 0:
                 s_vertex = rd_vertices.pop()
                 path = _find_restricted_path(s_vertex)
-                dprint(f"Found path={path}")
+                if _debug:
+                    print(f"Found path={path}")
                 rd_vertices.difference_update(path)
-                dprint(f"Remaining rd_vertices = {rd_vertices}")
+                if _debug:
+                    print(f"Remaining rd_vertices = {rd_vertices}")
                 vertex_paths.append(path)
 
-            dprint(f"Final Vertex paths for face={face.id}:\n{vertex_paths}")
+            if _debug:
+                print(f"Final Vertex paths for face={face.id}:\n{vertex_paths}")
             # Process the set of vertex paths to create edges
             if boundary_strategy == "combine":
                 weights = [_weight_len(path) for path in vertex_paths]
                 weight = sum(weights)
-                dprint(f"Weight={weight}")
-                dprint(f"vertex_paths={vertex_paths}")
-                dprint(f"exclude={exclude(vertex_paths, qubit_data)}")
-                if weight in levels and not exclude(vertex_paths, qubit_data):
+                if _debug:
+                    print(f"Weight={weight}")
+                    print(f"vertex_paths={vertex_paths}")
+                    print(f"exclude={exclude(vertex_paths, qubit_data)}")
+
+                if (
+                    (face_inside and weight in inside_levels)
+                    or (not face_inside and weight in boundary_levels)
+                ) and not exclude(vertex_paths, qubit_data):
+                    # if weight in levels and not exclude(vertex_paths, qubit_data):
                     for path in vertex_paths:
-                        dprint(f"Working on v/e for path {path}")
+                        if _debug:
+                            print(f"Working on v/e for path {path}")
                         # Create the new vertices
                         if len(path) > 1:
                             if path[0] == path[-1]:
                                 # have a loop
-                                dprint("Have a loop")
+                                if _debug:
+                                    print("Have a loop")
                                 new_path = [vertex.shallowcopy() for vertex in path[:-1]]
                                 short_path = path[:-1]
-                                dprint(f"short_path is {short_path}")
+                                if _debug:
+                                    print(f"short_path is {short_path}")
                             else:
                                 # Have non loop path of edges
-                                dprint("Have a non loop path of edges")
+                                if _debug:
+                                    print("Have a non loop path of edges")
                                 new_path = [vertex.shallowcopy() for vertex in path]
                                 short_path = path
-                                dprint(f"short_path is {short_path}")
+                                if _debug:
+                                    print(f"short_path is {short_path}")
                         else:
                             new_path = [vertex.shallowcopy() for vertex in path]
                             short_path = path
-                            dprint(f"short_path is {short_path}")
+                            if _debug:
+                                print(f"short_path is {short_path}")
 
                         # Copy over the qubit data for the vertices
                         for new_vertex, old_vertex in zip(new_path, short_path):
@@ -233,18 +264,22 @@ class Shell(ShapeObject):
 
                         # Create the new edges
                         if len(path) == 1:
-                            dprint("Path is length 1")
+                            if _debug:
+                                print("Path is length 1")
                             edges.append(Edge([new_path[0]]))
-                            dprint(edges[-1])
+                            if _debug:
+                                print(edges[-1])
                         else:
-                            dprint("Path is length > 1")
+                            if _debug:
+                                print("Path is length > 1")
                             for index, vertex in enumerate(new_path[:-1]):
                                 edges.append(Edge([vertex, new_path[index + 1]]))
                             if len(path) == len(short_path) + 1:
-                                dprint(
-                                    "Have a loop with len(path) == len(short_path) + 1:"
-                                    + " - adding extra edge"
-                                )
+                                if _debug:
+                                    print(
+                                        "Have a loop with len(path) == len(short_path) + 1:"
+                                        + " - adding extra edge"
+                                    )
                                 if len(short_path) > 2:
                                     # Loop
                                     edges.append(Edge([new_path[-1], new_path[0]]))
@@ -254,13 +289,16 @@ class Shell(ShapeObject):
 
             # Create the wireframe and face
             if len(edges) > 0:
-                dprint("Create Wireframe and face with edges:")
-                for edge in edges:
-                    dprint(edge)
+                if _debug:
+                    print("Create Wireframe and face with edges:")
+                    for edge in edges:
+                        print(edge)
                 new_wf = WireFrame(edges)
-                dprint(f"New wireframe created with id={new_wf.id}")
+                if _debug:
+                    print(f"New wireframe created with id={new_wf.id}")
                 new_face = Face([new_wf])
-                dprint(f"New face created with id={new_face.id}")
+                if _debug:
+                    print(f"New face created with id={new_face.id}")
 
                 # Copy over face colors (if there any)
                 try:
