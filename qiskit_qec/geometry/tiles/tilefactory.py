@@ -52,18 +52,24 @@ class TileFactory:
 
         faces = []
 
+        # print(f"faces_wf_components={faces_wf_components}")
         for wf_list in faces_wf_components:
+            # print(f"wf_list={wf_list}")
             wfs = []
             for wf_index in wf_list:
-                wf = cls._make_wireframe(
-                    vertices=wf_coordinates[wf_index],
-                    origin=origin,
-                    loop_indicator=wf_loop_indicator[wf_index],
-                )
-                wfs.append(wf)
-                wf_id_to_index[wf.id] = wf_index
-
-            faces.append(Face(wfs))
+                # print(f"wf_index={wf_index}")
+                # print(f"operators[wf_index]={operators[wf_index]}")
+                if operators[wf_index] is not None:
+                    # print(f"Making wf for index = {wf_index}")
+                    wf = cls._make_wireframe(
+                        vertices=wf_coordinates[wf_index],
+                        origin=origin,
+                        loop_indicator=wf_loop_indicator[wf_index],
+                    )
+                    wfs.append(wf)
+                    wf_id_to_index[wf.id] = wf_index
+            if len(wfs) != 0:
+                faces.append(Face(wfs))
 
         shell = Shell(faces)
 
