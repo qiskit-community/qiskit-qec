@@ -82,13 +82,20 @@ class TestSymplectic(TestCase):
         answer = 0
         self.assertTrue(np.equal(result, answer).all())
 
-        # input vectors as numpy array
+        # input vpeectors as numpy array
 
         mat1 = np.array(test_mata)[0]
         mat2 = np.array(test_matb)[0]
         result = symplectic_product(mat1, mat2)
         answer = 0
         self.assertTrue(np.equal(result, answer).all())
+
+        # input a single Pauli
+
+        mat = np.array([1, 1, 0, 0], dtype=np.bool_)
+        result = symplectic_product(mat, mat)
+        answer = 0
+        self.assertTrue(answer == result)
 
     def test_invalid_symplectic_product(self):
         """Tests invalid symplectic product."""

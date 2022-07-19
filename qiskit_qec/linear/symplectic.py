@@ -50,7 +50,7 @@ def all_commute(matrix: np.ndarray) -> bool:
         >>> all_commute(matrix)
         True
     """
-    test_mat = symplectic_product(matrix, matrix)
+    test_mat = np.asarray(symplectic_product(matrix, matrix))
     return not test_mat.any()
 
 
