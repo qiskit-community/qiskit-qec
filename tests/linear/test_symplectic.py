@@ -82,7 +82,7 @@ class TestSymplectic(TestCase):
         answer = 0
         self.assertTrue(np.equal(result, answer).all())
 
-        # input vpeectors as numpy array
+        # input vectors as numpy array
 
         mat1 = np.array(test_mata)[0]
         mat2 = np.array(test_matb)[0]
