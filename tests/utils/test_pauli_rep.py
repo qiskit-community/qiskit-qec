@@ -28,8 +28,10 @@ from qiskit_qec.utils.pauli_rep import (
     encode_of_tensor_str,
     str2symplectic,
     symplectic2str,
+    str2str,
     INDEX_SYNTAX,
     PRODUCT_SYNTAX,
+    LATEX_SYNTAX,
 )
 
 
@@ -296,6 +298,35 @@ class TestPauliRep(TestCase):
             )
         )
 
+        matrix, phase_exp = str2symplectic(
+            "iX_{1}",
+            qubit_order="left-to-right",
+            output_encoding="-isXZ",
+            index_start=0,
+        )
+        self.assertTrue(np.array_equal(np.array([1, 1]), phase_exp))
+        self.assertTrue(
+            np.array_equal(
+                np.array([[0, 1, 0, 0]]),
+                matrix,
+            )
+        )
+
+        matrix, phase_exp = str2symplectic(
+            "iX_{1}X_{3}Y_{4}Z_{9}",
+            qubit_order="left-to-right",
+            output_encoding="-isXZ",
+            index_start=1,
+        )
+
+        self.assertTrue(np.array_equal(np.array([0, 1]), phase_exp))
+        self.assertTrue(
+            np.array_equal(
+                np.array([[1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]]),
+                matrix,
+            )
+        )
+
         matrix, phase_exp = str2symplectic("iXXXIZYZ")
         self.assertEqual(phase_exp, 0)
         self.assertTrue(
@@ -325,6 +356,14 @@ class TestPauliRep(TestCase):
                 np.array(["-iX1X3Y4Y9", "iX3Y6Y7X8Z10"], dtype="<U12"),
             )
         )
+
+        self.assertTrue(
+            np.array_equal(
+                symplectic2str(matrix, phase_exp, qubit_order="left-to-right", syntax=LATEX_SYNTAX),
+                np.array(["-iX_{1}X_{3}Y_{4}Y_{9}", "iX_{3}Y_{6}Y_{7}X_{8}Z_{10}"], dtype="<U30"),
+            )
+        )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(matrix),
@@ -333,12 +372,16 @@ class TestPauliRep(TestCase):
         )
         self.assertEqual(symplectic2str(matrix[0]), "-Y9Y4X3X1")
         self.assertEqual(symplectic2str(matrix[0], no_phase=True), "Y9Y4X3X1")
+        self.assertEqual(
+            symplectic2str(matrix[0], no_phase=True, syntax=LATEX_SYNTAX), "Y_{9}Y_{4}X_{3}X_{1}"
+        )
         self.assertTrue(
             np.array_equal(
                 symplectic2str(matrix),
                 np.array(["-Y9Y4X3X1", "-Z10X8Y7Y6X3"], dtype="<U12"),
             )
         )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(
@@ -352,6 +395,21 @@ class TestPauliRep(TestCase):
                 np.array(["iY9Y4X3X1", "-iZ10X8Y7Y6X3"], dtype="<U13"),
             )
         )
+
+        self.assertTrue(
+            np.array_equal(
+                symplectic2str(
+                    matrix,
+                    phase_exp,
+                    input_encoding="iXZ",
+                    output_phase_encoding=None,
+                    output_tensor_encoding="XZY",
+                    syntax=LATEX_SYNTAX,
+                ),
+                np.array(["iY_{9}Y_{4}X_{3}X_{1}", "-iZ_{10}X_{8}Y_{7}Y_{6}X_{3}"], dtype="<U40"),
+            )
+        )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(
@@ -368,6 +426,27 @@ class TestPauliRep(TestCase):
                 ),
             )
         )
+
+        self.assertTrue(
+            np.array_equal(
+                symplectic2str(
+                    matrix,
+                    phase_exp,
+                    input_encoding="iXZ",
+                    output_phase_encoding=None,
+                    output_tensor_encoding="XZ",
+                    syntax=LATEX_SYNTAX,
+                ),
+                np.array(
+                    [
+                        "-i(X_{9}Z_{9})(X_{4}Z_{4})(X_{3})(X_{1})",
+                        "i(Z_{10})(X_{8})(X_{7}Z_{7})(X_{6}Z_{6})(X_{3})",
+                    ],
+                    dtype="<U50",
+                ),
+            )
+        )
+
         self.assertTrue(
             np.array_equal(
                 symplectic2str(
@@ -419,4 +498,92 @@ class TestPauliRep(TestCase):
                     dtype="<U28",
                 ),
             )
+        )
+
+    def test_str2str(self):
+        """Tests str2str function"""
+        self.assertEqual(
+            str2str("iX1X3Y4Z9", LATEX_SYNTAX, qubit_order_output="left-to-right"),
+            "iX_{1}X_{3}Y_{4}Z_{9}",
+        )
+        self.assertEqual(
+            str2str("iX_{1}X_{3}Y_{4}Z_{9}", INDEX_SYNTAX, qubit_order_output="left-to-right"),
+            "iX1X3Y4Z9",
+        )
+        self.assertEqual(str2str("IIX", INDEX_SYNTAX), "X0")
+        self.assertEqual(str2str("Y_{3}Y_{4}", INDEX_SYNTAX), "Y4Y3")
+        self.assertEqual(
+            str2str("Y_{3}Y_{4}", PRODUCT_SYNTAX, qubit_order_output="left-to-right"), "IIIYY"
+        )
+        self.assertEqual(
+            str2str(
+                "Y_{3}Y_{4}",
+                PRODUCT_SYNTAX,
+                index_start_input=3,
+                index_start_output=0,
+                qubit_order_output="left-to-right",
+            ),
+            "YY",
+        )
+        self.assertEqual(
+            str2str(
+                "iIYY",
+                LATEX_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_input="left-to-right",
+                qubit_order_output="left-to-right",
+            ),
+            "iY_{1}Y_{2}",
+        )
+        self.assertEqual(
+            str2str(
+                "iIYY",
+                LATEX_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_input="right-to-left",
+                qubit_order_output="left-to-right",
+            ),
+            "iY_{0}Y_{1}",
+        )
+        self.assertEqual(
+            str2str(
+                "Y3Y4",
+                PRODUCT_SYNTAX,
+                index_start_input=0,
+                index_start_output=0,
+                qubit_order_output="left-to-right",
+            ),
+            "IIIYY",
+        )
+
+        self.assertEqual(
+            str2str(
+                "iX_{1}",
+                phase_encoding_output_string="-is",
+                tensor_encoding_output_string="XZ",
+                syntax_output=INDEX_SYNTAX,
+            ),
+            "(-i,1)(-1,1)(X1)",
+        )
+
+        self.assertEqual(
+            str2str(
+                "iX_{1}Y_{2}",
+                phase_encoding_output_string="is",
+                tensor_encoding_output_string="XZY",
+                syntax_output=LATEX_SYNTAX,
+            ),
+            "(i,1)(-1,1)Y_{2}X_{1}",
+        )
+
+        self.assertEqual(
+            str2str(
+                "ZY",
+                phase_encoding_output_string="-i",
+                tensor_encoding_output_string="ZX",
+                syntax_output=LATEX_SYNTAX,
+            ),
+            "(-i,1)(Z_{1})(Z_{0}X_{0})",
         )
