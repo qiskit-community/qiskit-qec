@@ -2539,7 +2539,7 @@ def symplectic2str(
 def str2str(
     pauli_str: Union[np.ndarray, str],
     syntax_output: str,
-    phase_enconding_output_string: str = None,
+    phase_encoding_output_string: str = None,
     tensor_encoding_output_string: str = DEFAULT_EXTERNAL_TENSOR_ENCODING,
     qubit_order_input: str = "right-to-left",
     qubit_order_output: str = "right-to-left",
@@ -2555,7 +2555,7 @@ def str2str(
         phase_encoding_output_string (optional): Encoding used to represent phases of the output.
             A value of None will result in complex phases notation. Defaults
             to None.
-        output_tensor_encoding (optional): Encoding of output pauli tensor
+        tensor_encoding_output_string (optional): Encoding of output pauli tensor
             (without phase). Defaults to DEFAULT_EXTERNAL_TENSOR_ENCODING.
         qubit_order_input (optional): order in which to read product representation Paulis of the input.
             Defaults to "right-to-left". Alternative is "left-to-right". Only relevatent if the syntax of
@@ -2581,7 +2581,7 @@ def str2str(
         qubit_order=qubit_order_output,
         syntax=syntax_output,
         index_start=index_start_output,
-        output_phase_encoding=phase_enconding_output_string,
+        output_phase_encoding=phase_encoding_output_string,
         output_tensor_encoding=tensor_encoding_output_string,
     )
 

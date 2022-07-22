@@ -54,7 +54,7 @@ class TestPauliRep(TestCase):
         self.assertEqual(result1, 1)
 
         result2 = change_pauli_encoding(
-            np.array([2, 1]),
+            np.ary([2, 1]),
             y_count=np.array([1, 3]),
             input_pauli_encoding="-iXZY",
             output_pauli_encoding="-isXZ",
@@ -561,7 +561,7 @@ class TestPauliRep(TestCase):
         self.assertEqual(
             str2str(
                 "iX_{1}",
-                phase_enconding_output_string="-is",
+                phase_encoding_output_string="-is",
                 tensor_encoding_output_string="XZ",
                 syntax_output=INDEX_SYNTAX,
             ),
@@ -571,7 +571,7 @@ class TestPauliRep(TestCase):
         self.assertEqual(
             str2str(
                 "iX_{1}Y_{2}",
-                phase_enconding_output_string="is",
+                phase_encoding_output_string="is",
                 tensor_encoding_output_string="XZY",
                 syntax_output=LATEX_SYNTAX,
             ),
@@ -581,7 +581,7 @@ class TestPauliRep(TestCase):
         self.assertEqual(
             str2str(
                 "ZY",
-                phase_enconding_output_string="-i",
+                phase_encoding_output_string="-i",
                 tensor_encoding_output_string="ZX",
                 syntax_output=LATEX_SYNTAX,
             ),

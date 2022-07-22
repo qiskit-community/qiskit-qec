@@ -280,9 +280,11 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Args:
             syntax_code (Optional[int], optional): sets the syntax of Pauli tensors. Possible inputs
-            are 0 for product syntax, 1 for index syntax and 2 for latex syntax. Defaults to None.
+                                                   are 0 for product syntax, 1 for index syntax and 2
+                                                   for latex syntax. Defaults to None.
             syntax_str (Optional[str], optional): sets the syntax of Pauli tensors. Possible inputs are
-            Product or Latex, if another input is given the syntax is set to Order. Defaults to "Product".
+                                                  Product or Latex, if another input is given the syntax
+                                                   is set to Order. Defaults to "Product".
 
         Raises:
             QiskitError: Unknown syntax: {syntax_code}. See pauli_rep for options.
