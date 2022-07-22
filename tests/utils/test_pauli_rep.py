@@ -54,7 +54,7 @@ class TestPauliRep(TestCase):
         self.assertEqual(result1, 1)
 
         result2 = change_pauli_encoding(
-            np.ary([2, 1]),
+            np.array([2, 1]),
             y_count=np.array([1, 3]),
             input_pauli_encoding="-iXZY",
             output_pauli_encoding="-isXZ",
