@@ -557,3 +557,33 @@ class TestPauliRep(TestCase):
             ),
             "IIIYY",
         )
+
+        self.assertEqual(
+            str2str(
+                "iX_{1}",
+                phase_enconding_output_string="-is",
+                tensor_encoding_output_string="XZ",
+                syntax_output=INDEX_SYNTAX,
+            ),
+            "(-i,1)(-1,1)(X1)",
+        )
+
+        self.assertEqual(
+            str2str(
+                "iX_{1}Y_{2}",
+                phase_enconding_output_string="is",
+                tensor_encoding_output_string="XZY",
+                syntax_output=LATEX_SYNTAX,
+            ),
+            "(i,1)(-1,1)Y_{2}X_{1}",
+        )
+
+        self.assertEqual(
+            str2str(
+                "ZY",
+                phase_enconding_output_string="-i",
+                tensor_encoding_output_string="ZX",
+                syntax_output=LATEX_SYNTAX,
+            ),
+            "(-i,1)(Z_{1})(Z_{0}X_{0})",
+        )

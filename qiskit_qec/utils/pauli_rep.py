@@ -52,7 +52,7 @@ DEFAULT_EXTERNAL_PAULI_ENCODING = DEFAULT_EXTERNAL_PHASE_ENCODING + DEFAULT_EXTE
 # The external encodings may be changed via the phase_rep_format,
 # symp_rep_format, or pauli_rep_format methods. Any method changing
 # these values must make sure to update the others
-# Tensor encvodings are: 'XZ', 'XZY', 'ZX', 'YZX'
+# Tensor encodings are: 'XZ', 'XZY', 'ZX', 'YZX'
 # Phase encodings are: 'i', '-i', 'is', '-is'
 # See [ref] for details on the different encodings
 # TODO: Include ref for above.
@@ -566,7 +566,7 @@ def stand_phase_str(
 
     The string representing a phase may use different
     representations for the complex number i such
-    as "i', "1i", "1j", "j", etc. Note that the sting may be
+    as "i', "1i", "1j", "j", etc. Note that the string may be
     encoded or not encoded. Likewise other aspects of the
     string have different variations. These method
     converts the input string representing a phase into a
@@ -2539,6 +2539,8 @@ def symplectic2str(
 def str2str(
     pauli_str: Union[np.ndarray, str],
     syntax_output: str,
+    phase_enconding_output_string: str = None,
+    tensor_encoding_output_string: str = DEFAULT_EXTERNAL_TENSOR_ENCODING,
     qubit_order_input: str = "right-to-left",
     qubit_order_output: str = "right-to-left",
     index_start_input: int = 0,
@@ -2550,6 +2552,11 @@ def str2str(
         pauli_str: Strings representing Pauli group elements
         syntax_output (optional): Syntax of output pauli tensor. Values are
             PRODUCT_SYNTAX = 0, INDEX_SYNTAX=1 and LATEX_SYNTAX=2. Defaults to INDEX_SYNTAX.
+        phase_encoding_output_string (optional): Encoding used to represent phases of the output.
+            A value of None will result in complex phases notation. Defaults
+            to None.
+        output_tensor_encoding (optional): Encoding of output pauli tensor
+            (without phase). Defaults to DEFAULT_EXTERNAL_TENSOR_ENCODING.
         qubit_order_input (optional): order in which to read product representation Paulis of the input.
             Defaults to "right-to-left". Alternative is "left-to-right". Only relevatent if the syntax of
             the input is in PRODUCT_SYNTAX.
@@ -2574,6 +2581,8 @@ def str2str(
         qubit_order=qubit_order_output,
         syntax=syntax_output,
         index_start=index_start_output,
+        output_phase_encoding=phase_enconding_output_string,
+        output_tensor_encoding=tensor_encoding_output_string,
     )
 
 

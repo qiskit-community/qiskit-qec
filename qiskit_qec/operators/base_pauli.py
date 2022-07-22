@@ -276,22 +276,26 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @classmethod
     def set_syntax(cls, syntax_code: Optional[int] = None, syntax_str: Optional[str] = "Product"):
-        """_summary_
+        """Sets the global input and output format
 
         Args:
-            syntax_code (Optional[int], optional): _description_. Defaults to None.
-            syntax_str (Optional[str], optional): _description_. Defaults to "Product".
+            syntax_code (Optional[int], optional): sets the syntax of Pauli tensors. Possible inputs
+            are 0 for product syntax, 1 for index syntax and 2 for latex syntax. Defaults to None.
+            syntax_str (Optional[str], optional): sets the syntax of Pauli tensors. Possible inputs are
+            Product or Latex, if another input is given the syntax is set to Order. Defaults to "Product".
 
         Raises:
-            QiskitError: _description_
+            QiskitError: Unknown syntax: {syntax_code}. See pauli_rep for options.
         """
         if syntax_code is None:
             if syntax_str == "Product":
                 BasePauli.EXTERNAL_SYNTAX = pauli_rep.PRODUCT_SYNTAX
+            elif syntax_str == "Latex":
+                BasePauli.EXTERNAL_SYNTAX = pauli_rep.LATEX_SYNTAX
             else:
                 BasePauli.EXTERNAL_SYNTAX = pauli_rep.INDEX_SYNTAX
         else:
-            if syntax_code not in [0, 1]:
+            if syntax_code not in [0, 1, 2]:
                 raise QiskitError("Unknown syntax: {syntax_code}. See pauli_rep for options.")
             BasePauli.EXTERNAL_SYNTAX = syntax_code
 
