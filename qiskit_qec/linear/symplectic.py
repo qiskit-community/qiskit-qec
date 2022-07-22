@@ -57,7 +57,7 @@ def all_commute(matrix: np.ndarray) -> bool:
 # ---------------------------------------------------------------
 
 
-def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> int:
+def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> Union[int, np.ndarray]:
     r"""Returns the symplectic product of two GF(2) symplectic matrices.
 
     Let math:'A', math:'B' be two GF(2) symplectic matrices of width math:'2m',
@@ -106,6 +106,10 @@ def symplectic_product(mat1: np.ndarray, mat2: np.ndarray) -> int:
                 f"Input vectors must have the same \
             dimensions: {mat1_np_array.shape[0]} not equal \
             to {mat2_np_array.shape[0]}"
+            )
+        if mat1_np_array.dtype == bool:
+            return _symplectic_product_vv_boolean(
+                mat1_np_array, mat2_np_array, mat1_np_array.shape[0] >> 1
             )
         return _symplectic_product_vv(mat1_np_array, mat2_np_array, mat1_np_array.shape[0] >> 1)
 
