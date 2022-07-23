@@ -15,10 +15,9 @@
 # pylint: disable=invalid-name
 
 """Generates circuits for quantum error correction."""
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
-from qiskit import QuantumRegister, ClassicalRegister
-from qiskit import QuantumCircuit
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 
 class RepetitionCodeCircuit:
@@ -86,9 +85,9 @@ class RepetitionCodeCircuit:
             self.syndrome_measurement(final=True)
             self.readout()
 
-        gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
+        gauge_ops = [[j, j + 1] for j in range(self.d - 1 - 1, -1, -1)]
         measured_logical = [[0]]
-        flip_logical = list(range(self.d))
+        flip_logical = list(range(self.d - 1, -1, -1))
         boundary = [[0], [self.d - 1]]
 
         if xbasis:
@@ -232,7 +231,7 @@ class RepetitionCodeCircuit:
     def _process_string(self, string):
 
         # logical readout taken from
-        measured_log = string[0] + " " + string[self.d - 1]
+        measured_log = string[0] + string[self.d - 1]
 
         # final syndrome deduced from final code qubit readout
         full_syndrome = ""
@@ -285,33 +284,47 @@ class RepetitionCodeCircuit:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
         """
-
+        print("I know what you did last summer...")
+        print(string)
         string = self._process_string(string)
         separated_string = self._separate_string(string)
+        print(string)
+        print(separated_string)
         nodes = []
-        for syn_type, _ in enumerate(separated_string):
-            for syn_round in range(len(separated_string[syn_type])):
-                elements = separated_string[syn_type][syn_round]
-                for elem_num, element in enumerate(elements):
+        for syn_type, _ in enumerate(separated_string):  # [[boundary], [syn], [synd]]
+            for syn_round in range(
+                len(separated_string[syn_type])
+            ):  # should be range(1) for boundary
+                elements = separated_string[syn_type][
+                    syn_round
+                ]  # syndrome string for that timestamp/stab
+                elem_max_index = len(elements) - 1
+                for elem_indx, element in enumerate(
+                    elements
+                ):  # QEC writes elements with the 0th element at the end of the list. In 10000, the 1 has elem_num = 4, elem_indx = 0
+                    # elem_indx will be used to index into other lists ordered in the same.
+                    # elem_num will be the output position of the element
+                    elem_num = elem_max_index - elem_indx
                     if (syn_type == 0 and (all_logicals or element != logical)) or (
                         syn_type != 0 and element == "1"
                     ):
                         if syn_type == 0:
-                            elem_num = syn_round
+                            # elem_num = syn_round  # when wouldn't this be 0
                             syn_round = 0
                         node = {"time": syn_round}
                         is_boundary = syn_type == 0
                         if is_boundary:
-                            i = [0, -1][elem_num]
+                            print(f"boundary: {elem_indx}")
+                            i = [0, -1][elem_indx]  # on boundary, we care about
                             if self.basis == "z":
                                 qubits = [self.css_x_logical[i]]
                             else:
                                 qubits = [self.css_z_logical[i]]
                         else:
                             if self.basis == "z":
-                                qubits = self.css_z_gauge_ops[elem_num]
+                                qubits = self.css_z_gauge_ops[elem_indx]
                             else:
-                                qubits = self.css_x_gauge_ops[elem_num]
+                                qubits = self.css_x_gauge_ops[elem_indx]
                         node["qubits"] = qubits
                         node["is_boundary"] = is_boundary
                         node["element"] = elem_num
