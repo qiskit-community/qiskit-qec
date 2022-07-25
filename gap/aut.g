@@ -177,9 +177,9 @@ end;
 # of coordinate permutations and a corresponding list of
 # local relabelings of the non-zero elements of GF(4).
 # These can be interpreted as pairs of coordinate permutations
-# and single-qubit Clifford gates that map the stabilizer
-# code space to itself. In the returned record, the Clifford
-# gates are encoded as:
+# preceeded by single-qubit Clifford gates that, taken together,
+# map the stabilizer code space to itself. In the returned
+# record, the Clifford gates are encoded as:
 # 'i': identity
 # 'r': 1 -> \omega -> \omega^2 (x -> z -> y)
 # 'R': 1 -> \omega^2 -> \omega (x -> y -> z)
@@ -187,7 +187,7 @@ end;
 # 'S': 1 <-> \omega^2 (x <-> y)
 # 'H': 1 <-> \omega (x <-> z)
 reformat := function(A, n)
-  local autgens, g, img, perm, sing, tup, permlist, lclist, i;
+  local autgens, g, img, perm, sing, sing2, tup, permlist, lclist, i;
   autgens := GeneratorsOfGroup(A);
   permlist := [];
   lclist := [];
@@ -214,8 +214,13 @@ reformat := function(A, n)
         Append(sing, "S");  # exchange 1 and a^2, fix a
       fi;
     od;
+    # Apply perm^-1 to sing
+    sing2 := [];
+    for i in [1..n] do
+      Append(sing2, [sing[perm[i]]]);
+    od;
     Add(permlist, perm);
-    Add(lclist, sing);
+    Add(lclist, sing2);
   od;
   return rec(permutations:=permlist, locals:=lclist);
 end;
