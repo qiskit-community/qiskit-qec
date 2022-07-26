@@ -145,7 +145,8 @@ class TestCodes(unittest.TestCase):
             code.readout()
             self.assertTrue(
                 results == code.string2nodes(outstring),
-                f"string2nodes on {outstring} produced bad output: { code.string2nodes(outstring)} instead of {results}",
+                f"string2nodes on {outstring}"
+                + f"produced bad output: { code.string2nodes(outstring)} instead of {results}",
             )
 
     def test_graph_construction(self):
