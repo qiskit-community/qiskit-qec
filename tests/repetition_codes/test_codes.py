@@ -16,14 +16,12 @@
 
 """Run codes and decoders."""
 
+import sys
 import unittest
 
-import sys
-
-from qiskit import execute, Aer, QuantumCircuit
+from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
-
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
@@ -63,7 +61,9 @@ def get_noise(p_meas, p_gate):
 class TestCodes(unittest.TestCase):
     """Test the topological codes module."""
 
-    def single_error_test(self, code):
+    def single_error_test(
+        self, code
+    ):  # NOT run directly by unittest; called by test_graph_constructions
         """
         Insert all possible single qubit errors into the given code,
         and check that each creates a pair of syndrome nodes.
@@ -115,7 +115,7 @@ class TestCodes(unittest.TestCase):
                                 + " nodes in syndrome graph, instead of 2.",
                             )
 
-    def test_string2nodes(self):
+    def test_string2nodes_1(self):
         """Test string2nodes with different logical values."""
         code = RepetitionCode(3, 2)
         s0 = "0 0  01 00 01"
@@ -124,6 +124,29 @@ class TestCodes(unittest.TestCase):
             code.string2nodes(s0, logical="0") == code.string2nodes(s1, logical="1"),
             "Error: Incorrect nodes from results string",
         )
+
+    def test_string2nodes_2(self):
+        """Assert string2nodes produces correct output"""
+        test_info = [
+            [
+                (5, 0),
+                "00001",
+                [
+                    {"time": 0, "qubits": [0], "is_boundary": True, "element": 0},
+                    {"time": 0, "qubits": [0, 1], "is_boundary": False, "element": 0},
+                ],
+            ]
+        ]
+        for cur_test in test_info:
+            d, T = cur_test[0]
+            outstring = cur_test[1]
+            results = cur_test[2]
+            code = RepetitionCode(d, T, resets=True)
+            code.readout()
+            self.assertTrue(
+                results == code.string2nodes(outstring),
+                f"string2nodes on {outstring} produced bad output: { code.string2nodes(outstring)} instead of {results}",
+            )
 
     def test_graph_construction(self):
         """Check that single errors create a pair of nodes for all types of code."""
@@ -164,7 +187,11 @@ class TestCodes(unittest.TestCase):
         n1 = dec.graph.nodes().index(
             {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
         )
-        self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+        # edges in graph aren't directed and could be in any order
+        if (n0, n1) in p:
+            self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+        else:
+            self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
 
 
 if __name__ == "__main__":
