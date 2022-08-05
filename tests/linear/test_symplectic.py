@@ -90,6 +90,13 @@ class TestSymplectic(TestCase):
         answer = 0
         self.assertTrue(np.equal(result, answer).all())
 
+        # input a single Pauli
+
+        mat = np.array([1, 1, 0, 0], dtype=np.bool_)
+        result = symplectic_product(mat, mat)
+        answer = 0
+        self.assertTrue(answer == result)
+
     def test_invalid_symplectic_product(self):
         """Tests invalid symplectic product."""
         test_mata = [[2, 0, 1, 1], [0, 1, 1, 0]]
