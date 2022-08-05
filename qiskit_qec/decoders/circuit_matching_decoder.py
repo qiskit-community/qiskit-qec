@@ -136,7 +136,7 @@ class CircuitModelMatchingDecoder(ABC):
         self.edge_weight_polynomials = {}
         self.symbols = None
         if not self.uniform:
-            fe = FaultEnumerator(circuit, order=1, method="stabilizer", model=self.model)
+            fe = FaultEnumerator(circuit, order=1, method="propagator", model=self.model)
             self.event_map = self._enumerate_events(
                 self.css_x_gauge_ops,
                 self.css_x_stabilizer_ops,
