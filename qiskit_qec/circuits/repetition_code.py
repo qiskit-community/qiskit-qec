@@ -27,11 +27,12 @@ class RepetitionCodeCircuit:
     def __init__(
         self,
         d: int,
-        T: Optional[int] = None,
+        T: Optional[int] = 0,
         xbasis: bool = False,
         resets: bool = False,
         delay: Optional[int] = None,
         barriers: bool = False,
+        dx: int = 0,
     ):
         """
         Creates the circuits corresponding to a logical 0 and 1 encoded
@@ -47,6 +48,7 @@ class RepetitionCodeCircuit:
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
             barriers (bool): Whether to include barriers between different sections of the code.
+            dx (int): number of code qubits along which to move the code
 
 
         Additional information:
@@ -56,16 +58,19 @@ class RepetitionCodeCircuit:
             syndrome measurement round).
         """
 
+        T = max(T, 3*dx + 1)
+
         self.n = d
         self.d = d
         self.T = 0
+        self.dx = dx
 
-        self.code_qubit = QuantumRegister(d, "code_qubit")
-        self.link_qubit = QuantumRegister((d - 1), "link_qubit")
+        self.code_qubit = QuantumRegister(d + dx, "code_qubit")
+        self.link_qubit = QuantumRegister((d - 1) + dx, "link_qubit")
         self.qubit_registers = {"code_qubit", "link_qubit"}
 
         self.link_bits = []
-        self.code_bit = ClassicalRegister(d, "code_bit")
+        self.code_bit = ClassicalRegister(d + dx, "code_bit")
 
         self.circuit = {}
         for log in ["0", "1"]:
@@ -79,16 +84,22 @@ class RepetitionCodeCircuit:
 
         delay = delay or 0
 
-        for _ in range(T - 1):
-            self.syndrome_measurement(delay=delay)
+        a = 0
+        b = 0
+        for t in range(T - 1):
+            if a < dx:
+                a += (t%3 == 2)
+            if dx>0:
+                b = int(t%3 == 1)
+            self.syndrome_measurement(delay=delay, a=a, b=b)
 
         if T != 0:
-            self.syndrome_measurement(final=True)
+            self.syndrome_measurement(final=True, a=a, b=b)
             self.readout()
 
-        gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
+        gauge_ops = [[j, j + 1] for j in range(d - 1 + dx + (dx>1))]
         measured_logical = [[0]]
-        flip_logical = list(range(self.d))
+        flip_logical = list(range(self.d + dx))
         boundary = [[0], [self.d - 1]]
 
         if xbasis:
@@ -141,9 +152,9 @@ class RepetitionCodeCircuit:
             if barrier and (log == "1" or self._xbasis):
                 self.circuit[log].barrier()
             if self._xbasis:
-                self.circuit[log].z(self.code_qubit)
+                self.circuit[log].z(self.code_qubit[:self.d])
             else:
-                self.circuit[log].x(self.code_qubit)
+                self.circuit[log].x(self.code_qubit[:self.d])
 
     def _preparation(self):
         """Prepares logical bit states by applying an x to the circuit that will
@@ -151,10 +162,10 @@ class RepetitionCodeCircuit:
         """
         for log in ["0", "1"]:
             if self._xbasis:
-                self.circuit[log].h(self.code_qubit)
+                self.circuit[log].h(self.code_qubit[:self.d])
         self.x(["1"])
 
-    def syndrome_measurement(self, final: bool = False, barrier: bool = False, delay: int = 0):
+    def syndrome_measurement(self, final: bool = False, barrier: bool = False, delay: int = 0, a: int = 0, b: int = 0):
         """Application of a syndrome measurement round.
 
         Args:
@@ -162,10 +173,15 @@ class RepetitionCodeCircuit:
             being the final syndrome measurement round.
             barrier (bool): Boolean denoting whether to include a barrier at the start.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
+            a (int): number of code qubits for which the code is offset along the register
+            b (int): number of extra code qubits to include
         """
         barrier = barrier or self._barriers
 
-        self.link_bits.append(ClassicalRegister((self.d - 1), "round_" + str(self.T) + "_link_bit"))
+        
+        self.link_bits.append(
+            ClassicalRegister(self.d - 1 + self.dx, "round_" + str(self.T) + "_link_bit")
+        )
 
         for log in ["0", "1"]:
 
@@ -176,12 +192,12 @@ class RepetitionCodeCircuit:
                 self.circuit[log].barrier()
             if self._xbasis:
                 self.circuit[log].h(self.link_qubit)
-            for j in range(self.d - 1):
+            for j in range(a, a + self.d - 1 + b):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j])
                 else:
                     self.circuit[log].cx(self.code_qubit[j], self.link_qubit[j])
-            for j in range(self.d - 1):
+            for j in range(a, a + self.d - 1 + b):
                 if self._xbasis:
                     self.circuit[log].cx(self.link_qubit[j], self.code_qubit[j + 1])
                 else:
@@ -192,21 +208,21 @@ class RepetitionCodeCircuit:
             # measurement
             if barrier:
                 self.circuit[log].barrier()
-            for j in range(self.d - 1):
+            for j in range(a, a + self.d - 1 + b):
                 self.circuit[log].measure(self.link_qubit[j], self.link_bits[self.T][j])
 
             # resets
             if self._resets and not final:
                 if barrier:
                     self.circuit[log].barrier()
-                for j in range(self.d - 1):
+                for j in range(a, a + self.d - 1 + b):
                     self.circuit[log].reset(self.link_qubit[j])
 
             # delay
             if delay > 0 and not final:
                 if barrier:
                     self.circuit[log].barrier()
-                for j in range(self.d - 1):
+                for j in range(a, a + self.d - 1 + b):
                     self.circuit[log].delay(delay, self.link_qubit[j])
 
         self.T += 1
@@ -220,7 +236,7 @@ class RepetitionCodeCircuit:
             if self._xbasis:
                 self.circuit[log].h(self.code_qubit)
             self.circuit[log].add_register(self.code_bit)
-            self.circuit[log].measure(self.code_qubit, self.code_bit)
+            self.circuit[log].measure(self.code_qubit[self.dx:self.d], self.code_bit[self.dx:self.d])
 
     def _separate_string(self, string):
 
@@ -231,6 +247,8 @@ class RepetitionCodeCircuit:
 
     def _process_string(self, string):
 
+        d = self.d + self.dx
+
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
 
@@ -238,14 +256,15 @@ class RepetitionCodeCircuit:
         full_syndrome = ""
         for j in range(self.d - 1):
             full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (string[j] != string[j + 1])
+        full_syndrome += "0"*self.dx
         # results from all other syndrome measurements then added
-        full_syndrome = full_syndrome + string[self.d :]
+        full_syndrome = full_syndrome + string[d:]
 
         # changes between one syndrome and the next then calculated
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
         for t in range(self.T + 1):
-            for j in range(self.d - 1):
+            for j in range(d - 1):
                 if self._resets:
                     if t == 0:
                         change = syndrome_list[-1][j] != "0"
