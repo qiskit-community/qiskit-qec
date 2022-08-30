@@ -13,6 +13,8 @@
 
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
+import logging
+
 import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit_qec.geometry.model.edge import Edge
@@ -78,6 +80,7 @@ class Shell(ShapeObject):
         boundary_levels: Optional[List[int]] = None,
         exclude: Optional[Callable] = None,
         boundary_strategy: str = "combine",
+        debug:str=False
     ) -> Tuple["Shell", QubitData, QubitCount]:
         """Extracts the subshell defined by in_vertices and is_inside
 
@@ -100,11 +103,15 @@ class Shell(ShapeObject):
                 is to be excluded. Deflault always returns False. That is exlude nothing
                 extra.
             boundary_strategy (str, optional): _description_. Defaults to "combine".
+            debug (optional) : With debug set to True a range of intermediate details are printed. Used 
+            for debuging the addition of features to the method.
 
         Returns:
             Tuple[Shell, QubitData, QubitCount]: _description_
         """
-        _debug = False
+
+        if debug:
+            logger = logging.getLogger(__name__)
 
         if levels is None:
             levels = [2, 3, 4]
@@ -191,31 +198,32 @@ class Shell(ShapeObject):
             if len(rd_vertices) == len(face.vertices):
                 face_inside = True
 
-            if _debug:
-                print(
-                    f"\n\nrd_vertices start = {rd_vertices} for face: {face.id} : {face.vertices}"
+            if debug:
+                logger.debug(
+                    "\n\nrd_vertices start = %s for face: %s : %s", rd_vertices, face.id, face.vertices
                 )
 
             while len(rd_vertices) > 0:
                 s_vertex = rd_vertices.pop()
                 path = _find_restricted_path(s_vertex)
-                if _debug:
-                    print(f"Found path={path}")
+                if debug:
+                    logger.debug("Found path= %s", path)
                 rd_vertices.difference_update(path)
-                if _debug:
-                    print(f"Remaining rd_vertices = {rd_vertices}")
+                if debug:
+                    logger.debug("Remaining rd_vertices = %s", rd_vertices)
                 vertex_paths.append(path)
 
-            if _debug:
-                print(f"Final Vertex paths for face={face.id}:\n{vertex_paths}")
+            if debug:
+                logger.debug("Final Vertex paths for face=%s:\n%s", face.id, vertex_paths)
+
             # Process the set of vertex paths to create edges
             if boundary_strategy == "combine":
                 weights = [_weight_len(path) for path in vertex_paths]
                 weight = sum(weights)
-                if _debug:
-                    print(f"Weight={weight}")
-                    print(f"vertex_paths={vertex_paths}")
-                    print(f"exclude={exclude(vertex_paths, qubit_data)}")
+                if debug:
+                    logger.debug("Weight=%s",weight)
+                    logger.debug("vertex_paths=%s",vertex_paths)
+                    logger.debug("exclude=%s",exclude)
 
                 if (
                     (face_inside and weight in inside_levels)
@@ -223,31 +231,32 @@ class Shell(ShapeObject):
                 ) and not exclude(vertex_paths, qubit_data):
                     # if weight in levels and not exclude(vertex_paths, qubit_data):
                     for path in vertex_paths:
-                        if _debug:
-                            print(f"Working on v/e for path {path}")
+                        if debug:
+                            logger.debug("Working on v/e for path %s",path)
+
                         # Create the new vertices
                         if len(path) > 1:
                             if path[0] == path[-1]:
                                 # have a loop
-                                if _debug:
-                                    print("Have a loop")
+                                if debug:
+                                    logger.debug("Have a loop!")
                                 new_path = [vertex.shallowcopy() for vertex in path[:-1]]
                                 short_path = path[:-1]
-                                if _debug:
-                                    print(f"short_path is {short_path}")
+                                if debug:
+                                    logger.debug("short_path is ", short_path)
                             else:
                                 # Have non loop path of edges
-                                if _debug:
-                                    print("Have a non loop path of edges")
+                                if debug:
+                                    logger.debug("Have a non loop path of edges")
                                 new_path = [vertex.shallowcopy() for vertex in path]
                                 short_path = path
-                                if _debug:
-                                    print(f"short_path is {short_path}")
+                                if debug:
+                                    logger.debug("short_path is ", short_path)
                         else:
                             new_path = [vertex.shallowcopy() for vertex in path]
                             short_path = path
-                            if _debug:
-                                print(f"short_path is {short_path}")
+                            if debug:
+                                logger.debug("short_path is ", short_path)
 
                         # Copy over the qubit data for the vertices
                         for new_vertex, old_vertex in zip(new_path, short_path):
@@ -264,19 +273,19 @@ class Shell(ShapeObject):
 
                         # Create the new edges
                         if len(path) == 1:
-                            if _debug:
-                                print("Path is length 1")
+                            if debug:
+                                logger.debug("Path is length 1")
                             edges.append(Edge([new_path[0]]))
-                            if _debug:
-                                print(edges[-1])
+                            if debug:
+                                logger.debug("Edges: %s", edges[-1])
                         else:
-                            if _debug:
-                                print("Path is length > 1")
+                            if debug:
+                                logger.debug("Path is length > 1")
                             for index, vertex in enumerate(new_path[:-1]):
                                 edges.append(Edge([vertex, new_path[index + 1]]))
                             if len(path) == len(short_path) + 1:
-                                if _debug:
-                                    print(
+                                if debug:
+                                    logger.debug(
                                         "Have a loop with len(path) == len(short_path) + 1:"
                                         + " - adding extra edge"
                                     )
@@ -289,16 +298,16 @@ class Shell(ShapeObject):
 
             # Create the wireframe and face
             if len(edges) > 0:
-                if _debug:
-                    print("Create Wireframe and face with edges:")
+                if debug:
+                    logger.debug("Create Wireframe and face with edges:")
                     for edge in edges:
                         print(edge)
                 new_wf = WireFrame(edges)
-                if _debug:
-                    print(f"New wireframe created with id={new_wf.id}")
+                if debug:
+                    logger.debug("New wireframe created with id=%s", new_wf.id)
                 new_face = Face([new_wf])
-                if _debug:
-                    print(f"New face created with id={new_face.id}")
+                if debug:
+                    logger.debug("New face created with id=%s", new_face.id)
 
                 # Copy over face colors (if there any)
                 try:
