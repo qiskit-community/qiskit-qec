@@ -102,6 +102,7 @@ class HexagonTile(Tile):
             PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 0
             PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 1
             PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 2
+            None,  # 3
             None,  # 4
             None,  # 5
             None,  # 6
@@ -115,6 +116,7 @@ class HexagonTile(Tile):
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
+            None,  # 3
             None,  # 4
             None,  # 5
             None,  # 6
@@ -128,6 +130,7 @@ class HexagonTile(Tile):
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
+            None,  # 3
             None,  # 4
             None,  # 5
             None,  # 6
@@ -141,6 +144,7 @@ class HexagonTile(Tile):
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
+            None,  # 3
             None,  # 4
             None,  # 5
             None,  # 6
@@ -164,6 +168,20 @@ class HexagonTile(Tile):
             PauliList(["XX"]),  # 10
             None,  # 11
         ],
+        "cZ-aXX": [
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 0
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 1
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 2
+            PauliList(["XX"]),  # 3
+            PauliList(["XX"]),  # 4
+            PauliList(["XX"]),  # 5
+            PauliList(["XX"]),  # 6
+            PauliList(["XX"]),  # 7
+            PauliList(["XX"]),  # 8
+            PauliList(["XX"]),  # 9
+            PauliList(["XX"]),  # 10
+            PauliList(["XX"]),  # 11
+        ],
     }
 
     # Descriptions of wireframes
@@ -180,8 +198,8 @@ class HexagonTile(Tile):
         [6, 9],  # 8
         [7, 10],  # 9
         [9, 8],  # 10
-        [9, 11],
-    ]  # 11
+        [9, 11], # 11
+    ]  
 
     # pylint: disable=invalid-name
     r = sqrt(3) / 2
@@ -254,7 +272,7 @@ class HexagonTile(Tile):
         qubit_count=None,
         qubit_data=None,
         operators=None,
-        optype="dXZ",
+        optype="cZ-aXX",
     ) -> Shell:
         """Hexagon Tile
                                      q0      q1
