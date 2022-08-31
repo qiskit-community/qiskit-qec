@@ -16,14 +16,12 @@
 
 """Run codes and decoders."""
 
+import sys
 import unittest
 
-import sys
-
-from qiskit import execute, Aer, QuantumCircuit
+from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
-
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
@@ -165,6 +163,7 @@ class TestCodes(unittest.TestCase):
             {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
         )
         self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+
 
 
 if __name__ == "__main__":
