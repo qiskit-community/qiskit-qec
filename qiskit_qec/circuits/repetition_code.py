@@ -238,36 +238,36 @@ class RepetitionCodeCircuit:
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
 
+        if self._resets:
+            syndrome = string[self.d :]
+        else:
+            # if there are no resets, results are cumulative and need to be separated
+            cumsyn_list = string[self.d :].split(" ")
+            syndrome_list = []
+            for tt, cum_syn in enumerate(cumsyn_list[0:-1]):
+                syn = ""
+                for j in range(len(cum_syn)):
+                    syn += str(int(cumsyn_list[tt][j]!=cumsyn_list[tt+1][j]))
+                syndrome_list.append(syn)
+            syndrome_list.append(cumsyn_list[-1])
+            syndrome = " ".join(syndrome_list)
+
         # final syndrome deduced from final code qubit readout
         full_syndrome = ""
         for j in range(self.d - 1):
             full_syndrome += "0" * (string[j] == string[j + 1]) + "1" * (string[j] != string[j + 1])
         # results from all other syndrome measurements then added
-        full_syndrome = full_syndrome + string[self.d :]
+        full_syndrome = full_syndrome + syndrome
 
         # changes between one syndrome and the next then calculated
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
         for t in range(self.T + 1):
             for j in range(self.d - 1):
-                if self._resets:
-                    if t == 0:
-                        change = syndrome_list[-1][j] != "0"
-                    else:
-                        change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
+                if t == 0:
+                    change = syndrome_list[-1][j] != "0"
                 else:
-                    if t <= 1:
-                        if t != self.T:
-                            change = syndrome_list[-t - 1][j] != "0"
-                        else:
-                            change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
-                    elif t == self.T:
-                        last3 = ""
-                        for dt in range(3):
-                            last3 += syndrome_list[-t - 1 + dt][j]
-                        change = last3.count("1") % 2 == 1
-                    else:
-                        change = syndrome_list[-t - 1][j] != syndrome_list[-t + 1][j]
+                    change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
 
