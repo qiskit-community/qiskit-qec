@@ -658,11 +658,11 @@ class ArcCircuit:
                 graph = self._get_link_graph(0)
                 nodes = graph.nodes()
                 edges = graph.edge_list()
-                ns = tuple([nodes.index(link[j]) for j in [0, 2]])
+                ns = [nodes.index(link[j]) for j in [0, 2]]
                 qubit_l_nghbrs = []
                 for n in ns:
                     neighbors = list(graph.incident_edges(n))
-                    neighbors.remove(list(edges).index(ns))
+                    neighbors.remove(list(edges).index(tuple(ns)))
                     qubit_l_nghbrs.append(
                         [graph.get_edge_data_by_index(ngbhr)["link qubit"] for ngbhr in neighbors]
                     )
@@ -680,9 +680,9 @@ class ArcCircuit:
         )
 
         tau, qubit_l_202, qubit_l_nghbrs = self._get_202(self.T)
-        for basis in self.circuit:
+        for basis, qc in self.circuit.items():
             if self._barriers:
-                self.circuit[basis].barrier()
+                qc.barrier()
             for pairs in self.schedule:
                 for qubit_c, qubit_l in pairs:
                     q_c = self.code_index[qubit_c]
@@ -692,30 +692,30 @@ class ArcCircuit:
                         if qubit_l == qubit_l_202:
                             c = (c + tau) % 2
                         self._rotate(basis, c, self.code_qubit[q_c], True)
-                        self.circuit[basis].cx(self.code_qubit[q_c], self.link_qubit[q_l])
+                        qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
 
         # measurement
-        for basis in self.circuit:
+        for basis, qc in self.circuit.items():
 
             # measurement
             if self._barriers:
                 if final:
-                    self.circuit[basis].barrier(self.link_qubit)
+                    qc.barrier(self.link_qubit)
                 else:
-                    self.circuit[basis].barrier()
-            self.circuit[basis].add_register(self.link_bits[self.T])
-            self.circuit[basis].measure(self.link_qubit, self.link_bits[self.T])
+                    qc.barrier()
+            qc.add_register(self.link_bits[self.T])
+            qc.measure(self.link_qubit, self.link_bits[self.T])
 
             # resets
             if self._resets and not final:
-                self.circuit[basis].reset(self.link_qubit)
+                qc.reset(self.link_qubit)
 
             # delay
             if self.delay > 0 and not final:
                 if self._barriers:
-                    self.circuit[basis].barrier()
-                self.circuit[basis].delay(self.delay, self.link_qubit)
+                    qc.barrier()
+                qc.delay(self.delay, self.link_qubit)
 
         self.T += 1
 
@@ -725,12 +725,12 @@ class ArcCircuit:
         as well as allowing for a measurement of the syndrome to be inferred.
         """
 
-        for basis in self.circuit:
+        for basis, qc in self.circuit.items():
             self._basis_change(basis, inverse=True)
             if self._barriers:
-                self.circuit[basis].barrier(self.code_qubit)
-            self.circuit[basis].add_register(self.code_bit)
-            self.circuit[basis].measure(self.code_qubit, self.code_bit)
+                qc.barrier(self.code_qubit)
+            qc.add_register(self.code_bit)
+            qc.measure(self.code_qubit, self.code_bit)
 
     def _separate_string(self, string):
         separated_string = []
