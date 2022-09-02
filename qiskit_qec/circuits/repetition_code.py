@@ -14,11 +14,16 @@
 
 # pylint: disable=invalid-name
 
-"""Generates circuits for quantum error correction."""
+"""Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+import numpy as np
+import retworkx as rx
 
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
+from qiskit.circuit.library import RXGate, XGate, RZGate
+from qiskit.transpiler import PassManager, InstructionDurations
+from qiskit.transpiler.passes import ALAPSchedule, DynamicalDecoupling
 
 class RepetitionCodeCircuit:
     """RepetitionCodeCircuit class."""
@@ -362,3 +367,559 @@ class RepetitionCodeCircuit:
         final_outcomes = [int(c) for c in finals]
 
         return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
+
+def add_edge(graph, pair, edge=None):
+    """
+    Adds an edge correspoding to the given pair of nodes to the given graph,
+    adding also the nodes themselves if not already present.
+    """
+    ns = []
+    for node in pair:
+        if node not in graph.nodes():
+            ns.append(graph.add_node(node))
+        else:
+            ns.append(graph.nodes().index(node))
+    graph.add_edge(ns[0], ns[1], edge)
+    return ns
+
+
+class ArcCircuit():
+    """Anisotropic repetition code class."""
+
+    def __init__(
+            self,
+            links: list,
+            T: int,
+            basis: str = 'xy',
+            resets: bool = True,
+            delay: Optional[int] = None,
+            barriers: bool = False,
+            color: Optional[dict] = None,
+            max_dist: int = 2,
+            schedule: Optional[list] = None,
+            run_202: bool = True
+        ):
+        """
+        Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
+        measurement rounds, with the syndrome measurements provided.
+        Args:
+            links (list): List of tuples (c0, a, c1), where c0 and c1 are the two code qubits in each
+                syndrome measurement, and a is the auxiliary qubit used.
+            T (int): Number of rounds of syndrome measurement.
+            basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
+                used.
+            resets (bool): Whether to include a reset gate after mid-circuit measurements.
+            delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
+            barriers (bool): Whether to include barriers between different sections of the code.
+            color (dict): Dictionary with code qubits as keys and 0 or 1 for each value, to specify
+                a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
+            max_dist (int): Maximum edge distance used when determining the bicoloring of code qubits.append
+            schedule(list): Specifies order in which entangling gates are applied in each syndrome
+                measurement round. Each element is a list of lists [c, a] for entangling gates to be
+                applied simultaneously.
+            run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
+                enough (at least 5xlen(links)).
+        """
+
+        self.links = links
+        self.basis = basis        
+        self._resets = resets
+        self._barriers = barriers
+        self._max_dist = max_dist
+        self.delay = delay or 0
+
+        # calculate coloring and schedule (if required)
+        if color ==  None:
+            self._coloring()
+        else:
+            self.color = color
+        if schedule == None:
+            self._scheduling()
+        else:
+            self.schedule = schedule
+
+        # determine the placement of [2,0,2] rounds
+        num_links = len(self.links)
+        self.rounds_per_link = np.floor(T/num_links)
+        self.metabuffer = np.ceil((T - num_links*self.rounds_per_link)/2)
+        self.roundbuffer = np.ceil((self.rounds_per_link-5)/2)
+        self.run_202 = run_202 and self.rounds_per_link>=5
+
+        # create the circuit
+        self._preparation()
+        self.T = 0
+        for _ in range(T - 1):
+            self._syndrome_measurement()
+        if T!=0:
+            self._syndrome_measurement(final=True)
+        self._readout()
+
+    def _get_link_graph(self, max_dist=1):
+        graph = rx.PyGraph()
+        for link in self.links:
+            add_edge(graph, (link[0], link[2]), {'distance':1, 'link qubit':link[1]})
+        distance = rx.distance_matrix(graph)
+        edges = graph.edge_list()
+        for n0, node0 in enumerate(graph.nodes()):
+            for n1, node1 in enumerate(graph.nodes()):
+                if n0<n1:
+                    if (n0, n1) not in edges:
+                        dist = distance[n0,n1]
+                        if dist<max_dist:
+                            add_edge(graph, (node0, node1), {'distance':dist})
+        return graph
+
+    def _coloring(self):
+        """
+        Creates a graph with a weight=1 edge for each link, and additional edges up to `max_weight`.
+        Then performs a matching of edges in this graph. The code qubits of each pair are then
+        bicolored. All unmatched code qubits are alternately bicolored.
+        """
+
+        graph = self._get_link_graph(self._max_dist)
+        matching = rx.max_weight_matching(graph, max_cardinality=True, weight_fn=lambda edge: -int(edge['distance']))
+
+        self.color = {}
+        unmatched = list(graph.node_indices())
+        nodes = graph.nodes()
+        for pair in matching:
+            for j, n in enumerate(pair):
+                self.color[nodes[n]] = j
+                unmatched.remove(n)
+        for j, n in enumerate(unmatched):
+            self.color[nodes[n]] = j%2
+
+    def _get_coupling_graph(self, aux=None):
+        """
+        Returns a graph for pairs of nodes on which entangling gates are applied in the code.
+        """
+
+        if aux==None:
+            aux = [link[1] for link in self.links]
+
+        graph = rx.PyGraph()
+        for link in self.links:
+            if link[1] in aux:
+                add_edge(graph, (link[0], link[1]), {})
+                add_edge(graph, (link[1], link[2]), {})
+        # we use max degree of the nodes as the edge weight, to delay bottlenecks
+        for e, (n0,n1) in enumerate(graph.edge_list()):
+            graph.edges()[e]['weight'] = max(graph.degree(n0),graph.degree(n1))
+
+        return graph
+
+    def _scheduling(self):
+        """
+        Determines the order in which entangling gates should be applied in each round.
+        """
+
+        link_dict = {link[1]:link for link in self.links}
+        aux = set(link_dict.keys())
+
+        weight_fn = lambda edge: -int(edge['weight'])
+
+        schedule = []
+        while aux:
+
+            # contruct coupling graph for as yet unpaired auxiliaries (i.e. link qubits)
+            graph = self._get_coupling_graph(aux)
+
+            # find a min weight matching, and then another that exlcudes the pairs from the first
+            matching = [rx.max_weight_matching(graph, max_cardinality=True, weight_fn=weight_fn)]
+            cut_graph = graph.copy()
+            for n0,n1 in matching[0]:
+                cut_graph.remove_edge(n0,n1)
+            matching.append(rx.max_weight_matching(cut_graph, max_cardinality=True, weight_fn=weight_fn))
+
+            # rewrite the matchings to use nodes instead of indices, and to always place the auxilliary second
+            nodes = [graph.nodes(), cut_graph.nodes()]
+            for j in range(2):
+                matching[j] = list(matching[j])
+                for p, pair in enumerate(matching[j]):
+                    node_pair = [None,None]
+                    for n in pair:
+                        node = nodes[j][n]
+                        node_pair[node in aux] = node
+                    matching[j][p] = node_pair
+
+            # determine which links are covered by the conjuction of these matchings
+            matched_aux = [set(), set()]
+            for j in range(2):
+                for pair in matching[j]:
+                    matched_aux[j].add(pair[1])
+            completed = matched_aux[0].intersection(matched_aux[1])
+
+            # add these matched pairs to the schedule
+            for j in range(2):
+                schedule.append([pair for pair in matching[j] if pair[1] in completed])
+
+            # update the list of auxilliaries for links yet to be paired
+            aux = aux.difference(completed)
+
+        self.schedule = schedule
+
+    def _rotate(self, basis, c, regqubit, inverse):
+        """
+        Rotates the given qubit to (or from) the basis specified by the color and the pair of
+        bases used for the code.
+        """
+        if not inverse:
+            if basis[c] in ['x', 'y']:
+                self.circuit[basis].h(regqubit) 
+            if basis[c]=='y':
+                self.circuit[basis].s(regqubit)
+        else:
+            if basis[c]=='y':
+                self.circuit[basis].sdg(regqubit)
+            if basis[c] in ['x', 'y']:
+                self.circuit[basis].h(regqubit)
+
+    def _basis_change(self, basis, inverse=False):
+        """
+        Rotates all code qubits to (or from) the bases required for the code.
+        """
+        for qubit,q in self.code_index.items():
+            c = self.color[qubit]
+            self._rotate(basis, c, self.code_qubit[q], inverse)  
+
+    def _preparation(self):
+        """
+        Creates the circuits and their registers.
+        """
+
+        # get a list of all code qubits (qubits[0]) and link qubits (qubits[1])
+        qubits = [set(), set()]
+        for link in self.links:
+            qubits[0] = qubits[0].union({link[0],link[2]})
+            qubits[1].add(link[1])
+        self.qubits = [list(qubits[j]) for j in range(2)]
+        self.num_qubits = [len(qubits[j]) for j in range(2)]
+
+        # define the quantum egisters
+        self.code_qubit = QuantumRegister(self.num_qubits[0], "code_qubit")
+        self.link_qubit = QuantumRegister(self.num_qubits[1], "link_qubit")
+        self.qubit_registers = {"code_qubit", "link_qubit"}
+
+        # for looking up where each qubit lives on the quantum registers
+        self.code_index = {qubit:q for q, qubit in enumerate(list(qubits[0]))}
+        self.link_index = {qubit:q for q, qubit in enumerate(list(qubits[1]))}
+        
+        # set up the classical registers
+        self.link_bits = []
+        self.code_bit = ClassicalRegister(len(qubits[0]), "code_bit")
+
+        # create the circuits and initialize the code qubits
+        self.circuit = {}
+        for basis in [self.basis, self.basis[::-1]]:
+            self.circuit[basis] = QuantumCircuit(self.link_qubit, self.code_qubit, name=basis)
+            self._basis_change(basis)
+
+        # use degree 1 code qubits for logical z readouts
+        graph = self._get_coupling_graph()
+        z_logicals = []
+        for n, node in enumerate(graph.nodes()):
+            if graph.degree(n)==1:
+                z_logicals.append(node)
+        # if there are none, just use the first
+        if z_logicals==[]:
+            z_logicals = [0]
+        self.z_logicals = z_logicals
+
+    def _get_202(self, t):
+        '''
+        Returns the position within a 202 sequence for the current measurement round:
+        * `False` means not part of a 202 sequence;
+        * 0, 2 and 4 use the standard coloring;
+        * 1 and 3 use the flipped coloring.
+        Also returns the link qubits for the link for which the 202 sequence is run and its neigbours.
+        '''
+        # null values in case no 202 done during this round
+        tau, qubit_l_202, qubit_l_nghbrs = None, None, [[],[]]
+        if self.run_202 and int(t/self.rounds_per_link)<len(self.links):
+            # determine the link qubit for which the 202 sequence is run
+            link = self.links[int(t/self.rounds_per_link)]
+            # see if the planned link has overlap with the logicals
+            logical_overlap = {link[0], link[2]}.intersection(set(self.z_logicals))
+            if not logical_overlap:
+                # set the 202 link
+                qubit_l_202 = link[1]
+                #  determine where we are in the sequence
+                tau = int((t-self.metabuffer)%self.rounds_per_link - self.roundbuffer)
+                if t<self.metabuffer or tau not in range(5):
+                    tau = False
+                # determine the neighbouring link qubits that are suppressed
+                graph = self._get_link_graph(0)
+                nodes = graph.nodes()
+                edges = graph.edge_list()
+                ns = tuple([nodes.index(link[j]) for j in [0,2]])
+                qubit_l_nghbrs = []
+                for n in ns:
+                    neighbors = list(graph.incident_edges(n))
+                    neighbors.remove(list(edges).index(ns))
+                    qubit_l_nghbrs.append([graph.get_edge_data_by_index(ngbhr)['link qubit'] for ngbhr in neighbors])
+        return tau, qubit_l_202, qubit_l_nghbrs
+
+    def _syndrome_measurement(self, final: bool = False):
+        """
+        Adds a syndrome measurement round.
+        Args:
+            final (bool): Whether or not this is the final round.
+        """
+
+        self.link_bits.append(ClassicalRegister(self.num_qubits[1], "round_" + str(self.T) + "_link_bit"))
+
+        tau, qubit_l_202, qubit_l_nghbrs = self._get_202(self.T)
+        for basis in self.circuit:
+            if self._barriers:
+                self.circuit[basis].barrier()
+            for pairs in self.schedule:
+                for qubit_c, qubit_l in pairs:
+                    q_c = self.code_index[qubit_c]
+                    q_l = self.link_index[qubit_l]
+                    if not (tau in [1,2,3] and qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]):
+                        c = self.color[qubit_c]
+                        if qubit_l == qubit_l_202:
+                            c = (c+tau)%2
+                        self._rotate(basis, c, self.code_qubit[q_c], True)
+                        self.circuit[basis].cx(self.code_qubit[q_c],self.link_qubit[q_l])
+                        self._rotate(basis, c, self.code_qubit[q_c], False)
+
+        # measurement
+        for basis in self.circuit:
+
+            # measurement
+            if self._barriers:
+                if final:
+                    self.circuit[basis].barrier(self.link_qubit)
+                else:
+                    self.circuit[basis].barrier()
+            self.circuit[basis].add_register(self.link_bits[self.T])
+            self.circuit[basis].measure(self.link_qubit, self.link_bits[self.T])  
+
+            # resets
+            if self._resets and not final:
+                self.circuit[basis].reset(self.link_qubit)
+
+            # delay
+            if self.delay > 0 and not final:
+                if self._barriers:
+                    self.circuit[basis].barrier()
+                self.circuit[basis].delay(self.delay, self.link_qubit)
+
+        self.T += 1
+
+    def _readout(self):
+        """
+        Readout of all code qubits, which corresponds to a logical measurement
+        as well as allowing for a measurement of the syndrome to be inferred.
+        """
+
+        for basis in self.circuit:
+            self._basis_change(basis, inverse=True)
+            if self._barriers:
+                self.circuit[basis].barrier(self.code_qubit)
+            self.circuit[basis].add_register(self.code_bit)
+            self.circuit[basis].measure(self.code_qubit, self.code_bit)
+
+    def _separate_string(self, string):
+        separated_string = []
+        for syndrome_type_string in string.split("  "):
+            separated_string.append(syndrome_type_string.split(" "))
+        return separated_string
+
+    def _process_string(self, string):
+
+        # logical readout taken from assigned qubits
+        measured_log = ''
+        for qubit in self.z_logicals:
+            j = self.code_index[qubit]
+            measured_log += string[self.num_qubits[0] -j -1] + " "
+
+        if self._resets:
+            syndrome = string[self.num_qubits[0] :]
+        else:
+            # if there are no resets, results are cumulative and need to be separated
+            cumsyn_list = string[self.num_qubits[0] :].split(" ")
+            syndrome_list = []
+            for tt, cum_syn in enumerate(cumsyn_list[0:-1]):
+                syn = ""
+                for j in range(len(cum_syn)):
+                    syn += str(int(cumsyn_list[tt][j]!=cumsyn_list[tt+1][j]))
+                syndrome_list.append(syn)
+            syndrome_list.append(cumsyn_list[-1])
+            syndrome = " ".join(syndrome_list)
+        
+        # final syndrome deduced from final code qubit readout
+        full_syndrome = ""
+        for link in self.links:
+            q = [self.num_qubits[0] - 1 - self.code_index[link[j]] for j in [0,-1]]
+            full_syndrome += "0" * (string[q[0]] == string[q[1]]) + "1" * (string[q[0]] != string[q[1]])
+        # results from all other syndrome measurements then added
+        full_syndrome = full_syndrome + syndrome
+
+        # changes between one syndrome and the next then calculated
+        syndrome_list = full_syndrome.split(" ")
+        syndrome_changes = ""
+        for t in range(self.T + 1):
+            tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
+            for j in range(self.num_qubits[1]):
+                q_l = self.num_qubits[1] - 1 - j
+                qubit_l = self.links[q_l][1]
+                all_neighbors = qubit_l_nghbrs[0]+qubit_l_nghbrs[1]
+                if qubit_l in all_neighbors and tau in [1,2,3]:
+                    # don't calculate changes for neighbours of the 202
+                    change = False
+                elif qubit_l in all_neighbors and tau==4:
+                    # index for neighbours on the other side of the 202 link
+                    opp_index = int(qubit_l in qubit_l_nghbrs[0])
+                    # first listed link on the other side
+                    qubit_l_opp = qubit_l_nghbrs[opp_index][0]
+                    # position in register for this link
+                    k = self.num_qubits[1] - 1 - self.link_index[qubit_l_opp]
+                    # determine change for product of these two over the past four rounds
+                    changes = 0
+                    for jj in [j,k]:
+                        dt = 4
+                        changes += (syndrome_list[-t - 1][jj] != syndrome_list[-t - 1 + dt][jj])
+                    change = changes%2 == 1
+                else:
+                    if t == 0:
+                        change = syndrome_list[-1][j] != "0"
+                    else:
+                        if qubit_l==qubit_l_202:
+                            if tau==1:
+                                change = False
+                            else:
+                                if tau in [2,3,4]:
+                                    dt = 2
+                                else:
+                                    dt = 1
+                                # compare value t with that at t-dt
+                                change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
+                    if change:
+                        print(tau, qubit_l_202, qubit_l_nghbrs, qubit_l)
+                syndrome_changes += "0" * (not change) + "1" * change
+            syndrome_changes += " "
+
+        # the space separated string of syndrome changes then gets a
+        # double space separated logical value on the end
+        new_string = measured_log + " " + syndrome_changes[:-1]
+
+        return new_string     
+
+    def string2nodes(self, string, logical="0", all_logicals=False):
+        """
+        Convert output string from circuits into a set of nodes.
+        Args:
+            string (string): Results string to convert.
+            logical (string): Logical value whose results are used.
+            all_logicals (bool): Whether to include logical nodes
+            irrespective of value.
+        Returns:
+            dict: List of nodes corresponding to to the non-trivial
+            elements in the string.
+        """
+
+        string = self._process_string(string)
+        separated_string = self._separate_string(string)
+        nodes = []
+        for syn_type, _ in enumerate(separated_string):
+            for syn_round in range(len(separated_string[syn_type])):
+                elements = separated_string[syn_type][syn_round]
+                for elem_num, element in enumerate(elements):
+                    if (syn_type == 0 and (all_logicals or element != logical)) or (
+                        syn_type != 0 and element == "1"
+                    ):
+                        is_boundary = syn_type == 0
+                        if is_boundary:
+                            elem_num = syn_round
+                            syn_round = 0
+                            code_qubits = [self.z_logicals[-elem_num]]
+                            link_qubit = None
+                        else:
+                            link = self.links[elem_num - 1]
+                            code_qubits = [link[0], link[2]]
+                            link_qubit = link[1]
+                        self.link_index
+                        node = {"time": syn_round}
+                        node["code qubits"] = code_qubits
+                        node["link qubit"] = link_qubit
+                        node["is_boundary"] = is_boundary
+                        node["element"] = elem_num
+                        nodes.append(node)
+        return nodes
+
+    def transpile(self, backend, echo=['X','X'], echo_num=[2,0]):
+        """
+        Args:
+            backend: Backend to transpile and schedule the circuits for. The numbering of the
+                qubits in this backend should correspond to the numbering used in `self.links`.
+            echo: List of gate sequences (expressed as strings) to be used on code qubits and
+                link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
+            echo_num:
+                Number of times to repeat the sequences (as a list) for code qubits and
+                link qubits, respectively.
+        Returns:
+            transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
+            with dynamical decoupling added.
+        """
+        
+        circuits = [self.circuit[basis] for basis in [self.basis, self.basis[::-1]]]
+        
+        initial_layout = []
+        for qreg in circuits[0].qregs:
+            qreg_index = int('link' in qreg.name)
+            initial_layout += [self.qubits[qreg_index][q] for q in range(self.num_qubits[qreg_index])]
+
+        # transpile to backend and schedule
+        circuits = transpile(circuits,backend,initial_layout=initial_layout,scheduling_method='alap')
+
+        # then dynamical decoupling if needed
+        if any(echo_num):
+
+            # set up the dd sequences
+            dd_sequences = []
+            spacings = []
+            for j in range(2):
+                if echo[j]=='X':
+                    dd_sequences.append( [XGate()]*echo_num[j] )
+                    spacings.append(None)
+                elif echo[j]=='XZX':
+                    dd_sequences.append( [XGate(), RZGate(np.pi), XGate()]*echo_num )
+                    d = 1.0/(2*echo_num-1+1)
+                    spacing = [d/2]+([0,d,d]*echo_num[j])[:-1]+[d/2]
+                    for _ in range(2):
+                        spacing[0] += 1-sum(spacing)
+                    spacings.append(spacing)
+                else:
+                    dd_sequences.append(None)
+                    spacings.append(None)
+
+            # add in the dd sequences
+            durations = InstructionDurations().from_backend(backend)
+            for j,dd_sequence in enumerate(dd_sequences):
+                if dd_sequence:
+                    if echo_num[j]:
+                        qubits = self.qubits[j]
+                    else:
+                        qubits = None
+                    pm = PassManager([DynamicalDecoupling(durations, dd_sequence, qubits=qubits, spacing=spacings[j])])
+                    circuits = pm.run(circuits)
+
+            # make sure delays are a multiple of 16 samples, while keeping the barriers
+            # as aligned as possible
+            for qc in circuits:
+                total_delay = [{q:0 for q in qc.qubits} for _ in range(2)]
+                for gate in qc.data:
+                    if gate[0].name=='delay':
+                        q = gate[1][0]
+                        t = gate[0].params[0]
+                        total_delay[0][q] += t
+                        new_t = 16*np.ceil((total_delay[0][q]-total_delay[1][q])/16)
+                        total_delay[1][q] += new_t
+                        gate[0].params[0] = new_t
+
+            # transpile to backend and schedule again
+            circuits = transpile(circuits,backend,scheduling_method='alap')
+   
+        return {basis:circuits[j] for j,basis in enumerate([self.basis, self.basis[::-1]])}
