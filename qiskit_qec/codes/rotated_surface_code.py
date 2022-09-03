@@ -20,28 +20,17 @@ class RSSC:
             raise Exception("require odd distance")
         if distance < 3:
             raise Exception("require positive distance > 2")
-        d = distance
-        k = 1
-        n = int(d**2 + (d - 1) ** 2 / 2)
-        x_gauges, self.x_orientations = self._x_gauge_generators(d)
-        z_gauges, self.z_orientations = self._z_gauge_generators(d)
-        x_stabilizers = self._x_stabilizer_generators(d)
-        z_stabilizers = self._z_stabilizer_generators(d)
-        logical_z = self._logical_z(d)
-        logical_x = self._logical_x(d)
-        self.x_boundary = self._x_boundary_qubits(d)
-        self.z_boundary = self._z_boundary_qubits(d)
-        super().__init__(
-            x_gauges,
-            z_gauges,
-            n,
-            k,
-            d,
-            x_stabilizers,
-            z_stabilizers,
-            logical_z,
-            logical_x,
-        )
+        self.d = distance
+        self.k = 1
+        self.n = int(self.d**2 + (self.d - 1) ** 2 / 2)
+        self.x_gauges, self.x_orientations = self._x_gauge_generators(self.d)
+        self.z_gauges, self.z_orientations = self._z_gauge_generators(self.d)
+        self.x_stabilizers = self._x_stabilizer_generators(self.d)
+        self.z_stabilizers = self._z_stabilizer_generators(self.d)
+        self.logical_z = self._logical_z(self.d)
+        self.logical_x = self._logical_x(self.d)
+        self.x_boundary = self._x_boundary_qubits(self.d)
+        self.z_boundary = self._z_boundary_qubits(self.d)
 
     def __str__(self) -> str:
         """Formatted string."""
@@ -91,7 +80,7 @@ class RSSC:
         """
         x_gauges = []
         x_orientations = []  # 0 = up, 1 = down
-        for i in range(d):
+        for i in range(self.d):
             for j in range(d - 1):
                 if i % 2 == j % 2:  # triangle points up
                     try:
@@ -132,7 +121,7 @@ class RSSC:
         z_gauges = []
         z_orientations = []  # 0 = left, 1 = right
         for i in range(d - 1):
-            for j in range(d):
+            for j in range(self.d):
                 if i % 2 == j % 2:  # triangle points left
                     try:
                         tip = self.to_index(2 * i + 1, 2 * j - 1, d)
@@ -168,9 +157,9 @@ class RSSC:
         -1 is substituted when a qubit does not exist because the stabilizer
         is on the boundary of the lattice.
         """
-        x_gauges, x_orientations = self._x_gauge_generators(d)
+        x_gauges, x_orientations = self._x_gauge_generators(self.d)
         x_stabilizers = []
-        for i in range(d):
+        for i in range(self.d):
             for j in range(d - 1):
                 if i == 0 and j % 2 == 1:
                     x_stabilizers.append(x_gauges[(d - 1) * i + j])
@@ -189,10 +178,10 @@ class RSSC:
         The index -1 is substituted when a qubit does not exist because
         the stabilizer is on the boundary of the lattice.
         """
-        z_gauges, z_orientations = self._z_gauge_generators(d)
+        z_gauges, z_orientations = self._z_gauge_generators(self.d)
         z_stabilizers = []
         for i in range(d - 1):
-            for j in range(d):
+            for j in range(self.d):
                 if i % 2 == 1 and j == 0:
                     z_stabilizers.append(z_gauges[d * i + j])
                 elif i % 2 == 0 and j == d - 1:
@@ -203,11 +192,11 @@ class RSSC:
 
     def _logical_z(self, d):
         """Return the support of the logical Z operators."""
-        return [[i for i in range(d)]]
+        return [[i for i in range(self.d)]]
 
     def _logical_x(self, d):
         """Return the support of the logical X operators."""
-        return [[d * i for i in range(d)]]
+        return [[d * i for i in range(self.d)]]
 
     def _z_boundary_qubits(self, d):
         """Return a list of singletons each containing a Z boundary qubit.
@@ -216,9 +205,9 @@ class RSSC:
         a logical X chain terminates.
         """
         z_boundary = []
-        for i in range(d):
+        for i in range(self.d):
             z_boundary.append([i])
-        for i in range(d):
+        for i in range(self.d):
             z_boundary.append([d * (d - 1) + i])
         return z_boundary
 
@@ -229,8 +218,8 @@ class RSSC:
         a logical Z chain terminates.
         """
         x_boundary = []
-        for i in range(d):
+        for i in range(self.d):
             x_boundary.append([d * i])
-        for i in range(d):
+        for i in range(self.d):
             x_boundary.append([d * i + d - 1])
         return x_boundary

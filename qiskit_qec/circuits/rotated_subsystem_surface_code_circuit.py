@@ -3,7 +3,6 @@
 import copy
 import logging
 from tokenize import group
-from typing import List, Tuple
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import IGate
@@ -18,18 +17,18 @@ class RSSCCircuit:
 
     def __init__(
         self,
-        rssc,
-        idles:bool,
-        basis:str,
-        rounds:int,
+        rssc:RSSC,
+        barriers: bool,
+        idles: bool,
+        distinct_measurement_idle: bool,
+        group_meas: bool,
+        round_schedule: str,
+        basis: str,
+        initial_state: str,
+        logical_paulis: str,
+        rounds: int,
         schedule,
-        barriers:bool,
-        group_meas,
-        initial_state:str,
-        round_schedule:str,
-        logical_paulis:str,
-        distinct_measurement_idle:bool,
-        num_initialize:int=None,
+        num_initialize: int = None,
     ):
         """Create an object associated to a RSSC.
 
@@ -45,19 +44,18 @@ class RSSCCircuit:
         self.total_qubits = rssc.n + self.total_ancilla
         self.qreg = QuantumRegister(self.total_qubits)
         self.imlabel = "idm"  # label for idle during measurement
-
         self.barriers = barriers
-        self.idles = idles 
+        self.idles = idles
         self.distinct_measurement_idle = distinct_measurement_idle
         if rounds < 1:
             raise Exception("expected positive integer rounds")
-        self.rounds= rounds  
+        self.rounds = rounds
         if set(round_schedule) > set("xz"):
             raise Exception("expected round schedule of 'x', 'z' chars")
-        self.round_schedule = round_schedule 
+        self.round_schedule = round_schedule
         if not (basis == "x" or basis == "z"):
             raise Exception("expected basis to be 'x' or 'z'")
-        self.basis = basis 
+        self.basis = basis
         if not (initial_state == "+" or initial_state == "-"):
             raise Exception("expected initial state '+' or '-'")
         self.initial_state = initial_state
