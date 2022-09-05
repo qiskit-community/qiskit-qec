@@ -51,6 +51,9 @@ def make_model(p):
     return pnm
 
 
+from qiskit_qec.decoders.temp_code_util import temp_syndrome
+
+
 class TestRSSCDecoder(unittest.TestCase):
     def correct_all_1(self, code, circ, dec, model, good=0, xbasis=False, method="propagator"):
         dec.update_edge_weights(model)
@@ -59,10 +62,7 @@ class TestRSSCDecoder(unittest.TestCase):
         for faultpath in fe.generate():
             outcome = faultpath[3]
             corrected_outcomes = dec.process(outcome)
-            if xbasis:
-                fail = code.logical_z_error(corrected_outcomes)
-            else:
-                fail = code.logical_x_error(corrected_outcomes)
+            fail = temp_syndrome(corrected_outcomes, [range(code.n)])
             if fail[0] != good:
                 failures += 1
         self.assertEqual(failures, 0)
@@ -100,10 +100,7 @@ class TestRSSCDecoder(unittest.TestCase):
         for (outcome, num) in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
-            if xbasis:
-                fail = code.logical_z_error(corrected_outcomes)
-            else:
-                fail = code.logical_x_error(corrected_outcomes)
+            fail = temp_syndrome(corrected_outcomes, [range(code.n)])
             if fail[0] != good:
                 failures += 1
         self.assertEqual(failures, 0)
@@ -119,6 +116,11 @@ class TestRSSCDecoder(unittest.TestCase):
         distinct_measurement_idle = False
         gen = RSSCCircuit(
             rssc=c,
+            barriers=True,
+            idles=True,
+            group_meas=False,
+            initial_state="+",
+            logical_paulis="",
             schedule=schedule,
             rounds=rounds,
             round_schedule=round_schedule,
@@ -129,290 +131,368 @@ class TestRSSCDecoder(unittest.TestCase):
         model = make_model(0.0001)
         dec = RSSCDecoder(
             c,
-            circ,
-            model,
-            method=method,
+            n=c.n,
+            css_x_gauge_ops=c.x_gauges,
+            css_x_stabilizer_ops=c.x_stabilizers,
+            css_x_boundary=c.x_boundary,
+            css_z_gauge_ops=c.z_gauges,
+            css_z_stabilizer_ops=c.z_stabilizers,
+            css_z_boundary=c.z_boundary,
+            circuit=circ,
+            model=model,
+            basis=basis,
+            round_schedule=round_schedule,
+            blocks=3,
+            method="pymatching",
+            uniform=True,
         )
         self.no_faults_success(c, circ, dec, model)
         self.correct_all_1(c, circ, dec, model)
 
-    def test_d3_2(self):  # 3 zx z pymatching hex-layout
-        c = RSSC(3)
 
-        schedule = "heavy-hex"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_pymatching"
-        gen = RSSCCircuit(
-            rssc=c, schedule=schedule, rounds=rounds, round_schedule=round_schedule, basis=basis
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#     def test_d3_2(self):  # 3 zx z pymatching hex-layout
+#         c = RSSC(3)
+#         logical_paulis = "ii"
+#         schedule = "heavy-hex"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-    def test_d3_3(self):  # 3 zx z pymatching hex-layout logical=xx
-        c = RSSC(3)
+#     def test_d3_3(self):  # 3 zx z pymatching hex-layout logical=xx
+#         c = RSSC(3)
 
-        schedule = "heavy-hex"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_pymatching"
-        logical_paulis = "xx"
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            logical_paulis=logical_paulis,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#         schedule = "heavy-hex"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         logical_paulis = "xx"
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             logical_paulis=logical_paulis,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-    def test_d3_4(self):  # 1 zxzxzx z pymatching hex-layout logical=xyzxyz
-        c = RSSC(3)
+#     def test_d3_4(self):  # 1 zxzxzx z pymatching hex-layout logical=xyzxyz
+#         c = RSSC(3)
 
-        schedule = "heavy-hex"
-        rounds = 1
-        round_schedule = "zxzxzx"
-        basis = "z"
-        method = "matching_pymatching"
-        logical_paulis = "xyzxyz"
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            logical_paulis=logical_paulis,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#         schedule = "heavy-hex"
+#         rounds = 1
+#         round_schedule = "zxzxzx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         logical_paulis = "xyzxyz"
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             logical_paulis=logical_paulis,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-    def test_d3_5(self):  # 3 zx z pymatching -1 eigenvalue
-        c = RSSC(3)
+#     def test_d3_5(self):  # 3 zx z pymatching -1 eigenvalue
+#         c = RSSC(3)
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_pymatching"
-        initial_state = "-"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-            initial_state=initial_state,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model, good=1)
-        self.correct_all_1(c, circ, dec, model, good=0, xbasis=False, method="propagator")
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         initial_state = "-"
+#         distinct_measurement_idle = False
+#         logical_paulis = "ii"
 
-    def test_d3_6(self):  # 3 zx z pymatching uniform
-        c = RSSC(3)
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#             initial_state=initial_state,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model, good=1)
+#         self.correct_all_1(c, circ, dec, model, good=0, xbasis=False, method="propagator")
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_pymatching"
-        uniform = True
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-            uniform=uniform,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#     def test_d3_6(self):  # 3 zx z pymatching uniform
+#         c = RSSC(3)
 
-    def test_d3_7(self):  # 3 zx z networkx
-        c = RSSC(3)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         uniform = True
+#         distinct_measurement_idle = False
+#         logical_paulis = ""
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#             uniform=uniform,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_networkx"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#     def test_d3_7(self):  # 3 zx z networkx
+#         c = RSSC(3)
 
-    def test_d3_8(self):  # 3 zx z networkx uniform
-        c = RSSC(3)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_networkx"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_networkx"
-        uniform = True
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-            uniform=uniform,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#     def test_d3_8(self):  # 3 zx z networkx uniform
+#         c = RSSC(3)
 
-    def test_d3_9(self):  # 3 zx x pymatching
-        c = RSSC(3)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         logical_paulis = "ii"
+#         basis = "z"
+#         method = "matching_networkx"
+#         uniform = True
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#             uniform=uniform,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "x"
-        method = "matching_pymatching"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
-        self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
+#     def test_d3_9(self):  # 3 zx x pymatching
+#         c = RSSC(3)
 
-    def test_d3_10(self):  # 3 zx x pymatching -1 eigenvalue
-        c = RSSC(3)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         logical_paulis = "ii"
+#         basis = "x"
+#         method = "matching_pymatching"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
+#         self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "x"
-        method = "matching_pymatching"
-        initial_state = "-"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-            initial_state=initial_state,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model, good=1, xbasis=True)
-        self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
+#     def test_d3_10(self):  # 3 zx x pymatching -1 eigenvalue
+#         c = RSSC(3)
 
-    def test_d3_11(self):  # 3 zx x networkx
-        c = RSSC(3)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         logical_paulis = "ii"
+#         basis = "x"
+#         method = "matching_pymatching"
+#         initial_state = "-"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#             initial_state=initial_state,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model, good=1, xbasis=True)
+#         self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "x"
-        method = "matching_networkx"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
-        self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
+#     def test_d3_11(self):  # 3 zx x networkx
+#         c = RSSC(3)
 
-    def test_d5_1(self):  # 5 zx z pymatching
-        c = RSSC(5)
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "x"
+#         method = "matching_networkx"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
+#         self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
 
-        schedule = "higgott-breuckmann"
-        rounds = 5
-        round_schedule = "zx"
-        basis = "z"
-        method = "matching_pymatching"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model)
-        self.correct_all_1(c, circ, dec, model)
+#     def test_d5_1(self):  # 5 zx z pymatching
+#         c = RSSC(5)
 
-    def test_d5_2(self):  # 3 zxzx x pymatching
-        c = RSSC(5)
+#         schedule = "higgott-breuckmann"
+#         rounds = 5
+#         round_schedule = "zx"
+#         basis = "z"
+#         method = "matching_pymatching"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model)
+#         self.correct_all_1(c, circ, dec, model)
 
-        schedule = "higgott-breuckmann"
-        rounds = 3
-        round_schedule = "zx"
-        basis = "x"
-        method = "matching_pymatching"
-        distinct_measurement_idle = False
-        gen = RSSCCircuit(
-            rssc=c,
-            schedule=schedule,
-            rounds=rounds,
-            round_schedule=round_schedule,
-            basis=basis,
-            distinct_measurement_idle=distinct_measurement_idle,
-        )
-        circ = gen.syndrome_measurement()
-        model = make_model(0.0001)
-        dec = RSSCDecoder(c, circ, model, method=method)
-        self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
-        self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
+#     def test_d5_2(self):  # 3 zxzx x pymatching
+#         c = RSSC(5)
+
+#         schedule = "higgott-breuckmann"
+#         rounds = 3
+#         round_schedule = "zx"
+#         basis = "x"
+#         method = "matching_pymatching"
+#         distinct_measurement_idle = False
+#         gen = RSSCCircuit(
+#             rssc=c,
+#             barriers=True,
+#             idles=True,
+#             group_meas=False,
+#             initial_state="+",
+#             logical_paulis=logical_paulis,
+#             schedule=schedule,
+#             rounds=rounds,
+#             round_schedule=round_schedule,
+#             basis=basis,
+#             distinct_measurement_idle=distinct_measurement_idle,
+#         )
+#         circ = gen.syndrome_measurement()
+#         model = make_model(0.0001)
+#         dec = RSSCDecoder(c, circ, model, method=method)
+#         self.no_faults_success(c, circ, dec, model, good=0, xbasis=True)
+#         self.correct_all_1(c, circ, dec, model, good=0, xbasis=True, method="propagator")
 
 
 if __name__ == "__main__":

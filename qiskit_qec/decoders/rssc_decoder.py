@@ -39,6 +39,7 @@ class RSSCDecoder(CircuitModelMatchingDecoder):
     ):
         """Create a decoder object."""
         # Sum the total number of bits per round
+        self.code = code
         self.bits_per_round = 0
         self.round_schedule = round_schedule
         if not isinstance(self.round_schedule, str):
