@@ -448,6 +448,7 @@ class ArcCircuit:
         self.run_202 = run_202 and self.rounds_per_link >= 5
 
         # create the circuit
+        self.base = basis
         self._preparation()
         self.T = 0
         for _ in range(T - 1):
@@ -809,8 +810,6 @@ class ArcCircuit:
                                     dt = 1
                                 # compare value t with that at t-dt
                                 change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
-                    if change:
-                        print(tau, qubit_l_202, qubit_l_nghbrs, qubit_l)
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
 
@@ -854,7 +853,7 @@ class ArcCircuit:
                             code_qubits = [link[0], link[2]]
                             link_qubit = link[1]
                         node = {"time": syn_round}
-                        node["code qubits"] = code_qubits
+                        node["qubits"] = code_qubits
                         node["link qubit"] = link_qubit
                         node["is_boundary"] = is_boundary
                         node["element"] = elem_num
