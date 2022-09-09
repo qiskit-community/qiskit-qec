@@ -15,10 +15,9 @@
 # pylint: disable=invalid-name
 
 """Generates circuits for quantum error correction."""
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
-from qiskit import QuantumRegister, ClassicalRegister
-from qiskit import QuantumCircuit
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 
 class RepetitionCodeCircuit:
@@ -284,37 +283,46 @@ class RepetitionCodeCircuit:
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
+
+        Additional information:
+        Strings are read right to left, but lists*
+        are read left to right. So, we have some ugly indexing
+        code whenever we're dealing with both strings and lists.
         """
 
         string = self._process_string(string)
-        separated_string = self._separate_string(string)
+        separated_string = self._separate_string(string)  # [ <boundary>, <syn>, <syn>,...]
         nodes = []
-        for syn_type, _ in enumerate(separated_string):
+
+        # boundary nodes
+        boundary = separated_string[0]  # [<last_elem>, <init_elem>]
+        for bqec_index, belement in enumerate(boundary[::-1]):
+            if all_logicals or belement != logical:
+                bnode = {"time": 0}
+                i = [0, -1][bqec_index]
+                if self.basis == "z":
+                    bqubits = [self.css_x_logical[i]]
+                else:
+                    bqubits = [self.css_z_logical[i]]
+                bnode["qubits"] = bqubits
+                bnode["is_boundary"] = True
+                bnode["element"] = bqec_index
+                nodes.append(bnode)
+
+        # bulk nodes
+        for syn_type in range(1, len(separated_string)):
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
-                for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and (all_logicals or element != logical)) or (
-                        syn_type != 0 and element == "1"
-                    ):
-                        if syn_type == 0:
-                            elem_num = syn_round
-                            syn_round = 0
+                for qec_index, element in enumerate(elements[::-1]):
+                    if element == "1":
                         node = {"time": syn_round}
-                        is_boundary = syn_type == 0
-                        if is_boundary:
-                            i = [0, -1][elem_num]
-                            if self.basis == "z":
-                                qubits = [self.css_x_logical[i]]
-                            else:
-                                qubits = [self.css_z_logical[i]]
+                        if self.basis == "z":
+                            qubits = self.css_z_gauge_ops[qec_index]
                         else:
-                            if self.basis == "z":
-                                qubits = self.css_z_gauge_ops[elem_num]
-                            else:
-                                qubits = self.css_x_gauge_ops[elem_num]
+                            qubits = self.css_x_gauge_ops[qec_index]
                         node["qubits"] = qubits
-                        node["is_boundary"] = is_boundary
-                        node["element"] = elem_num
+                        node["is_boundary"] = False
+                        node["element"] = qec_index
                         nodes.append(node)
         return nodes
 
