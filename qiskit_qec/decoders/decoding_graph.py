@@ -51,8 +51,8 @@ class DecodingGraph:
         self.hyperedges = []
 
         # get the circuit used as the base case
-        if type(self.code.circuit) is dict:
-            if 'base' not in dir(self.code):
+        if isinstance(self.code.circuit, dict):
+            if "base" not in dir(self.code):
                 base = "0"
             else:
                 base = self.code.base
