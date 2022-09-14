@@ -868,7 +868,7 @@ class ArcCircuit:
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
         Args:
-            nodes (dict): List of nodes to be flattened.
+            nodes (dict): List of nodes, of the type produced by `string2nodes`, to be flattened.
         Returns:
             flat_nodes (dict): List of flattened nodes.
         """
@@ -887,6 +887,54 @@ class ArcCircuit:
                     flat_node.pop("time")
                 flat_nodes.append(flat_node)
         return flat_nodes
+
+    def check_nodes(self, nodes):
+        """
+        Determines whether a given set of nodes are neutral. If so, also
+        determines the logical readout qubits they contain.
+        Args:
+            nodes (list): List of nodes, of the type produced by `string2nodes`.
+        Returns:
+            neutral (bool): Whether the nodes independently correspond to a valid
+                set of errors.
+            flipped_logicals (list): List of qubits within `z_logicals`
+                enclosed by the nodes.
+        """
+        nodes = self.flatten_nodes(nodes)
+        link_qubits = set(node["link qubit"] for node in nodes)
+        node_color = {0: 0}
+        neutral = True
+        link_graph = self._get_link_graph()
+        ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
+        n = 0
+        while ns_to_do and neutral:
+            for n in link_graph.neighbors(n):
+                if n in node_color:
+                    incident_es = link_graph.incident_edges(n)
+                    for e in incident_es:
+                        edge = link_graph.edges()[e]
+                        n0, n1 = link_graph.edge_list()[e]
+                        if n0 == n:
+                            nn = n1
+                        else:
+                            nn = n0
+                        dc = edge["link qubit"] in link_qubits
+                        if nn not in node_color:
+                            node_color[nn] = (node_color[n] + dc) % 2
+                            ns_to_do.remove(nn)
+                        else:
+                            neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
+
+        print(node_color)
+        flipped_logicals = []
+        if neutral:
+            inside_c = int(sum(node_color.values()) < len(node_color) / 2)
+            for n, c in node_color.items():
+                node = link_graph.nodes()[n]
+                if node in self.z_logicals and c == inside_c:
+                    flipped_logicals.append(node)
+
+        return neutral, flipped_logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
