@@ -526,7 +526,7 @@ class ArcCircuit:
         schedule = []
         while aux:
 
-            # contruct coupling graph for as yet unpaired auxiliaries (i.e. link qubits)
+            # construct coupling graph for as yet unpaired auxiliaries (i.e. link qubits)
             graph = self._get_coupling_graph(aux)
 
             # find a min weight matching, and then another that exlcudes the pairs from the first
@@ -852,7 +852,7 @@ class ArcCircuit:
                             code_qubits = [self.z_logicals[-elem_num]]
                             link_qubit = None
                         else:
-                            link = self.links[elem_num - 1]
+                            link = self.links[-elem_num - 1]
                             code_qubits = [link[0], link[2]]
                             link_qubit = link[1]
                         node = {"time": syn_round}
@@ -862,6 +862,33 @@ class ArcCircuit:
                         node["element"] = elem_num
                         nodes.append(node)
         return nodes
+
+    def flatten_nodes(self, nodes):
+        """
+        Removes time information from a set of nodes, and consolidates those on
+        the same position at different times.
+        Args:
+            nodes (dict): List of nodes to be flattened.
+        Returns:
+            flat_nodes (dict): List of flattened nodes.
+        """
+        nodes_per_link = {}
+        for node in nodes:
+            link_qubit = node["link qubit"]
+            if link_qubit in nodes_per_link:
+                nodes_per_link[link_qubit] += 1
+            else:
+                nodes_per_link[link_qubit] = 1
+        flat_nodes = []
+        for node in nodes:
+            if nodes_per_link[node["link qubit"]]%2:
+                flat_node = node.copy()
+                if "time" in flat_node:
+                    flat_node.pop("time")
+                flat_nodes.append(flat_node)
+        return flat_nodes
+
+
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
