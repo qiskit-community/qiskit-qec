@@ -17,12 +17,15 @@
 """Run codes and decoders."""
 
 import unittest
+import itertools
 
 from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -195,22 +198,22 @@ class TestRepCodes(unittest.TestCase):
 class TestARCCodes(unittest.TestCase):
     """Test the ARC code circuits."""
 
-        def single_error_test(
-            self, code
-        ):# NOT run directly by unittest; called by test_graph_constructions
+    def single_error_test(
+        self, code
+    ):  # NOT run directly by unittest; called by test_graph_constructions
         """
         Insert all possible single qubit errors into the given code,
         and check that each creates a pair of syndrome nodes.
         """
 
         # determine the neighbourhood of each code qubit
-        incident_links = {None:set()}
+        incident_links = {None: set()}
         link_graph = code._get_link_graph()
         for n, node in enumerate(link_graph.nodes()):
             edges = link_graph.incident_edges(n)
             incident_links[node] = set()
             for edge in edges:
-                incident_links[node].add(link_graph.edges()[edge]['link qubit'])
+                incident_links[node].add(link_graph.edges()[edge]["link qubit"])
             if node in code.z_logicals:
                 incident_links[node].add(None)
 
@@ -218,7 +221,7 @@ class TestARCCodes(unittest.TestCase):
         for basis in [code.basis, code.basis[::-1]]:
 
             # use the fault enumerator to test possible faults
-            qc = code.circuit[code.base]
+            qc = code.circuit[basis]
             fe = FaultEnumerator(qc, method="stabilizer")
             blocks = list(fe.generate_blocks())
             fault_paths = list(itertools.chain(*blocks))
@@ -228,12 +231,12 @@ class TestARCCodes(unittest.TestCase):
                 string = "".join([str(c) for c in output[::-1]])
                 nodes = code.string2nodes(string)
                 # check that it doesn't extend over more than two rounds
-                ts = [node['time'] for node in nodes if not node['is_boundary']]
+                ts = [node["time"] for node in nodes if not node["is_boundary"]]
                 if ts:
-                    minimal = minimal and (max(ts)-min(ts))<=1
+                    minimal = minimal and (max(ts) - min(ts)) <= 1
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
                 flat_nodes = code.flatten_nodes(nodes)
-                link_qubits = set([node['link qubit'] for node in flat_nodes])
+                link_qubits = set(node["link qubit"] for node in flat_nodes)
                 minimal = minimal and link_qubits in incident_links.values()
 
                 self.assertTrue(
@@ -243,12 +246,14 @@ class TestARCCodes(unittest.TestCase):
 
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
-        square = [(0,1,2), (2,3,4), (4,5,6), (6,7,0)]
-        tadpole = [(0,1,2),(2,3,4),(2,5,6),(6,7,8)]
-        all2all = [(0,1,2), (2,3,4), (4,5,0), (0,7,6), (6,8,2), (6,9,4)]
+        square = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
+        all2all = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (0, 7, 6), (6, 8, 2), (6, 9, 4)]
         for links in [square, tadpole, all2all]:
             for resets in [True, False]:
-                code = ArcCircuit(links,T=4,barriers=True,delay=1,basis='xy',run_202=False,resets=resets)
+                code = ArcCircuit(
+                    links, T=4, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
+                )
                 self.single_error_test(code)
 
 

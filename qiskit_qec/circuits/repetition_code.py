@@ -881,14 +881,12 @@ class ArcCircuit:
                 nodes_per_link[link_qubit] = 1
         flat_nodes = []
         for node in nodes:
-            if nodes_per_link[node["link qubit"]]%2:
+            if nodes_per_link[node["link qubit"]] % 2:
                 flat_node = node.copy()
                 if "time" in flat_node:
                     flat_node.pop("time")
                 flat_nodes.append(flat_node)
         return flat_nodes
-
-
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
