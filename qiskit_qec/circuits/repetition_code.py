@@ -406,10 +406,10 @@ class ArcCircuit:
         measurement rounds, with the syndrome measurements provided.
         Args:
             links (list): List of tuples (c0, a, c1), where c0 and c1 are the two code qubits in each
-                syndrome measurement, and a is the auxiliary qubit used.
+            syndrome measurement, and a is the auxiliary qubit used.
             T (int): Number of rounds of syndrome measurement.
             basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
-                used.
+            used.
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
             barriers (bool): Whether to include barriers between different sections of the code.
@@ -417,10 +417,10 @@ class ArcCircuit:
                 a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
             max_dist (int): Maximum edge distance used when determining the bicoloring of code qubits.
             schedule(list): Specifies order in which entangling gates are applied in each syndrome
-                measurement round. Each element is a list of lists [c, a] for entangling gates to be
-                applied simultaneously.
+            measurement round. Each element is a list of lists [c, a] for entangling gates to be
+            applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
-                enough (at least 5xlen(links)).
+            enough (at least 5xlen(links)).
         """
 
         self.links = links
@@ -896,9 +896,9 @@ class ArcCircuit:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
-                set of errors.
+            set of errors.
             flipped_logicals (list): List of qubits within `z_logicals`
-                enclosed by the nodes.
+            enclosed by the nodes.
         """
         nodes = self.flatten_nodes(nodes)
         link_qubits = set(node["link qubit"] for node in nodes)
@@ -940,13 +940,13 @@ class ArcCircuit:
         """
         Args:
             backend (qiskit.providers.ibmq.IBMQBackend): Backend to transpile and schedule the
-                circuits for. The numbering of the qubits in this backend should correspond to
-                the numbering used in `self.links`.
+            circuits for. The numbering of the qubits in this backend should correspond to
+            the numbering used in `self.links`.
             echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and
-                link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
+            link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
             echo_num(tuple):
-                Number of times to repeat the sequences (as a list) for code qubits and
-                link qubits, respectively.
+            Number of times to repeat the sequences (as a list) for code qubits and
+            link qubits, respectively.
         Returns:
             transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
             with dynamical decoupling added.
