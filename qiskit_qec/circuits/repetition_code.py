@@ -944,8 +944,7 @@ class ArcCircuit:
             the numbering used in `self.links`.
             echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and
             link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
-            echo_num(tuple):
-            Number of times to repeat the sequences (as a list) for code qubits and
+            echo_num(tuple): Number of times to repeat the sequences (as a list) for code qubits and
             link qubits, respectively.
         Returns:
             transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
