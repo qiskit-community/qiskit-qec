@@ -22,6 +22,7 @@ import itertools
 from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.aer.noise.errors import depolarizing_error
+from qiskit.providers.fake_provider import FakeJakarta
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
@@ -255,6 +256,77 @@ class TestARCCodes(unittest.TestCase):
                     links, T=4, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
                 )
                 self.single_error_test(code)
+
+    def test_202s(self):
+        """Test that [[2,0,2]] codes appear when needed"""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        T = 5 * len(links)
+        for run_202 in [True, False]:
+            code = ArcCircuit(links, T=T, run_202=run_202)
+            running_202 = False
+            for t in range(T):
+                tau, _, _ = code._get_202(t)
+                if tau:
+                    running_202 = True
+            self.assertTrue(
+                running_202 == run_202,
+                "Error: [[2,0,2]] codes not present when required." * run_202
+                + "Error: [[2,0,2]] codes present when not required." * (not run_202),
+            )
+
+    def test_bases(self):
+        """Test that correct rotations are used for basis changes."""
+        links = [(0, 1, 2), (2, 3, 4)]
+        rightops = True
+        for ba in ["x", "y", "z"]:
+            for sis in ["x", "y", "z"]:
+                basis = ba + sis
+                code = ArcCircuit(links, T=3, basis=basis)
+                ops = code.circuit[code.base].count_ops()
+                if "x" in basis or "y" in basis:
+                    rightops = rightops and "h" in ops
+                else:
+                    rightops = rightops and "h" not in ops
+                if "y" in basis:
+                    for op in ["s", "sdg"]:
+                        rightops = rightops and op in ops
+                else:
+                    for op in ["s", "sdg"]:
+                        rightops = rightops and op not in ops
+        self.assertTrue(rightops, "Error: Required rotations for basis changes not present.")
+
+    def test_anisotropy(self):
+        """Test that code qubits have neighbors with the opposite color."""
+        link_num = 10
+        links = [(2 * j, 2j + 1, 2 * (j + 1)) for j in range(link_num)]
+        code = ArcCircuit(links, T=2)
+        color = code.color
+        for j in range(1, link_num - 1):
+            self.assertTrue(
+                color[2 * j] != color[2 * (j - 1)] or color[2 * j] != color[2 * (j + 1)],
+                "Error: Code qubit does not have neighbor of oppposite color.",
+            )
+
+    def test_transpilation(self):
+        """Test correct transpilation to a backend."""
+        backend = FakeJakarta()
+        links = [(0, 1, 3), (3, 5, 6)]
+        schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
+        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, resets=True)
+        circuit = code.transpile(backend)
+        self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
+        circuit = code.transpile(backend, echo_num=(0, 2))
+        self.assertTrue(
+            circuit[code.base].count_ops()["x"] == 2, "Error: Wrong echo sequence for link qubits."
+        )
+        circuit = code.transpile(backend, echo_num=(2, 0))
+        self.assertTrue(
+            circuit[code.base].count_ops()["x"] == 8, "Error: Wrong echo sequence for code qubits."
+        )
+        self.assertTrue(
+            circuit[code.base].count_ops()["cx"] == 8,
+            "Error: Wrong number of cx gates after transpilation.",
+        )
 
 
 if __name__ == "__main__":
