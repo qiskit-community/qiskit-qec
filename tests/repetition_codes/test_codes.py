@@ -20,9 +20,9 @@ import unittest
 import itertools
 
 from qiskit import Aer, QuantumCircuit, execute
-from qiskit.providers.aer.noise import NoiseModel
-from qiskit.providers.aer.noise.errors import depolarizing_error
 from qiskit.providers.fake_provider import FakeJakarta
+from qiskit_aer.noise import NoiseModel
+from qiskit_aer.noise import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
