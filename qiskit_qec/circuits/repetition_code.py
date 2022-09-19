@@ -812,7 +812,7 @@ class ArcCircuit:
                                 change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
                         else:
                             change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
-                        
+
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
 
