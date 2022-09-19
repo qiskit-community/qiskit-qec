@@ -258,9 +258,10 @@ class TestARCCodes(unittest.TestCase):
                 self.single_error_test(code)
 
     def test_202s(self):
-        """Test that [[2,0,2]] codes appear when needed"""
+        """Test that [[2,0,2]] codes appear when needed and act as required."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
         T = 5 * len(links)
+        # first, do they appear when needed
         for run_202 in [True, False]:
             code = ArcCircuit(links, T=T, run_202=run_202)
             running_202 = False
@@ -273,6 +274,15 @@ class TestARCCodes(unittest.TestCase):
                 "Error: [[2,0,2]] codes not present when required." * run_202
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
+        # second, do they yield non-trivial outputs yet trivial nodes
+        code = ArcCircuit(links, T=T, run_202=True)
+        backend = Aer.get_backend("aer_simulator")
+        counts = backend.run(code.circuit[code.basis]).result().get_counts()
+        self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
+        nodeless = True
+        for string in counts:
+            nodeless = nodeless and code.string2nodes(string) == []
+        self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
 
     def test_bases(self):
         """Test that correct rotations are used for basis changes."""
