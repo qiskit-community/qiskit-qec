@@ -80,7 +80,7 @@ class Shell(ShapeObject):
         boundary_levels: Optional[List[int]] = None,
         exclude: Optional[Callable] = None,
         boundary_strategy: str = "combine",
-        debug:str=False
+        debug: str = False,
     ) -> Tuple["Shell", QubitData, QubitCount]:
         """Extracts the subshell defined by in_vertices and is_inside
 
@@ -103,7 +103,7 @@ class Shell(ShapeObject):
                 is to be excluded. Deflault always returns False. That is exlude nothing
                 extra.
             boundary_strategy (str, optional): _description_. Defaults to "combine".
-            debug (optional) : With debug set to True a range of intermediate details are printed. Used 
+            debug (optional) : With debug set to True a range of intermediate details are printed. Used
             for debuging the addition of features to the method.
 
         Returns:
@@ -200,7 +200,10 @@ class Shell(ShapeObject):
 
             if debug:
                 logger.debug(
-                    "\n\nrd_vertices start = %s for face: %s : %s", rd_vertices, face.id, face.vertices
+                    "\n\nrd_vertices start = %s for face: %s : %s",
+                    rd_vertices,
+                    face.id,
+                    face.vertices,
                 )
 
             while len(rd_vertices) > 0:
@@ -221,9 +224,9 @@ class Shell(ShapeObject):
                 weights = [_weight_len(path) for path in vertex_paths]
                 weight = sum(weights)
                 if debug:
-                    logger.debug("Weight=%s",weight)
-                    logger.debug("vertex_paths=%s",vertex_paths)
-                    logger.debug("exclude=%s",exclude)
+                    logger.debug("Weight=%s", weight)
+                    logger.debug("vertex_paths=%s", vertex_paths)
+                    logger.debug("exclude=%s", exclude)
 
                 if (
                     (face_inside and weight in inside_levels)
@@ -232,7 +235,7 @@ class Shell(ShapeObject):
                     # if weight in levels and not exclude(vertex_paths, qubit_data):
                     for path in vertex_paths:
                         if debug:
-                            logger.debug("Working on v/e for path %s",path)
+                            logger.debug("Working on v/e for path %s", path)
 
                         # Create the new vertices
                         if len(path) > 1:

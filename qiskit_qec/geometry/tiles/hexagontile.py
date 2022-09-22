@@ -198,8 +198,8 @@ class HexagonTile(Tile):
         [6, 9],  # 8
         [7, 10],  # 9
         [9, 8],  # 10
-        [9, 11], # 11
-    ]  
+        [9, 11],  # 11
+    ]
 
     # pylint: disable=invalid-name
     r = sqrt(3) / 2
