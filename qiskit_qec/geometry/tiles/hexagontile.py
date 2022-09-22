@@ -24,6 +24,9 @@ from qiskit_qec.operators.pauli_list import PauliList
 class HexagonTile(Tile):
     """Hexagon Tile
 
+
+    Weight 6 operators (0,1,2)
+
                           q0      q1
                           v0      v1
                            o-----o
@@ -54,34 +57,149 @@ class HexagonTile(Tile):
                      \       /
                       o-----o
 
+    Weight 2 operators (3,4,5,6,7,8,9,10,11)
+
+                        q0
+                      o v1
+                   3 /
+                    o v0
+                      q3
+
+     q2   4     q3    q3        q4
+     v1 o-----o v0  o v1      o v1
+                     \ 5     / 6
+                      o v0  o v0
+                        q6    q7
+
+                   v0 o-----o v1
+                   q6    7    q7
+
+                        q6    q7
+                      o v0  o v0
+     q8    10    q9  / 8     \ 9
+     v1 o-----o v0  o         o v1
+                      q9        q10
+                    o v0
+                     \ 11
+                      o v1
+                        q11
+
+                      o
+                    3/
+              o--4--o         o
+                     \5      /6
+                      o--7--o
+                     /8      \9
+              o--10-o         o
+                     \11
+                      o
+
+
     """
 
     wf_operator_dict = {
         "cX": [
-            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
-            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
-            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 0
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 1
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 2
+            None,  # 3
+            None,  # 4
+            None,  # 5
+            None,  # 6
+            None,  # 7
+            None,  # 8
+            None,  # 9
+            None,  # 10
+            None,  # 11
         ],
         "cZ": [
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ"], input_qubit_order="left-to-right"),
+            None,  # 3
+            None,  # 4
+            None,  # 5
+            None,  # 6
+            None,  # 7
+            None,  # 8
+            None,  # 9
+            None,  # 10
+            None,  # 11
         ],
         "dXZ": [
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
             PauliList(["XXXXXX", "ZZZZZZ"], input_qubit_order="left-to-right"),
+            None,  # 3
+            None,  # 4
+            None,  # 5
+            None,  # 6
+            None,  # 7
+            None,  # 8
+            None,  # 9
+            None,  # 10
+            None,  # 11
         ],
         "dZX": [
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
             PauliList(["ZZZZZZ", "XXXXXX"], input_qubit_order="left-to-right"),
+            None,  # 3
+            None,  # 4
+            None,  # 5
+            None,  # 6
+            None,  # 7
+            None,  # 8
+            None,  # 9
+            None,  # 10
+            None,  # 11
+        ],
+        "cYZX2-hXX": [
+            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 0
+            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 1
+            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 2
+            None,  # 3
+            PauliList(["XX"]),  # 4
+            None,  # 5
+            None,  # 6
+            PauliList(["XX"]),  # 7
+            None,  # 8
+            None,  # 9
+            PauliList(["XX"]),  # 10
+            None,  # 11
+        ],
+        "cZ-aXX": [
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 0
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 1
+            PauliList(["XXXXXX"], input_qubit_order="left-to-right"),  # 2
+            PauliList(["XX"]),  # 3
+            PauliList(["XX"]),  # 4
+            PauliList(["XX"]),  # 5
+            PauliList(["XX"]),  # 6
+            PauliList(["XX"]),  # 7
+            PauliList(["XX"]),  # 8
+            PauliList(["XX"]),  # 9
+            PauliList(["XX"]),  # 10
+            PauliList(["XX"]),  # 11
         ],
     }
 
     # Descriptions of wireframes
     # qubit indices for each wireframe
-    wf_q_indices = [[0, 1, 4, 7, 6, 3], [2, 3, 6, 9, 8, 5], [6, 7, 10, 12, 11, 9]]
+    wf_q_indices = [
+        [0, 1, 4, 7, 6, 3],  # 0
+        [2, 3, 6, 9, 8, 5],  # 1
+        [6, 7, 10, 12, 11, 9],  # 2
+        [3, 0],  # 3
+        [3, 2],  # 4
+        [6, 3],  # 5
+        [7, 4],  # 6
+        [6, 7],  # 7
+        [6, 9],  # 8
+        [7, 10],  # 9
+        [9, 8],  # 10
+        [9, 11],  # 11
+    ]
 
     # pylint: disable=invalid-name
     r = sqrt(3) / 2
@@ -90,21 +208,56 @@ class HexagonTile(Tile):
     # coordinates for each wireframe vertex in path list form to enable the
     # creation of the associate edges
     wf_coordinates = [
-        [[0, 2 * r], [2 * h, 2 * r], [1 + h, r], [1, 0], [0, 0], [-h, r]],
-        [[-1 - h, r], [-h, r], [0, 0], [-h, -r], [-1 - h, -r], [-2, 0]],
-        [[0, 0], [1, 0], [1 + h, -r], [2 * h, -2 * r], [0, -2 * r], [-h, -r]],
+        [[0, 2 * r], [2 * h, 2 * r], [1 + h, r], [1, 0], [0, 0], [-h, r]],  # 0
+        [[-1 - h, r], [-h, r], [0, 0], [-h, -r], [-1 - h, -r], [-2, 0]],  # 1
+        [[0, 0], [1, 0], [1 + h, -r], [2 * h, -2 * r], [0, -2 * r], [-h, -r]],  # 2
+        [[-h, r], [0, 2 * r]],  # 3
+        [[-h, r], [-1 - h, r]],  # 4
+        [[0, 0], [-h, r]],  # 5
+        [[1, 0], [1 + h, r]],  # 6
+        [[0, 0], [1, 0]],  # 7
+        [[0, 0], [-h, -r]],  # 8
+        [[1, 0], [1 + h, -r]],  # 9
+        [[-h, -r], [-1 - h, -r]],  # 10
+        [[-h, -r], [0, -2 * r]],  # 11
     ]
 
     # If the wf's are closed loops or not
-    wf_loop_indicator = [True, True, True]
+    wf_loop_indicator = [
+        True,
+        True,
+        True,
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+        False,
+    ]
 
     # How wireframes components combine into faces/operators
-    faces_wf_components = [[0], [1], [2]]
+    faces_wf_components = [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
 
     # Face colors (wf's inherit colors from faces)
-    face_colors = ["yellowgreen", "tomato", "steelblue"]
+    face_colors = [
+        "yellowgreen",
+        "tomato",
+        "steelblue",
+        "red",
+        "red",
+        "red",
+        "red",
+        "red",
+        "red",
+        "red",
+        "red",
+        "red",
+    ]
 
-    num_faces = 3
+    num_faces = 12
 
     size = np.array([2 * h + 2, 4 * r])
 
@@ -119,7 +272,7 @@ class HexagonTile(Tile):
         qubit_count=None,
         qubit_data=None,
         operators=None,
-        optype="dXZ",
+        optype="cZ-aXX",
     ) -> Shell:
         """Hexagon Tile
                                      q0      q1
@@ -152,23 +305,53 @@ class HexagonTile(Tile):
                                 \       /
                                  o-----o
 
-        Face colors for faces [0,1,2] are ["yellowgreen","tomato","steelblue"]
+        Weight 2 operators (3,4,5,6,7,8,9,10,11)
 
-        Preformatted operators are stored in HexagonTile.op_dict. Keys for op_dict are of the
-        form [p|c|d]PPPP... where p = pattern and c = copy, d=double and P is a Pauli opertor X, Z or Y.
+                                    q0
+                                o v1
+                            3 /
+                                o v0
+                                q3
 
-        "cX" -> face #0 operator is Pauli("XXXXXX"), face #1 operator is Pauli("ZZZZZZ"), ...
-        "dXZ" -> face #0 operators are Pauli("XXXXXX") and Pauli("ZZZZZZ"), face #1 operators are
-        Pauli("ZZZZZZ") and  ...
+                q2   4     q3    q3        q4
+                v1 o-----o v0  o v1      o v1
+                                \ 5     / 6
+                                o v0  o v0
+                                    q6    q7
 
-        Available precomputed operator layouts are:
+                            v0 o-----o v1
+                            q6    7    q7
 
-        "cX", "cZ", "dXZ"
+                                    q6    q7
+                                o v0  o v0
+                q8    10    q9  / 8     \ 9
+                v1 o-----o v0  o         o v1
+                                q9        q10
+                                o v0
+                                \ 11
+                                o v1
+                                    q11
+
+                                o
+                                3/
+                        o--4--o         o
+                                \5      /6
+                                o--7--o
+                                /8      \9
+                        o--10-o         o
+                                \11
+                                o
+
+        Face colors for faces [0,1,2] are ["yellowgreen","tomato","steelblue"] and red for the
+        weight 2 faces.
+
+        Preformatted operators are stored in HexagonTile.wf_operator_dict
 
         The operator variable may be used to define the operators specifically. The operator must be
         a list of PauliList objects where each PauliList describes the opertors to be built for the
         faces as indexed above 0,1,2,3, ... If the PauliList contains k Paulis then k operators will
-        be created for the given face.
+        be created for the given face. If a face is not wanted then that face should be listed as None.
+        See HexagonTile.wf_operator_dict for examples.
 
         Args:
             origin (np.array): Coordinates of origin of tile (shell)
