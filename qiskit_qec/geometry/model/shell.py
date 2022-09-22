@@ -289,7 +289,8 @@ class Shell(ShapeObject):
                             if len(path) == len(short_path) + 1:
                                 if debug:
                                     logger.debug(
-                                        "Have a loop with len(path) == len(short_path) + 1: - adding extra edge"
+                                        "Have a loop with len(path) == len(short_path) + 1: \
+                                            - adding extra edge"
                                     )
                                 if len(short_path) > 2:
                                     # Loop
