@@ -543,7 +543,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # Needed by MultiplyMixin class
     # ---------------------------------------------------------------------
 
-    def _multiply(self, phase, roundit=True) -> "BasePauli": #pylint: disable=arguments-renamed
+    def _multiply(self, phase, roundit=True) -> "BasePauli":  # pylint: disable=arguments-renamed
         """Return the {cls} phase * self where phase is in ``[1, -1j, -1, 1j]``.
 
         Args:

@@ -26,4 +26,4 @@ Extensions module classes and functions
     compiledextension
 """
 
-from . import compiledextension #pylint: disable=import-self
+from . import compiledextension  # pylint: disable=import-self
