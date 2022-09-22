@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 """Subsystem Surface code builder example"""
 
-from typing import Optional
+from typing import List, Optional
 import numpy as np
 
 from qiskit import QiskitError
@@ -19,8 +19,10 @@ from qiskit_qec.operators.pauli import Pauli
 
 from qiskit_qec.codes.codebuilders.builder import Builder
 from qiskit_qec.codes.codefactory.tilecodefactory import TileCodeFactory
+from qiskit_qec.geometry.model.qubit_data import QubitData
 from qiskit_qec.geometry.shape import Shape
 from qiskit_qec.geometry.plane import Plane
+from qiskit_qec.geometry.model.vertex import Vertex
 from qiskit_qec.geometry.tiles.squarediamondtile import SquareDiamondTile
 from qiskit_qec.geometry.lattice import Lattice
 from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
@@ -68,9 +70,13 @@ class SubsystemSurfaceCodeBuilder(Builder):
             raise QiskitError(f"dx:{dx} and dz:{dz} must be odd positive integers ≥ 3")
 
         if w3_op == Pauli("Z"):
+            self.ul_op = Pauli("Z")
             self.optype = "pZXZX"
+            self.nul_op = Pauli("X")
         else:
+            self.ul_op = Pauli("X")
             self.optype = "pXZXZ"
+            self.nul_op = Pauli("Z")
 
         delta = 0.2
         self.cutter = Shape.rect(
@@ -82,6 +88,52 @@ class SubsystemSurfaceCodeBuilder(Builder):
             delta=delta,
             dtype=float,
         )
+
+        # Cutter with delta=0 used for boundary selection exclude method
+        self.cutter_ex = Shape.rect(
+            origin=np.array((-1, -1)),
+            direction=np.array((1, 0)),
+            scale1=dx - 1,
+            scale2=dz - 1,
+            manifold=Plane(),
+            delta=0,
+            dtype=float,
+        )
+
+        # Exclude method used to select the required boundary
+        def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -> bool:
+            def _weight_len(path: List) -> int:
+                """Find the weight of the operator from the vertex path listing"""
+                length = len(path)
+                if path[0] == path[-1] and length > 1:
+                    return length - 1
+                return length
+
+            weights = [_weight_len(path) for path in vertex_paths]
+            weight = sum(weights)
+            # Exclude any operator that is not of weight 2
+            if weight != 2:
+                return False
+            else:
+                v0_pos = vertex_paths[0][0].pos
+                v1_pos = vertex_paths[0][1].pos
+                if abs(v0_pos[0] - v1_pos[0]) < 0.01:  # vertical line
+                    if (
+                        abs(v0_pos[0] - self.cutter_ex.bounds.min[0]) < 0.01
+                        or abs(v0_pos[0] - self.cutter_ex.bounds.max[0]) < 0.01
+                    ):
+                        if qubit_data.operator[vertex_paths[0][0].id][0] == self.nul_op:
+                            return True
+                elif abs(v0_pos[1] - v1_pos[1]) < 0.01:  # horizontal line
+                    if (
+                        abs(v0_pos[1] - self.cutter_ex.bounds.min[1]) < 0.01
+                        or abs(v0_pos[1] - self.cutter_ex.bounds.max[1]) < 0.01
+                    ):
+                        if qubit_data.operator[vertex_paths[0][0].id][0] == self.ul_op:
+                            return True
+            return False
+
+        self.exclude = exclude
 
     def build(self) -> StabSubSystemCode:
         """Builds a subsystem surface code"""
@@ -97,8 +149,9 @@ class SubsystemSurfaceCodeBuilder(Builder):
             cutter=self.cutter,
             on_boundary=False,
             boundary_strategy="combine",
-            levels=[3],
+            levels=[2, 3],
             integer_snap=True,
+            exclude=self.exclude,
             lattice_view=False,
             precut_tiling_view=False,
             show_qubit_indices=False,
