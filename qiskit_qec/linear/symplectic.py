@@ -50,6 +50,8 @@ def all_commute(matrix: np.ndarray) -> bool:
         >>> all_commute(matrix)
         True
     """
+    if matrix.shape[0] == 1:
+        return True
     test_mat = np.asarray(symplectic_product(matrix, matrix))
     return not test_mat.any()
 
@@ -1144,8 +1146,8 @@ def is_same_span(matrix1: np.ndarray, matrix2: np.ndarray) -> bool:
     return np.array_equal(rref_matrix1, rref_matrix2)
 
 
-def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
-    """Do the input matrices form a hyperbolic/symnplectic basis?
+def is_hyper_form(x: Union[list, np.ndarray], z: Union[list, np.ndarray]) -> bool:
+    """Do the input matrices form a hyperbolic/symplectic basis?
 
     Args:
         x,z: Pairs to test if they form a hyperbolic/symnplectic basis
@@ -1159,6 +1161,10 @@ def is_hyper_form(x: np.ndarray, z: np.ndarray) -> bool:
         >>> is_hyper_form(x,z)
         True
     """
+    if isinstance(x, list):
+        x = np.array(x)
+    if isinstance(z, list):
+        z = np.array(z)
 
     # Check for empty x and z: Null comdition -> True
     if x.shape[0] == 0 and z.shape[0] == 0:
@@ -1739,6 +1745,7 @@ def _hyperbolic_basis_for_pauli_group(
     basis = _basis_for_pauli_group(np.vstack((x, z)))
     added = x.shape[1] - 2 * x.shape[0]
     basis_com = _make_commute_hyper(basis[-added:], x, z)
+
     _, x_new, z_new = symplectic_gram_schmidt(basis_com, x, z)
 
     return x_new, z_new
