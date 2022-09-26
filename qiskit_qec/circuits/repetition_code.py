@@ -681,8 +681,8 @@ class ArcCircuit:
         )
 
         tau, qubit_l_202, qubit_l_nghbrs = self._get_202(self.T)
-        links_to_measure = []
-        links_to_reset = []
+        links_to_measure = set()
+        links_to_reset = set()
         for basis, qc in self.circuit.items():
             if self._barriers:
                 qc.barrier()
@@ -697,9 +697,9 @@ class ArcCircuit:
                         self._rotate(basis, c, self.code_qubit[q_c], True)
                         qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
-                        links_to_measure.append(q_l)
-                        if tau != 0:
-                            links_to_reset.append(q_l)
+                        links_to_measure.add(q_l)
+                        if not (tau == 0 and qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]):
+                            links_to_reset.add(q_l)
 
         # measurement
         for basis, qc in self.circuit.items():
