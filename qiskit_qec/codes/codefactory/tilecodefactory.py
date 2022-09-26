@@ -39,7 +39,7 @@ class TileCodeFactory:
     LATTICE_PARAMETERS = ["lattice"]
     CUTTER_PARAMETERS = ["cutter", "on_boundary"]
     EXCLUDE_PARAMETERS = ["exclude"]
-    BOUNDARY_PARAMETERS = ["boundary_strategy", "levels"]
+    BOUNDARY_PARAMETERS = ["boundary_strategy", "levels", "inside_levels", "boundary_levels"]
     TILING_PARAMETERS = ["expand_value"]
     DEBUG_VIEWS_PARAMETERS = ["lattice_view", "precut_tiling_view", "final_view"]
     DRAWING_PARAMETERS = [
@@ -116,6 +116,8 @@ class TileCodeFactory:
         self.configured["boundary"] = False
         self.boundary_strategy = None
         self.levels = None
+        self.inside_levels = None
+        self.boundary_levels = None
 
         # Tiling settings
         self.expand_value = np.array([1, 1])
@@ -150,6 +152,14 @@ class TileCodeFactory:
                 getattr(self, parameter) is not None
                 for parameter in TileCodeFactory.PARAMETER_DICT[para_set]
             )
+        if not self.configured["boundary"]:
+            if self.boundary_strategy is not None:
+                if (
+                    self.levels is None
+                    and self.inside_levels is not None
+                    and self.boundary_levels is not None
+                ) or (self.levels is not None):
+                    self.configured["boundary"] = True
 
     def set_parameters(self, **kwargs):
         """Set the given Factory parameters
@@ -272,7 +282,9 @@ class TileCodeFactory:
             is_inside,
             qubit_data,
             qubit_count,
-            self.levels,
+            levels=self.levels,
+            inside_levels=self.inside_levels,
+            boundary_levels=self.boundary_levels,
             exclude=self.exclude,
             boundary_strategy=self.boundary_strategy,
         )
@@ -362,6 +374,7 @@ class TileCodeFactory:
                 verts = []
                 for vertex in face.vertices:
                     verts.append(list(vertex.pos))
+                # This is the cheap persons version of deciding on the color.
                 pauli = qubit_data.operator[face.vertices[0].id][0]
                 if face_colors and qubit_data.face_colors != {}:
                     stab.append([verts, qubit_data.face_colors[face.id]])
