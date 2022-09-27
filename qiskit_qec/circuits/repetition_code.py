@@ -932,7 +932,6 @@ class ArcCircuit:
                         else:
                             neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
 
-        print(node_color)
         flipped_logicals = []
         if neutral:
             inside_c = int(sum(node_color.values()) < len(node_color) / 2)
