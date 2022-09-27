@@ -394,6 +394,7 @@ class ArcCircuit:
         T: int,
         basis: str = "xy",
         resets: bool = True,
+        ff: bool = True,
         delay: Optional[int] = None,
         barriers: bool = False,
         color: Optional[dict] = None,
@@ -411,10 +412,11 @@ class ArcCircuit:
             basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
             used.
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
+            ff (bool): Whether to correct the effects of [[2,0,2]] sequences via feed forward.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
             barriers (bool): Whether to include barriers between different sections of the code.
             color (dict): Dictionary with code qubits as keys and 0 or 1 for each value, to specify
-                a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
+            a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
             max_dist (int): Maximum edge distance used when determining the bicoloring of code qubits.
             schedule(list): Specifies order in which entangling gates are applied in each syndrome
             measurement round. Each element is a list of lists [c, a] for entangling gates to be
@@ -446,6 +448,7 @@ class ArcCircuit:
         self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
         self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
         self.run_202 = run_202 and self.rounds_per_link >= 5
+        self._ff = ff and self.run_202
 
         # create the circuit
         self.base = basis
@@ -683,6 +686,7 @@ class ArcCircuit:
         tau, qubit_l_202, qubit_l_nghbrs = self._get_202(self.T)
         links_to_measure = set()
         links_to_reset = set()
+        qubits_to_correct = set()
         for basis, qc in self.circuit.items():
             if self._barriers:
                 qc.barrier()
@@ -690,7 +694,8 @@ class ArcCircuit:
                 for qubit_c, qubit_l in pairs:
                     q_c = self.code_index[qubit_c]
                     q_l = self.link_index[qubit_l]
-                    if not (tau in [1, 2, 3] and qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]):
+                    neighbor = qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
+                    if not (tau in [1, 2, 3] and neighbor):
                         c = self.color[qubit_c]
                         if qubit_l == qubit_l_202:
                             c = (c + tau) % 2
@@ -698,10 +703,15 @@ class ArcCircuit:
                         qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
                         links_to_measure.add(q_l)
-                        if not (tau == 0 and qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]):
+                        if tau == 0 and neighbor:
+                            if not self._ff:
+                                links_to_reset.add(q_l)
+                        else:
                             links_to_reset.add(q_l)
+                        if tau == 4 and neighbor:
+                            qubits_to_correct.add(q_l)
 
-        # measurement
+        # measurement, etc
         for basis, qc in self.circuit.items():
 
             # measurement
@@ -718,6 +728,18 @@ class ArcCircuit:
             if self._resets and not final:
                 for q_l in links_to_reset:
                     qc.reset(self.link_qubit[q_l])
+
+            # correct
+            if self._ff:
+                for q_l in qubits_to_correct:
+                    link = set(self.links[q_l])
+                    link_202 = set(self.links[self.link_index[qubit_l_202]])
+                    qubit_c = list(link.intersection(link_202))[0]
+                    q_c = self.code_index[qubit_c]
+                    c = self.color[qubit_c]
+                    self._rotate(basis, c, self.code_qubit[q_c], True)
+                    qc.x(self.code_qubit[q_c]).c_if(self.link_bits[self.T][q_l], 1)
+                    self._rotate(basis, c, self.code_qubit[q_c], False)
 
             # delay
             if self.delay > 0 and not final:

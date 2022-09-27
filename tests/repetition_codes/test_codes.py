@@ -284,6 +284,44 @@ class TestARCCodes(unittest.TestCase):
             nodeless = nodeless and code.string2nodes(string) == []
         self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
 
+    def test_feedforward(self):
+        """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
+        T = 5 * len(links)
+        # try codes with and without feedforward correction
+        for ff in [True, False]:
+            code = ArcCircuit(
+                links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, ff=ff
+            )
+            correct = code._ff == ff
+            # insert an initial bitflip on qubit 2
+            test_qcs = []
+            for basis in [code.basis, code.basis[::-1]]:
+                qc = code.circuit[basis]
+
+                test_qc = QuantumCircuit()
+                for qreg in qc.qregs:
+                    test_qc.add_register(qreg)
+                for creg in qc.cregs:
+                    test_qc.add_register(creg)
+                test_qc.x(code.code_qubit[2])
+                for gate in qc:
+                    test_qc.append(gate)
+                test_qcs.append(test_qc)
+            result = Aer.get_backend("qasm_simulator").run(test_qcs).result()
+            # check result strings are correct
+            for j in range(2):
+                counts = result.get_counts(j)
+                for string in counts:
+                    string = string.split(" ")[::-1]
+                    if ff:
+                        # post 202 result should be same as initial
+                        correct = correct and string[10] == string[0]
+                    else:
+                        # final 202 result should be same as those that follow
+                        correct = correct and string[9] == string[10]
+            self.assertTrue(correct, "Result string not as required for ff=" + str(ff))
+
     def test_bases(self):
         """Test that correct rotations are used for basis changes."""
         links = [(0, 1, 2), (2, 3, 4)]
