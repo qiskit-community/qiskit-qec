@@ -486,7 +486,6 @@ class ArcCircuit:
         matching = rx.max_weight_matching(
             graph, max_cardinality=True, weight_fn=lambda edge: -int(edge["distance"])
         )
-
         self.color = {}
         unmatched = list(graph.node_indices())
         nodes = graph.nodes()
@@ -495,7 +494,15 @@ class ArcCircuit:
                 self.color[nodes[n]] = j
                 unmatched.remove(n)
         for j, n in enumerate(unmatched):
-            self.color[nodes[n]] = j % 2
+            # color opposite to a colored neighbor
+            neighbors = graph.neighbors(n)
+            if neighbors:
+                for nn in neighbors:
+                    if nodes[nn] in self.color:
+                        self.color[nodes[n]] = (self.color[nodes[nn]] + 1) % 2
+            else:
+                # otherwise color arbitrarily
+                self.color[nodes[n]] = j % 2
 
     def _get_coupling_graph(self, aux=None):
         """
