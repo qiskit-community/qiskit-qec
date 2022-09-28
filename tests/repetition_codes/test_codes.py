@@ -357,7 +357,7 @@ class TestARCCodes(unittest.TestCase):
     def test_anisotropy(self):
         """Test that code qubits have neighbors with the opposite color."""
         link_num = 10
-        links = [(2 * j, 2j + 1, 2 * (j + 1)) for j in range(link_num)]
+        links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(link_num)]
         code = ArcCircuit(links, T=2)
         color = code.color
         for j in range(1, link_num - 1):
