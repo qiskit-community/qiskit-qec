@@ -275,14 +275,19 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        code = ArcCircuit(links, T=T, run_202=True)
-        backend = Aer.get_backend("aer_simulator")
-        counts = backend.run(code.circuit[code.basis]).result().get_counts()
-        self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
-        nodeless = True
-        for string in counts:
-            nodeless = nodeless and code.string2nodes(string) == []
-        self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
+        for ff in [True, False]:
+            for resets in [True, False]:
+                code = ArcCircuit(links, T=T, run_202=True, ff=ff, resets=resets)
+                backend = Aer.get_backend("aer_simulator")
+                counts = backend.run(code.circuit[code.basis]).result().get_counts()
+                self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
+                nodeless = True
+                for string in counts:
+                    nodeless = nodeless and code.string2nodes(string) == []
+                self.assertTrue(
+                    nodeless,
+                    "Non-trivial nodes found for noiseless [[2,0,2]] circuits with ff=" + str(ff) + ", resets="+str(resets)+".",
+                )
 
     def test_feedforward(self):
         """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""

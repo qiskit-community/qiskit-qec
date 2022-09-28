@@ -728,6 +728,8 @@ class ArcCircuit:
             if self._resets and not final:
                 for q_l in links_to_reset:
                     qc.reset(self.link_qubit[q_l])
+                    # might at some point add an option for reset via
+                    # qc.x(self.link_qubit[q_l]).c_if(self.link_bits[self.T][q_l], 1)
 
             # correct
             if self._ff:
@@ -804,6 +806,7 @@ class ArcCircuit:
         # changes between one syndrome and the next then calculated
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
+        last_neighbors = []
         for t in range(self.T + 1):
             tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
             for j in range(self.num_qubits[1]):
@@ -837,13 +840,23 @@ class ArcCircuit:
                                 if tau in [2, 3, 4]:
                                     dt = 2
                                 else:
-                                    dt = 1
+                                    if self._ff and qubit_l in last_neighbors and t % 5 == 0:
+                                        dt = 5
+                                    else:
+                                        dt = 1
                                 change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
+                        elif qubit_l in last_neighbors and t % 5 == 0:
+                            if self._ff:
+                                dt = 5
+                            else:
+                                dt = 1
+                            change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
                         else:
                             change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
 
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
+            last_neighbors = all_neighbors.copy()
 
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end
