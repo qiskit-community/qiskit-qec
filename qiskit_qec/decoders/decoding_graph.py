@@ -43,14 +43,24 @@ class DecodingGraph:
 
         self.code = code
 
-        self.graph = self._make_syndrome_graph()
+        self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
 
         S = rx.PyGraph(multigraph=False)
+        self.hyperedges = []
+
+        # get the circuit used as the base case
+        if isinstance(self.code.circuit, dict):
+            if "base" not in dir(self.code):
+                base = "0"
+            else:
+                base = self.code.base
+            qc = self.code.circuit[base]
+        else:
+            qc = self.code.circuit
 
         if self.code is not None:
-            qc = self.code.circuit["0"]
             fe = FaultEnumerator(qc, method="stabilizer")
             blocks = list(fe.generate_blocks())
             fault_paths = list(itertools.chain(*blocks))
@@ -61,6 +71,7 @@ class DecodingGraph:
                 for node in nodes:
                     if node not in S.nodes():
                         S.add_node(node)
+                hyperedge = {}
                 for source in nodes:
                     for target in nodes:
                         if target != source:
@@ -73,8 +84,12 @@ class DecodingGraph:
                                 qubits = []
                             edge = {"qubits": qubits, "weight": 1}
                             S.add_edge(n0, n1, edge)
+                            if (n1, n0) not in hyperedge:
+                                hyperedge[n0, n1] = edge
+                if hyperedge and hyperedge not in self.hyperedges:
+                    self.hyperedges.append(hyperedge)
 
-        return S
+        self.graph = S
 
     def get_error_probs(self, results, logical="0"):
         """Generate probabilities of single error events from result counts.
