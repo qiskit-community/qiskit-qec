@@ -16,16 +16,17 @@
 
 """Run codes and decoders."""
 
-import sys
 import unittest
+import itertools
 
 from qiskit import Aer, QuantumCircuit, execute
-from qiskit.providers.aer.noise import NoiseModel
-from qiskit.providers.aer.noise.errors import depolarizing_error
+from qiskit.providers.fake_provider import FakeJakarta
+from qiskit_aer.noise import NoiseModel
+from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-
-sys.path.append("../../")
+from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -58,8 +59,8 @@ def get_noise(p_meas, p_gate):
     return noise_model
 
 
-class TestCodes(unittest.TestCase):
-    """Test the topological codes module."""
+class TestRepCodes(unittest.TestCase):
+    """Test the repetition code circuits."""
 
     def single_error_test(
         self, code
@@ -193,6 +194,198 @@ class TestCodes(unittest.TestCase):
             self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
         else:
             self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
+
+
+class TestARCCodes(unittest.TestCase):
+    """Test the ARC code circuits."""
+
+    def single_error_test(
+        self, code
+    ):  # NOT run directly by unittest; called by test_graph_constructions
+        """
+        Insert all possible single qubit errors into the given code,
+        and check that each creates a pair of syndrome nodes.
+        """
+
+        # determine the neighbourhood of each code qubit
+        incident_links = {None: set()}
+        link_graph = code._get_link_graph()
+        for n, node in enumerate(link_graph.nodes()):
+            edges = link_graph.incident_edges(n)
+            incident_links[node] = set()
+            for edge in edges:
+                incident_links[node].add(link_graph.edges()[edge]["link qubit"])
+            if node in code.z_logicals:
+                incident_links[node].add(None)
+
+        minimal = True
+        for basis in [code.basis, code.basis[::-1]]:
+
+            # use the fault enumerator to test possible faults
+            qc = code.circuit[basis]
+            fe = FaultEnumerator(qc, method="stabilizer")
+            blocks = list(fe.generate_blocks())
+            fault_paths = list(itertools.chain(*blocks))
+
+            # check that the syndrome for single faults is as it should be
+            for _, _, _, output in fault_paths:
+                string = "".join([str(c) for c in output[::-1]])
+                nodes = code.string2nodes(string)
+                # check that it doesn't extend over more than two rounds
+                ts = [node["time"] for node in nodes if not node["is_boundary"]]
+                if ts:
+                    minimal = minimal and (max(ts) - min(ts)) <= 1
+                # check that it doesn't extend beyond the neigbourhood of a code qubit
+                flat_nodes = code.flatten_nodes(nodes)
+                link_qubits = set(node["link qubit"] for node in flat_nodes)
+                minimal = minimal and link_qubits in incident_links.values()
+
+                self.assertTrue(
+                    minimal,
+                    "Error: Single error creates too many nodes",
+                )
+
+    def test_graph_construction(self):
+        """Test single errors for a range of layouts"""
+        square = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
+        all2all = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (0, 7, 6), (6, 8, 2), (6, 9, 4)]
+        for links in [square, tadpole, all2all]:
+            for resets in [True, False]:
+                code = ArcCircuit(
+                    links, T=4, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
+                )
+                self.single_error_test(code)
+
+    def test_202s(self):
+        """Test that [[2,0,2]] codes appear when needed and act as required."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        T = 5 * len(links)
+        # first, do they appear when needed
+        for run_202 in [True, False]:
+            code = ArcCircuit(links, T=T, run_202=run_202)
+            running_202 = False
+            for t in range(T):
+                tau, _, _ = code._get_202(t)
+                if tau:
+                    running_202 = True
+            self.assertTrue(
+                running_202 == run_202,
+                "Error: [[2,0,2]] codes not present when required." * run_202
+                + "Error: [[2,0,2]] codes present when not required." * (not run_202),
+            )
+        # second, do they yield non-trivial outputs yet trivial nodes
+        for ff in [True, False]:
+            for resets in [True, False]:
+                code = ArcCircuit(links, T=T, run_202=True, ff=ff, resets=resets)
+                backend = Aer.get_backend("aer_simulator")
+                counts = backend.run(code.circuit[code.basis]).result().get_counts()
+                self.assertTrue(
+                    len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits."
+                )
+                nodeless = True
+                for string in counts:
+                    nodeless = nodeless and code.string2nodes(string) == []
+                self.assertTrue(
+                    nodeless,
+                    "Non-trivial nodes found for noiseless [[2,0,2]] circuits with ff="
+                    + str(ff)
+                    + ", resets="
+                    + str(resets)
+                    + ".",
+                )
+
+    def test_feedforward(self):
+        """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
+        T = 5 * len(links)
+        # try codes with and without feedforward correction
+        for ff in [True, False]:
+            code = ArcCircuit(
+                links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, ff=ff
+            )
+            correct = code._ff == ff
+            # insert an initial bitflip on qubit 2
+            test_qcs = []
+            for basis in [code.basis, code.basis[::-1]]:
+                qc = code.circuit[basis]
+
+                test_qc = QuantumCircuit()
+                for qreg in qc.qregs:
+                    test_qc.add_register(qreg)
+                for creg in qc.cregs:
+                    test_qc.add_register(creg)
+                test_qc.x(code.code_qubit[2])
+                for gate in qc:
+                    test_qc.append(gate)
+                test_qcs.append(test_qc)
+            result = Aer.get_backend("qasm_simulator").run(test_qcs).result()
+            # check result strings are correct
+            for j in range(2):
+                counts = result.get_counts(j)
+                for string in counts:
+                    string = string.split(" ")[::-1]
+                    if ff:
+                        # post 202 result should be same as initial
+                        correct = correct and string[10] == string[0]
+                    else:
+                        # final 202 result should be same as those that follow
+                        correct = correct and string[9] == string[10]
+            self.assertTrue(correct, "Result string not as required for ff=" + str(ff))
+
+    def test_bases(self):
+        """Test that correct rotations are used for basis changes."""
+        links = [(0, 1, 2), (2, 3, 4)]
+        rightops = True
+        for ba in ["x", "y", "z"]:
+            for sis in ["x", "y", "z"]:
+                basis = ba + sis
+                code = ArcCircuit(links, T=3, basis=basis)
+                ops = code.circuit[code.base].count_ops()
+                if "x" in basis or "y" in basis:
+                    rightops = rightops and "h" in ops
+                else:
+                    rightops = rightops and "h" not in ops
+                if "y" in basis:
+                    for op in ["s", "sdg"]:
+                        rightops = rightops and op in ops
+                else:
+                    for op in ["s", "sdg"]:
+                        rightops = rightops and op not in ops
+        self.assertTrue(rightops, "Error: Required rotations for basis changes not present.")
+
+    def test_anisotropy(self):
+        """Test that code qubits have neighbors with the opposite color."""
+        link_num = 10
+        links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(link_num)]
+        code = ArcCircuit(links, T=2)
+        color = code.color
+        for j in range(1, link_num - 1):
+            self.assertTrue(
+                color[2 * j] != color[2 * (j - 1)] or color[2 * j] != color[2 * (j + 1)],
+                "Error: Code qubit does not have neighbor of oppposite color.",
+            )
+
+    def test_transpilation(self):
+        """Test correct transpilation to a backend."""
+        backend = FakeJakarta()
+        links = [(0, 1, 3), (3, 5, 6)]
+        schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
+        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, resets=True)
+        circuit = code.transpile(backend)
+        self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
+        circuit = code.transpile(backend, echo_num=(0, 2))
+        self.assertTrue(
+            circuit[code.base].count_ops()["x"] == 2, "Error: Wrong echo sequence for link qubits."
+        )
+        circuit = code.transpile(backend, echo_num=(2, 0))
+        self.assertTrue(
+            circuit[code.base].count_ops()["x"] == 8, "Error: Wrong echo sequence for code qubits."
+        )
+        self.assertTrue(
+            circuit[code.base].count_ops()["cx"] == 8,
+            "Error: Wrong number of cx gates after transpilation.",
+        )
 
 
 if __name__ == "__main__":
