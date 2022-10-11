@@ -22,12 +22,8 @@ from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 from qiskit.circuit import Gate
-from qiskit.circuit.library.generalized_gates import PauliGate
-from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
-from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from scipy.sparse import csr_matrix
-from qiskit_qec.linear.symplectic import count_num_y, is_symplectic_matrix_form
 
 
 # -------------------------------------------------------------------------------
@@ -46,7 +42,9 @@ INTERNAL_XP_PAULI_ENCODING = INTERNAL_PHASE_ENCODING + INTERNAL_TENSOR_ENCODING
 
 DEFAULT_EXTERNAL_TENSOR_ENCODING = "YZX"
 DEFAULT_EXTERNAL_PHASE_ENCODING = "-i"
-DEFAULT_EXTERNAL_XP_PAULI_ENCODING = DEFAULT_EXTERNAL_PHASE_ENCODING + DEFAULT_EXTERNAL_TENSOR_ENCODING
+DEFAULT_EXTERNAL_XP_PAULI_ENCODING = (
+    DEFAULT_EXTERNAL_PHASE_ENCODING + DEFAULT_EXTERNAL_TENSOR_ENCODING
+)
 
 # Set the external encodings
 # The external encodings may be changed via the phase_rep_format,
@@ -247,6 +245,7 @@ QUBIT_ORDERS = ["right-to-left", "left-to-right"]
 
 
 def _is_pattern(string, pattern):
+    """_summary_"""
     return bool(pattern.search(string))
 
 
@@ -256,31 +255,49 @@ def _is_pattern(string, pattern):
 
 
 def get_phase_encodings() -> List[str]:
+    """_summary_"""
     pass
+
 
 def get_tensor_encodings() -> List[str]:
+    """_summary_"""
     pass
 
+
 def get_pauli_encodings() -> List[str]:
+    """_summary_"""
     pass
+
 
 # -------------------------------------------------------------------------------
 # Encoding Methods and Conversions
 # -------------------------------------------------------------------------------
 
-
+# pylint: disable=unused-argument
 def split_pauli_enc(encoding: str) -> Tuple[str, str]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _split_pauli_enc(encoding: str) -> Tuple[str, str]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def get_phase_enc(encoding: str) -> str:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def get_tensor_enc(encoding: str) -> str:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def change_pauli_encoding(
     phase_exp: Any,
     y_count: Union[np.array, int] = 0,
@@ -289,33 +306,52 @@ def change_pauli_encoding(
     output_pauli_encoding: str = DEFAULT_EXTERNAL_XP_PAULI_ENCODING,
     same_type=True,
 ) -> Any:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _change_pauli_encoding(
     phase_exponent: np.ndarray,
     y_count: np.ndarray,
     input_pauli_encoding: str,
     output_pauli_encoding: str,
 ) -> Any:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def stand_phase_str(
     phase_str: str, same_type: bool = True, imaginary: str = "i"
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _stand_phase_str(phase_string: np.ndarray, imaginary: str) -> np.ndarray:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def is_scalar(obj: Any, scalar_pair: bool = False):
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def squeeze(array_: Any, scalar: bool = False) -> bool:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def is_exp_type(phase_exp: Any, input_phase_encoding: str) -> bool:
+    """_summary_"""
     pass
+
 
 # Conversion function between XPPauli phases as
 
@@ -336,140 +372,190 @@ def is_exp_type(phase_exp: Any, input_phase_encoding: str) -> bool:
 # when scalar values are input
 
 # ----------------------------------------------------------------------
+# pylint: disable=unused-argument
 def cpxstr2cpx(
     cpx_str: Union[str, np.ndarray, List[str]],
     same_type: bool = True,
 ) -> Union[np.ndarray, numbers.Complex]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _cpxstr2cpx(cpx_string: np.ndarray) -> np.ndarray:
+    """_summary_"""
     pass
+
 
 # ----------------------------------------------------------------------
+# pylint: disable=unused-argument
 def cpx2cpxstr(
     cpx: Union[numbers.Complex, np.ndarray], same_type: bool = True, ones: bool = False
 ) -> Union[str, np.ndarray]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _cpx2cpxstr(cpx: np.ndarray, one_str: str) -> Union[str, np.ndarray]:
+    """_summary_"""
     pass
+
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def exp2cpx(
     phase_exp: Any, input_encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, numbers.Complex]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _exp2cpx(phase_exp: np.ndarray, input_encoding: str) -> np.ndarray:
+    """_summary_"""
     pass
+
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def cpx2exp(
     cpx: numbers.Complex, output_encoding: str, same_type: bool = True, roundit: bool = True
 ) -> Union[np.ndarray, Tuple[numbers.Integral, numbers.Integral], numbers.Integral]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _cpx2exp(cpx: numbers.Complex, encoding: str) -> np.ndarray:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def expstr2exp(exp_str: Union[np.ndarray, str], same_type: bool = True) -> Any:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _expstr2exp(exp_string, encoding: str) -> np.ndarray:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def exp2expstr(
     phase_exp: Any,
     input_encoding: str,
     same_type: bool = True,
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _exp2expstr(phase_exp: np.ndarray, encoding: str) -> np.ndarray:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def exp2exp(
     phase_exp: Union[np.ndarray, Any],
     input_encoding=INTERNAL_PHASE_ENCODING,
     output_encoding=DEFAULT_EXTERNAL_PHASE_ENCODING,
     same_type: bool = True,
 ):
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _exp2exp(phase_exp, input_encoding, output_encoding):
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def cpxstr2expstr(
     cpx_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def expstr2cpxstr(
     exp_str: Union[np.ndarray, str], encoding: str, same_type: bool = True, ones: bool = False
 ) -> Union[str, np.ndarray]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def cpxstr2exp(cpx_str: Union[np.ndarray, str], encoding: str, same_type: bool = True) -> Any:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def exp2cpxstr(
     phase_exp: Any, encoding: str, same_type: bool = True, ones: bool = False
 ) -> Union[str, np.ndarray]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def expstr2cpx(
     phase_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, numbers.Complex]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def cpx2expstr(
     cpx: Union[np.ndarray, numbers.Complex], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def str2exp(
     phase_str: Union[np.ndarray, str], encoding: str, same_type: bool = True
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def _str2exp(phase_str: np.ndarray, encoding: str) -> np.ndarray:
+    """_summary_"""
     pass
 
 
@@ -478,11 +564,15 @@ def _str2exp(phase_str: np.ndarray, encoding: str) -> np.ndarray:
 # ---------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def split_pauli(pauli_str: str, same_type: bool = True) -> Tuple[str, str]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _split_pauli(pauli_str: str):
+    """_summary_"""
 
     def _split(p_str):
         pass
@@ -493,12 +583,17 @@ def _split_pauli(pauli_str: str):
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def encode_of_phase_str(phase_str: str, same_type: bool = True) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _encode_of_phase_str(phase_str: str) -> np.ndarray:
+    """_summary_"""
 
+    # pylint: disable=unused-variable
     def _find_encode(p_str):
         pass
 
@@ -508,15 +603,21 @@ def _encode_of_phase_str(phase_str: str) -> np.ndarray:
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def encode_of_tensor_str(
     tensor_str: str, encoded: bool = True, same_type: bool = True
 ) -> List[Tuple[List, Union[str, int]]]:
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _encode_of_tensor_str(
     tensor_str: np.ndarray, encoded: bool
 ) -> List[Tuple[List, Union[str, int]]]:
+    """_summary_"""
 
+    # pylint: disable=unused-variable
     def _find_encode(t_str: str, ecode: bool):
         pass
 
@@ -526,6 +627,7 @@ def _encode_of_tensor_str(
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def str2symplectic(
     pauli_str: Union[np.ndarray, str],
     qubit_order: str = "right-to-left",
@@ -533,19 +635,23 @@ def str2symplectic(
     index_start: int = 0,
     same_type: bool = True,
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _str2symplectic(
     pauli_str: np.ndarray,
     qubit_order: str,
     output_encoding: str,
     index_start: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
+# pylint: disable=unused-argument
 def symplectic2str(
     matrix: np.ndarray,
     phase_exp: Any = None,
@@ -559,10 +665,12 @@ def symplectic2str(
     same_type=True,
     index_str="",
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
+# pylint: disable=unused-argument
 def str2str(
     pauli_str: Union[np.ndarray, str],
     syntax_output: str,
@@ -573,6 +681,7 @@ def str2str(
     index_start_input: int = 0,
     index_start_output: int = 0,
 ) -> Union[np.ndarray, str]:
+    """_summary_"""
     pass
 
 
@@ -581,20 +690,24 @@ def str2str(
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def from_array(
     matrix: Union[List, Tuple, np.ndarray],
     phase_exp: Union[int, List, Tuple, np.ndarray] = None,
     input_pauli_encoding: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def from_split_array(
     x: Union[List, Tuple, np.ndarray],
     z: Union[List, Tuple, np.ndarray],
     phase_exp: Union[int, List, Tuple, np.ndarray],
     input_pauli_encoding: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
+    """_summary_"""
     pass
 
 
@@ -603,18 +716,22 @@ def from_split_array(
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def to_cpx_matrix(
     matrix: np.ndarray,
     phase_exp: Optional[np.ndarray],
     pauli_encoding: str = INTERNAL_XP_PAULI_ENCODING,
     sparse: bool = False,
 ) -> Union[np.ndarray, csr_matrix]:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _to_cpx_matrix(
     matrix: np.ndarray, phase_exp: int, num_qubits: int, sparse: bool = False
 ) -> Union[np.ndarray, csr_matrix]:
+    """_summary_"""
     pass
 
 
@@ -623,31 +740,41 @@ def _to_cpx_matrix(
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def indices_to_boolean(indices: Iterable[int], dim: int) -> np.ndarray:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
+# pylint: disable=unused-argument
 def _ind_to_latex_repr(index: int) -> str:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def boolean_to_indices(booleans: Iterable[bool]) -> np.ndarray:
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def scalar_op2symplectic(
     op: ScalarOp, output_encoding: str = DEFAULT_EXTERNAL_PHASE_ENCODING
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
+    """_summary_"""
     pass
 
 
 # ----------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def gate2symplectic(
     gate: Gate, encoding: str = INTERNAL_XP_PAULI_ENCODING
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
+    """_summary_"""
     pass
 
 

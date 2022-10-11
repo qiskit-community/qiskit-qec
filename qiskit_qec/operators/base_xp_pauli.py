@@ -13,7 +13,6 @@
 # Part of the QEC framework
 """Module for base XP pauli"""
 
-import copy
 import numbers
 from typing import List, Optional, Union
 
@@ -28,8 +27,6 @@ from qiskit.circuit.delay import Delay
 from qiskit.circuit.instruction import Instruction
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
-from qiskit_qec.linear import matrix as mt
-from qiskit_qec.linear.symplectic import symplectic_product
 from qiskit_qec.utils import xp_pauli_rep
 
 
@@ -117,90 +114,111 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @property
     def x(self):
+        """_summary_"""
         pass
 
     @x.setter
     def x(self, val: np.ndarray):
+        """_summary_"""
         pass
 
     # @final Add when python >= 3.8
     @property
     def _x(self):  # pylint: disable=invalid-name
+        """_summary_"""
         pass
 
     # @final Add when python >= 3.8
     @_x.setter
     def _x(self, val):  # pylint: disable=invalid-name
+        """_summary_"""
         pass
 
     @property
     def z(self):
+        """_summary_"""
         pass
 
     @z.setter
     def z(self, val):
+        """_summary_"""
         pass
 
     # @final Add when python >= 3.8
     @property
     def _z(self):  # pylint: disable=invalid-name
+        """_summary_"""
         pass
 
     # @final Add when python >= 3.8
     @_z.setter
     def _z(self, val):  # pylint: disable=invalid-name
+        """_summary_"""
         pass
 
     @property
     def num_y(self):
+        """_summary_"""
         pass
 
     @property
     def tensor_encoding(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_tensor_encoding(cls, encoding: str = xp_pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING):
+        """_summary_"""
         pass
 
     @property
     def phase_encoding(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_phase_encoding(cls, encoding: str = xp_pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING):
+        """_summary_"""
         pass
 
     @property
     def pauli_encoding(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_pauli_encoding(cls, encoding: str = xp_pauli_rep.DEFAULT_EXTERNAL_XP_PAULI_ENCODING):
+        """_summary_"""
         pass
 
     @property
     def syntax(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_syntax(cls, syntax_code: Optional[int] = None, syntax_str: Optional[str] = "Product"):
+        """_summary_"""
         pass
 
     @property
     def print_phase_encoding(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_print_phase_encoding(cls, phase_encoding: Optional[str] = None):
+        """_summary_"""
         pass
 
     @property
     def qubit_order(self):
+        """_summary_"""
         pass
 
     @classmethod
     def set_qubit_order(cls, qubit_order: Optional[str] = None):
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -208,14 +226,17 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def __imul__(self, other: "BaseXPPauli") -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     def __neg__(self) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
 
     def copy(self) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -231,6 +252,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         front: bool = False,
         inplace: bool = False,
     ) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     @staticmethod
@@ -241,20 +263,24 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         front: bool = False,
         inplace: bool = False,
     ) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
 
     def tensor(self, other):
+        """_summary_"""
         pass
 
     @staticmethod
     def _tensor(a: "BaseXPPauli", b: "BaseXPPauli"):
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
 
     def expand(self, other):
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -262,20 +288,25 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def _multiply(self, phase, roundit=True) -> "BaseXPPauli":  # pylint: disable=arguments-renamed
+        """_summary_"""
         pass
 
     # Needed by AdjointMixin class
 
     def conjugate(self, inplace=False) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     def transpose(self, inplace: bool = False) -> "BaseXPPauli":
+        """_summary_"""
         pass
 
     def commutes(self, other: "BaseXPPauli", qargs: List = None) -> np.ndarray:
+        """_summary_"""
         pass
 
     def _commutes(self, other: "BaseXPPauli", qargs: List = None) -> np.ndarray:
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -283,6 +314,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def all_commutes(self, other: "BaseXPPauli") -> np.ndarray:
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -290,6 +322,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def evolve(self, other: "BaseXPPauli", qargs: Union[None, List, int] = None, frame: str = "h"):
+        """_summary_"""
         pass
 
     def _evolve_clifford(
@@ -298,6 +331,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         qargs: Union[None, List, int] = None,
         frame: str = "h",
     ):
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -305,6 +339,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def _eq(self, other):
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -322,6 +357,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         squeeze: bool = True,
         index_str: str = "",
     ) -> Union[str, List[str]]:
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -330,14 +366,17 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def _count_y(self) -> np.ndarray:
+        """_summary_"""
         pass
 
     @staticmethod
     def _stack(array: np.ndarray, size: int, vertical: bool = True) -> np.ndarray:
+        """_summary_"""
         pass
 
     @staticmethod
     def _phase_from_complex(coeff: numbers.Complex) -> np.ndarray:
+        """_summary_"""
         pass
 
     # ---------------------------------------------------------------------
@@ -349,49 +388,73 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         circuit: Union[Barrier, Delay, QuantumCircuit, Instruction],
         qargs: Optional[List] = None,
     ) -> "BaseXPPauli":
+        """_summary_"""
         pass
+
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates
 # ---------------------------------------------------------------------
 
 
+# pylint: disable=unused-argument
 def _evolve_h(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
 
 
+# pylint: disable=unused-argument
 def _evolve_s(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
 
+
+# pylint: disable=unused-argument
 def _evolve_sdg(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
+
 
 # pylint: disable=unused-argument
 def _evolve_i(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
 
 
 def _evolve_x(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
+
 
 def _evolve_y(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
+
 
 def _evolve_z(base_xp_pauli: "BaseXPPauli", qubit: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
 
+
 def _evolve_cx(base_xp_pauli: "BaseXPPauli", qctrl: int, qtrgt: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
+
 
 def _evolve_cz(  # pylint: disable=invalid-name
     base_xp_pauli: "BaseXPPauli", q1: int, q2: int  # pylint: disable=invalid-name
 ) -> "BaseXPPauli":
+    """_summary_"""
     pass
 
+
 def _evolve_cy(base_xp_pauli: "BaseXPPauli", qctrl: int, qtrgt: int) -> "BaseXPPauli":
+    """_summary_"""
     pass
+
 
 def _evolve_swap(  # pylint: disable=invalid-name
     base_xp_pauli: "BaseXPPauli", q1: int, q2: int  # pylint: disable=invalid-name
 ) -> "BaseXPPauli":
+    """_summary_"""
     pass
