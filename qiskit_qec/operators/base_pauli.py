@@ -773,7 +773,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         squeeze: bool = True,
         index_str: str = "",
     ) -> Union[str, List[str]]:
-        """Returns the string representatiojn for a Pauli or Paulis.
+        """Returns the string representation for a Pauli or Paulis.
 
         Args:
             output_pauli_encoding (optional): Encoding used to represent phases.
