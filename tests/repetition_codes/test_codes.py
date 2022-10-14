@@ -391,5 +391,6 @@ class TestARCCodes(unittest.TestCase):
         """Test initializtion of decoding graphs with None"""
         dg = DecodingGraph(None)
 
+
 if __name__ == "__main__":
     unittest.main()
