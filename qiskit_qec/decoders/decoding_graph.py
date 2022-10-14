@@ -50,17 +50,18 @@ class DecodingGraph:
         S = rx.PyGraph(multigraph=False)
         self.hyperedges = []
 
-        # get the circuit used as the base case
-        if isinstance(self.code.circuit, dict):
-            if "base" not in dir(self.code):
-                base = "0"
-            else:
-                base = self.code.base
-            qc = self.code.circuit[base]
-        else:
-            qc = self.code.circuit
-
         if self.code is not None:
+
+            # get the circuit used as the base case
+            if isinstance(self.code.circuit, dict):
+                if "base" not in dir(self.code):
+                    base = "0"
+                else:
+                    base = self.code.base
+                qc = self.code.circuit[base]
+            else:
+                qc = self.code.circuit
+
             fe = FaultEnumerator(qc, method="stabilizer")
             blocks = list(fe.generate_blocks())
             fault_paths = list(itertools.chain(*blocks))
