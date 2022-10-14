@@ -389,7 +389,7 @@ class TestARCCodes(unittest.TestCase):
 
     def test_empty_decoding_grapg(self):
         """Test initializtion of decoding graphs with None"""
-        dg = DecodingGraph(None)
+        DecodingGraph(None)
 
 
 if __name__ == "__main__":
