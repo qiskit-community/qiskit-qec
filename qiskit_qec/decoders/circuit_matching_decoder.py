@@ -7,12 +7,12 @@ from math import log
 from typing import Dict, List, Tuple
 from sympy import Poly, Symbol, symbols
 
-import retworkx as rx
+import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
-from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
+from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
@@ -21,7 +21,7 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 class CircuitModelMatchingDecoder(ABC):
     """Matching decoder for circuit noise."""
 
-    METHOD_RETWORKX: str = "retworkx"
+    METHOD_RETWORKX: str = "rustworkx"
     METHOD_PYMATCHING: str = "pymatching"
     AVAILABLE_METHODS = {METHOD_RETWORKX, METHOD_PYMATCHING}
 
@@ -64,7 +64,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks : number of measurement blocks
         method : matching implementation
         uniform : use same edge weight everywhere?
-        annotate : for retworkx method, compute self.matcher.annotated_graph
+        annotate : for rustworkx method, compute self.matcher.annotated_graph
         """
         self.n = n
         self.css_x_gauge_ops = css_x_gauge_ops
@@ -94,7 +94,7 @@ class CircuitModelMatchingDecoder(ABC):
         if self.method == self.METHOD_PYMATCHING:
             self.matcher = PyMatchingMatcher()
         else:
-            self.matcher = RetworkXMatcher(annotate)
+            self.matcher = RustworkxMatcher(annotate)
 
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
