@@ -30,7 +30,7 @@ from scipy.sparse import csr_matrix
 # Module Variables/States
 # -------------------------------------------------------------------------------
 
-# Set the interal encodings
+# Set the internal encodings
 # The internal encoding cannot be changed by changing this constant
 # These constants are for reference only and do not change the behavior of
 # the XPPauli methods. See [ref] for details on the different encodings

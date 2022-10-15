@@ -32,8 +32,8 @@ from qiskit_qec.utils import xp_pauli_rep
 
 # pylint: disable=no-member
 class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
-    r"""Symplectic representation of a list of N-qubit XP operators with phases using
-    numpy arrays for symplectic matrices and phase vectors.
+    r"""Symplectic representation of a list of N-qubit XP operators with phases
+    using numpy arrays for generalized symplectic matrices and phase vectors.
 
     Base class for XPPauli and XPPauliList.
     """
@@ -48,31 +48,37 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     PRINT_PHASE_ENCODING = None
 
+    # pylint: disable=unused-argument
     def __init__(
         self,
         matrix: Union[np.ndarray, None] = None,
         phase_exp: Union[None, np.ndarray, np.integer] = None,
+        N: int = None,
         order: str = "xz",
     ) -> None:
-        """A BaseXPPauli object represents a list N-qubit Pauli operators with phases.
-        Numpy arrays are used to represent the symplectic matrix represention of these
-        Paulis. The phases of the Paulis are stored encoded. The phases of the Pauli
+        # TODO: Need to update this docstring once the representation to be
+        # used for XP operators has been decided. In addition,
+        # (-i)^phase_exp Z^z X^x and GF(2) need to be updated to XP operators.
+        """A BaseXPPauli object represents a list N-qubit XP Pauli operators with phases.
+        Numpy arrays are used to represent the generalized symplectic matrix represention of these
+        XP operators. The phases of the XP operators are stored encoded. The phases of the XP operators
         operators are internally encoded in the '-iZX' Pauli encoding (See the xp_pauli_rep
-        module for more details). That is a Pauli operator is represented as symplectic
+        module for more details). That is a XP operator is represented as generalized symplectic
         vector V and a phase exponent phase_exp such that:
 
         (-i)^phase_exp Z^z X^x
 
-        where V = [x, z] and phase_exp is a vector of Z_4 elements (0,1,2,3). A list
-        of Pauli operators is represented as a symplectic matrix S and a phase exponent
-        vector phase_exp such that the rows or S are the symplectic vector representations
-        of the Paulis and the phase_exp vector store the phase exponent of each
-        associated Pauli Operator.
+        where V = [x, z] and phase_exp is a vector of Z_2N elements (0,1,2,...,2N-1). A list
+        of XP operators is represented as a generalized symplectic matrix S and a phase exponent
+        vector phase_exp such that the rows or S are the generalized symplectic vector representations
+        of the XP operators and the phase_exp vector store the phase exponent of each
+        associated XP Operator.
 
         Args:
             matrix: Input GF(2) symplectic matrix
-            phase_exp (optional): Phase exponent vector for imput matrix. A value of None will
-                result in an a complex coefficients of 1 for each Pauli operator. Defaults to None.
+            phase_exp (optional): Phase exponent vector for input matrix. A value of None will
+                result in an a complex coefficients of 1 for each XP operator. Defaults to None.
+            N: Precision of XP operators. Must be an integer greater than or equal to 2.
             order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
 
         Raises: QiskitError: matrix and phase_exp sizes are not compatible

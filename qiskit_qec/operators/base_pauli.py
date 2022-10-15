@@ -74,7 +74,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Args:
             matrix: Input GF(2) symplectic matrix
-            phase_exp (optional): Phase exponent vector for imput matrix. A value of None will
+            phase_exp (optional): Phase exponent vector for input matrix. A value of None will
                 result in an a complex coefficients of 1 for each Pauli operator. Defaults to None.
             order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
 
