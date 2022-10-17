@@ -92,8 +92,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
 
         if matrix is None or matrix.size == 0:
-            matrix = np.empty(shape=(0, 0), dtype=np.int8)
-            phase_exp = np.empty(shape=(0,), dtype=np.int8)
+            matrix = np.empty(shape=(0, 0), dtype=np.int64)
+            phase_exp = np.empty(shape=(0,), dtype=np.int64)
         matrix = np.atleast_2d(matrix)
         num_qubits = matrix.shape[1] >> 1
 
@@ -106,7 +106,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         self.matrix = matrix
         self._num_paulis = self.matrix.shape[0]
         if phase_exp is None:
-            self._phase_exp = np.zeros(shape=(self.matrix.shape[0],), dtype=np.int8)
+            self._phase_exp = np.zeros(shape=(self.matrix.shape[0],), dtype=np.int64)
         else:
             self._phase_exp = np.atleast_1d(phase_exp)
         if self._phase_exp.shape[0] != self.matrix.shape[0]:
