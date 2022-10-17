@@ -1,11 +1,11 @@
 """Temporary module with methods for graphs."""
 import json
 import networkx as nx
-import retworkx as rx
+import rustworkx as rx
 
 
 def ret2net(graph: rx.PyGraph):
-    """Convert retworkx graph to equivalent networkx graph."""
+    """Convert rustworkx graph to equivalent networkx graph."""
     nx_graph = nx.Graph()
     for j, node in enumerate(graph.nodes()):
         nx_graph.add_node(j)

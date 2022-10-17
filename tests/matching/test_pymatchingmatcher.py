@@ -1,8 +1,8 @@
-"""Tests for the retworkx matcher subroutines."""
+"""Tests for the rustworkx matcher subroutines."""
 import unittest
 
 from typing import Dict, Tuple
-import retworkx as rx
+import rustworkx as rx
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 
 

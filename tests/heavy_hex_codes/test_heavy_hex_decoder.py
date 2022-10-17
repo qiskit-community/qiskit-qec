@@ -149,7 +149,7 @@ class TestHHCDecoder(unittest.TestCase):
         self.correct_all_1(c, circ, dec, self.model)
 
     def test_d3_3(self):
-        """Check 3, zx, z, retworkx."""
+        """Check 3, zx, z, rustworkx."""
         blocks = 3
         round_schedule = "zx"
         basis = "z"
@@ -185,7 +185,7 @@ class TestHHCDecoder(unittest.TestCase):
             basis=basis,
             round_schedule=round_schedule,
             blocks=blocks,
-            method="retworkx",
+            method="rustworkx",
             uniform=False,
         )
         # self.no_faults_success(c, circ, dec, self.model)
