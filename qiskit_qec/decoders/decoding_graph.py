@@ -22,7 +22,7 @@ import logging
 from typing import List, Tuple
 
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 

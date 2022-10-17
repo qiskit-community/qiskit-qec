@@ -1,7 +1,7 @@
 """Base matching object."""
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Dict, Set
-import retworkx as rx
+import rustworkx as rx
 
 
 class BaseMatcher(ABC):

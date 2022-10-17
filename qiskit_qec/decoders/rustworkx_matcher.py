@@ -1,4 +1,4 @@
-"""RetworkX matching object."""
+"""rustworkx matching object."""
 
 import logging
 from copy import deepcopy

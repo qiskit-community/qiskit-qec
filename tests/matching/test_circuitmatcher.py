@@ -63,7 +63,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.x_logical = x_logical
 
     def test_no_errors(self):
-        """Test the case with no errors using retworkx."""
+        """Test the case with no errors using rustworkx."""
         shots = 100
         seed = 100
         dec = ThreeBitDecoder(
@@ -79,7 +79,7 @@ class TestCircuitMatcher(unittest.TestCase):
             "z",
             "z",
             2,
-            "retworkx",
+            "rustworkx",
             False,
         )
         result = execute(
@@ -139,7 +139,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.assertEqual(failures, 0)
 
     def test_correct_single_errors(self):
-        """Test the case with single faults using retworkx."""
+        """Test the case with single faults using rustworkx."""
         dec = ThreeBitDecoder(
             3,
             self.x_stabilizers,
@@ -153,7 +153,7 @@ class TestCircuitMatcher(unittest.TestCase):
             "z",
             "z",
             2,
-            "retworkx",
+            "rustworkx",
             False,
         )
         dec.update_edge_weights(self.pnm)
@@ -165,7 +165,7 @@ class TestCircuitMatcher(unittest.TestCase):
             self.assertEqual(fail[0], 0)
 
     def test_correct_single_errors_uniform(self):
-        """Test the case with single faults using retworkx."""
+        """Test the case with single faults using rustworkx."""
         dec = ThreeBitDecoder(
             3,
             self.x_stabilizers,
@@ -179,7 +179,7 @@ class TestCircuitMatcher(unittest.TestCase):
             "z",
             "z",
             2,
-            "retworkx",
+            "rustworkx",
             True,
         )
         dec.update_edge_weights(self.pnm)
@@ -243,7 +243,7 @@ class TestCircuitMatcher(unittest.TestCase):
             self.assertEqual(fail[0], 0)
 
     def test_error_pairs(self):
-        """Test the case with two faults using retworkx."""
+        """Test the case with two faults using rustworkx."""
         dec = ThreeBitDecoder(
             3,
             self.x_stabilizers,
@@ -257,7 +257,7 @@ class TestCircuitMatcher(unittest.TestCase):
             "z",
             "z",
             2,
-            "retworkx",
+            "rustworkx",
             False,
         )
         dec.update_edge_weights(self.pnm)
@@ -271,7 +271,7 @@ class TestCircuitMatcher(unittest.TestCase):
         self.assertEqual(failures, 128)
 
     def test_error_pairs_uniform(self):
-        """Test the case with two faults using retworkx."""
+        """Test the case with two faults using rustworkx."""
         dec = ThreeBitDecoder(
             3,
             self.x_stabilizers,
@@ -285,7 +285,7 @@ class TestCircuitMatcher(unittest.TestCase):
             "z",
             "z",
             2,
-            "retworkx",
+            "rustworkx",
             True,
         )
         dec.update_edge_weights(self.pnm)

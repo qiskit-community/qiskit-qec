@@ -18,7 +18,7 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate

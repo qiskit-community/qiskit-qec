@@ -1,13 +1,13 @@
-"""Tests for the retworkx matcher subroutines."""
+"""Tests for the rustworkx matcher subroutines."""
 import unittest
 
 from typing import Dict, Tuple
-import retworkx as rx
-from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
+import rustworkx as rx
+from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 
 
-class TestRetworkXMatcher(unittest.TestCase):
-    """Tests for the retworkx matcher subroutines."""
+class TestRustworkxMatcher(unittest.TestCase):
+    """Tests for the rustworkx matcher subroutines."""
 
     def make_test_graph(self) -> Tuple[rx.PyGraph, Dict[Tuple[int, Tuple[int]], int]]:
         """Make a basic decoding graph.
@@ -29,7 +29,7 @@ class TestRetworkXMatcher(unittest.TestCase):
         return graph, idxmap
 
     def setUp(self) -> None:
-        self.rxm = RetworkXMatcher(annotate=True)
+        self.rxm = RustworkxMatcher(annotate=True)
 
     def test_preprocess(self):
         """Test preprocessing example."""
