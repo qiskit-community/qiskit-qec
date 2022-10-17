@@ -53,7 +53,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         self,
         matrix: Union[np.ndarray, None] = None,
         phase_exp: Union[None, np.ndarray, np.integer] = None,
-        N: int = None,
+        precision: int = None,
         order: str = "xz",
     ) -> None:
         # TODO: Need to update this docstring once the representation to be
@@ -78,7 +78,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             matrix: Input GF(2) symplectic matrix
             phase_exp (optional): Phase exponent vector for input matrix. A value of None will
                 result in an a complex coefficients of 1 for each XP operator. Defaults to None.
-            N: Precision of XP operators. Must be an integer greater than or equal to 2.
+            precision: Precision of XP operators. Must be an integer greater than or equal to 2.
             order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
 
         Raises: QiskitError: matrix and phase_exp sizes are not compatible
