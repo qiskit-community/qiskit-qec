@@ -640,7 +640,7 @@ class ArcCircuit:
                 z_logicals.append(node)
         # if there are none, just use the first
         if z_logicals == []:
-            z_logicals = [0]
+            z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
 
     def _get_202(self, t):
