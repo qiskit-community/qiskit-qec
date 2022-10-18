@@ -716,7 +716,7 @@ def squeeze(array_: Any, scalar: bool = False) -> bool:
         >>> squeeze(numpy.array([[[[1,2,3,4,5]]]]))
         array([1,2,3,4,5])
     """
-    array_ = np.squeeze(array_)
+    array_ = np.squeeze(np.array(array_, dtype=object))
     if array_.shape == () and scalar is True:
         return array_.item()
     else:
