@@ -26,6 +26,7 @@ from qiskit.utils.deprecation import deprecate_function
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.utils import pauli_rep
 
+# Just a dummy comment, trying to create a PR to see if checks(tests) run on my PR or not via CI
 
 class Pauli(BasePauli):
     """`Pauli` inherits from `BasePauli`"""
