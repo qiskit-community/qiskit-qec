@@ -1086,6 +1086,7 @@ class ArcCircuit:
                     new_node["time"] = t
                     nodes.append(new_node)
             else:
+                node["time"] = 0
                 nodes.append(node)
 
         # find pairs that should be connected
