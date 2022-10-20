@@ -27,6 +27,7 @@ from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.utils import pauli_rep
 
 
+# TODO just trying to check if checks run on my PR
 class Pauli(BasePauli):
     """`Pauli` inherits from `BasePauli`"""
 
