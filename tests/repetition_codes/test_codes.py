@@ -387,6 +387,20 @@ class TestARCCodes(unittest.TestCase):
             "Error: Wrong number of cx gates after transpilation.",
         )
 
+    def test_decoding_graphs(self):
+        """Test creation of decoding graphs."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (2, 7, 8)]
+        code = ArcCircuit(links, T=2)
+        dg = DecodingGraph(code, brute=False)
+        dgb = DecodingGraph(code, brute=True)
+        assert len(dg.graph.nodes()) == len(
+            dgb.graph.nodes()
+        ), "Decoding graph created by brute force has different number of nodes to algorithmic method."
+        for node in dgb.graph.nodes():
+            assert (
+                node in dg.graph.nodes()
+            ), "Brute force decoding graph chas node not present in algorithmically created one."
+
 
 if __name__ == "__main__":
     unittest.main()

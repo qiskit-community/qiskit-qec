@@ -51,7 +51,7 @@ class DecodingGraph:
     def _make_syndrome_graph(self):
 
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
-            self.S, self.hyperedges = self.code._make_syndrome_graph()
+            self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
             S = rx.PyGraph(multigraph=False)
             self.hyperedges = []

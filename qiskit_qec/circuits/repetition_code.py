@@ -1079,12 +1079,13 @@ class ArcCircuit:
             + "1" * len(self.links)
         )
         nodes = []
-        for node in self.flatten_nodes(self.string2nodes(string)):
+        for node in self.string2nodes(string):
             if not node["is_boundary"]:
                 for t in range(self.T + 1):
                     new_node = node.copy()
                     new_node["time"] = t
-                    nodes.append(new_node)
+                    if new_node not in nodes:
+                        nodes.append(new_node)
             else:
                 node["time"] = 0
                 nodes.append(node)
