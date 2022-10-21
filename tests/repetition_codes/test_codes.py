@@ -399,7 +399,7 @@ class TestARCCodes(unittest.TestCase):
         for node in dgb.graph.nodes():
             assert (
                 node in dg.graph.nodes()
-            ), "Brute force decoding graph chas node not present in algorithmically created one."
+            ), "Brute force decoding graph has node not present in algorithmically created one."
 
 
 if __name__ == "__main__":
