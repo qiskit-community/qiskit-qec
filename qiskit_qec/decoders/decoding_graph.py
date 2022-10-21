@@ -166,7 +166,10 @@ class DecodingGraph:
             else:
                 if (1 - 2 * av_xor[n0, n1]) != 0:
                     x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
-                    error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                    if x < 0.25:
+                        error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                    else:
+                        error_probs[n0, n1] = np.nan
                 else:
                     error_probs[n0, n1] = np.nan
 
