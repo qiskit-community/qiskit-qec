@@ -100,14 +100,15 @@ class DecodingGraph:
             self.graph = S
 
     def get_error_probs(self, results, logical="0"):
-        """Generate probabilities of single error events from result counts.
+        """
+        Generate probabilities of single error events from result counts.
 
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
         Returns:
             dict: Keys are the edges for specific error
-            events, and values are the calculated probabilities
+            events, and values are the calculated probabilities.
         Additional information:
             Uses `results` to estimate the probability of the errors that
             create the pairs of nodes specified by the edge.
@@ -188,6 +189,85 @@ class DecodingGraph:
             error_probs[n0, n0] = 0.5 + (av_v[n0] - 0.5) / prod[n0]
 
         return error_probs
+
+    def get_error_coords(self, results, logical="0"):
+        """
+        Generate probabilities of single error events from result counts.
+
+        Args:
+            results (dict): A results dictionary.
+            logical (string): Logical value whose results are used.
+        Returns:
+            dict: Keys are the coordinates (qubit, time) for specific error
+            events. Values are a dictionary whose keys are the edges that detected
+            the event, and whose keys are the calculated probabilities.
+        Additional information:
+            Uses `results` to estimate the probability of the errors that
+            create the pairs of nodes specified by the edge.
+            Default calculation method is that of Spitz, et al.
+            https://doi.org/10.1002/qute.201800012
+        """
+
+        error_probs = self.get_error_probs(results, logical=logical)
+        nodes = self.graph.nodes()
+
+        if hasattr(self.code, "z_logicals"):
+            z_logicals = set(self.code.z_logicals)
+        elif hasattr(self.code, "z_logical"):
+            z_logicals = {self.code.z_logical}
+        else:
+            print("No qubits for z logicals found. Proceeding without.")
+            z_logicals = set()
+
+        error_coords = {}
+        for (n0, n1), prob in error_probs.items():
+            node0 = nodes[n0]
+            node1 = nodes[n1]
+            if n0 != n1:
+                qubits = self.graph.get_edge_data(n0, n1)["qubits"]
+                if qubits:
+                    # error on a code qubit before a round, or during a round
+                    assert (
+                        node0["time"] == node1["time"] and node0["qubits"] != node1["qubits"]
+                    ) or (node0["time"] != node1["time"] and node0["qubits"] != node1["qubits"])
+                    qubit = qubits[0]
+                    if node0["time"] == node1["time"]:
+                        time = node0["time"]
+                    else:
+                        # put nodes in descending time order
+                        if node0["time"] < node1["time"]:
+                            node_pair = [node1, node0]
+                        else:
+                            node_pair = [node0, node1]
+                        # see when in the schedule each node measures the qubit
+                        dts = []
+                        for node in node_pair:
+                            pair = [qubit, node["link qubit"]]
+                            for dt, pairs in enumerate(self.code.schedule):
+                                if pair in pairs:
+                                    dts.append(dt)
+                        # use to define fractional time
+                        if dts[0] < dts[1]:
+                            time = node_pair[1]["time"] + (dts[0] + 1) / len(self.code.schedule)
+                        else:
+                            # impossible cases are disregarded
+                            time = np.nan
+
+                else:
+                    # measurement error
+                    assert node0["time"] != node1["time"] and node0["qubits"] == node1["qubits"]
+                    qubit = node0["link qubit"]
+                    time = min(node0["time"], node1["time"])
+            else:
+                qubit = list(set(node0["qubits"]).intersection(z_logicals))[0]
+                time = node0["time"]
+
+            if not np.isnan(time):  # only record if not nan
+                if (qubit, time) not in error_coords:
+                    error_coords[qubit, time] = {}
+                error_coords[qubit, time][n0, n1] = prob
+
+        return error_coords
 
     def weight_syndrome_graph(self, results):
         """Generate weighted syndrome graph from result counts.
