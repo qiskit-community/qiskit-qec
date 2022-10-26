@@ -258,9 +258,8 @@ class TestARCCodes(unittest.TestCase):
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
         triangle = [(0, 1, 2), (2, 3, 4), (4, 5, 0)]
-        triangles = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0), (0, 8, 4)]
         tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (4, 6, 7)]
-        for links in [triangle, triangles, tadpole]:
+        for links in [triangle, tadpole]:
             for resets in [True, False]:
                 code = ArcCircuit(
                     links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
