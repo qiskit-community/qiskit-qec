@@ -56,6 +56,8 @@ class DecodingGraph:
             S = rx.PyGraph(multigraph=False)
             self.hyperedges = []
 
+        if self.code is not None:
+
             # get the circuit used as the base case
             if isinstance(self.code.circuit, dict):
                 if "base" not in dir(self.code):
@@ -66,23 +68,26 @@ class DecodingGraph:
             else:
                 qc = self.code.circuit
 
-            if self.code is not None:
-                fe = FaultEnumerator(qc, method="stabilizer")
-                blocks = list(fe.generate_blocks())
-                fault_paths = list(itertools.chain(*blocks))
+            fe = FaultEnumerator(qc, method="stabilizer")
+            blocks = list(fe.generate_blocks())
+            fault_paths = list(itertools.chain(*blocks))
 
-                for _, _, _, output in fault_paths:
-                    string = "".join([str(c) for c in output[::-1]])
-                    nodes = self.code.string2nodes(string)
-                    for node in nodes:
-                        if node not in S.nodes():
-                            S.add_node(node)
-                    hyperedge = {}
-                    for source in nodes:
-                        for target in nodes:
-                            if target != source:
-                                n0 = S.nodes().index(source)
-                                n1 = S.nodes().index(target)
+            for _, _, _, output in fault_paths:
+                string = "".join([str(c) for c in output[::-1]])
+                nodes = self.code.string2nodes(string)
+                for node in nodes:
+                    if node not in S.nodes():
+                        S.add_node(node)
+                hyperedge = {}
+                for source in nodes:
+                    for target in nodes:
+                        if target != source:
+                            n0 = S.nodes().index(source)
+                            n1 = S.nodes().index(target)
+                            qubits = []
+                            if not (source["is_boundary"] and target["is_boundary"]):
+                                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+                            if source["time"] != target["time"] and len(qubits) > 1:
                                 qubits = []
                                 if not (source["is_boundary"] and target["is_boundary"]):
                                     qubits = list(

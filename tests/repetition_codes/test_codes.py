@@ -401,6 +401,10 @@ class TestARCCodes(unittest.TestCase):
                 node in dg.graph.nodes()
             ), "Brute force decoding graph has node not present in algorithmically created one."
 
+    def test_empty_decoding_graph(self):
+        """Test initializtion of decoding graphs with None"""
+        DecodingGraph(None)
+
     def test_error_coords(self):
         """Test assignment of coordinates to links."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (2, 7, 8)]
