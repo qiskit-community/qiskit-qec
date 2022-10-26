@@ -51,43 +51,39 @@ class DecodingGraph:
     def _make_syndrome_graph(self):
 
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
-            S, self.hyperedges = self.code._make_syndrome_graph()
+            self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
             S = rx.PyGraph(multigraph=False)
             self.hyperedges = []
 
-        if self.code is not None:
+            if self.code is not None:
 
-            # get the circuit used as the base case
-            if isinstance(self.code.circuit, dict):
-                if "base" not in dir(self.code):
-                    base = "0"
+                # get the circuit used as the base case
+                if isinstance(self.code.circuit, dict):
+                    if "base" not in dir(self.code):
+                        base = "0"
+                    else:
+                        base = self.code.base
+                    qc = self.code.circuit[base]
                 else:
-                    base = self.code.base
-                qc = self.code.circuit[base]
-            else:
-                qc = self.code.circuit
+                    qc = self.code.circuit
 
-            fe = FaultEnumerator(qc, method="stabilizer")
-            blocks = list(fe.generate_blocks())
-            fault_paths = list(itertools.chain(*blocks))
+                fe = FaultEnumerator(qc, method="stabilizer")
+                blocks = list(fe.generate_blocks())
+                fault_paths = list(itertools.chain(*blocks))
 
-            for _, _, _, output in fault_paths:
-                string = "".join([str(c) for c in output[::-1]])
-                nodes = self.code.string2nodes(string)
-                for node in nodes:
-                    if node not in S.nodes():
-                        S.add_node(node)
-                hyperedge = {}
-                for source in nodes:
-                    for target in nodes:
-                        if target != source:
-                            n0 = S.nodes().index(source)
-                            n1 = S.nodes().index(target)
-                            qubits = []
-                            if not (source["is_boundary"] and target["is_boundary"]):
-                                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-                            if source["time"] != target["time"] and len(qubits) > 1:
+                for _, _, _, output in fault_paths:
+                    string = "".join([str(c) for c in output[::-1]])
+                    nodes = self.code.string2nodes(string)
+                    for node in nodes:
+                        if node not in S.nodes():
+                            S.add_node(node)
+                    hyperedge = {}
+                    for source in nodes:
+                        for target in nodes:
+                            if target != source:
+                                n0 = S.nodes().index(source)
+                                n1 = S.nodes().index(target)
                                 qubits = []
                                 if not (source["is_boundary"] and target["is_boundary"]):
                                     qubits = list(
