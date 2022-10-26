@@ -404,7 +404,8 @@ class TestARCCodes(unittest.TestCase):
     def test_error_coords(self):
         """Test assignment of coordinates to links."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (2, 7, 8)]
-        code = ArcCircuit(links, T=2)
+        schedule = [[[0, 1], [6, 5]], [[4, 5], [2, 1]], [[2, 3], [8, 7]], [[4, 3], [2, 7]]]
+        code = ArcCircuit(links, T=2, schedule=schedule)
         dg = DecodingGraph(code, brute=False)
         nodes = dg.graph.nodes()
         # the following are known correct coords for this code
