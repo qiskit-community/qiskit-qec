@@ -898,7 +898,7 @@ class ArcCircuit:
                         if is_boundary:
                             elem_num = syn_round
                             syn_round = 0
-                            code_qubits = [self.z_logicals[-elem_num]]
+                            code_qubits = [self.z_logicals[elem_num]]
                             link_qubit = None
                         else:
                             link = self.links[-elem_num - 1]
@@ -940,15 +940,18 @@ class ArcCircuit:
     def check_nodes(self, nodes):
         """
         Determines whether a given set of nodes are neutral. If so, also
-        determines the logical readout qubits they contain.
+        determines any additional logical readout qubits that would be
+        flipped by the errors creating such a cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
             flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes.
+            enclosed by the nodes, that aren't already accounted for by given
+            boundary nodes.
         """
+        # see whether the bulk nodes are neutral
         nodes = self.flatten_nodes(nodes)
         link_qubits = set(node["link qubit"] for node in nodes)
         node_color = {0: 0}
@@ -974,13 +977,30 @@ class ArcCircuit:
                         else:
                             neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
 
+        # see which qubits for logical zs are given
+        given_logicals = []
+        for node in nodes:
+            if node["is_boundary"]:
+                given_logicals += node["qubits"]
+        given_logicals = set(given_logicals)
+
+        # see which qubits for logical zs are needed
         flipped_logicals = []
         if neutral:
             inside_c = int(sum(node_color.values()) < len(node_color) / 2)
             for n, c in node_color.items():
-                node = link_graph.nodes()[n]
-                if node in self.z_logicals and c == inside_c:
-                    flipped_logicals.append(node)
+                qubit = link_graph.nodes()[n]
+                if qubit in self.z_logicals and c == inside_c:
+                    flipped_logicals.append(qubit)
+        flipped_logicals = set(flipped_logicals)
+
+        # if unneeded logical zs are given, cluster is not neutral
+        if given_logicals.difference(flipped_logicals):
+            neutral = False
+        # otherwise, report only needed logicals that aren't given
+        else:
+            flipped_logicals = flipped_logicals.difference(given_logicals)
+        flipped_logicals = list(flipped_logicals)
 
         return neutral, flipped_logicals
 

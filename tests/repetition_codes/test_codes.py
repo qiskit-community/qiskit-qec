@@ -239,21 +239,33 @@ class TestARCCodes(unittest.TestCase):
                 flat_nodes = code.flatten_nodes(nodes)
                 link_qubits = set(node["link qubit"] for node in flat_nodes)
                 minimal = minimal and link_qubits in incident_links.values()
-
                 self.assertTrue(
                     minimal,
                     "Error: Single error creates too many nodes",
                 )
+                # check that the nodes are neutral
+                neutral, flipped_logicals = code.check_nodes(nodes)
+                self.assertTrue(
+                    neutral and flipped_logicals == [], "Error: Single error nodes are not neutral"
+                )
+                # and that the given flipped logical makes sense
+                for node in nodes:
+                    if not node["is_boundary"]:
+                        for logical in flipped_logicals:
+                            self.assertTrue(
+                                logical in node["qubits"],
+                                "Error: Single error appears to flip logical is not part of nodes.",
+                            )
 
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
-        square = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        tadpole = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
-        all2all = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (0, 7, 6), (6, 8, 2), (6, 9, 4)]
-        for links in [square, tadpole, all2all]:
+        triangle = [(0, 1, 2), (2, 3, 4), (4, 5, 0)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (4, 6, 7)]
+        t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
+        for links in [triangle, tadpole, t_pose]:
             for resets in [True, False]:
                 code = ArcCircuit(
-                    links, T=4, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
+                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
                 )
                 self.single_error_test(code)
 
