@@ -24,6 +24,8 @@ from qiskit_qec.linear.matrix import (
     augment_mat,
     rref_complete,
     rank,
+    _howell,
+    howell,
 )
 
 
@@ -332,3 +334,43 @@ class TestLinearMatrix(TestCase):
             dtype=np.bool_,
         )
         self.assertEqual(rank(matrix), 4)
+
+    def test_howell(self):
+        """Tests howell."""
+        matrix = np.array(
+            [[8, 5, 5],
+             [0, 9, 8],
+             [0, 0, 10]],
+        )
+        N = 12
+
+        howell_mat, transform_mat, kernel_mat = _howell(matrix, N)
+        expected_howell_mat = np.array(
+            [[4, 1, 0], 
+             [0, 3, 0],
+             [0, 0, 1]]
+        )
+        expected_transform_mat = np.array(
+            [[8, 1, 0],
+             [0, 7, 4],
+             [9, 3, 4]]
+        )
+        expected_kernel_mat = np.array(
+            [[6, 6, 3],
+             [0, 4, 4]]
+        )
+        self.assertTrue(np.array_equal(howell_mat, expected_howell_mat))
+        self.assertTrue(np.array_equal(transform_mat, expected_transform_mat))
+        self.assertTrue(np.array_equal(kernel_mat, expected_kernel_mat))
+
+    def test_invalid_howell(self):
+        """Tests invalid howell."""
+        valid_array = np.array([[1, 2], [3, 4]])
+        valid_N = 8
+
+        negative_N = -2
+        self.assertRaises(QiskitError, howell, valid_array, negative_N)
+        fraction_N = 1.5
+        self.assertRaises(QiskitError, howell, valid_array, fraction_N)
+        invalid_array = np.array([[[1, 1], [2, 1]]])
+        self.assertRaises(QiskitError, howell, invalid_array, valid_N)

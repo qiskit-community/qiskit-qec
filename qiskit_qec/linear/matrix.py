@@ -677,7 +677,7 @@ def _do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int
         mat[rows[0]], mat[rows[1]] = R1, R2
 
     return mat
-    
+
 
 def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Computes the Howell form of a matrix in the ring Z/NZ, the corresponding transformation matrix, and the kernel.
@@ -690,6 +690,10 @@ def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
         H: Howell form of mat
         U: transformation matrix (U @ mat = H)
         K: kernel of mat (mat @ K = 0)
+
+    Raises:
+        QiskitError: Modulus N must be a positive integer
+        QiskitError: Input matrix must be a 2D array
 
     Examples:
         >>> mat = numpy.array([[8, 5, 5],
@@ -707,6 +711,45 @@ def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
                [9, 3, 4]])
         >>> K
         array([[6, 6, 6],
+               [0, 4, 4]])
+    """
+    if not N > 0 or not isinstance(N, (int, np.integer)):
+        raise QiskitError("Modulus N must be a positive integer")
+    mat = np.array(mat, dtype=int)
+    if not mat.ndim == 2:
+        raise QiskitError("Input matrix must be a 2D array")
+    
+    return _howell(mat, N)
+
+
+def _howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Computes the Howell form of a matrix in the ring Z/NZ, the corresponding transformation matrix, and the kernel.
+
+    Args:
+        mat: input matrix
+        N: modulus
+
+    Returns:
+        H: Howell form of mat
+        U: transformation matrix (U @ mat = H)
+        K: kernel of mat (K @ mat = 0)
+
+    Examples:
+        >>> mat = numpy.array([[8, 5, 5],
+                               [0, 9, 8],
+                               [0, 0, 10]])
+        >>> N = 12
+        >>> H, U, K = howell(mat, N)
+        >>> H
+        array([[4, 1, 0],
+               [0, 3, 0],
+               [0, 0, 1]])
+        >>> U
+        array([[8, 1, 0],
+               [0, 7, 4],
+               [9, 3, 4]])
+        >>> K
+        array([[6, 6, 3],
                [0, 4, 4]])
     """
     H = mat.copy()
