@@ -493,3 +493,281 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
     if interleave:
         return np.hstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
     return np.vstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
+
+
+# ---------------------------------------------------------------
+# Modular Arithmetic & Howell matrix form
+
+
+def _gcdex(a: int, b: int) -> Tuple[int, int, int, int, int]:
+    """Implements the extended Euclidean algorithm: for any two integers a & b, find g, s, t, u, v that satisfy
+
+    1. g = gcd(a, b) = s*a + t*b, where gcd stands for greatest common divisor, s & t are called Bezout coefficients for a & b;
+    2. u*a + v*b = 0;
+    3. s*v - t*u = 1.
+
+    Args:
+        a, b: input integers
+
+    Returns:
+        g: greatest common divisor of a & b
+        s, t, u, v: integer coefficients satisfying s*a + t*b = g, u*a + v*b = 0, s*v - t*u = 1
+    """
+    old_s, s  = 1, 0
+    old_t, t  = 0, 1
+    old_r, r  = a, b
+
+    while r != 0:
+        q = old_r // r
+        old_r, r = r, old_r - q * r
+        old_s, s = s, old_s - q * s
+        old_t, t = t, old_t - q * t
+
+    p = np.sign(t * old_s - s * old_t)
+    u, v = p * s, p * t
+    g, s, t = old_r, old_s, old_t
+
+    if a < 0 and b == 0:
+        g, s, v = -g, -s, -v
+    elif a == 0 and b < 0:
+        g, t, u = -g, -t, -u
+    elif a < 0 and b < 0:
+        g, s, t, u, v = -g, -s, -t, -u, -v
+
+    return (g, s, t, u, v)
+
+
+def _quo(a: int, b: int, N: int) -> int:
+    """Computes the quotient of a/b in the ring Z/NZ, i.e. returns integer q such that a = b*q (mod N).
+
+    Args:
+        a: numerator
+        b: denominator
+        N: modulus
+
+    Returns:
+        quotient of a/b in the ring Z/NZ
+    """
+    a, b = a % N, b % N
+    if b == 0:
+        return None
+    return (a // b) % N
+
+
+def _div(a: int, b: int, N: int) -> int:
+    """Computes the divisor of a/b in the ring Z/NZ, i.e., returns integer d such that b*d = a (mod N). Returns None if no such d exists.
+
+    Args:
+        a: numerator
+        b: denominator
+        N: modulus
+
+    Returns:
+        divisor of a/b in the ring Z/NZ
+    """
+    a, b = a % N, b % N
+    if b == 0:
+        return None
+    g = np.gcd(b, N)
+    if a % g != 0:
+        return None
+    else:
+        r = a % b
+        while r > 0:
+            a += N
+            r = a % b
+        return a // b % N
+
+
+def _ann(a: int, N: int) -> int:
+    """Computes the annihilator of a in the ring Z/NZ, i.e., returns integer b such that a*b (mod N) = 0.
+
+    Args:
+        a: input integer
+        N: modulus
+
+    Returns:
+        annihilator of a in the ring Z/NZ
+    """
+    a = a % N
+    if a == 0:
+        return 1
+    u = N // np.gcd(a, N)
+    return u % N
+
+
+def _stab(a: int, b: int, N: int) -> int:
+    """Returns a ring element c such that gcd(a+b*c, N) = gcd(a, b, N) in the ring Z/NZ.
+
+    Args:
+        a, b: input integers
+        N: modulus
+
+    Returns:
+        ring element c such that gcd(a+b*c, N) = gcd(a, b, N)
+    """
+    a, b = a % N, b % N
+    g = np.gcd.reduce([a, b, N])
+    N_old = N
+    a, N = a // g, N // g
+    if N == 0:
+        c = 0
+    else:
+        a = a % N
+        if a == 0:
+            c = 1
+        else:
+            r = int(np.ceil(np.log2(np.log2(N)))) if N > 1 else 1
+            for _ in range(r):
+                a = a * a % N
+            c = N // np.gcd(a, N)
+    return c % N_old
+
+
+def _unit(a: int, N: int) -> int:
+    """Computes a unit u such that for element a in the ring Z/NZ, (a*u) mod N = gcd(a, N).
+
+    Args:
+        a: input integer
+        N: modulus
+
+    Returns:
+        unit of a in the ring Z/NZ
+    """
+    a = a % N
+    if a == 0:
+        return 1
+    g = np.gcd(a, N)
+    s = _div(g, a, N)
+    if g == 1:
+        return s
+    d = _stab(s, N // g, N)
+    return (s + d * N // g) % N
+
+
+def _do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int) -> np.ndarray:
+    """Performs span-preserving row operations on a matrix in the ring Z/NZ. These include:
+
+    1. Swap two rows mat[i] and mat[j];
+    2. Multiply a row mat[i] by a scalar c (valid only when c is a unit), i.e., mat[i] = c * mat[i];
+    3. Add a multiple of one row to another, i.e., mat[i] = mat[i] + c * mat[j];
+    4. Append the product of a row by a scalar c to the end of matrix (used when c is a zero divisor), i.e., mat = mat.append(c * mat[i]);
+    5. Update two rows by multiplying by a full-rank 2x2 matrix, i.e., mat[i] = a * mat[i] + b * mat[j], mat[j] = c * mat[i] + d * mat[j].
+    
+    Args:
+        mat: input matrix
+        row_op: tuple (op, rows, coeff), where op is the operation to be performed, rows are the row indices, and coeff is a list of coefficients for the operation (empty list if op is 'swap')
+        N: modulus
+
+    Returns:
+        matrix after performing the row operation
+    """
+    op, rows, coeff = row_op
+    if op == 'swap':
+        mat[rows[0]], mat[rows[1]] = mat[rows[1]], mat[rows[0]]
+    elif op == 'unit':
+        mat[rows[0]] = np.mod(coeff[0] * mat[rows[0]], N)
+    elif op == 'add':
+        mat[rows[0]] = np.mod(mat[rows[0]] + coeff[0] * mat[rows[1]], N)
+    elif op == 'append':
+        mat = np.vstack((mat, np.mod(coeff[0] * mat[rows[0]], N)))
+    elif op == 'update':
+        R1 = np.mod(coeff[0] * mat[rows[0]] + coeff[1] * mat[rows[1]], N)
+        R2 = np.mod(coeff[2] * mat[rows[0]] + coeff[3] * mat[rows[1]], N)
+        mat[rows[0]], mat[rows[1]] = R1, R2
+
+    return mat
+    
+
+def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Computes the Howell form of a matrix in the ring Z/NZ, the corresponding transformation matrix, and the kernel.
+
+    Args:
+        mat: input matrix
+        N: modulus
+
+    Returns:
+        H: Howell form of mat
+        U: transformation matrix (U @ mat = H)
+        K: kernel of mat (mat @ K = 0)
+
+    Examples:
+        >>> mat = numpy.array([[8, 5, 5],
+                               [0, 9, 8],
+                               [0, 0, 10]])
+        >>> N = 12
+        >>> H, U, K = howell(mat, N)
+        >>> H
+        array([[4, 1, 0],
+               [0, 3, 0],
+               [0, 0, 1]])
+        >>> U
+        array([[8, 1, 0],
+               [0, 7, 4],
+               [9, 3, 4]])
+        >>> K
+        array([[6, 6, 6],
+               [0, 4, 4]])
+    """
+    H = mat.copy()
+    U = np.eye(H.shape[0], dtype=int)
+    m, n = H.shape
+    row_ops = []
+    
+    r = 0
+    # going through each column
+    for c in range(n):
+        # find j such that H[j, c] > 0
+        j = r
+        while j < m and H[j, c] == 0:
+            j += 1
+        if j < m:
+            # found j: if j > r, swap rows r and j
+            if j > r:
+                row_ops.append(('swap', [r, j], []))
+                H = _do_row_op(H, row_ops[-1], N)
+                U = _do_row_op(U, row_ops[-1], N)
+
+            # multiply row r by a unit to ensure that H[r, c] is a minimal representative
+            x = _unit(H[r, c], N)
+            if x > 1:
+                row_ops.append(('unit', [r], [x]))
+                H = _do_row_op(H, row_ops[-1], N)
+                U = _do_row_op(U, row_ops[-1], N)
+            
+            # eliminate entries in column c below row r
+            for i in range(r + 1, m):
+                if H[i, c] % N > 0:
+                    (g, s, t, u, v) = _gcdex(H[r, c], H[i, c])
+                    row_ops.append(('update', [r, i], [s, t, u, v]))
+                    H = _do_row_op(H, row_ops[-1], N)
+                    U = _do_row_op(U, row_ops[-1], N)
+            
+            # ensure entries in column c above row r are less than H[r, c]
+            b = H[r, c]
+            for i in range(r):
+                if H[i, c] >= b:
+                    x = _quo(H[i, c], b, N)
+                    row_ops.append(('add', [i, r], [-x]))
+                    H = _do_row_op(H, row_ops[-1], N)
+                    U = _do_row_op(U, row_ops[-1], N)
+            
+            # if b = H[r, c] is a zero divisor, find the annihilator x that eliminates H[r, c] and append a new row x * H[r]
+            x = _ann(b, N)
+            if x > 0:
+                row_ops.append(('append', [r], [x]))
+                H = _do_row_op(H, row_ops[-1], N)
+                U = _do_row_op(U, row_ops[-1], N)
+                m = len(H)
+            r += 1
+        
+    # remove rows of zeros
+    H = H[H.any(axis=1)]
+
+    # compute the transformation matrix and kernel
+    k = len(H)
+    K = U[k:, :]
+    K = K[K.any(axis=1)]
+    U = U[:k, :]
+
+    return H, U, K
