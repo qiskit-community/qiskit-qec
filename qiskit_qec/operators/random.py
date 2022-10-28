@@ -196,6 +196,38 @@ def random_clifford(num_qubits, seed=None):
     return Clifford(StabilizerTable(table, phase))
 
 
+def random_xppauli(num_qubits, precision=None, seed=None):
+    """Return a random XPPauli.
+
+    Args:
+        num_qubits (int): the number of qubits.
+        precision (int): Precision of XP operators. Must be an integer
+                         greater than or equal to 2.
+        seed (int or np.random.Generator): Optional. Set a fixed seed or
+                                           generator for RNG.
+
+    Returns:
+        XPPauli: a random XPPauli
+    """
+    if seed is None:
+        rng = np.random.default_rng()
+    elif isinstance(seed, np.random.Generator):
+        rng = seed
+    else:
+        rng = default_rng(seed)
+    z = rng.integers(precision, size=num_qubits, dtype=np.int64)
+    x = rng.integers(2, size=num_qubits, dtype=bool)
+    # TODO: Need to decide whether we will add an argument group_phase in
+    # analogy with random_pauli. If yes, its implementation goes here.
+    # Mark's code randomizes phase modulo 2*precision.
+    phase = rng.integers(2 * precision, dtype=np.int64)
+    xppauli = XPPauli((z, x, phase))
+    return xppauli
+
+
+# TODO: def random_xppauli_list():
+
+
 def _sample_qmallows(n, rng=None):
     """Sample from the quantum Mallows distribution"""
 

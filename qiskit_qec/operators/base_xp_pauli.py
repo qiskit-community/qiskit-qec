@@ -90,6 +90,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See Also:
             Pauli, PauliList
         """
+        assert (type(precision) == int) and (precision > 1), QiskitError(
+            "Precision of XP operators must be an integer greater than or equal to 2."
+        )
 
         if matrix is None or matrix.size == 0:
             matrix = np.empty(shape=(0, 0), dtype=np.int64)
@@ -104,6 +107,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             matrix = nmatrix
 
         self.matrix = matrix
+        self.precision = precision
         self._num_paulis = self.matrix.shape[0]
         if phase_exp is None:
             self._phase_exp = np.zeros(shape=(self.matrix.shape[0],), dtype=np.int64)
@@ -396,6 +400,70 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     ) -> "BaseXPPauli":
         """_summary_"""
         pass
+
+    # ---------------------------------------------------------------------
+    # BaseXPPauli methods for XP arithmetic
+    # ---------------------------------------------------------------------
+
+    def unique_vector_rep(self):
+        return self._unique_vector_rep()
+
+    def _unique_vector_rep(self):
+        """(TODO improve doc): This is the equivalent of XPRound from Mark's
+        code. It converts the XPPauli operator into unique vector form, ie
+        phase_exp in Z modulo 2*precision, x in Z_2, z in Z modulo
+        precision."""
+        matrix = np.empty(shape=np.shape(self.matrix), dtype=np.int64)
+
+        phase_exp = np.mod(self._phase_exp, 2 * self.precision)
+        matrix[:, : self.num_qubits][0] = np.mod(self.matrix[:, : self.num_qubits][0], 2)
+        matrix[:, self.num_qubits : ][0] = np.mod(
+            self.matrix[:, self.num_qubits : ][0],  self.precision
+        )
+
+        return BaseXPPauli(matrix, phase_exp, self.precision)
+
+    def rescale_precision(self, new_precision):
+        return self._rescale_precision(new_precision)
+
+    def _rescale_precision(self, new_precision):
+        """(TODO improve doc): This is the equivalent of XPSetNsingle from
+        Mark's code. It rescales the generalized symplectic vector components
+        of XPPauli operator to the new precision. Returns None if the
+        rescaling is not possible, else returns the rescaled BaseXPPauli object."""
+
+        # TODO this code will probably only work for XPPauli, may need to be upgraded for XPPauliList
+        unique_xp_op = self.unique_vector_rep()
+
+        if new_precision > unique_xp_op.precision:
+            if np.mod(new_precision, unique_xp_op.precision > 0):
+                return None
+            matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
+            scale_factor = new_precision // unique_xp_op.precision
+            phase_exp = scale_factor * unique_xp_op.phase_exp
+            matrix[:, unique_xp_op.num_qubits :][0] = (
+                scale_factor * unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0]
+            )
+
+        elif new_precision < unique_xp_op.precision:
+            scale_factor = unique_xp_op.precision // new_precision
+            if(
+               (unique_xp_op.precision % new_precision > 0)
+               or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
+               or (
+                   np.sum(
+                       np.mod(unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0], scale_factor)
+                   )
+                   > 0
+                )
+            ):
+                return None
+            matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
+            phase_exp = unique_xp_op._phase_exp // scale_factor
+            matrix[:, 0 : unique_xp_op.num_qubits][0] = unique_xp_op.matrix[:, 0 : unique_xp_op.num_qubits][0]
+            matrix[:, unique_xp_op.num_qubits :][0] = unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0] // scale_factor
+
+        return BaseXPPauli(matrix, phase_exp, new_precision)
 
 
 # ---------------------------------------------------------------------
