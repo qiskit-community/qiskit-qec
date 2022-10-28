@@ -497,6 +497,7 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
 
 # ---------------------------------------------------------------
 # Modular Arithmetic & Howell matrix form
+# Code adapted from Mark Webster's XPFpackage: https://github.com/m-webster/XPFpackage
 
 
 def _gcdex(a: int, b: int) -> Tuple[int, int, int, int, int]:
