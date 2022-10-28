@@ -474,8 +474,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         component is nonzero."""
         # TODO Since 'distance' has a specific meaning in QECCs, for now, the
         # name 'weight' has been used for this function.
-        return np.sum(np.logical_and(self.x, self.z), axis=-1)
+        return np.sum(np.logical_or(self.x, self.z), axis=-1)
 
+    def is_diagonal(self):
+        return self._is_diagonal()
+
+    def _is_diagonal(self):
+        """(TODO improve doc) This is the equivalent of XPisDiag function from
+        Mark's code. Returns True if the XP operator is diagonal."""
+        return np.where(np.sum(self.x, axis=-1)==0, True, False)
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates

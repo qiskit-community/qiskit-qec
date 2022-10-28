@@ -126,6 +126,9 @@ class XPPauli(BaseXPPauli):
     def z(self, val):
         self.matrix[:, self.num_qubits :][0] = val
 
+    # TODO: as of now, these methods just call the base class method. If no
+    # class-specific code is needed in these functions, it should be possible
+    # to remove this code.
     def unique_vector_rep(self):
         return super().unique_vector_rep()
 
@@ -134,6 +137,9 @@ class XPPauli(BaseXPPauli):
 
     def weight(self):
         return super().weight()
+
+    def is_diagonal(self):
+        return super().is_diagonal()
 
 # Update docstrings for API docs
 generate_apidocs(XPPauli)

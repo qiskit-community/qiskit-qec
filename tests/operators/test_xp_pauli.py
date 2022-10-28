@@ -79,9 +79,36 @@ class TestXPPauli(QiskitTestCase):
         precision = 8
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.weight()
-        target = 2
+        target = 5
         self.assertEqual(value, target)
-        
+
+    def test_diagonal(self):
+        """Test is_diagonal method."""
+        # Test case taken from Mark's paper, Table 5.
+        matrix = np.array([0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3], dtype=np.int64)
+        phase_exp = 0
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.is_diagonal()
+        target = np.array([True])
+        self.assertEqual(value, target)
+
+        # Test case taken from Mark's paper, Table 5.
+        matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
+        phase_exp = 0
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.is_diagonal()
+        target = np.array([True])
+        self.assertEqual(value, target)
+
+        matrix = np.array([0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
+        phase_exp = 12
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.is_diagonal()
+        target = np.array([False])
+        self.assertEqual(value, target)
 
 if __name__ == "__main__":
     unittest.main()
