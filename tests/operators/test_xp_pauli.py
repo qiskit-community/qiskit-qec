@@ -71,6 +71,16 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target_xppauli.matrix, rescaled_xppauli.matrix)
         np.testing.assert_equal(target_xppauli._phase_exp, rescaled_xppauli._phase_exp)
         np.testing.assert_equal(target_xppauli.precision, rescaled_xppauli.precision)
+
+    def test_weight(self):
+        """Test weight method."""
+        matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)
+        phase_exp = 12
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.weight()
+        target = 2
+        self.assertEqual(value, target)
         
 
 if __name__ == "__main__":

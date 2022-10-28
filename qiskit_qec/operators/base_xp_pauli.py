@@ -465,6 +465,17 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return BaseXPPauli(matrix, phase_exp, new_precision)
 
+    def weight(self):
+        return self._weight()
+
+    def _weight(self):
+        """(TODO improve doc) This is the equivalent of XPDistance function
+        from Mark's code. It returns the count of qubits where either z or x
+        component is nonzero."""
+        # TODO Since 'distance' has a specific meaning in QECCs, for now, the
+        # name 'weight' has been used for this function.
+        return np.sum(np.logical_and(self.x, self.z), axis=-1)
+
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates

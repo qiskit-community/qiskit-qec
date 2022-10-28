@@ -132,6 +132,8 @@ class XPPauli(BaseXPPauli):
     def rescale_precision(self, new_precision):
         return super().rescale_precision(new_precision)
 
+    def weight(self):
+        return super().weight()
 
 # Update docstrings for API docs
 generate_apidocs(XPPauli)
