@@ -262,8 +262,61 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         front: bool = False,
         inplace: bool = False,
     ) -> "BaseXPPauli":
-        """_summary_"""
-        pass
+        r"""Return the composition of XPPaulis lists
+
+        To be consistent with other compose functions in Qiskit, composition is defined via
+        left multiplication. That is
+
+        A.compose(B) = B.A = B.dot(A) = A.compose(B, front=False)
+
+        where . is the Pauli group multiplication and so B is applied after A. Likewise
+
+        A.compose(B, front=True) = A.B = A.dot(B)
+
+        That is B is applied first or at the front.
+
+        This compose is:
+
+        [A_1,A_2,...,A_k].compose([B_1,B_2,...,B_k]) = [A_1.compose(B_1),...,A_k.compose(B_k)]
+
+        or
+
+        [A].compose([B_1,B_2,...,B_k])) = [A.compose(B_1),...,A.compose(B_k)]
+
+        Note:
+            This method does compose coordinate wise (which is different from the PauliTable compose
+            which should be corrected at some point).
+
+        Args:
+            other: BaseXPPauli
+            front (bool): (default: False)
+            qargs (list or None): Optional, qubits to apply compose on
+                                  on (default: None->All).
+            inplace (bool): If True update in-place (default: False).
+
+        Returns:
+            BaseXPPauli : Compositon of self and other
+
+        Raises:
+            QiskitError: if number of qubits of other does not match qargs.
+        """
+
+        # Validation
+        if qargs is None and other.num_qubits != self.num_qubits:
+            raise QiskitError(f"other {type(self).__name__} must be on the same number of qubits.")
+
+        if qargs and other.num_qubits != len(qargs):
+            raise QiskitError(
+                f"Number of qubits of the other {type(self).__name__} does not match qargs."
+            )
+
+        if other._num_paulis not in [1, self._num_paulis]:
+            raise QiskitError(
+                "Incompatible BaseXPPaulis. Second list must "
+                "either have 1 or the same number of XPPaulis."
+            )
+
+        return self._compose(self, other, qargs=qargs, front=front, inplace=inplace)
 
     @staticmethod
     def _compose(
@@ -273,8 +326,66 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         front: bool = False,
         inplace: bool = False,
     ) -> "BaseXPPauli":
-        """_summary_"""
-        pass
+        """Returns the composition of two BaseXPPauli objects.
+
+        Args:
+            a : BaseXPPauli object
+            b : BaseXPPauli object
+            qargs (Optional[list], optional): _description_. Defaults to None.
+            front (bool, optional): _description_. Defaults to False.
+            inplace (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            BaseXPPauli: _description_
+        """
+
+        assert a.precision == b.precision, QiskitError("Precision of the two BaseXPPaulis to be multiplied must be the same.") 
+
+        if qargs is not None:
+            qargs = list(qargs) + [item + a.num_qubits for item in qargs]
+            amat = a.matrix[:, qargs]
+        else:
+            amat = a.matrix
+        bmat = b.matrix
+
+        # Calculate the sum of generalized symplectic matrix for the composition, excluding D
+        x = np.logical_xor(amat[:, : a.num_qubits], bmat[:, : b.num_qubits])
+        z = amat[:, a.num_qubits :] + bmat[:, b.num_qubits :]
+        mat = np.concatenate((x, z), axis=-1)
+
+        # Calculate the phase of the composition, excluding D
+        phase_exp = a._phase_exp + b._phase_exp
+        # Calculate antisymmetric operator, i.e. D
+        if front:
+            Dx = np.zeros(np.shape(a.x))
+            Dz = 2 * np.multiply(b.x, a.z)
+            Dmat = np.concatenate((Dx, Dz), axis=-1)
+            D = BaseXPPauli(matrix=Dmat, precision=a.precision)._antisymmetric_op()
+        else:
+            Dx = np.zeros(np.shape(a.x))
+            Dz = 2 * np.multiply(a.x, b.z)
+            Dmat = np.concatenate((Dx, Dz), axis=-1)
+            D = BaseXPPauli(matrix=Dmat, precision=a.precision)._antisymmetric_op()
+
+        if qargs is None:
+            if not inplace:
+                result_x = np.logical_xor(x, D.x)
+                result_z = z + D.z
+                result_phase_exp = phase_exp + D._phase_exp
+                result_mat = np.concatenate((result_x, result_z), axis=-1)
+                return BaseXPPauli(matrix=result_mat, phase_exp=result_phase_exp, precision=a.precision)._unique_vector_rep()
+            # Inplace update
+            a.x = np.logical_xor(x, D.x)
+            a.z = z + D.z
+            a._phase_exp = phase_exp + D._phase_exp
+            return a._unique_vector_rep()
+
+        # Qargs update
+        ret = a if inplace else a.copy()
+        ret.matrix[:, qargs] = mat
+        ret._phase_exp = phase_exp + D._phase_exp
+        ret = ret._unique_vector_rep()
+        return ret
 
     # ---------------------------------------------------------------------
 
@@ -500,6 +611,10 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """(TODO improve doc) This is te equivalent of XPPower function from
         Mark's code. It returns the XP operator of specified precision raised
         to the power n."""
+        # TODO at present, this function only handles positive powers. If it is
+        # supposed to calculate inverses as well, that functionality needs to
+        # be coded.
+
         # TODO n = np.atleast_1d(n)
         a = np.mod(n, 2)
 
@@ -512,12 +627,13 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         x = np.zeros(np.shape(self.z))
         z = np.multiply((n-a), np.multiply(self.x, self.z))
         matrix = np.concatenate((x, z), axis=-1)
-        second_temp = BaseXPPauli(matrix=matrix, precision=self.precision)
-        second = second_temp.antisymmetric_op()
+        second = BaseXPPauli(matrix=matrix, precision=self.precision).antisymmetric_op()
 
         product = BaseXPPauli(matrix=first.matrix+second.matrix, phase_exp=first._phase_exp+second._phase_exp, precision=self.precision)
 
         return product._unique_vector_rep()
+
+
 
 
 # ---------------------------------------------------------------------

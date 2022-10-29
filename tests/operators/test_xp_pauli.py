@@ -80,7 +80,7 @@ class TestXPPauli(QiskitTestCase):
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.weight()
         target = 5
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
 
     def test_diagonal(self):
         """Test is_diagonal method."""
@@ -91,7 +91,7 @@ class TestXPPauli(QiskitTestCase):
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.is_diagonal()
         target = np.array([True])
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
 
         # Test case taken from Mark's paper, Table 5.
         matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
@@ -100,7 +100,7 @@ class TestXPPauli(QiskitTestCase):
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.is_diagonal()
         target = np.array([True])
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
 
         matrix = np.array([0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
         phase_exp = 12
@@ -108,7 +108,7 @@ class TestXPPauli(QiskitTestCase):
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.is_diagonal()
         target = np.array([False])
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
 
     def test_antisymmetric_op(self):
         """Test antisymmetric_op method."""
@@ -123,7 +123,7 @@ class TestXPPauli(QiskitTestCase):
         target_phase_exp = 15
         target_precision = 8
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
 
     def test_power(self):
         """Test power method."""
@@ -138,7 +138,27 @@ class TestXPPauli(QiskitTestCase):
         target_phase_exp = 15
         target_precision = 8
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
-        self.assertEqual(value, target)
+        self.assertEqual(target, value)
+
+    def test_multiplication(self):
+        """Test multiplication method."""
+        # Test case taken from Mark's code.
+        a_matrix = np.array([0,1,0,0,2,0], dtype=np.int64)
+        a_phase_exp = 6
+        a_precision = 4
+        a = XPPauli(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
+        b_matrix = np.array([1,1,1,3,3,0], dtype=np.int64)
+        b_phase_exp = 2
+        b_precision = 4
+        b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
+        value = XPPauli.compose(a, b)
+
+        target_matrix = np.array([1,0,1,3,3,0], dtype=np.int64)
+        target_phase_exp = 6
+        target_precision = 4
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+
+        self.assertEqual(target, value)
 
 if __name__ == "__main__":
     unittest.main()

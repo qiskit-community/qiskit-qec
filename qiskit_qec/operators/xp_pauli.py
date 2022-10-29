@@ -68,7 +68,8 @@ class XPPauli(BaseXPPauli):
             raise QiskitError("Input is not a single XPPauli")
 
         super().__init__(matrix, phase_exp, precision)
-        self.vlist = self.matrix[0].tolist()
+        # TODO check if this is needed
+        # self.vlist = self.matrix[0].tolist()
 
     # ---------------------------------------------------------------------
     # Property Methods
@@ -126,6 +127,52 @@ class XPPauli(BaseXPPauli):
     @z.setter
     def z(self, val):
         self.matrix[:, self.num_qubits :][0] = val
+
+    # ---------------------------------------------------------------------
+    # BaseOperator methods
+    # ---------------------------------------------------------------------
+
+    def compose(
+        self,
+        other: Union["XPPauli", BaseXPPauli],
+        qargs: Optional[List[int]] = None,
+        front: bool = False,
+        inplace: bool = False,
+    ) -> "XPPauli":
+        """Return the operator composition with another XPPauli.
+
+        Args:
+            other (XPPauli): a XPPauli object.
+            qargs (list or None): Optional, qubits to apply dot product
+                                  on (default: None).
+            front (bool): If True compose using right operator multiplication,
+                          instead of left multiplication [default: False].
+            inplace (bool): If True update in-place (default: False).
+
+        Returns:
+            XPPauli: The composed XPPauli.
+
+        Raises:
+            QiskitError: if other cannot be converted to an operator, or has
+                         incompatible dimensions for specified subsystems.
+
+        .. note::
+            Composition (``&``) by default is defined as `left` matrix multiplication for
+            matrix operators, while :meth:`dot` is defined as `right` matrix
+            multiplication. That is that ``A & B == A.compose(B)`` is equivalent to
+            ``B.dot(A)`` when ``A`` and ``B`` are of the same type.
+
+            Setting the ``front=True`` kwarg changes this to `right` matrix
+            multiplication and is equivalent to the :meth:`dot` method
+            ``A.dot(B) == A.compose(B, front=True)``.
+        """
+        if qargs is None:
+            qargs = getattr(other, "qargs", None)
+        if not isinstance(other, XPPauli):
+            other = XPPauli(other)
+        return XPPauli(super().compose(other, qargs=qargs, front=front, inplace=inplace))
+
+    # ---------------------------------------------------------------------
 
     def unique_vector_rep(self):
         return XPPauli(super().unique_vector_rep())
