@@ -110,5 +110,20 @@ class TestXPPauli(QiskitTestCase):
         target = np.array([False])
         self.assertEqual(value, target)
 
+    def test_antisymmetric_op(self):
+        """Test antisymmetric_op method."""
+
+        matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64)
+        phase_exp = 0
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.antisymmetric_op()
+
+        target_matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
+        target_phase_exp = 15
+        target_precision = 8
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        self.assertEqual(value, target)
+
 if __name__ == "__main__":
     unittest.main()

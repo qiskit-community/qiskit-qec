@@ -57,6 +57,7 @@ class XPPauli(BaseXPPauli):
         elif isinstance(data, BaseXPPauli):
             matrix = data.matrix[:, :]
             phase_exp = data._phase_exp[:]
+            precision = data.precision
         # TODO: elif isinstance(data, (tuple, list)), isinstance(data, str),
         # isinstance(data, ScalarOp) may be implemented later, like Pauli class
         else:
@@ -126,20 +127,20 @@ class XPPauli(BaseXPPauli):
     def z(self, val):
         self.matrix[:, self.num_qubits :][0] = val
 
-    # TODO: as of now, these methods just call the base class method. If no
-    # class-specific code is needed in these functions, it should be possible
-    # to remove this code.
     def unique_vector_rep(self):
-        return super().unique_vector_rep()
+        return XPPauli(super().unique_vector_rep())
 
     def rescale_precision(self, new_precision):
-        return super().rescale_precision(new_precision)
+        return XPPauli(super().rescale_precision(new_precision))
 
     def weight(self):
         return super().weight()
 
     def is_diagonal(self):
         return super().is_diagonal()
+
+    def antisymmetric_op(self):
+        return XPPauli(super().antisymmetric_op())
 
 # Update docstrings for API docs
 generate_apidocs(XPPauli)

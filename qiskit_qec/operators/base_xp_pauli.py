@@ -416,10 +416,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         matrix = np.empty(shape=np.shape(self.matrix), dtype=np.int64)
 
         phase_exp = np.mod(self._phase_exp, 2 * self.precision)
-        matrix[:, : self.num_qubits][0] = np.mod(self.matrix[:, : self.num_qubits][0], 2)
-        matrix[:, self.num_qubits : ][0] = np.mod(
-            self.matrix[:, self.num_qubits : ][0],  self.precision
-        )
+        matrix[:, : self.num_qubits][0] = np.mod(self.x, 2)
+        matrix[:, self.num_qubits : ][0] = np.mod(self.z,  self.precision)
 
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
@@ -441,27 +439,20 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
             scale_factor = new_precision // unique_xp_op.precision
             phase_exp = scale_factor * unique_xp_op.phase_exp
-            matrix[:, unique_xp_op.num_qubits :][0] = (
-                scale_factor * unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0]
-            )
+            matrix[:, unique_xp_op.num_qubits :][0] = (scale_factor * unique_xp_op.z)
 
         elif new_precision < unique_xp_op.precision:
             scale_factor = unique_xp_op.precision // new_precision
             if(
                (unique_xp_op.precision % new_precision > 0)
                or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
-               or (
-                   np.sum(
-                       np.mod(unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0], scale_factor)
-                   )
-                   > 0
-                )
+               or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
             ):
                 return None
             matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
             phase_exp = unique_xp_op._phase_exp // scale_factor
-            matrix[:, 0 : unique_xp_op.num_qubits][0] = unique_xp_op.matrix[:, 0 : unique_xp_op.num_qubits][0]
-            matrix[:, unique_xp_op.num_qubits :][0] = unique_xp_op.matrix[:, unique_xp_op.num_qubits :][0] // scale_factor
+            matrix[:, 0 : unique_xp_op.num_qubits][0] = unique_xp_op.x
+            matrix[:, unique_xp_op.num_qubits :][0] = unique_xp_op.z // scale_factor
 
         return BaseXPPauli(matrix, phase_exp, new_precision)
 
@@ -483,6 +474,24 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """(TODO improve doc) This is the equivalent of XPisDiag function from
         Mark's code. Returns True if the XP operator is diagonal."""
         return np.where(np.sum(self.x, axis=-1)==0, True, False)
+
+    def antisymmetric_op(self):
+        return self._antisymmetric_op()
+
+    def _antisymmetric_op(self):
+        """(TODO improve doc) This is the equivalent of XPD function from
+        Mark's code. It returns the antisymmetric operator corresponding to the
+        z component of XP operator, only if x component is 0, else it returns
+        None."""
+
+        if np.any(self.x):
+            return None
+
+        phase_exp = np.sum(self.z, axis = -1)
+        x = np.zeros(np.shape(self.z))
+        matrix = np.concatenate((x, -self.z), axis = -1)
+
+        return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates
