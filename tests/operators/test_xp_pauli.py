@@ -125,5 +125,20 @@ class TestXPPauli(QiskitTestCase):
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
         self.assertEqual(value, target)
 
+    def test_power(self):
+        """Test power method."""
+        matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)
+        phase_exp = 12
+        precision = 8
+        n = 5
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.power(n=n)
+
+        target_matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=np.int64)
+        target_phase_exp = 15
+        target_precision = 8
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        self.assertEqual(value, target)
+
 if __name__ == "__main__":
     unittest.main()

@@ -125,46 +125,46 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     @property
     def x(self):
         """_summary_"""
-        pass
+        return self.matrix[:, : self.num_qubits]
 
     @x.setter
     def x(self, val: np.ndarray):
         """_summary_"""
-        pass
+        self.matrix[:, : self.num_qubits] = val
 
     # @final Add when python >= 3.8
     @property
     def _x(self):  # pylint: disable=invalid-name
         """_summary_"""
-        pass
+        return self.matrix[:, : self.num_qubits]
 
     # @final Add when python >= 3.8
     @_x.setter
     def _x(self, val):  # pylint: disable=invalid-name
         """_summary_"""
-        pass
+        self.matrix[:, : self.num_qubits] = val
 
     @property
     def z(self):
         """_summary_"""
-        pass
+        return self.matrix[:, self.num_qubits :]
 
     @z.setter
     def z(self, val):
         """_summary_"""
-        pass
+        self.matrix[:, self.num_qubits :] = val
 
     # @final Add when python >= 3.8
     @property
     def _z(self):  # pylint: disable=invalid-name
         """_summary_"""
-        pass
+        return self.matrix[:, self.num_qubits :]
 
     # @final Add when python >= 3.8
     @_z.setter
     def _z(self, val):  # pylint: disable=invalid-name
         """_summary_"""
-        pass
+        self.matrix[:, self.num_qubits :] = val
 
     @property
     def num_y(self):
@@ -492,6 +492,33 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         matrix = np.concatenate((x, -self.z), axis = -1)
 
         return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
+
+    def power(self, n):
+        return self._power(n)
+
+    def _power(self, n):
+        """(TODO improve doc) This is te equivalent of XPPower function from
+        Mark's code. It returns the XP operator of specified precision raised
+        to the power n."""
+        # TODO n = np.atleast_1d(n)
+        a = np.mod(n, 2)
+
+        x = np.multiply(self.x, a)
+        z = np.multiply(self.z, n)
+        phase_exp = np.multiply(self._phase_exp, n)
+        matrix = np.concatenate((x, z), axis=-1)
+        first = BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
+
+        x = np.zeros(np.shape(self.z))
+        z = np.multiply((n-a), np.multiply(self.x, self.z))
+        matrix = np.concatenate((x, z), axis=-1)
+        second_temp = BaseXPPauli(matrix=matrix, precision=self.precision)
+        second = second_temp.antisymmetric_op()
+
+        product = BaseXPPauli(matrix=first.matrix+second.matrix, phase_exp=first._phase_exp+second._phase_exp, precision=self.precision)
+
+        return product._unique_vector_rep()
+
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates

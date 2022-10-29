@@ -142,5 +142,8 @@ class XPPauli(BaseXPPauli):
     def antisymmetric_op(self):
         return XPPauli(super().antisymmetric_op())
 
+    def power(self, n):
+        return XPPauli(super().power(n))
+
 # Update docstrings for API docs
 generate_apidocs(XPPauli)
