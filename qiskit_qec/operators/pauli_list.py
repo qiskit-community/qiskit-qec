@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
-"""Module fo Pauli List"""
+"""Module for Pauli List"""
 import numbers
 from collections import defaultdict
 from typing import Iterable, List, Tuple, Union
