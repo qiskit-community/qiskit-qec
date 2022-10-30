@@ -192,5 +192,8 @@ class XPPauli(BaseXPPauli):
     def power(self, n):
         return XPPauli(super().power(n))
 
+    def degree(self):
+        return super().degree()
+
 # Update docstrings for API docs
 generate_apidocs(XPPauli)

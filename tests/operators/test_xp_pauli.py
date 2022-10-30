@@ -157,7 +157,17 @@ class TestXPPauli(QiskitTestCase):
         target_phase_exp = 6
         target_precision = 4
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        self.assertEqual(target, value)
 
+    def test_degree(self):
+        """Test degree method."""
+        matrix = np.array([0,0,0,2,1,0], dtype=np.int64)
+        phase_exp = 2
+        precision = 4
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.degree()
+
+        target = 4
         self.assertEqual(target, value)
 
 if __name__ == "__main__":

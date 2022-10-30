@@ -633,7 +633,35 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return product._unique_vector_rep()
 
+    
+    def degree(self):
+        return self._degree()
 
+    def _degree(self):
+        """(TODO improve doc) This is the equivalent of XPDegree from Mark's
+        code. It returns the degree of XP operator."""
+
+        gcd = np.gcd(self.z, self.precision)
+        precision_by_gcd = np.floor_divide(self.precision, gcd)
+        lcm = np.atleast_1d(precision_by_gcd)[0]
+        for i in precision_by_gcd:
+            lcm = np.lcm(lcm, i)
+
+        square = type(self)(BaseXPPauli.compose(self, self))
+        gcd_square = np.gcd(square.z, square.precision)
+        precision_by_gcd_square = np.floor_divide(square.precision, gcd_square)
+        lcm_square = np.atleast_1d(precision_by_gcd_square)[0]
+        for i in precision_by_gcd_square:
+            lcm_square = np.lcm(lcm_square, i)
+
+        lcm_square = 2 * lcm_square
+
+        # TODO it can be explored (maybe with Mark) if the algorithm used when
+        # the XP operator is non-diagonal (which involves squaring) gives the
+        # correct output for diagonal XP operators as well (naively that seems
+        # to be true). If that is the case, then checking np.where and
+        # is_diagonal can be removed and the code can be optimized a bit.
+        return np.where(self.is_diagonal(), lcm, lcm_square) 
 
 
 # ---------------------------------------------------------------------
