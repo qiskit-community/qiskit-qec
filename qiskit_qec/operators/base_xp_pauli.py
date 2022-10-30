@@ -529,8 +529,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         matrix = np.empty(shape=np.shape(self.matrix), dtype=np.int64)
 
         phase_exp = np.mod(self._phase_exp, 2 * self.precision)
-        matrix[:, : self.num_qubits][0] = np.mod(self.x, 2)
-        matrix[:, self.num_qubits : ][0] = np.mod(self.z,  self.precision)
+        matrix[:, : self.num_qubits] = np.mod(self.x, 2)
+        matrix[:, self.num_qubits : ] = np.mod(self.z,  np.expand_dims(self.precision, axis=-1))
 
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
@@ -543,29 +543,36 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         of XPPauli operator to the new precision. Returns None if the
         rescaling is not possible, else returns the rescaled BaseXPPauli object."""
 
-        # TODO this code will probably only work for XPPauli, may need to be upgraded for XPPauliList
+        # TODO Currently, if any operator in an XPPauliList can not be
+        # rescaled, this function will return None.
         unique_xp_op = self.unique_vector_rep()
+        old_precision = np.atleast_1d(unique_xp_op.precision)
+        new_precision = np.atleast_1d(new_precision)
+        cmp = new_precision > old_precision
+        matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
+        phase_exp = np.empty(shape=np.shape(unique_xp_op._phase_exp))
 
-        if new_precision > unique_xp_op.precision:
-            if np.mod(new_precision, unique_xp_op.precision > 0):
-                return None
-            matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
-            scale_factor = new_precision // unique_xp_op.precision
-            phase_exp = scale_factor * unique_xp_op.phase_exp
-            matrix[:, unique_xp_op.num_qubits :][0] = (scale_factor * unique_xp_op.z)
+        for i in range(len(cmp)):
 
-        elif new_precision < unique_xp_op.precision:
-            scale_factor = unique_xp_op.precision // new_precision
-            if(
-               (unique_xp_op.precision % new_precision > 0)
-               or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
-               or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
-            ):
-                return None
-            matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
-            phase_exp = unique_xp_op._phase_exp // scale_factor
-            matrix[:, 0 : unique_xp_op.num_qubits][0] = unique_xp_op.x
-            matrix[:, unique_xp_op.num_qubits :][0] = unique_xp_op.z // scale_factor
+            if cmp[i]:
+                if np.mod(new_precision[i], old_precision[i] > 0):
+                    return None
+                scale_factor = new_precision[i] // old_precision[i]
+                phase_exp[i] = scale_factor * unique_xp_op._phase_exp[i]
+                matrix[:, unique_xp_op.num_qubits :][i] = (scale_factor * np.atleast_2d(unique_xp_op.z)[i])
+
+            else:
+                scale_factor = old_precision[i] // new_precision[i]
+                if(
+                   (old_precision[i] % new_precision[i] > 0)
+                   or (np.sum(np.mod(unique_xp_op._phase_exp[i], scale_factor)) > 0)
+                   or (np.sum(np.mod(unique_xp_op.z[i], scale_factor)) > 0)
+                ):
+                    return None
+                phase_exp[i] = unique_xp_op._phase_exp[i] // scale_factor
+                matrix[:, unique_xp_op.num_qubits :][i] = np.atleast_2d(unique_xp_op.z)[i] // scale_factor
+
+        matrix[:, 0 : unique_xp_op.num_qubits] = unique_xp_op.x
 
         return BaseXPPauli(matrix, phase_exp, new_precision)
 
@@ -600,9 +607,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         if np.any(self.x):
             return None
 
-        phase_exp = np.sum(self.z, axis = -1)
+        phase_exp = np.sum(self.z, axis=-1)
         x = np.zeros(np.shape(self.z))
-        matrix = np.concatenate((x, -self.z), axis = -1)
+        matrix = np.concatenate((x, -self.z), axis=-1)
 
         return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
