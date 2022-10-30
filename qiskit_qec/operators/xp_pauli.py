@@ -46,6 +46,7 @@ class XPPauli(BaseXPPauli):
             x ([type], optional): [description]. Defaults to None.
             z ([type], optional): [description]. Defaults to None.
             phase_exponent ([type], optional): [description]. Defaults to None.
+            precision: Precision of XP operators. Must be an integer greater than or equal to two.
 
         Raises:
             QiskitError: Something went wrong.

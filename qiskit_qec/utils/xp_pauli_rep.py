@@ -690,15 +690,35 @@ def str2str(
 # ----------------------------------------------------------------------
 
 
-# pylint: disable=unused-argument
 def from_array(
     matrix: Union[List, Tuple, np.ndarray],
     phase_exp: Union[int, List, Tuple, np.ndarray] = None,
+    precision: Union[int, List, Tuple, np.ndarray] = None,
     input_pauli_encoding: Optional[str] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
-    """_summary_"""
-    pass
-
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Convert array and phase_exp to the matrix, phase_exp and precision in BaseXPPauli's internal
+    XPPauli encoding (xp_pauli_rep.INTERNAL_XP_PAULI_ENCODING)
+    Args:
+        matrix (_type_): _description_
+        phase_exp (_type_): _description_
+        input_pauli_encoding: input XPPauli encoding
+    Returns:
+        _type_: _description_
+    """
+    if input_pauli_encoding is None:
+        input_pauli_encoding = DEFAULT_EXTERNAL_XP_PAULI_ENCODING
+    if isinstance(matrix, np.ndarray) and matrix.dtype == np.int64:
+        matrix_data = matrix
+    else:
+        matrix_data = np.asarray(matrix, dtype=np.int64)
+    matrix_data = np.atleast_2d(matrix_data)
+    # TODO
+    # if not is_symplectic_matrix_form(matrix_data):
+    #     raise QiskitError("Input matrix not a symplectic matrix or symplectic vector")
+    if phase_exp is None or (isinstance(phase_exp, numbers.Integral) and phase_exp == 0):
+        phase_exp = np.zeros(shape=(matrix_data.shape[0],))
+    # TODO may need to implement change_pauli_encoding
+    return matrix_data, phase_exp, precision
 
 # pylint: disable=unused-argument
 def from_split_array(

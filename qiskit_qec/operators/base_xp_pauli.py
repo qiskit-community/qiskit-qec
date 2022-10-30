@@ -53,7 +53,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         self,
         matrix: Union[np.ndarray, None] = None,
         phase_exp: Union[None, np.ndarray, np.integer] = None,
-        precision: int = None,
+        precision: Union[int, np.ndarray] = None,
         order: str = "xz",
     ) -> None:
         # TODO: Need to update this docstring once the representation to be
@@ -90,7 +90,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See Also:
             Pauli, PauliList
         """
-        assert (type(precision) == int) and (precision > 1), QiskitError(
+
+        assert ((type(precision) == int) or (type(precision) == np.ndarray)) and (np.all(precision > 1)), QiskitError(
             "Precision of XP operators must be an integer greater than or equal to 2."
         )
 

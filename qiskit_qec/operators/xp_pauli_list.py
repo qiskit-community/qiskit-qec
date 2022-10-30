@@ -19,7 +19,7 @@ from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.mixins import GroupMixin, LinearMixin
 from qiskit_qec.operators.base_xp_pauli import BaseXPPauli
 from qiskit_qec.operators.xp_pauli import XPPauli
-from qiskit_qec.utils import pauli_rep
+from qiskit_qec.utils import xp_pauli_rep
 
 
 class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
@@ -34,6 +34,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             BaseXPPauli, np.ndarray, Tuple[np.ndarray], Iterable, None
         ] = None,
         phase_exp: Union[int, np.ndarray, None] = None,
+        precision: Union[int, np.ndarray] = None,
         *,
         input_pauli_encoding: str = BaseXPPauli.EXTERNAL_XP_PAULI_ENCODING,
         input_qubit_order: str = "right-to-left",
@@ -45,6 +46,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             data (str): List of XPPauli Operators.
             phase_exp (int, optional): i**phase_exp. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
+            precision: Precision of XP operators. Must be an integer/array of integers greater than or equal to 2.
 
         Raises:
             QiskitError: Something went wrong.
@@ -55,25 +57,25 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         elif isinstance(data, BaseXPPauli):
             matrix = data.matrix
             phase_exp = data._phase_exp
+            precision = data.precision
         # TODO elif isinstance(data, StabilizerTable), elif isinstance(data, PauliTable)
         elif isinstance(data, np.ndarray):
             if data.size == 0:
                 matrix = np.empty(shape=(0, 0), dtype=np.bool_)
                 phase_exp = np.empty(shape=(0,), dtype=np.int8)
-            elif isinstance(data[0], str):
-                matrix, phase_exp = self._from_paulis(data, input_qubit_order)
+            # TODO elif isinstance(data[0], str):
             else:
                 if phase_exp is None:
                     phase_exp = 0
-                matrix, phase_exp = pauli_rep.from_array(
-                    data, phase_exp, input_pauli_encoding=input_pauli_encoding
+                matrix, phase_exp, precision = xp_pauli_rep.from_array(
+                    data, phase_exp, precision, input_pauli_encoding=input_pauli_encoding
                 )
         # TODO elif isinstance(data, tuple)
         else:
             # TODO Conversion as iterable of Paulis
             pass
 
-        super().__init__(matrix, phase_exp)
+        super().__init__(matrix, phase_exp, precision)
 
         # TODO
         # self.paulis = [
@@ -206,6 +208,10 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
     def __len__(self):
         """Return the number of XPPauli rows in the table."""
         return self._num_paulis
+
+    def _add(self, other, qargs=None):
+        """summary"""
+        pass
 
     # ----
     #
