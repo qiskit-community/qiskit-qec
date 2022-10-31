@@ -701,6 +701,7 @@ def from_array(
     Args:
         matrix (_type_): _description_
         phase_exp (_type_): _description_
+        precision (_type_): Precision of XP operator
         input_pauli_encoding: input XPPauli encoding
     Returns:
         _type_: _description_
@@ -719,6 +720,7 @@ def from_array(
         phase_exp = np.zeros(shape=(matrix_data.shape[0],))
     # TODO may need to implement change_pauli_encoding
     return matrix_data, phase_exp, precision
+
 
 # pylint: disable=unused-argument
 def from_split_array(

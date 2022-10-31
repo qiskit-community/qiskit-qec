@@ -22,6 +22,7 @@ from qiskit.quantum_info.operators.symplectic.stabilizer_table import Stabilizer
 
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
+from qiskit_qec.operators.xp_pauli import XPPauli
 
 
 def random_pauli(num_qubits, group_phase=False, seed=None):

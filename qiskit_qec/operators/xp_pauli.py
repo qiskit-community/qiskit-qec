@@ -11,24 +11,20 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for Pauli"""
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import numpy as np
-from qiskit.circuit import Instruction, QuantumCircuit
-from qiskit.circuit.barrier import Barrier
-from qiskit.circuit.delay import Delay
-from qiskit.circuit.library.generalized_gates import PauliGate
-from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.mixins import generate_apidocs
-from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit_qec.operators.base_xp_pauli import BaseXPPauli
-from qiskit_qec.utils import xp_pauli_rep
+
+# from qiskit_qec.utils import xp_pauli_rep
 
 
 class XPPauli(BaseXPPauli):
     """`XPPauli` inherits from `BaseXPPauli`"""
 
+    # pylint: disable=unused-argument
     def __init__(
         self,
         data: Any,
@@ -181,20 +177,12 @@ class XPPauli(BaseXPPauli):
     def rescale_precision(self, new_precision):
         return XPPauli(super().rescale_precision(new_precision))
 
-    def weight(self):
-        return super().weight()
-
-    def is_diagonal(self):
-        return super().is_diagonal()
-
     def antisymmetric_op(self):
         return XPPauli(super().antisymmetric_op())
 
     def power(self, n):
         return XPPauli(super().power(n))
 
-    def degree(self):
-        return super().degree()
 
 # Update docstrings for API docs
 generate_apidocs(XPPauli)

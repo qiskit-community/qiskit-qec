@@ -15,20 +15,10 @@
 """Tests for Pauli operator class."""
 
 import unittest
-import itertools as it
-from functools import lru_cache
 
 import numpy as np
-from ddt import ddt, data, unpack
-
-from qiskit import QuantumCircuit
-from qiskit.exceptions import QiskitError
+from ddt import ddt
 from qiskit.test import QiskitTestCase
-
-from qiskit.quantum_info.operators import Operator
-
-from qiskit_qec.operators.random import random_clifford, random_pauli, random_xppauli
-from qiskit_qec.operators.base_xp_pauli import BaseXPPauli
 from qiskit_qec.operators.xp_pauli import XPPauli
 
 # TODO from qiskit_qec.utils.pauli_rep import split_pauli, cpxstr2exp
@@ -36,7 +26,7 @@ from qiskit_qec.operators.xp_pauli import XPPauli
 # from qiskit.quantum_info.operators.symplectic.pauli import _split_pauli_label, _phase_from_label
 
 
-@ddt 
+@ddt
 class TestXPPauliInit(QiskitTestCase):
     """Tests for XPPauli initialization."""
 
@@ -67,7 +57,9 @@ class TestXPPauli(QiskitTestCase):
         rescaled_xppauli = xppauli.rescale_precision(new_precision=new_precision)
         target_matrix = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], dtype=np.int64)
         target_phase_exp = 3
-        target_xppauli = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=new_precision)
+        target_xppauli = XPPauli(
+            data=target_matrix, phase_exp=target_phase_exp, precision=new_precision
+        )
         np.testing.assert_equal(target_xppauli.matrix, rescaled_xppauli.matrix)
         np.testing.assert_equal(target_xppauli._phase_exp, rescaled_xppauli._phase_exp)
         np.testing.assert_equal(target_xppauli.precision, rescaled_xppauli.precision)
@@ -143,17 +135,17 @@ class TestXPPauli(QiskitTestCase):
     def test_multiplication(self):
         """Test multiplication method."""
         # Test case taken from Mark's code.
-        a_matrix = np.array([0,1,0,0,2,0], dtype=np.int64)
+        a_matrix = np.array([0, 1, 0, 0, 2, 0], dtype=np.int64)
         a_phase_exp = 6
         a_precision = 4
         a = XPPauli(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
-        b_matrix = np.array([1,1,1,3,3,0], dtype=np.int64)
+        b_matrix = np.array([1, 1, 1, 3, 3, 0], dtype=np.int64)
         b_phase_exp = 2
         b_precision = 4
         b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
         value = XPPauli.compose(a, b)
 
-        target_matrix = np.array([1,0,1,3,3,0], dtype=np.int64)
+        target_matrix = np.array([1, 0, 1, 3, 3, 0], dtype=np.int64)
         target_phase_exp = 6
         target_precision = 4
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
@@ -161,7 +153,7 @@ class TestXPPauli(QiskitTestCase):
 
     def test_degree(self):
         """Test degree method."""
-        matrix = np.array([0,0,0,2,1,0], dtype=np.int64)
+        matrix = np.array([0, 0, 0, 2, 1, 0], dtype=np.int64)
         phase_exp = 2
         precision = 4
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
@@ -169,6 +161,7 @@ class TestXPPauli(QiskitTestCase):
 
         target = 4
         self.assertEqual(target, value)
+
 
 if __name__ == "__main__":
     unittest.main()

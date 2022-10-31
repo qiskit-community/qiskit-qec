@@ -18,10 +18,11 @@ import numpy as np
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.mixins import GroupMixin, LinearMixin
 from qiskit_qec.operators.base_xp_pauli import BaseXPPauli
-from qiskit_qec.operators.xp_pauli import XPPauli
 from qiskit_qec.utils import xp_pauli_rep
 
 
+# pylint: disable=unused-argument
+# pylint: disable=no-member
 class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
     """`XPPauliList` inherits from `BaseXPPauli`"""
 
@@ -30,9 +31,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     def __init__(
         self,
-        data: Union[
-            BaseXPPauli, np.ndarray, Tuple[np.ndarray], Iterable, None
-        ] = None,
+        data: Union[BaseXPPauli, np.ndarray, Tuple[np.ndarray], Iterable, None] = None,
         phase_exp: Union[int, np.ndarray, None] = None,
         precision: Union[int, np.ndarray] = None,
         *,
@@ -46,7 +45,8 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             data (str): List of XPPauli Operators.
             phase_exp (int, optional): i**phase_exp. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
-            precision: Precision of XP operators. Must be an integer/array of integers greater than or equal to 2.
+            precision: Precision of XP operators. Must be an integer/array of
+            integers greater than or equal to 2.
 
         Raises:
             QiskitError: Something went wrong.
@@ -267,25 +267,25 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             )
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
-    def conjugate(self):
-        """Return the conjugate of each XPPauli in the list."""
-        # TODO
-        pass
+    # def conjugate(self):
+    #     """Return the conjugate of each XPPauli in the list."""
+    #     # TODO
+    #     pass
 
-    def transpose(self):
-        """Return the transpose of each XPPauli in the list."""
-        # TODO
-        pass
+    # def transpose(self):
+    #     """Return the transpose of each XPPauli in the list."""
+    #     # TODO
+    #     pass
 
-    def adjoint(self):
-        """Return the adjoint of each XPPauli in the list."""
-        # TODO
-        pass
+    # def adjoint(self):
+    #     """Return the adjoint of each XPPauli in the list."""
+    #     # TODO
+    #     pass
 
-    def inverse(self):
-        """Return the inverse of each XPPauli in the list."""
-        # TODO
-        pass
+    # def inverse(self):
+    #     """Return the inverse of each XPPauli in the list."""
+    #     # TODO
+    #     pass
 
     # ---------------------------------------------------------------------
     # Utility methods

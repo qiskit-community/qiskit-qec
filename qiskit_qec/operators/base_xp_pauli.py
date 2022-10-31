@@ -91,7 +91,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Pauli, PauliList
         """
 
-        assert ((type(precision) == int) or (type(precision) == np.ndarray)) and (np.all(precision > 1)), QiskitError(
+        assert isinstance(precision, (int, np.ndarray)) and (np.all(precision > 1)), QiskitError(
             "Precision of XP operators must be an integer greater than or equal to 2."
         )
 
@@ -341,7 +341,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: _description_
         """
 
-        assert a.precision == b.precision, QiskitError("Precision of the two BaseXPPaulis to be multiplied must be the same.") 
+        assert a.precision == b.precision, QiskitError(
+            "Precision of the two BaseXPPaulis to be multiplied must be the same."
+        )
 
         if qargs is not None:
             qargs = list(qargs) + [item + a.num_qubits for item in qargs]
@@ -359,33 +361,35 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         phase_exp = a._phase_exp + b._phase_exp
         # Calculate antisymmetric operator, i.e. D
         if front:
-            Dx = np.zeros(np.shape(a.x))
-            Dz = 2 * np.multiply(b.x, a.z)
-            Dmat = np.concatenate((Dx, Dz), axis=-1)
-            D = BaseXPPauli(matrix=Dmat, precision=a.precision)._antisymmetric_op()
+            dx = np.zeros(np.shape(a.x))
+            dz = 2 * np.multiply(b.x, a.z)
+            dmat = np.concatenate((dx, dz), axis=-1)
+            d = BaseXPPauli(matrix=dmat, precision=a.precision)._antisymmetric_op()
         else:
-            Dx = np.zeros(np.shape(a.x))
-            Dz = 2 * np.multiply(a.x, b.z)
-            Dmat = np.concatenate((Dx, Dz), axis=-1)
-            D = BaseXPPauli(matrix=Dmat, precision=a.precision)._antisymmetric_op()
+            dx = np.zeros(np.shape(a.x))
+            dz = 2 * np.multiply(a.x, b.z)
+            dmat = np.concatenate((dx, dz), axis=-1)
+            d = BaseXPPauli(matrix=dmat, precision=a.precision)._antisymmetric_op()
 
         if qargs is None:
             if not inplace:
-                result_x = np.logical_xor(x, D.x)
-                result_z = z + D.z
-                result_phase_exp = phase_exp + D._phase_exp
+                result_x = np.logical_xor(x, d.x)
+                result_z = z + d.z
+                result_phase_exp = phase_exp + d._phase_exp
                 result_mat = np.concatenate((result_x, result_z), axis=-1)
-                return BaseXPPauli(matrix=result_mat, phase_exp=result_phase_exp, precision=a.precision)._unique_vector_rep()
+                return BaseXPPauli(
+                    matrix=result_mat, phase_exp=result_phase_exp, precision=a.precision
+                )._unique_vector_rep()
             # Inplace update
-            a.x = np.logical_xor(x, D.x)
-            a.z = z + D.z
-            a._phase_exp = phase_exp + D._phase_exp
+            a.x = np.logical_xor(x, d.x)
+            a.z = z + d.z
+            a._phase_exp = phase_exp + d._phase_exp
             return a._unique_vector_rep()
 
         # Qargs update
         ret = a if inplace else a.copy()
         ret.matrix[:, qargs] = mat
-        ret._phase_exp = phase_exp + D._phase_exp
+        ret._phase_exp = phase_exp + d._phase_exp
         ret = ret._unique_vector_rep()
         return ret
 
@@ -519,6 +523,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def unique_vector_rep(self):
+        """_summary_"""
         return self._unique_vector_rep()
 
     def _unique_vector_rep(self):
@@ -530,11 +535,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         phase_exp = np.mod(self._phase_exp, 2 * self.precision)
         matrix[:, : self.num_qubits] = np.mod(self.x, 2)
-        matrix[:, self.num_qubits : ] = np.mod(self.z,  np.expand_dims(self.precision, axis=-1))
+        matrix[:, self.num_qubits :] = np.mod(self.z, np.expand_dims(self.precision, axis=-1))
 
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
     def rescale_precision(self, new_precision):
+        """_summary_"""
         return self._rescale_precision(new_precision)
 
     def _rescale_precision(self, new_precision):
@@ -552,31 +558,36 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
         phase_exp = np.empty(shape=np.shape(unique_xp_op._phase_exp))
 
-        for i in range(len(cmp)):
+        for i, val in enumerate(cmp):
 
-            if cmp[i]:
+            if val:
                 if np.mod(new_precision[i], old_precision[i] > 0):
                     return None
                 scale_factor = new_precision[i] // old_precision[i]
                 phase_exp[i] = scale_factor * unique_xp_op._phase_exp[i]
-                matrix[:, unique_xp_op.num_qubits :][i] = (scale_factor * np.atleast_2d(unique_xp_op.z)[i])
+                matrix[:, unique_xp_op.num_qubits :][i] = (
+                    scale_factor * np.atleast_2d(unique_xp_op.z)[i]
+                )
 
             else:
                 scale_factor = old_precision[i] // new_precision[i]
-                if(
-                   (old_precision[i] % new_precision[i] > 0)
-                   or (np.sum(np.mod(unique_xp_op._phase_exp[i], scale_factor)) > 0)
-                   or (np.sum(np.mod(unique_xp_op.z[i], scale_factor)) > 0)
+                if (
+                    (old_precision[i] % new_precision[i] > 0)
+                    or (np.sum(np.mod(unique_xp_op._phase_exp[i], scale_factor)) > 0)
+                    or (np.sum(np.mod(unique_xp_op.z[i], scale_factor)) > 0)
                 ):
                     return None
                 phase_exp[i] = unique_xp_op._phase_exp[i] // scale_factor
-                matrix[:, unique_xp_op.num_qubits :][i] = np.atleast_2d(unique_xp_op.z)[i] // scale_factor
+                matrix[:, unique_xp_op.num_qubits :][i] = (
+                    np.atleast_2d(unique_xp_op.z)[i] // scale_factor
+                )
 
         matrix[:, 0 : unique_xp_op.num_qubits] = unique_xp_op.x
 
         return BaseXPPauli(matrix, phase_exp, new_precision)
 
     def weight(self):
+        """_summary_"""
         return self._weight()
 
     def _weight(self):
@@ -588,14 +599,16 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return np.sum(np.logical_or(self.x, self.z), axis=-1)
 
     def is_diagonal(self):
+        """_summary_"""
         return self._is_diagonal()
 
     def _is_diagonal(self):
         """(TODO improve doc) This is the equivalent of XPisDiag function from
         Mark's code. Returns True if the XP operator is diagonal."""
-        return np.where(np.sum(self.x, axis=-1)==0, True, False)
+        return np.where(np.sum(self.x, axis=-1) == 0, True, False)
 
     def antisymmetric_op(self):
+        """_summary_"""
         return self._antisymmetric_op()
 
     def _antisymmetric_op(self):
@@ -614,6 +627,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
     def power(self, n):
+        """_summary_"""
         return self._power(n)
 
     def _power(self, n):
@@ -634,16 +648,20 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         first = BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
         x = np.zeros(np.shape(self.z))
-        z = np.multiply((n-a), np.multiply(self.x, self.z))
+        z = np.multiply((n - a), np.multiply(self.x, self.z))
         matrix = np.concatenate((x, z), axis=-1)
         second = BaseXPPauli(matrix=matrix, precision=self.precision).antisymmetric_op()
 
-        product = BaseXPPauli(matrix=first.matrix+second.matrix, phase_exp=first._phase_exp+second._phase_exp, precision=self.precision)
+        product = BaseXPPauli(
+            matrix=first.matrix + second.matrix,
+            phase_exp=first._phase_exp + second._phase_exp,
+            precision=self.precision,
+        )
 
         return product._unique_vector_rep()
 
-    
     def degree(self):
+        """_summary_"""
         return self._degree()
 
     def _degree(self):
@@ -670,7 +688,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # correct output for diagonal XP operators as well (naively that seems
         # to be true). If that is the case, then checking np.where and
         # is_diagonal can be removed and the code can be optimized a bit.
-        return np.where(self.is_diagonal(), lcm, lcm_square) 
+        return np.where(self.is_diagonal(), lcm, lcm_square)
 
 
 # ---------------------------------------------------------------------
