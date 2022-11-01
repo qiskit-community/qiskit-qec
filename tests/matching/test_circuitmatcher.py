@@ -352,7 +352,12 @@ class TestCircuitMatcher(unittest.TestCase):
             corrected_outcomes = dec.process(outcome)
             fail = temp_syndrome(corrected_outcomes, self.z_logical)
             failures += fail[0]
-        self.assertEqual(failures, 156)
+        # For pymatching v0.x, there are 168 failures, whereas for pymatching >v2.0.0 there are 156.
+        # The reason for the difference is that many of these test cases have degenerate solutions
+        # (Both versions of pymatching are giving valid minimum-weight perfect matching solutions, but
+        # the predictions they make are not always the same when there is more than one valid
+        # minimum-weight solution.)
+        self.assertTrue(failures in {156, 168})
 
 
 if __name__ == "__main__":
