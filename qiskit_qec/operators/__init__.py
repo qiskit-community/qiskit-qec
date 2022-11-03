@@ -27,8 +27,10 @@ Operators module classes and functions
     PauliList
     Pauli
     BasePauli
+    BaseXPPauli
 """
 
 from .base_pauli import BasePauli
 from .pauli import Pauli
 from .pauli_list import PauliList
+from .base_xp_pauli import BaseXPPauli
