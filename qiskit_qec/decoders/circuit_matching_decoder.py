@@ -7,12 +7,12 @@ from math import log
 from typing import Dict, List, Tuple
 from sympy import Poly, Symbol, symbols
 
-import retworkx as rx
+import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
-from qiskit_qec.decoders.retworkx_matcher import RetworkXMatcher
+from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
 from qiskit_qec.exceptions import QiskitQECError
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
@@ -21,7 +21,7 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 class CircuitModelMatchingDecoder(ABC):
     """Matching decoder for circuit noise."""
 
-    METHOD_RETWORKX: str = "retworkx"
+    METHOD_RETWORKX: str = "rustworkx"
     METHOD_PYMATCHING: str = "pymatching"
     AVAILABLE_METHODS = {METHOD_RETWORKX, METHOD_PYMATCHING}
 
@@ -64,7 +64,7 @@ class CircuitModelMatchingDecoder(ABC):
         blocks : number of measurement blocks
         method : matching implementation
         uniform : use same edge weight everywhere?
-        annotate : for retworkx method, compute self.matcher.annotated_graph
+        annotate : for rustworkx method, compute self.matcher.annotated_graph
         """
         self.n = n
         self.css_x_gauge_ops = css_x_gauge_ops
@@ -94,7 +94,7 @@ class CircuitModelMatchingDecoder(ABC):
         if self.method == self.METHOD_PYMATCHING:
             self.matcher = PyMatchingMatcher()
         else:
-            self.matcher = RetworkXMatcher(annotate)
+            self.matcher = RustworkxMatcher(annotate)
 
         self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
         self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
@@ -136,7 +136,7 @@ class CircuitModelMatchingDecoder(ABC):
         self.edge_weight_polynomials = {}
         self.symbols = None
         if not self.uniform:
-            fe = FaultEnumerator(circuit, order=1, method="stabilizer", model=self.model)
+            fe = FaultEnumerator(circuit, order=1, method="propagator", model=self.model)
             self.event_map = self._enumerate_events(
                 self.css_x_gauge_ops,
                 self.css_x_stabilizer_ops,
@@ -304,18 +304,9 @@ class CircuitModelMatchingDecoder(ABC):
         for source, target in graph.edge_list():
             edge_data = graph.get_edge_data(source, target)
             if "weight_poly" not in edge_data and edge_data["weight"] != 0:
-                if (
-                    "is_boundary" in graph.nodes()[source] and graph.nodes()[source]["is_boundary"]
-                ) or (
-                    "is_boundary" in graph.nodes()[target] and graph.nodes()[target]["is_boundary"]
-                ):
-                    # TODO: we could consider removing the edge
-                    edge_data["weight"] = 1000000
-                    logging.info("increase edge weight (%d, %d)", source, target)
-                else:
-                    # Otherwise, remove the edge
-                    remove_list.append((source, target))
-                    logging.info("remove edge (%d, %d)", source, target)
+                # Remove the edge
+                remove_list.append((source, target))
+                logging.info("remove edge (%d, %d)", source, target)
         graph.remove_edges_from(remove_list)
         return graph
 

@@ -387,6 +387,10 @@ class TestARCCodes(unittest.TestCase):
             "Error: Wrong number of cx gates after transpilation.",
         )
 
+    def test_empty_decoding_grapg(self):
+        """Test initializtion of decoding graphs with None"""
+        DecodingGraph(None)
+
 
 if __name__ == "__main__":
     unittest.main()
