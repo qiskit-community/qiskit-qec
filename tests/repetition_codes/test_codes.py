@@ -239,21 +239,30 @@ class TestARCCodes(unittest.TestCase):
                 flat_nodes = code.flatten_nodes(nodes)
                 link_qubits = set(node["link qubit"] for node in flat_nodes)
                 minimal = minimal and link_qubits in incident_links.values()
-
                 self.assertTrue(
                     minimal,
                     "Error: Single error creates too many nodes",
                 )
+                # check that the nodes are neutral
+                neutral, flipped_logicals = code.check_nodes(nodes)
+                self.assertTrue(neutral, "Error: Single error nodes are not neutral")
+                # and that the given flipped logical makes sense
+                for node in nodes:
+                    if not node["is_boundary"]:
+                        for logical in flipped_logicals:
+                            self.assertTrue(
+                                logical in node["qubits"],
+                                "Error: Single error appears to flip logical is not part of nodes.",
+                            )
 
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
-        square = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        tadpole = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
-        all2all = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (0, 7, 6), (6, 8, 2), (6, 9, 4)]
-        for links in [square, tadpole, all2all]:
+        triangle = [(0, 1, 2), (2, 3, 4), (4, 5, 0)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (4, 6, 7)]
+        for links in [triangle, tadpole]:
             for resets in [True, False]:
                 code = ArcCircuit(
-                    links, T=4, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
+                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
                 )
                 self.single_error_test(code)
 
@@ -387,9 +396,71 @@ class TestARCCodes(unittest.TestCase):
             "Error: Wrong number of cx gates after transpilation.",
         )
 
-    def test_empty_decoding_grapg(self):
+    def test_decoding_graphs(self):
+        """Test creation of decoding graphs."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (2, 7, 8)]
+        code = ArcCircuit(links, T=2)
+        dg = DecodingGraph(code, brute=False)
+        dgb = DecodingGraph(code, brute=True)
+        assert len(dg.graph.nodes()) == len(
+            dgb.graph.nodes()
+        ), "Decoding graph created by brute force has different number of nodes to algorithmic method."
+        for node in dgb.graph.nodes():
+            assert (
+                node in dg.graph.nodes()
+            ), "Brute force decoding graph has node not present in algorithmically created one."
+
+    def test_empty_decoding_graph(self):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
+
+    def test_error_coords(self):
+        """Test assignment of coordinates to links."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (2, 7, 8)]
+        schedule = [[[0, 1], [6, 5]], [[4, 5], [2, 1]], [[2, 3], [8, 7]], [[4, 3], [2, 7]]]
+        code = ArcCircuit(links, T=2, schedule=schedule)
+        dg = DecodingGraph(code, brute=False)
+        nodes = dg.graph.nodes()
+        # the following are known correct coords for this code
+        test_coords = [
+            [
+                (2, 0.8, 1.2),
+                {"time": 1, "qubits": [2, 8], "link qubit": 7, "is_boundary": False, "element": 0},
+                {"time": 1, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 3},
+            ],
+            [
+                (2, 1.4, 1.4),
+                {"time": 1, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 2},
+                {"time": 2, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 3},
+            ],
+            [
+                (6, 1.2, 2.0),
+                {"time": 2, "qubits": [4, 6], "link qubit": 5, "is_boundary": False, "element": 1},
+                {"time": 2, "qubits": [4, 6], "link qubit": 5, "is_boundary": False, "element": 1},
+            ],
+            [
+                (4, 0, 0.2),
+                {"time": 0, "qubits": [4, 6], "link qubit": 5, "is_boundary": False, "element": 1},
+                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 2},
+            ],
+            [
+                (3, 0, 0.8),
+                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 2},
+                {"time": 1, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 2},
+            ],
+            [
+                (8, 1.6, 2.4),
+                {"time": 2, "qubits": [2, 8], "link qubit": 7, "is_boundary": False, "element": 0},
+                {"time": 2, "qubits": [2, 8], "link qubit": 7, "is_boundary": False, "element": 0},
+            ],
+        ]
+        # check that this is what we get
+        results = {"00000 0000 0000": 1}
+        error_coords = dg.get_error_coords(results)
+        for coords, node0, node1 in test_coords:
+            n0 = nodes.index(node0)
+            n1 = nodes.index(node1)
+            assert (n0, n1) in error_coords[coords] or (n1, n0) in error_coords[coords]
 
 
 if __name__ == "__main__":
