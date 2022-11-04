@@ -937,13 +937,15 @@ class ArcCircuit:
                 flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes):
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
         flipped by the errors creating such a cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
+            ignore_extra_boundary (bool): If `True`, undeeded boundary node are
+            ignored.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -995,7 +997,8 @@ class ArcCircuit:
         flipped_logicals = set(flipped_logicals)
 
         # if unneeded logical zs are given, cluster is not neutral
-        if given_logicals.difference(flipped_logicals):
+        # (unless this is ignored)
+        if not ignore_extra_boundary and given_logicals.difference(flipped_logicals):
             neutral = False
         # otherwise, report only needed logicals that aren't given
         else:
