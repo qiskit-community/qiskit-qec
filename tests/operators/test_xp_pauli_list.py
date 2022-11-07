@@ -25,15 +25,13 @@ class TestXPPauliListInit(QiskitTestCase):
     def test_array_init(self):
         """Test array initialization."""
         # Matrix array initialization
+        precision = 8
         matrix1 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64)
         phase_exp1 = 12
-        precision1 = 8
         matrix2 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0], dtype=np.int64)
         phase_exp2 = 2
-        precision2 = 4
         matrix = np.array([matrix1, matrix2])
         phase_exp = np.array([phase_exp1, phase_exp2])
-        precision = np.array([precision1, precision2])
         xppaulilist = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
         np.testing.assert_equal(xppaulilist.matrix, matrix)
         np.testing.assert_equal(xppaulilist._phase_exp, phase_exp)
@@ -72,15 +70,13 @@ class TestXPPauliListOperator(QiskitTestCase):
 
     def test_weight(self):
         """Test weight method."""
+        precision = 8
         matrix1 = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)
         phase_exp1 = 12
-        precision1 = 8
         matrix2 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 4], dtype=np.int64)
         phase_exp2 = 3
-        precision2 = 5
         matrix = np.array([matrix1, matrix2])
         phase_exp = np.array([phase_exp1, phase_exp2])
-        precision = np.array([precision1, precision2])
         xppaulilist = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppaulilist.weight()
         target = np.array([5, 4])
@@ -88,20 +84,17 @@ class TestXPPauliListOperator(QiskitTestCase):
 
     def test_diagonal(self):
         """Test is_diagonal method."""
+        precision = 8
         matrix1 = np.array([0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3], dtype=np.int64)
         phase_exp1 = 0
-        precision1 = 8
 
         matrix2 = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
         phase_exp2 = 0
-        precision2 = 5
 
         matrix3 = np.array([0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64)
         phase_exp3 = 12
-        precision3 = 8
         matrix = np.array([matrix1, matrix2, matrix3])
         phase_exp = np.array([phase_exp1, phase_exp2, phase_exp3])
-        precision = np.array([precision1, precision2, precision3])
         xppaulilist = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
 
         value = xppaulilist.is_diagonal()

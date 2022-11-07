@@ -91,7 +91,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Pauli, PauliList
         """
 
-        assert isinstance(precision, (int, np.ndarray)) and (np.all(precision > 1)), QiskitError(
+        assert isinstance(precision, int) and (np.all(precision > 1)), QiskitError(
             "Precision of XP operators must be an integer greater than or equal to 2."
         )
 
