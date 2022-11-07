@@ -26,7 +26,7 @@ from qiskit_qec.utils import xp_pauli_rep
 class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
     """`XPPauliList` inherits from `BaseXPPauli`"""
 
-    # Set the max number of qubits * paulis before string truncation
+    # Set the max number of qubits * xppaulis before string truncation
     _truncate__ = 2000
 
     def __init__(

@@ -24,6 +24,9 @@ from qiskit_qec.operators.base_xp_pauli import BaseXPPauli
 class XPPauli(BaseXPPauli):
     """`XPPauli` inherits from `BaseXPPauli`"""
 
+    # Set the max XPPauli string size before truncation
+    _truncate__ = 50
+
     # pylint: disable=unused-argument
     def __init__(
         self,
