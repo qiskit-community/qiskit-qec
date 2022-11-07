@@ -114,17 +114,17 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
     @property
     def shape(self):
         """The full shape of the :meth:`array`"""
-        return self._num_paulis, self.num_qubits
+        return self._num_xppaulis, self.num_qubits
 
     @property
     def size(self):
         """The number of XPPauli rows in the table."""
-        return self._num_paulis
+        return self._num_xppaulis
 
     @property
-    def num_paulis(self):
+    def num_xppaulis(self):
         """Returns the number of XPPauli's in List"""
-        return self._num_paulis
+        return self._num_xppaulis
 
     @property
     def phase_exp(self):
@@ -207,7 +207,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     def __len__(self):
         """Return the number of XPPauli rows in the table."""
-        return self._num_paulis
+        return self._num_xppaulis
 
     def _add(self, other, qargs=None):
         """summary"""

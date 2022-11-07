@@ -109,8 +109,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         self.matrix = matrix
         self.precision = precision
-        # TODO should _num_paulis be renamed to _num_xppaulis in this and derived classes?
-        self._num_paulis = self.matrix.shape[0]
+        self._num_xppaulis = self.matrix.shape[0]
         if phase_exp is None:
             self._phase_exp = np.zeros(shape=(self.matrix.shape[0],), dtype=np.int64)
         else:
@@ -312,7 +311,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 f"Number of qubits of the other {type(self).__name__} does not match qargs."
             )
 
-        if other._num_paulis not in [1, self._num_paulis]:
+        if other._num_xppaulis not in [1, self._num_xppaulis]:
             raise QiskitError(
                 "Incompatible BaseXPPaulis. Second list must "
                 "either have 1 or the same number of XPPaulis."
