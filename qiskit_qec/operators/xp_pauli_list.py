@@ -12,7 +12,7 @@
 # Part of the QEC framework
 """Module for XPPauli List"""
 import numbers
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Optional
 
 import numpy as np
 from qiskit.exceptions import QiskitError
@@ -122,7 +122,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         return self._num_xppaulis
 
     @property
-    def num_xppaulis(self):
+    def num_xppaulis(self) -> int:
         """Returns the number of XPPauli's in List"""
         return self._num_xppaulis
 
@@ -238,7 +238,13 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         # TODO
         pass
 
-    def compose(self, other, qargs=None, front=False, inplace=False):
+    def compose(
+        self,
+        other: "BaseXPPauli",
+        qargs: Optional[list] = None,
+        front: bool = False,
+        inplace: bool = False,
+    ) -> "XPPauliList":
         """Return the composition self∘other for each XPPauli in the list.
 
         Args:

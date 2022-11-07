@@ -13,6 +13,7 @@
 Random symplectic operator functions
 """
 
+from typing import Union
 import numpy as np
 from numpy.random import default_rng
 
@@ -197,7 +198,11 @@ def random_clifford(num_qubits, seed=None):
     return Clifford(StabilizerTable(table, phase))
 
 
-def random_xppauli(num_qubits, precision=None, seed=None):
+def random_xppauli(
+    num_qubits: int,
+    precision: int = None,
+    seed: Union[int, np.random.Generator, None] = None,
+) -> XPPauli:
     """Return a random XPPauli.
 
     Args:

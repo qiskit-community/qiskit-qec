@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
-"""Module for Pauli"""
+"""Module for XPPauli"""
 from typing import Any, List, Optional, Union
 
 import numpy as np
@@ -174,16 +174,16 @@ class XPPauli(BaseXPPauli):
 
     # ---------------------------------------------------------------------
 
-    def unique_vector_rep(self):
+    def unique_vector_rep(self) -> "XPPauli":
         return XPPauli(super().unique_vector_rep())
 
-    def rescale_precision(self, new_precision):
+    def rescale_precision(self, new_precision) -> "XPPauli":
         return XPPauli(super().rescale_precision(new_precision))
 
-    def antisymmetric_op(self):
+    def antisymmetric_op(self) -> "XPPauli":
         return XPPauli(super().antisymmetric_op())
 
-    def power(self, n):
+    def power(self, n) -> "XPPauli":
         return XPPauli(super().power(n))
 
 
