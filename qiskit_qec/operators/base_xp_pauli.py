@@ -593,8 +593,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """(TODO improve doc) This is the equivalent of XPDistance function
         from Mark's code. It returns the count of qubits where either z or x
         component is nonzero."""
-        # TODO Since 'distance' has a specific meaning in QECCs, for now, the
-        # name 'weight' has been used for this function.
         return np.sum(np.logical_or(self.x, self.z), axis=-1)
 
     def is_diagonal(self):
