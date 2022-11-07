@@ -53,7 +53,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         self,
         matrix: Union[np.ndarray, None] = None,
         phase_exp: Union[None, np.ndarray, np.integer] = None,
-        precision: Union[int, np.ndarray] = None,
+        precision: int = None,
         order: str = "xz",
     ) -> None:
         # TODO: Need to update this docstring once the representation to be
@@ -551,35 +551,27 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # TODO Currently, if any operator in an XPPauliList can not be
         # rescaled, this function will return None.
         unique_xp_op = self.unique_vector_rep()
-        old_precision = np.atleast_1d(unique_xp_op.precision)
-        new_precision = np.atleast_1d(new_precision)
-        cmp = new_precision > old_precision
+        old_precision = unique_xp_op.precision
         matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
         phase_exp = np.empty(shape=np.shape(unique_xp_op._phase_exp))
 
-        for i, val in enumerate(cmp):
+        if new_precision > old_precision:
+            if np.mod(new_precision, old_precision > 0):
+                return None
+            scale_factor = new_precision // old_precision
+            phase_exp = scale_factor * unique_xp_op._phase_exp
+            matrix[:, unique_xp_op.num_qubits :] = scale_factor * np.atleast_2d(unique_xp_op.z)
 
-            if val:
-                if np.mod(new_precision[i], old_precision[i] > 0):
-                    return None
-                scale_factor = new_precision[i] // old_precision[i]
-                phase_exp[i] = scale_factor * unique_xp_op._phase_exp[i]
-                matrix[:, unique_xp_op.num_qubits :][i] = (
-                    scale_factor * np.atleast_2d(unique_xp_op.z)[i]
-                )
-
-            else:
-                scale_factor = old_precision[i] // new_precision[i]
-                if (
-                    (old_precision[i] % new_precision[i] > 0)
-                    or (np.sum(np.mod(unique_xp_op._phase_exp[i], scale_factor)) > 0)
-                    or (np.sum(np.mod(unique_xp_op.z[i], scale_factor)) > 0)
-                ):
-                    return None
-                phase_exp[i] = unique_xp_op._phase_exp[i] // scale_factor
-                matrix[:, unique_xp_op.num_qubits :][i] = (
-                    np.atleast_2d(unique_xp_op.z)[i] // scale_factor
-                )
+        else:
+            scale_factor = old_precision // new_precision
+            if (
+                (old_precision % new_precision > 0)
+                or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
+                or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
+            ):
+                return None
+            phase_exp = unique_xp_op._phase_exp // scale_factor
+            matrix[:, unique_xp_op.num_qubits :] = np.atleast_2d(unique_xp_op.z) // scale_factor
 
         matrix[:, 0 : unique_xp_op.num_qubits] = unique_xp_op.x
 
