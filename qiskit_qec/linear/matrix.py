@@ -522,6 +522,7 @@ def do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int)
         QiskitError: Modulus N must be a positive integer.
         QiskitError: Input matrix must be a 2D array.
         QiskitError: Row operation must be a valid operation ("swap", "unit", "add", "append", or "update").
+        QiskitError: Row operation must involve valid row indices for the input matrix.
         QiskitError: Swap operation must involve two rows.
         QiskitError: Unit operation must involve one row and one coefficient.
         QiskitError: Add operation must involve two rows and one coefficient.
@@ -546,11 +547,15 @@ def do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int)
     mat = np.array(mat, dtype=int)
     if not mat.ndim == 2:
         raise QiskitError("Input matrix must be a 2D array")
-
+    
+    # get number of rows
+    nrows = mat.shape[0]
     op, rows, coeff = row_op
 
     if op not in ["swap", "unit", "add", "append", "update"]:
         raise QiskitError("Row operation must be a valid operation (\"swap\", \"unit\", \"add\", \"append\", or \"update\").")
+    if any([row >= nrows for row in rows]):
+        raise QiskitError("Row operation must involve valid row indices for the input matrix.")
     if op == 'swap':
         if len(rows) != 2:
             raise QiskitError("Swap operation must involve two rows.")
@@ -883,23 +888,3 @@ def _howell_complete(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, n
     U = U[:k, :]
 
     return H, U, K
-
-
-# -----------------------
-mat = np.array([[8, 5, 5],
-                [0, 9, 8],
-                [0, 0, 10]])
-N = 12
-H, U, K = howell_complete(mat, N)
-print(H)
-print(U)
-print(K)
-print(mat)
-
-# mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-# print(_multiply_unit(mat, 0, 2, 4))
-# print(_add_rows(mat, [0, 2], 2, 4))
-# print(_append_row(mat, 0, 2, 4))
-# print(_update_rows(mat, [0, 1], [2, 1, 3, 4], 4))
-
-# print(do_row_op(mat, ('unit', [0], [2]), 4))
