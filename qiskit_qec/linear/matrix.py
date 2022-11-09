@@ -12,9 +12,10 @@
 
 """Matrix ops."""
 
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import numpy as np
 from qiskit import QiskitError
+from qiskit_qec.arithmetic.modn import gcd_ext, quo, ann, unit
 
 
 def create_lambda_matrix(n: int) -> np.ndarray:
@@ -496,191 +497,257 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
 
 
 # ---------------------------------------------------------------
-# Modular Arithmetic & Howell matrix form
-# Code adapted from Mark Webster's XPFpackage: https://github.com/m-webster/XPFpackage
+# Span-preserving row operations and Howell matrix form
+# This code is adapted from XPFpackage: https://github.com/m-webster/XPFpackage, originally developed by Mark Webster. The original code is licensed under the GNU General Public License v3.0 and Mark Webster has given permission to use the code under the Apache License v2.0.
 
 
-def _gcdex(a: int, b: int) -> Tuple[int, int, int, int, int]:
-    """Implements the extended Euclidean algorithm: for any two integers a & b, find g, s, t, u, v that satisfy
-
-    1. g = gcd(a, b) = s*a + t*b, where gcd stands for greatest common divisor, s & t are called Bezout coefficients for a & b;
-    2. u*a + v*b = 0;
-    3. s*v - t*u = 1.
-
-    Args:
-        a, b: input integers
-
-    Returns:
-        g: greatest common divisor of a & b
-        s, t, u, v: integer coefficients satisfying s*a + t*b = g, u*a + v*b = 0, s*v - t*u = 1
-    """
-    old_s, s  = 1, 0
-    old_t, t  = 0, 1
-    old_r, r  = a, b
-
-    while r != 0:
-        q = old_r // r
-        old_r, r = r, old_r - q * r
-        old_s, s = s, old_s - q * s
-        old_t, t = t, old_t - q * t
-
-    p = np.sign(t * old_s - s * old_t)
-    u, v = p * s, p * t
-    g, s, t = old_r, old_s, old_t
-
-    if a < 0 and b == 0:
-        g, s, v = -g, -s, -v
-    elif a == 0 and b < 0:
-        g, t, u = -g, -t, -u
-    elif a < 0 and b < 0:
-        g, s, t, u, v = -g, -s, -t, -u, -v
-
-    return (g, s, t, u, v)
-
-
-def _quo(a: int, b: int, N: int) -> int:
-    """Computes the quotient of a/b in the ring Z/NZ, i.e. returns integer q such that a = b*q (mod N).
-
-    Args:
-        a: numerator
-        b: denominator
-        N: modulus
-
-    Returns:
-        quotient of a/b in the ring Z/NZ
-    """
-    a, b = a % N, b % N
-    if b == 0:
-        return None
-    return (a // b) % N
-
-
-def _div(a: int, b: int, N: int) -> int:
-    """Computes the divisor of a/b in the ring Z/NZ, i.e., returns integer d such that b*d = a (mod N). Returns None if no such d exists.
-
-    Args:
-        a: numerator
-        b: denominator
-        N: modulus
-
-    Returns:
-        divisor of a/b in the ring Z/NZ
-    """
-    a, b = a % N, b % N
-    if b == 0:
-        return None
-    g = np.gcd(b, N)
-    if a % g != 0:
-        return None
-    else:
-        r = a % b
-        while r > 0:
-            a += N
-            r = a % b
-        return a // b % N
-
-
-def _ann(a: int, N: int) -> int:
-    """Computes the annihilator of a in the ring Z/NZ, i.e., returns integer b such that a*b (mod N) = 0.
-
-    Args:
-        a: input integer
-        N: modulus
-
-    Returns:
-        annihilator of a in the ring Z/NZ
-    """
-    a = a % N
-    if a == 0:
-        return 1
-    u = N // np.gcd(a, N)
-    return u % N
-
-
-def _stab(a: int, b: int, N: int) -> int:
-    """Returns a ring element c such that gcd(a+b*c, N) = gcd(a, b, N) in the ring Z/NZ.
-
-    Args:
-        a, b: input integers
-        N: modulus
-
-    Returns:
-        ring element c such that gcd(a+b*c, N) = gcd(a, b, N)
-    """
-    a, b = a % N, b % N
-    g = np.gcd.reduce([a, b, N])
-    N_old = N
-    a, N = a // g, N // g
-    if N == 0:
-        c = 0
-    else:
-        a = a % N
-        if a == 0:
-            c = 1
-        else:
-            r = int(np.ceil(np.log2(np.log2(N)))) if N > 1 else 1
-            for _ in range(r):
-                a = a * a % N
-            c = N // np.gcd(a, N)
-    return c % N_old
-
-
-def _unit(a: int, N: int) -> int:
-    """Computes a unit u such that for element a in the ring Z/NZ, (a*u) mod N = gcd(a, N).
-
-    Args:
-        a: input integer
-        N: modulus
-
-    Returns:
-        unit of a in the ring Z/NZ
-    """
-    a = a % N
-    if a == 0:
-        return 1
-    g = np.gcd(a, N)
-    s = _div(g, a, N)
-    if g == 1:
-        return s
-    d = _stab(s, N // g, N)
-    return (s + d * N // g) % N
-
-
-def _do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int) -> np.ndarray:
+def do_row_op(mat: np.ndarray, row_op: Tuple[str, List[int], List[int]], N: int) -> np.ndarray:
     """Performs span-preserving row operations on a matrix in the ring Z/NZ. These include:
 
-    1. Swap two rows mat[i] and mat[j];
-    2. Multiply a row mat[i] by a scalar c (valid only when c is a unit), i.e., mat[i] = c * mat[i];
-    3. Add a multiple of one row to another, i.e., mat[i] = mat[i] + c * mat[j];
-    4. Append the product of a row by a scalar c to the end of matrix (used when c is a zero divisor), i.e., mat = mat.append(c * mat[i]);
-    5. Update two rows by multiplying by a full-rank 2x2 matrix, i.e., mat[i] = a * mat[i] + b * mat[j], mat[j] = c * mat[i] + d * mat[j].
+    1. Swap two rows mat[i] and mat[j] (_swap_rows);
+    2. Multiply a row mat[i] by a scalar c (valid only when c is a unit), i.e., mat[i] = c * mat[i] (_multiply_unit);
+    3. Add a multiple of one row to another, i.e., mat[i] = mat[i] + c * mat[j] (_add_rows);
+    4. Append the product of a row by a scalar c to the end of matrix (used when c is a zero divisor), i.e., mat = mat.append(c * mat[i]) (_append_row);
+    5. Update two rows by multiplying by a full-rank 2x2 matrix, i.e., mat[i] = a * mat[i] + b * mat[j], mat[j] = c * mat[i] + d * mat[j] (_update_rows).
     
     Args:
         mat: input matrix
-        row_op: tuple (op, rows, coeff), where op is the operation to be performed, rows are the row indices, and coeff is a list of coefficients for the operation (empty list if op is 'swap')
+        row_op: tuple (op, rows, coeff), where op is the operation to be performed, rows is a list of row indices, and coeff is a list of coefficients for the operation (empty list if op is 'swap')
         N: modulus
 
     Returns:
         matrix after performing the row operation
+
+    Raises:
+        QiskitError: Modulus N must be a positive integer.
+        QiskitError: Input matrix must be a 2D array.
+        QiskitError: Row operation must be a valid operation ("swap", "unit", "add", "append", or "update").
+        QiskitError: Swap operation must involve two rows.
+        QiskitError: Unit operation must involve one row and one coefficient.
+        QiskitError: Add operation must involve two rows and one coefficient.
+        QiskitError: Append operation must involve one row and one coefficient.
+        QiskitError: Update operation must involve two rows and one 2x2 matrix (four coefficients).
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> do_row_op(mat, ('swap', [0, 2], []), 4)
+        array([[7, 8, 9],
+               [4, 5, 6],
+               [1, 2, 3]])
+
+        >>> do_row_op(mat, ('unit', [0], [2]), 4)
+        array([[2, 0, 2],
+               [4, 5, 6],
+               [7, 8, 9]])
+
     """
+    if not isinstance(N, (int, np.integer)) or N <= 0:
+        raise QiskitError("Modulus N must be a positive integer.")
+    mat = np.array(mat, dtype=int)
+    if not mat.ndim == 2:
+        raise QiskitError("Input matrix must be a 2D array")
+
     op, rows, coeff = row_op
+
+    if op not in ["swap", "unit", "add", "append", "update"]:
+        raise QiskitError("Row operation must be a valid operation (\"swap\", \"unit\", \"add\", \"append\", or \"update\").")
     if op == 'swap':
-        mat[rows[0]], mat[rows[1]] = mat[rows[1]], mat[rows[0]]
+        if len(rows) != 2:
+            raise QiskitError("Swap operation must involve two rows.")
+        mat = _swap_rows(mat, rows)
     elif op == 'unit':
-        mat[rows[0]] = np.mod(coeff[0] * mat[rows[0]], N)
+        if len(rows) != 1 or len(coeff) != 1:
+            raise QiskitError("Unit operation must involve one row and one coefficient.")
+        mat = _multiply_unit(mat, rows[0], coeff[0], N)
     elif op == 'add':
-        mat[rows[0]] = np.mod(mat[rows[0]] + coeff[0] * mat[rows[1]], N)
+        if len(rows) != 2 or len(coeff) != 1:
+            raise QiskitError("Add operation must involve two rows and one coefficient.")
+        mat = _add_rows(mat, rows, coeff[0], N)
     elif op == 'append':
-        mat = np.vstack((mat, np.mod(coeff[0] * mat[rows[0]], N)))
+        if len(rows) != 1 or len(coeff) != 1:
+            raise QiskitError("Append operation must involve one row and one coefficient.")
+        mat = _append_row(mat, rows[0], coeff[0], N)
     elif op == 'update':
-        R1 = np.mod(coeff[0] * mat[rows[0]] + coeff[1] * mat[rows[1]], N)
-        R2 = np.mod(coeff[2] * mat[rows[0]] + coeff[3] * mat[rows[1]], N)
-        mat[rows[0]], mat[rows[1]] = R1, R2
+        if len(rows) != 2 or len(coeff) != 4:
+            raise QiskitError("Update operation must involve two rows and one 2x2 matrix (four coefficients).")
+        mat = _update_rows(mat, rows, coeff, N)
 
     return mat
 
 
-def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _swap_rows(mat: np.ndarray, rows: Union[list, np.ndarray]) -> np.ndarray:
+    """Swaps two rows of a matrix.
+
+    Args:
+        mat: input matrix
+        rows: list of indices of the two rows to swap
+
+    Returns:
+        matrix with rows swapped
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> _swap_rows(mat, [0, 2])
+        array([[7, 8, 9],
+               [4, 5, 6],
+               [1, 2, 3]])
+    """
+    mat[[rows[0], rows[1]]] = mat[[rows[1], rows[0]]]
+    return mat
+
+
+def _multiply_unit(mat: np.ndarray, row: int, c: int, N: int) -> np.ndarray:
+    """Multiplies a row of a matrix by a scalar c (valid only when c is a unit) in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        row: index of row to multiply
+        c: scalar to multiply by
+        N: modulus
+
+    Returns:
+        matrix with row multiplied by scalar
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> _multiply_unit(mat, 0, 2, 4)
+        array([[2, 0, 2],
+               [4, 5, 6],
+               [7, 8, 9]])
+    """
+    mat[row] = np.mod(c * mat[row], N)
+    return mat
+
+
+def _add_rows(mat: np.ndarray, rows: Union[list, np.ndarray], c: int, N: int) -> np.ndarray:
+    """Adds a multiple of one row to another of a matrix in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        rows: list of indices of the two rows in action
+        c: scalar to multiply by
+        N: modulus
+
+    Returns:
+        matrix with rows added
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> _add_rows(mat, [0, 2], 2, 4)
+        array([[3, 2, 1],
+               [4, 5, 6],
+               [7, 8, 9]])
+    """
+    mat[rows[0]] = np.mod(mat[rows[0]] + c * mat[rows[1]], N)
+    return mat
+
+
+def _append_row(mat: np.ndarray, row: int, c: int, N: int) -> np.ndarray:
+    """Appends the product of a row by a scalar c to the end of matrix (used when c is a zero divisor) in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        row: index of row to multiply
+        c: scalar to multiply by
+        N: modulus
+
+    Returns:
+        matrix with row multiplied by scalar and appended
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> _append_row(mat, 0, 2, 4)
+        array([[1, 2, 3],
+               [4, 5, 6],
+               [7, 8, 9],
+               [2, 0, 2]])
+    """
+    mat = np.vstack((mat, np.mod(c * mat[row], N)))
+    return mat
+
+
+def _update_rows(mat: np.ndarray, rows: Union[list, np.ndarray], c: Union[list, np.ndarray], N: int) -> np.ndarray:
+    """Updates two rows by multiplying by a full-rank 2x2 matrix in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        rows: list of indices of the two rows in action
+        c: components of the 2x2 matrix to multiply by
+        N: modulus
+
+    Returns:
+        matrix with rows updated
+
+    Examples:
+        >>> mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        >>> _update_rows(mat, [0, 1], [2, 1, 3, 4], 4)
+        array([[2, 1, 0],
+               [3, 2, 1],
+               [7, 8, 9]])
+    """
+    r1 = np.mod(c[0] * mat[rows[0]] + c[1] * mat[rows[1]], N)
+    r2 = np.mod(c[2] * mat[rows[0]] + c[3] * mat[rows[1]], N)
+    mat[rows[0]], mat[rows[1]] = r1, r2
+    return mat
+
+
+def howell(mat: np.ndarray, N: int) -> np.ndarray:
+    """Computes the Howell form of a matrix in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        N: modulus
+
+    Returns:
+        Howell form of input matrix
+
+    Examples:
+        >>> mat = numpy.array([[8, 5, 5],
+                               [0, 9, 8],
+                               [0, 0, 10]])
+        >>> N = 12
+        >>> H = howell(mat, N)
+        >>> H
+        array([[4, 1, 0],
+               [0, 3, 0],
+               [0, 0, 1]])
+
+    See Also:
+    _howell, howell_complete, _howell_complete
+    """
+    H, _, _ = howell_complete(mat, N)
+    return H
+
+
+def _howell(mat: np.ndarray, N: int) -> np.ndarray:
+    """Computes the Howell form of a matrix in the ring Z/NZ.
+
+    Args:
+        mat: input matrix
+        N: modulus
+
+    Returns:
+        Howell form of input matrix
+
+    Examples:
+        >>> mat = numpy.array([[8, 5, 5],
+                               [0, 9, 8],
+                               [0, 0, 10]])
+        >>> N = 12
+        >>> H = _howell(mat, N)
+        >>> H
+        array([[4, 1, 0],
+               [0, 3, 0],
+               [0, 0, 1]])
+
+    See Also:
+    howell, howell_complete, _howell_complete
+    """
+    H, _, _ = _howell_complete(mat, N)
+    return H
+
+
+def howell_complete(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Computes the Howell form of a matrix in the ring Z/NZ, the corresponding transformation matrix, and the kernel.
 
     Args:
@@ -713,6 +780,9 @@ def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
         >>> K
         array([[6, 6, 6],
                [0, 4, 4]])
+
+    See Also: 
+    _howell_complete, howell, _howell
     """
     if not N > 0 or not isinstance(N, (int, np.integer)):
         raise QiskitError("Modulus N must be a positive integer")
@@ -720,10 +790,10 @@ def howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]
     if not mat.ndim == 2:
         raise QiskitError("Input matrix must be a 2D array")
     
-    return _howell(mat, N)
+    return _howell_complete(mat, N)
 
 
-def _howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _howell_complete(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Computes the Howell form of a matrix in the ring Z/NZ, the corresponding transformation matrix, and the kernel.
 
     Args:
@@ -752,12 +822,15 @@ def _howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray
         >>> K
         array([[6, 6, 3],
                [0, 4, 4]])
+
+    See Also:
+    howell_complete, howell, _howell
     """
     H = mat.copy()
     U = np.eye(H.shape[0], dtype=int)
     m, n = H.shape
-    row_ops = []
     
+    # set row index to 0
     r = 0
     # going through each column
     for c in range(n):
@@ -768,40 +841,35 @@ def _howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray
         if j < m:
             # found j: if j > r, swap rows r and j
             if j > r:
-                row_ops.append(('swap', [r, j], []))
-                H = _do_row_op(H, row_ops[-1], N)
-                U = _do_row_op(U, row_ops[-1], N)
+                H = _swap_rows(H, r, j)
+                U = _swap_rows(U, r, j)
 
             # multiply row r by a unit to ensure that H[r, c] is a minimal representative
-            x = _unit(H[r, c], N)
+            x = unit(H[r, c], N)
             if x > 1:
-                row_ops.append(('unit', [r], [x]))
-                H = _do_row_op(H, row_ops[-1], N)
-                U = _do_row_op(U, row_ops[-1], N)
+                H = _multiply_unit(H, r, x, N)
+                U = _multiply_unit(U, r, x, N)
             
             # eliminate entries in column c below row r
             for i in range(r + 1, m):
                 if H[i, c] % N > 0:
-                    (g, s, t, u, v) = _gcdex(H[r, c], H[i, c])
-                    row_ops.append(('update', [r, i], [s, t, u, v]))
-                    H = _do_row_op(H, row_ops[-1], N)
-                    U = _do_row_op(U, row_ops[-1], N)
+                    _, s, t, u, v = gcd_ext(H[r, c], H[i, c], N)
+                    H = _update_rows(H, [r, i], [s, t, u, v], N)
+                    U = _update_rows(U, [r, i], [s, t, u, v], N)
             
             # ensure entries in column c above row r are less than H[r, c]
             b = H[r, c]
             for i in range(r):
                 if H[i, c] >= b:
-                    x = _quo(H[i, c], b, N)
-                    row_ops.append(('add', [i, r], [-x]))
-                    H = _do_row_op(H, row_ops[-1], N)
-                    U = _do_row_op(U, row_ops[-1], N)
+                    x = quo(H[i, c], b, N)
+                    H = _add_rows(H, [i, r], -x, N)
+                    U = _add_rows(U, [i, r], -x, N)
             
             # if b = H[r, c] is a zero divisor, find the annihilator x that eliminates H[r, c] and append a new row x * H[r]
-            x = _ann(b, N)
+            x = ann(b, N)
             if x > 0:
-                row_ops.append(('append', [r], [x]))
-                H = _do_row_op(H, row_ops[-1], N)
-                U = _do_row_op(U, row_ops[-1], N)
+                H = _append_row(H, r, x, N)
+                U = _append_row(U, r, x, N)
                 m = len(H)
             r += 1
         
@@ -815,3 +883,23 @@ def _howell(mat: np.ndarray, N: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray
     U = U[:k, :]
 
     return H, U, K
+
+
+# -----------------------
+mat = np.array([[8, 5, 5],
+                [0, 9, 8],
+                [0, 0, 10]])
+N = 12
+H, U, K = howell_complete(mat, N)
+print(H)
+print(U)
+print(K)
+print(mat)
+
+# mat = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+# print(_multiply_unit(mat, 0, 2, 4))
+# print(_add_rows(mat, [0, 2], 2, 4))
+# print(_append_row(mat, 0, 2, 4))
+# print(_update_rows(mat, [0, 1], [2, 1, 3, 4], 4))
+
+# print(do_row_op(mat, ('unit', [0], [2]), 4))
