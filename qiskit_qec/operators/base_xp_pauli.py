@@ -309,7 +309,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli : Compositon of self and other
 
         Raises:
-            QiskitError: if number of qubits of other does not match qargs.
+            QiskitError: if number of qubits of other does not match qargs, or
+                         if precision of other does not match precision of self.
 
         See also:
             _compose
@@ -329,6 +330,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 "Incompatible BaseXPPaulis. Second list must "
                 "either have 1 or the same number of XPPaulis."
             )
+
+        if self.precision != other.precision:
+            raise QiskitError("Precision of the two BaseXPPaulis to be multiplied must be the same.")
 
         return self._compose(self, other, qargs=qargs, front=front, inplace=inplace)
 
@@ -362,10 +366,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             unique_vector_rep, _unique_vector_rep
         """
-
-        assert a.precision == b.precision, QiskitError(
-            "Precision of the two BaseXPPaulis to be multiplied must be the same."
-        )
 
         if qargs is not None:
             qargs = list(qargs) + [item + a.num_qubits for item in qargs]

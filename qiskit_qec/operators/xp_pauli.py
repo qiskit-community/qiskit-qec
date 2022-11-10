@@ -161,7 +161,8 @@ class XPPauli(BaseXPPauli):
 
         Raises:
             QiskitError: if other cannot be converted to an operator, or has
-                         incompatible dimensions for specified subsystems.
+                         incompatible dimensions for specified subsystems, or
+                         if precision of other does not match precision of self.
 
         .. note::
             Composition (``&``) by default is defined as `left` matrix multiplication for
@@ -180,6 +181,9 @@ class XPPauli(BaseXPPauli):
             qargs = getattr(other, "qargs", None)
         if not isinstance(other, XPPauli):
             other = XPPauli(other)
+        if self.precision != other.precision:
+            raise QiskitError("Precision of the two XPPaulis to be multiplied must be the same.")
+
         return XPPauli(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
     # ---------------------------------------------------------------------

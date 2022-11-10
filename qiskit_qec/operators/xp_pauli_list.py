@@ -271,8 +271,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         Raises:
             QiskitError: if other cannot be converted to a XPPauliList, does
                          not have either 1 or the same number of XPPaulis as
-                         the current list, or has the wrong number of qubits
-                         for the specified qargs.
+                         the current list, has the wrong number of qubits
+                         for the specified qargs, or if precision of other 
+                         does not match precision of self.
 
         See also:
             _compose
@@ -286,6 +287,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
                 "Incompatible XPPauliLists. Other list must "
                 "have either 1 or the same number of XPPaulis."
             )
+        if self.precision != other.precision:
+            raise QiskitError("Precision of the two XPPauliLists to be multiplied must be the same.")
+
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
     # def conjugate(self):
