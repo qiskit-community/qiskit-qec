@@ -141,6 +141,13 @@ class XPPauli(BaseXPPauli):
     ) -> "XPPauli":
         """Return the operator composition with another XPPauli.
 
+        Note:
+            This method is adapted from method XPMul from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
         Args:
             other (XPPauli): a XPPauli object.
             qargs (list or None): Optional, qubits to apply dot product
@@ -175,15 +182,47 @@ class XPPauli(BaseXPPauli):
     # ---------------------------------------------------------------------
 
     def unique_vector_rep(self) -> "XPPauli":
+        """
+        Note:
+            This method is adapted from the method XPRound from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return XPPauli(super().unique_vector_rep())
 
     def rescale_precision(self, new_precision) -> "XPPauli":
+        """
+        Note:
+            This method is adapted from the method XPSetN from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return XPPauli(super().rescale_precision(new_precision))
 
     def antisymmetric_op(self) -> "XPPauli":
+        """
+        Note:
+            This method is adapted from method XPD from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return XPPauli(super().antisymmetric_op())
 
     def power(self, n) -> "XPPauli":
+        """
+        Note:
+            This method is adapted from method XPPower from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return XPPauli(super().power(n))
 
 

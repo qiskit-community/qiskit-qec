@@ -292,7 +292,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Note:
             This method does compose coordinate wise (which is different from the PauliTable compose
             which should be corrected at some point).
-            This method is adapted from XPFpackage:
+            This method is adapted from method XPMul from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
@@ -347,7 +347,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             inplace (bool, optional): _description_. Defaults to False.
 
         Note:
-            This method is adapted from XPFpackage:
+            This method is adapted from method XPMul from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
@@ -541,7 +541,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     def unique_vector_rep(self) -> "BaseXPPauli":
         """_summary_
         Note:
-            This method is adapted from XPFpackage:
+            This method is adapted from method XPRound from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
@@ -550,13 +550,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return self._unique_vector_rep()
 
     def _unique_vector_rep(self) -> "BaseXPPauli":
-        """(TODO improve doc): This is the equivalent of XPRound from Mark's
-        code. It converts the XPPauli operator into unique vector form, ie
+        """(TODO improve doc): This method converts the XPPauli operator into unique vector form, ie
         phase_exp in Z modulo 2*precision, x in Z_2, z in Z modulo
         precision.
 
         Note:
-            This method is adapted from XPFpackage:
+            This method is adapted from method XPRound from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
@@ -571,17 +570,24 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
     def rescale_precision(self, new_precision: int) -> "BaseXPPauli":
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPSetN from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._rescale_precision(new_precision)
 
     def _rescale_precision(self, new_precision: int) -> "BaseXPPauli":
-        """(TODO improve doc): This is the equivalent of XPSetNsingle from
-        Mark's code. It rescales the generalized symplectic vector components
+        """(TODO improve doc): It rescales the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns None if the
         rescaling is not possible, else returns the rescaled BaseXPPauli object.
 
         Note:
-            This method is adapted from XPFpackage:
+            This method is adapted from method XPSetN from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
@@ -618,33 +624,78 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BaseXPPauli(matrix, phase_exp, new_precision)
 
     def weight(self) -> Union[int, np.ndarray]:
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPDistance from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._weight()
 
     def _weight(self) -> Union[int, np.ndarray]:
-        """(TODO improve doc) This is the equivalent of XPDistance function
-        from Mark's code. It returns the count of qubits where either z or x
-        component is nonzero."""
+        """(TODO improve doc) This method returns the count of qubits where either z or x
+        component is nonzero.
+
+        Note:
+            This method is adapted from method XPDistance from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return np.sum(np.logical_or(self.x, self.z), axis=-1)
 
     def is_diagonal(self) -> np.ndarray:
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPisDiag from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._is_diagonal()
 
     def _is_diagonal(self) -> np.ndarray:
-        """(TODO improve doc) This is the equivalent of XPisDiag function from
-        Mark's code. Returns True if the XP operator is diagonal."""
+        """(TODO improve doc) Returns True if the XP operator is diagonal.
+
+        Note:
+            This method is adapted from method XPisDiag from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return np.where(np.sum(self.x, axis=-1) == 0, True, False)
 
     def antisymmetric_op(self) -> "BaseXPPauli":
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPD from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._antisymmetric_op()
 
     def _antisymmetric_op(self) -> "BaseXPPauli":
-        """(TODO improve doc) This is the equivalent of XPD function from
-        Mark's code. It returns the antisymmetric operator corresponding to the
+        """(TODO improve doc) This method returns the antisymmetric operator corresponding to the
         z component of XP operator, only if x component is 0, else it returns
-        None."""
+        None.
+
+        Note:
+            This method is adapted from method XPD from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
 
         if np.any(self.x):
             # TODO should there be an assertion here?
@@ -657,13 +708,28 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
     def power(self, n: int) -> "BaseXPPauli":
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPPower from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._power(n)
 
     def _power(self, n: int) -> "BaseXPPauli":
-        """(TODO improve doc) This is te equivalent of XPPower function from
-        Mark's code. It returns the XP operator of specified precision raised
-        to the power n."""
+        """(TODO improve doc) This method returns the XP operator of specified precision raised
+        to the power n.
+
+        Note:
+            This method is adapted from method XPPower from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         # TODO at present, this function only handles positive powers. If it is
         # supposed to calculate inverses as well, that functionality needs to
         # be coded.
@@ -691,12 +757,27 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return product._unique_vector_rep()
 
     def degree(self) -> np.ndarray:
-        """_summary_"""
+        """_summary_
+
+        Note:
+            This method is adapted from method XPDegree from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._degree()
 
     def _degree(self) -> np.ndarray:
-        """(TODO improve doc) This is the equivalent of XPDegree from Mark's
-        code. It returns the degree of XP operator."""
+        """(TODO improve doc) This method returns the degree of XP operator.
+
+        Note:
+            This method is adapted from method XPDegree from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
 
         gcd = np.gcd(self.z, self.precision)
         precision_by_gcd = np.floor_divide(self.precision, gcd)

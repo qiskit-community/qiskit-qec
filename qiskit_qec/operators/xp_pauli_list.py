@@ -252,6 +252,13 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
     ) -> "XPPauliList":
         """Return the composition self∘other for each XPPauli in the list.
 
+        Note:
+            This method is adapted from the method XPMul from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
         Args:
             other (XPPauliList): another XPPauliList.
             qargs (None or list): qubits to apply dot product on (Default: None).

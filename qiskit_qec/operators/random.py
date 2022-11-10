@@ -205,6 +205,13 @@ def random_xppauli(
 ) -> XPPauli:
     """Return a random XPPauli.
 
+    Note:
+        This method is adapted from XPFpackage:
+        https://github.com/m-webster/XPFpackage, originally developed by
+        Mark Webster. The original code is licensed under the GNU General
+        Public License v3.0 and Mark Webster has given permission to use
+        the code under the Apache License v2.0.
+
     Args:
         num_qubits (int): the number of qubits.
         precision (int): Precision of XP operators. Must be an integer
@@ -225,6 +232,7 @@ def random_xppauli(
     x = rng.integers(2, size=num_qubits, dtype=bool)
     # TODO: Need to decide whether we will add an argument group_phase in
     # analogy with random_pauli. If yes, its implementation goes here.
+
     # Mark's code randomizes phase modulo 2*precision.
     phase = rng.integers(2 * precision, dtype=np.int64)
     xppauli = XPPauli((z, x, phase))
