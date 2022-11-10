@@ -953,38 +953,45 @@ class ArcCircuit:
             enclosed by the nodes, that aren't already accounted for by given
             boundary nodes.
         """
-        # see which qubits for logical zs are given
+        # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
+        bulk_nodes = []
         for node in nodes:
             if node["is_boundary"]:
                 given_logicals += node["qubits"]
+            else:
+                bulk_nodes.append(node)
         given_logicals = set(given_logicals)
 
         # see whether the bulk nodes are neutral
-        nodes = self.flatten_nodes(nodes)
-        link_qubits = set(node["link qubit"] for node in nodes)
-        node_color = {0: 0}
-        neutral = True
-        link_graph = self._get_link_graph()
-        ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
-        n = 0
-        while ns_to_do and neutral:
-            for n in link_graph.neighbors(n):
-                if n in node_color:
-                    incident_es = link_graph.incident_edges(n)
-                    for e in incident_es:
-                        edge = link_graph.edges()[e]
-                        n0, n1 = link_graph.edge_list()[e]
-                        if n0 == n:
-                            nn = n1
-                        else:
-                            nn = n0
-                        dc = edge["link qubit"] in link_qubits
-                        if nn not in node_color:
-                            node_color[nn] = (node_color[n] + dc) % 2
-                            ns_to_do.remove(nn)
-                        else:
-                            neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
+        if bulk_nodes:
+            nodes = self.flatten_nodes(nodes)
+            link_qubits = set(node["link qubit"] for node in nodes)
+            node_color = {0: 0}
+            neutral = True
+            link_graph = self._get_link_graph()
+            ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
+            n = 0
+            while ns_to_do and neutral:
+                for n in link_graph.neighbors(n):
+                    if n in node_color:
+                        incident_es = link_graph.incident_edges(n)
+                        for e in incident_es:
+                            edge = link_graph.edges()[e]
+                            n0, n1 = link_graph.edge_list()[e]
+                            if n0 == n:
+                                nn = n1
+                            else:
+                                nn = n0
+                            dc = edge["link qubit"] in link_qubits
+                            if nn not in node_color:
+                                node_color[nn] = (node_color[n] + dc) % 2
+                                ns_to_do.remove(nn)
+                            else:
+                                neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
+        else:
+            # without bulk nodes, neutral only if no boundary nodes are given
+            neutral = given_logicals==[]
 
         # see which qubits for logical zs are needed
         flipped_logicals = []
@@ -998,7 +1005,7 @@ class ArcCircuit:
 
         # if unneeded logical zs are given, cluster is not neutral
         # (unless this is ignored)
-        if not ignore_extra_boundary and given_logicals.difference(flipped_logicals):
+        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
             neutral = False
         # otherwise, report only needed logicals that aren't given
         else:
