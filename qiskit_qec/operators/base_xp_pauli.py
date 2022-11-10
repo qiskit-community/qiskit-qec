@@ -310,6 +310,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Raises:
             QiskitError: if number of qubits of other does not match qargs.
+
+        See also:
+            _compose
         """
 
         # Validation
@@ -339,13 +342,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     ) -> "BaseXPPauli":
         """Returns the composition of two BaseXPPauli objects.
 
-        Args:
-            a : BaseXPPauli object
-            b : BaseXPPauli object
-            qargs (Optional[list], optional): _description_. Defaults to None.
-            front (bool, optional): _description_. Defaults to False.
-            inplace (bool, optional): _description_. Defaults to False.
-
         Note:
             This method is adapted from method XPMul from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
@@ -353,8 +349,18 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            a : BaseXPPauli object
+            b : BaseXPPauli object
+            qargs (Optional[list], optional): _description_. Defaults to None.
+            front (bool, optional): _description_. Defaults to False.
+            inplace (bool, optional): _description_. Defaults to False.
+
         Returns:
             BaseXPPauli: _description_
+
+        See also:
+            unique_vector_rep, _unique_vector_rep
         """
 
         assert a.precision == b.precision, QiskitError(
@@ -546,6 +552,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _unique_vector_rep
         """
         return self._unique_vector_rep()
 
@@ -578,6 +587,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _rescale_precision
         """
         return self._rescale_precision(new_precision)
 
@@ -592,6 +604,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            unique_vector_rep
         """
 
         # TODO Currently, if any operator in an XPPauliList can not be
@@ -632,6 +647,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _weight
         """
         return self._weight()
 
@@ -657,6 +675,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _is_diagonal
         """
         return self._is_diagonal()
 
@@ -681,6 +702,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _antisymmetric_op
         """
         return self._antisymmetric_op()
 
@@ -716,6 +740,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _power
         """
         return self._power(n)
 
@@ -729,6 +756,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _unique_vector_rep
         """
         # TODO at present, this function only handles positive powers. If it is
         # supposed to calculate inverses as well, that functionality needs to
@@ -765,6 +795,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _degree
         """
         return self._degree()
 
@@ -777,6 +810,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            is_diagonal
         """
 
         gcd = np.gcd(self.z, self.precision)

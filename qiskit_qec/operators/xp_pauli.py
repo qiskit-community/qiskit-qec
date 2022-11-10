@@ -172,6 +172,9 @@ class XPPauli(BaseXPPauli):
             Setting the ``front=True`` kwarg changes this to `right` matrix
             multiplication and is equivalent to the :meth:`dot` method
             ``A.dot(B) == A.compose(B, front=True)``.
+
+        See also:
+            _compose
         """
         if qargs is None:
             qargs = getattr(other, "qargs", None)
@@ -189,6 +192,9 @@ class XPPauli(BaseXPPauli):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _unique_vector_rep
         """
         return XPPauli(super().unique_vector_rep())
 
@@ -200,6 +206,9 @@ class XPPauli(BaseXPPauli):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _rescale_precision
         """
         return XPPauli(super().rescale_precision(new_precision))
 
@@ -211,6 +220,9 @@ class XPPauli(BaseXPPauli):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _antisymmetric_op
         """
         return XPPauli(super().antisymmetric_op())
 
@@ -222,6 +234,9 @@ class XPPauli(BaseXPPauli):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        See also:
+            _power
         """
         return XPPauli(super().power(n))
 

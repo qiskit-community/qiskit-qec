@@ -273,6 +273,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
                          not have either 1 or the same number of XPPaulis as
                          the current list, or has the wrong number of qubits
                          for the specified qargs.
+
+        See also:
+            _compose
         """
         if qargs is None:
             qargs = getattr(other, "qargs", None)
