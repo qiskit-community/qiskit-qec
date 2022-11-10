@@ -944,7 +944,7 @@ class ArcCircuit:
         flipped by the errors creating such a cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_boundary (bool): If `True`, undeeded boundary node are
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
@@ -953,6 +953,13 @@ class ArcCircuit:
             enclosed by the nodes, that aren't already accounted for by given
             boundary nodes.
         """
+        # see which qubits for logical zs are given
+        given_logicals = []
+        for node in nodes:
+            if node["is_boundary"]:
+                given_logicals += node["qubits"]
+        given_logicals = set(given_logicals)
+
         # see whether the bulk nodes are neutral
         nodes = self.flatten_nodes(nodes)
         link_qubits = set(node["link qubit"] for node in nodes)
@@ -978,13 +985,6 @@ class ArcCircuit:
                             ns_to_do.remove(nn)
                         else:
                             neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
-
-        # see which qubits for logical zs are given
-        given_logicals = []
-        for node in nodes:
-            if node["is_boundary"]:
-                given_logicals += node["qubits"]
-        given_logicals = set(given_logicals)
 
         # see which qubits for logical zs are needed
         flipped_logicals = []
