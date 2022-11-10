@@ -189,13 +189,19 @@ class XPPauli(BaseXPPauli):
     # ---------------------------------------------------------------------
 
     def unique_vector_rep(self) -> "XPPauli":
-        """
+        """Convert the XPPauli operator into unique vector form, ie
+        phase_exp in Z modulo 2*precision, x in Z_2, z in Z modulo
+        precision.
+
         Note:
-            This method is adapted from the method XPRound from XPFpackage:
+            This method is adapted from method XPRound from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        Returns:
+            XPPauli: Unique vector representation of self
 
         See also:
             _unique_vector_rep
@@ -203,13 +209,24 @@ class XPPauli(BaseXPPauli):
         return XPPauli(super().unique_vector_rep())
 
     def rescale_precision(self, new_precision) -> "XPPauli":
-        """
+        """Rescale the generalized symplectic vector components
+        of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
+
         Note:
-            This method is adapted from the method XPSetN from XPFpackage:
+            This method is adapted from method XPSetN from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        Args:
+            new_precision: The target precision in which XPPauli is to be expressed
+
+        Returns:
+            XPPauli: Resultant of rescaling the precision of XPPauli
+
+        Raises:
+            QiskitError: If it is not possible to express XPPauli in new_precision 
 
         See also:
             _rescale_precision
@@ -217,7 +234,9 @@ class XPPauli(BaseXPPauli):
         return XPPauli(super().rescale_precision(new_precision))
 
     def antisymmetric_op(self) -> "XPPauli":
-        """
+        """Return the antisymmetric operator corresponding to the
+        z component of XP operator, only if x component is 0.
+
         Note:
             This method is adapted from method XPD from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
@@ -225,19 +244,29 @@ class XPPauli(BaseXPPauli):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Returns:
+            XPPauli: Antisymmetric operator corresponding to XPPauli, if x is 0
+
         See also:
             _antisymmetric_op
         """
         return XPPauli(super().antisymmetric_op())
 
     def power(self, n) -> "XPPauli":
-        """
+        """Return the XP operator of specified precision raised to the power n.
+
         Note:
             This method is adapted from method XPPower from XPFpackage:
             https://github.com/m-webster/XPFpackage, originally developed by
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        Args:
+            n: The power to which XPPauli is to be raised
+
+        Returns:
+            XPPauli: XPPauli raised to the power n
 
         See also:
             _power
