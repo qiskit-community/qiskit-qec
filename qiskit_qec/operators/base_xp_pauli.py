@@ -86,7 +86,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             precision: Precision of XP operators. Must be an integer greater than or equal to 2.
             order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
 
-        Raises: QiskitError: matrix and phase_exp sizes are not compatible
+        Raises: 
+            QiskitError: matrix and phase_exp sizes are not compatible, or if precision is less than 2.
 
         Examples:
             >>> matrix = numpy.array([[1,1,0,0],[0,1,0,1]])
@@ -96,9 +97,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Pauli, PauliList
         """
 
-        assert isinstance(precision, int) and (np.all(precision > 1)), QiskitError(
-            "Precision of XP operators must be an integer greater than or equal to 2."
-        )
+        if not (isinstance(precision, int) and (precision > 1)):
+            raise QiskitError("Precision of XP operators must be an integer greater than or equal to 2.")
 
         if matrix is None or matrix.size == 0:
             matrix = np.empty(shape=(0, 0), dtype=np.int64)
