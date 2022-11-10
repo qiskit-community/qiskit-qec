@@ -11,6 +11,11 @@
 # that they have been altered from the originals.
 
 # Part of the QEC framework
+#
+# This code is based on the paper: "The XP Stabiliser Formalism: a
+# Generalisation of the Pauli Stabiliser Formalism with Arbitrary Phases", Mark
+# A. Webster, Benjamin J. Brown, and Stephen D. Bartlett. Quantum 6, 815
+# (2022).
 """Module for base XP pauli"""
 
 import numbers
@@ -287,6 +292,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Note:
             This method does compose coordinate wise (which is different from the PauliTable compose
             which should be corrected at some point).
+            This method is adapted from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
 
         Args:
             other: BaseXPPauli
@@ -335,6 +345,13 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             qargs (Optional[list], optional): _description_. Defaults to None.
             front (bool, optional): _description_. Defaults to False.
             inplace (bool, optional): _description_. Defaults to False.
+
+        Note:
+            This method is adapted from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
 
         Returns:
             BaseXPPauli: _description_
@@ -522,14 +539,29 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
     # ---------------------------------------------------------------------
 
     def unique_vector_rep(self) -> "BaseXPPauli":
-        """_summary_"""
+        """_summary_
+        Note:
+            This method is adapted from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         return self._unique_vector_rep()
 
     def _unique_vector_rep(self) -> "BaseXPPauli":
         """(TODO improve doc): This is the equivalent of XPRound from Mark's
         code. It converts the XPPauli operator into unique vector form, ie
         phase_exp in Z modulo 2*precision, x in Z_2, z in Z modulo
-        precision."""
+        precision.
+
+        Note:
+            This method is adapted from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
         matrix = np.empty(shape=np.shape(self.matrix), dtype=np.int64)
 
         phase_exp = np.mod(self._phase_exp, 2 * self.precision)
@@ -546,7 +578,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """(TODO improve doc): This is the equivalent of XPSetNsingle from
         Mark's code. It rescales the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns None if the
-        rescaling is not possible, else returns the rescaled BaseXPPauli object."""
+        rescaling is not possible, else returns the rescaled BaseXPPauli object.
+
+        Note:
+            This method is adapted from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+        """
 
         # TODO Currently, if any operator in an XPPauliList can not be
         # rescaled, this function will return None.
