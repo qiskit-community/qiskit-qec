@@ -605,9 +605,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
     def rescale_precision(self, new_precision: int) -> "BaseXPPauli":
-        """Rescale the generalized symplectic vector components
-        of BaseXPPauli operator to the new precision. Returns None if the
-        rescaling is not possible, else returns the rescaled BaseXPPauli object.
+        """Rescale the generalized symplectic vector components of BaseXPPauli
+        operator to the new precision.
 
         Note:
             This method is adapted from method XPSetN from XPFpackage:
@@ -636,6 +635,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             _rescale_precision
         """
+        unique_xp_op = self.unique_vector_rep()
+        old_precision = self.precision
+        if new_precision < old_precision:
+            scale_factor = old_precision // new_precision
+        if(((new_precision > old_precision) and (new_precision % old_precision > 0)) or ((new_precision < old_precision) and ((old_precision % new_precision > 0) or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0) or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)))):
+            raise QiskitError("XP Operator can not be expressed in new_precision.")
         return self._rescale_precision(new_precision)
 
     def _rescale_precision(self, new_precision: int) -> "BaseXPPauli":
