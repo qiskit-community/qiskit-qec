@@ -219,6 +219,9 @@ def random_xppauli(
         seed (int or np.random.Generator): Optional. Set a fixed seed or
                                            generator for RNG.
 
+    Examples:
+        >>> value = random_xppauli(num_qubits=3, precision=8)
+
     Returns:
         XPPauli: a random XPPauli
     """
@@ -235,7 +238,7 @@ def random_xppauli(
 
     # Mark's code randomizes phase modulo 2*precision.
     phase = rng.integers(2 * precision, dtype=np.int64)
-    xppauli = XPPauli((z, x, phase))
+    xppauli = XPPauli(data=np.concatenate((z, x)), phase_exp=phase, precision=precision)
     return xppauli
 
 
