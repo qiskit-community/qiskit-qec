@@ -272,12 +272,16 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             QiskitError: if other cannot be converted to a XPPauliList, does
                          not have either 1 or the same number of XPPaulis as
                          the current list, has the wrong number of qubits
-                         for the specified qargs, or if precision of other 
+                         for the specified qargs, or if precision of other
                          does not match precision of self.
 
         Examples:
-            >>> a = XPPauliList(data=np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64), phase_exp=np.array([6, 6]), precision=4)
-            >>> b = XPPauliList(data=np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64), phase_exp=np.array([2, 2]), precision=4)
+            >>> a = XPPauliList(
+            ... data=np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64),
+            ... phase_exp=np.array([6, 6]), precision=4)
+            >>> b = XPPauliList(
+            ... data=np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64),
+            ... phase_exp=np.array([2, 2]), precision=4)
             >>> value = XPPauliList.compose(a, b)
             >>> value.matrix
             array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=int64)
@@ -297,11 +301,13 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
                 "have either 1 or the same number of XPPaulis."
             )
         if self.precision != other.precision:
-            raise QiskitError("Precision of the two XPPauliLists to be multiplied must be the same.")
+            raise QiskitError(
+                "Precision of the two XPPauliLists to be multiplied must be the same."
+            )
 
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
-    def rescale_precision(self, new_precision) -> "XPPauliList":
+    def rescale_precision(self, new_precision: int) -> "XPPauliList":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -319,7 +325,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: Resultant of rescaling the precision of XPPauliList
 
         Raises:
-            QiskitError: If it is not possible to express XPPauli in new_precision 
+            QiskitError: If it is not possible to express XPPauliList in new_precision
 
         Examples:
             >>> matrix1 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64)
@@ -333,7 +339,8 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
             >>> rescaled_xppauli_list = xppaulilist.rescale_precision(new_precision=new_precision)
             >>> rescaled_xppauli_list.matrix
-            array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 3]] dtype=np.int64)
+            array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0],
+                [1, 1, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 3]] dtype=np.int64)
             >>> rescaled_xppauli_list._phase_exp
             array([6, 4])
 
@@ -357,13 +364,15 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: Antisymmetric operator corresponding to XPPauliList, if x is 0
 
         Examples:
-            >>> matrix = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 3, 1, 2, 3, 7, 6, 3]], dtype=np.int64)
+            >>> matrix = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3],
+            ... [0, 0, 0, 0, 0, 0, 0, 3, 1, 2, 3, 7, 6, 3]], dtype=np.int64)
             >>> phase_exp = np.array([0, 0])
             >>> precision = 8
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
             >>> value = xppauli_list.antisymmetric_op()
             >>> value.matrix
-            array([[0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], [0, 0, 0, 0, 0, 0, 0, -3, -1, -2, -3, -7, -6, -3]], dtype=np.int64)
+            array([[0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3],
+                [0, 0, 0, 0, 0, 0, 0, -3, -1, -2, -3, -7, -6, -3]], dtype=np.int64)
             >>> value._phase_exp
             array([15, 25])
 
@@ -389,14 +398,16 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: XPPauliList raised to the power n
 
         Examples:
-            >>> matrix = np.array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1]], dtype=np.int64)
+            >>> matrix = np.array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
+            ... [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1]], dtype=np.int64)
             >>> phase_exp = np.array([12, 12])
             >>> precision = 8
             >>> n = 5
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
             >>> value = xppauli_list.power(n=n)
             >>> value.matrix
-            array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]] ,dtype=np.int64)
+            array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]] ,dtype=np.int64)
             >>> value._phase_exp
             np.array([8, 8])
 

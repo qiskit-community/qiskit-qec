@@ -86,7 +86,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             precision: Precision of XP operators. Must be an integer greater than or equal to 2.
             order: Set to 'xz' or 'zx'. Defines which side the x and z parts of the input matrix
 
-        Raises: 
+        Raises:
             QiskitError: matrix and phase_exp sizes are not compatible, or if precision is less than 2.
 
         Examples:
@@ -98,7 +98,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
 
         if not (isinstance(precision, int) and (precision > 1)):
-            raise QiskitError("Precision of XP operators must be an integer greater than or equal to 2.")
+            raise QiskitError(
+                "Precision of XP operators must be an integer greater than or equal to 2."
+            )
 
         if matrix is None or matrix.size == 0:
             matrix = np.empty(shape=(0, 0), dtype=np.int64)
@@ -311,10 +313,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Raises:
             QiskitError: if number of qubits of other does not match qargs, or
                          if precision of other does not match precision of self.
-       
+
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([0, 1, 0, 0, 2, 0], dtype=np.int64), phase_exp=6, precision=4)
-            >>> b = BaseXPPauli(matrix=np.array([1, 1, 1, 3, 3, 0], dtype=np.int64), phase_exp=2, precision=4)
+            >>> a = BaseXPPauli(matrix=np.array([0, 1, 0, 0, 2, 0], dtype=np.int64),
+            ... phase_exp=6, precision=4)
+            >>> b = BaseXPPauli(matrix=np.array([1, 1, 1, 3, 3, 0], dtype=np.int64),
+            ... phase_exp=2, precision=4)
             >>> value = BaseXPPauli.compose(a, b)
             >>> value.matrix
             array([[1, 0, 1, 3, 3, 0]], dtype=int64)
@@ -341,7 +345,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             )
 
         if self.precision != other.precision:
-            raise QiskitError("Precision of the two BaseXPPaulis to be multiplied must be the same.")
+            raise QiskitError(
+                "Precision of the two BaseXPPaulis to be multiplied must be the same."
+            )
 
         return self._compose(self, other, qargs=qargs, front=front, inplace=inplace)
 
@@ -569,7 +575,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: Unique vector representation of self
 
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([0, 3, 1, 6, 4, 3], dtype=np.int64), phase_exp=11, precision=4)
+            >>> a = BaseXPPauli(matrix=np.array([0, 3, 1, 6, 4, 3], dtype=np.int64),
+            ... phase_exp=11, precision=4)
             >>> a = a.unique_vector_rep()
             >>> a.matrix
             np.array([[0, 1, 1, 2, 0, 3]], dtype=int64)
@@ -622,10 +629,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: Resultant of rescaling the precision of BaseXPPauli
 
         Raises:
-            QiskitError: If it is not possible to express BaseXPPauli in new_precision 
-        
+            QiskitError: If it is not possible to express BaseXPPauli in new_precision
+
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64), phase_exp=12, precision=8)
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64),
+            ... phase_exp=12, precision=8)
             >>> a = a.rescale_precision(new_precision=2)
             >>> a.matrix
             array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=int64)
@@ -639,8 +648,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         old_precision = self.precision
         if new_precision < old_precision:
             scale_factor = old_precision // new_precision
-        if(((new_precision > old_precision) and (new_precision % old_precision > 0)) or ((new_precision < old_precision) and ((old_precision % new_precision > 0) or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0) or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)))):
+        if (new_precision > old_precision) and (new_precision % old_precision > 0):
             raise QiskitError("XP Operator can not be expressed in new_precision.")
+        if (new_precision < old_precision) and (
+            (old_precision % new_precision > 0)
+            or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
+            or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
+        ):
+            raise QiskitError("XP Operator can not be expressed in new_precision.")
+
         return self._rescale_precision(new_precision)
 
     def _rescale_precision(self, new_precision: int) -> "BaseXPPauli":
@@ -706,9 +722,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Returns:
             Union[int, np.ndarray]: Weight of BaseXPPauli
-        
+
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64), phase_exp = 12, precision = 8)
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
+            ... phase_exp = 12, precision = 8)
             >>> a.weight()
             array([5])
 
@@ -746,11 +764,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             np.ndarray: True, if BaseXPPauli is diagonal
 
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64), phase_exp=0, precision=8)
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64),
+            ... phase_exp=0, precision=8)
             >>> a.is_diagonal()
             array([True])
 
-            >>> b = BaseXPPauli(matrix=np.array([0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64), phase_exp=12, precision=8)
+            >>> b = BaseXPPauli(
+            ... matrix=np.array([0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3, 3, 3], dtype=np.int64),
+            ... phase_exp=12, precision=8)
             >>> b.is_diagonal()
             array([False])
 
@@ -789,7 +811,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: Antisymmetric operator corresponding to BaseXPPauli, if x is 0
 
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64), phase_exp=0, precision=8)
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64),
+            ... phase_exp=0, precision=8)
             >>> value = a.antisymmetric_op()
             >>> value.matrix
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
@@ -844,7 +868,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: BaseXPPauli raised to the power n
 
         Examples:
-            >>> a = BaseXPPauli(matrix=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64), phase_exp=12, precision=8)
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
+            ... phase_exp=12, precision=8)
             >>> value = a.power(n=5)
             >>> value.matrix
             array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)
@@ -914,7 +940,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             np.ndarray: Degree of BaseXPPauli
 
         Examples:
-        >>> a = BaseXPPauli(matrix=np.array([0, 0, 0, 2, 1, 0], dtype=np.int64), phase_exp=2, precision=4)
+        >>> a = BaseXPPauli(matrix=np.array([0, 0, 0, 2, 1, 0], dtype=np.int64),
+        ... phase_exp=2, precision=4)
         >>> a.degree()
         array([4], dtype=int64)
 
@@ -942,18 +969,18 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         gcd = np.gcd(self.z, self.precision)
         precision_by_gcd = np.atleast_2d(np.floor_divide(self.precision, gcd))
-        lcm = np.atleast_2d(precision_by_gcd)[:,0]
-        for i,val in enumerate(precision_by_gcd):
+        lcm = np.atleast_2d(precision_by_gcd)[:, 0]
+        for i, val in enumerate(precision_by_gcd):
             for j in val:
                 lcm[i] = np.lcm(lcm[i], j)
 
         square = BaseXPPauli.compose(self, self)
-        if type(square) != type(self):
+        if not isinstance(square, type(self)):
             square = type(self)(square)
         gcd_square = np.gcd(square.z, square.precision)
         precision_by_gcd_square = np.atleast_2d(np.floor_divide(square.precision, gcd_square))
-        lcm_square = np.atleast_2d(precision_by_gcd_square)[:,0]
-        for i,val in enumerate(precision_by_gcd_square):
+        lcm_square = np.atleast_2d(precision_by_gcd_square)[:, 0]
+        for i, val in enumerate(precision_by_gcd_square):
             for j in val:
                 lcm_square[i] = np.lcm(lcm_square[i], j)
 

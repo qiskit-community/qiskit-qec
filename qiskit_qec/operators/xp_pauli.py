@@ -213,7 +213,8 @@ class XPPauli(BaseXPPauli):
             XPPauli: Unique vector representation of self
 
         Examples:
-            >>> a = XPPauli(matrix=np.array([0, 3, 1, 6, 4, 3], dtype=np.int64), phase_exp=11, precision=4)
+            >>> a = XPPauli(matrix=np.array([0, 3, 1, 6, 4, 3], dtype=np.int64),
+            ... phase_exp=11, precision=4)
             >>> a = a.unique_vector_rep()
             >>> a.matrix
             np.array([[0, 1, 1, 2, 0, 3]], dtype=int64)
@@ -225,7 +226,7 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().unique_vector_rep())
 
-    def rescale_precision(self, new_precision) -> "XPPauli":
+    def rescale_precision(self, new_precision: int) -> "XPPauli":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -243,10 +244,12 @@ class XPPauli(BaseXPPauli):
             XPPauli: Resultant of rescaling the precision of XPPauli
 
         Raises:
-            QiskitError: If it is not possible to express XPPauli in new_precision 
+            QiskitError: If it is not possible to express XPPauli in new_precision
 
         Examples:
-            >>> a = XPPauli(data=np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64), phase_exp=12, precision=8)
+            >>> a = XPPauli(
+            ... data=np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64),
+            ... phase_exp=12, precision=8)
             >>> a = a.rescale_precision(new_precision=2)
             >>> a.matrix
             array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=int64)
@@ -273,7 +276,9 @@ class XPPauli(BaseXPPauli):
             XPPauli: Antisymmetric operator corresponding to XPPauli, if x is 0
 
         Examples:
-            >>> a = XPPauli(data=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64), phase_exp=0, precision=8)
+            >>> a = XPPauli(
+            ... data=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64),
+            ... phase_exp=0, precision=8)
             >>> value = a.antisymmetric_op()
             >>> value.matrix
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
@@ -302,7 +307,9 @@ class XPPauli(BaseXPPauli):
             XPPauli: XPPauli raised to the power n
 
         Examples:
-            >>> a = XPPauli(data=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64), phase_exp=12, precision=8)
+            >>> a = XPPauli(
+            ... data=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
+            ... phase_exp=12, precision=8)
             >>> value = a.power(n=5)
             >>> value.matrix
             array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)
