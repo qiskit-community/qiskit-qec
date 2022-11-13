@@ -879,7 +879,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # supposed to calculate inverses as well, that functionality needs to
         # be coded.
 
-        # TODO n = np.atleast_1d(n)
         a = np.mod(n, 2)
 
         x = np.multiply(self.x, a)

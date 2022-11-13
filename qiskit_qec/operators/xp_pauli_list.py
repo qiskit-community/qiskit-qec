@@ -301,6 +301,110 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
+    def rescale_precision(self, new_precision) -> "XPPauliList":
+        """Rescale the generalized symplectic vector components
+        of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
+
+        Note:
+            This method is adapted from method XPSetN from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            new_precision: The target precision in which XPPauli is to be expressed
+
+        Returns:
+            XPPauliList: Resultant of rescaling the precision of XPPauliList
+
+        Raises:
+            QiskitError: If it is not possible to express XPPauli in new_precision 
+
+        Examples:
+            >>> matrix1 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64)
+            >>> phase_exp1 = 12
+            >>> matrix2 = np.array([1, 1, 0, 1, 0, 0, 0, 0, 0, 4, 0, 0, 0, 6], dtype=np.int64)
+            >>> phase_exp2 = 8
+            >>> precision = 8
+            >>> new_precision = 4
+            >>> matrix = np.array([matrix1, matrix2])
+            >>> phase_exp = np.array([phase_exp1, phase_exp2])
+            >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+            >>> rescaled_xppauli_list = xppaulilist.rescale_precision(new_precision=new_precision)
+            >>> rescaled_xppauli_list.matrix
+            array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 3]] dtype=np.int64)
+            >>> rescaled_xppauli_list._phase_exp
+            array([6, 4])
+
+        See also:
+            _rescale_precision
+        """
+        return XPPauliList(super().rescale_precision(new_precision))
+
+    def antisymmetric_op(self) -> "XPPauliList":
+        """Return the antisymmetric operator corresponding to the
+        z component of XP operator, only if x component is 0.
+
+        Note:
+            This method is adapted from method XPD from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauliList: Antisymmetric operator corresponding to XPPauliList, if x is 0
+
+        Examples:
+            >>> matrix = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], [0, 0, 0, 0, 0, 0, 0, 3, 1, 2, 3, 7, 6, 3]], dtype=np.int64)
+            >>> phase_exp = np.array([0, 0])
+            >>> precision = 8
+            >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+            >>> value = xppauli_list.antisymmetric_op()
+            >>> value.matrix
+            array([[0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], [0, 0, 0, 0, 0, 0, 0, -3, -1, -2, -3, -7, -6, -3]], dtype=np.int64)
+            >>> value._phase_exp
+            array([15, 25])
+
+        See also:
+            _antisymmetric_op
+        """
+        return XPPauliList(super().antisymmetric_op())
+
+    def power(self, n: int) -> "XPPauliList":
+        """Return the XP operator of specified precision raised to the power n.
+
+        Note:
+            This method is adapted from method XPPower from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            n: The power to which XPPauliList is to be raised
+
+        Returns:
+            XPPauliList: XPPauliList raised to the power n
+
+        Examples:
+            >>> matrix = np.array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1]], dtype=np.int64)
+            >>> phase_exp = np.array([12, 12])
+            >>> precision = 8
+            >>> n = 5
+            >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+            >>> value = xppauli_list.power(n=n)
+            >>> value.matrix
+            array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]] ,dtype=np.int64)
+            >>> value._phase_exp
+            np.array([8, 8])
+
+        See also:
+            _power
+        """
+        return XPPauliList(super().power(n))
+
     # def conjugate(self):
     #     """Return the conjugate of each XPPauli in the list."""
     #     # TODO

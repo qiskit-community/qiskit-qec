@@ -285,7 +285,7 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().antisymmetric_op())
 
-    def power(self, n) -> "XPPauli":
+    def power(self, n: int) -> "XPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         Note:
