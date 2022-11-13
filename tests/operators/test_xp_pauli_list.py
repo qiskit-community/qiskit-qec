@@ -101,6 +101,26 @@ class TestXPPauliListOperator(QiskitTestCase):
         target = np.array([True, True, False])
         np.testing.assert_equal(target, value)
 
+    def test_multiplication(self):
+        """Test multiplication method."""
+        a_matrix = np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64)
+        a_phase_exp = np.array([6, 6])
+        a_precision = 4
+        a = XPPauliList(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
+        b_matrix = np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64)
+        b_phase_exp = np.array([2, 2])
+        b_precision = 4
+        b = XPPauliList(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
+        value = XPPauliList.compose(a, b)
+
+        target_matrix = np.array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=np.int64)
+        target_phase_exp = np.array([6., 6.])
+        target_precision = 4
+        target = XPPauliList(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
 
 if __name__ == "__main__":
     unittest.main()

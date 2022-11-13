@@ -275,6 +275,15 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
                          for the specified qargs, or if precision of other 
                          does not match precision of self.
 
+        Examples:
+            >>> a = XPPauliList(data=np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64), phase_exp=np.array([6, 6]), precision=4)
+            >>> b = XPPauliList(data=np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64), phase_exp=np.array([2, 2]), precision=4)
+            >>> value = XPPauliList.compose(a, b)
+            >>> value.matrix
+            array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=int64)
+            >>> value._phase_exp
+            array([6, 6])
+
         See also:
             _compose
         """

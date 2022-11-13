@@ -115,7 +115,9 @@ class TestXPPauli(QiskitTestCase):
         target_phase_exp = 15
         target_precision = 8
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
-        self.assertEqual(target, value)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
 
     def test_power(self):
         """Test power method."""
@@ -127,10 +129,12 @@ class TestXPPauli(QiskitTestCase):
         value = xppauli.power(n=n)
 
         target_matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=np.int64)
-        target_phase_exp = 15
+        target_phase_exp = 8
         target_precision = 8
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
-        self.assertEqual(target, value)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
 
     def test_multiplication(self):
         """Test multiplication method."""
@@ -149,7 +153,9 @@ class TestXPPauli(QiskitTestCase):
         target_phase_exp = 6
         target_precision = 4
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
-        self.assertEqual(target, value)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
 
     def test_degree(self):
         """Test degree method."""
