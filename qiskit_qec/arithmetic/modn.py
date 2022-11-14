@@ -10,7 +10,11 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 #
-# This code is adapted from XPFpackage: https://github.com/m-webster/XPFpackage, originally developed by Mark Webster. The original code is licensed under the GNU General Public License v3.0 and Mark Webster has given permission to use the code under the Apache License v2.0.
+# This code is adapted from XPFpackage:
+# https://github.com/m-webster/XPFpackage, originally developed by Mark
+# Webster. The original code is licensed under the GNU General Public
+# License v3.0 and Mark Webster has given permission to use the code under
+# the Apache License v2.0.
 
 """Modular arithmetic Z/nZ."""
 
@@ -21,18 +25,23 @@ from qiskit import QiskitError
 
 
 def gcd_ext(a: int, b: int, n: int) -> Tuple[int, int, int, int, int]:
-    """Implements the extended Euclidean algorithm in the ring Z/nZ: for any two integers a & b, find g, s, t, u, v that satisfy
-
-    1. g = gcd_n(a, b) = s * a + t * b, where gcd_n stands for the greatest common divisor in the ring Z/nZ, s & t are called the Bezout coefficients for a & b;
-    2. (u * a + v * b) mod n = 0;
-    3. (s * v - t * u) mod n = 1.
+    """Implements the extended Euclidean algorithm in the ring Z/nZ: for any
+    two integers a & b, find g, s, t, u, v that satisfy:
+        - g = gcd_n(a, b) = s * a + t * b, where gcd_n stands for the greatest
+          common divisor in the ring Z/nZ, s & t are called the Bezout coefficients
+          for a & b;
+        - (u * a + v * b) mod n = 0;
+        - (s * v - t * u) mod n = 1.
 
     Args:
-        a, b: input integers
+        a: input integer
+        b: input integer
         n: modulus
 
     Returns:
-        g, s, t, u, v: g is the greatest common divisor of (a mod n) and (b mod n); s, t, u, and v are integer coefficients satisfying (s*a + t*b) mod n = g, (u*a + v*b) mod n = 0, (s*v - t*u) mod n = 1
+        g, s, t, u, v: g is the greatest common divisor of (a mod n) and (b mod n);
+        s, t, u, and v are integer coefficients satisfying (s*a + t*b) mod n = g,
+        (u*a + v*b) mod n = 0, (s*v - t*u) mod n = 1
 
     Raises:
         QiskitError: Input must be integers.
@@ -42,7 +51,7 @@ def gcd_ext(a: int, b: int, n: int) -> Tuple[int, int, int, int, int]:
         >>> gcd_ext(15, 6, 4)
         (1, 1, -1, -2, 3)
 
-    See Also: 
+    See Also:
     _gcd_ext
     """
     if not isinstance(a, (int, np.integer)) or not isinstance(b, (int, np.integer)):
@@ -54,18 +63,24 @@ def gcd_ext(a: int, b: int, n: int) -> Tuple[int, int, int, int, int]:
 
 
 def _gcd_ext(a: int, b: int, n: int) -> Tuple[int, int, int, int, int]:
-    """Implements the extended Euclidean algorithm in the ring Z/nZ: for any two integers a & b, find g, s, t, u, v that satisfy
-
-    1. g = gcd_n(a, b) = s * a + t * b, where gcd_n stands for the greatest common divisor in the ring Z/nZ, s & t are called the Bezout coefficients for a & b;
-    2. (u * a + v * b) mod n = 0;
-    3. (s * v - t * u) mod n = 1.
+    """Implements the extended Euclidean algorithm in the ring Z/nZ: for any
+    two integers a & b, find g, s, t, u, v that satisfy:
+        - g = gcd_n(a, b) = s * a + t * b, where gcd_n stands for the greatest
+          common divisor in the ring Z/nZ, s & t are called the Bezout coefficients
+          for a & b;
+        - (u * a + v * b) mod n = 0;
+        - (s * v - t * u) mod n = 1.
 
     Args:
-        a, b: input integers
+        a: input integer
+        b: input integer
         n: modulus
 
     Returns:
-        g, s, t, u, v: g is the greatest common divisor of (a mod n) and (b mod n); s, t, u, and v are integer coefficients satisfying (s*a + t*b) mod n = g, (u*a + v*b) mod n = 0, (s*v - t*u) mod n = 1
+        g_, s_, t_, u_, v_: g_ is the greatest common divisor of (a mod n) and
+        (b mod n); s_, t_, u_, and v_ are integer coefficients satisfying (s_ *
+        a + t_ * b) mod n = g_, (u_ * a + v_ * b) mod n = 0, (s_ * v_ - t_ * u_)
+        mod n = 1
 
     Examples:
         >>> _gcd_ext(15, 6, 4)
@@ -74,25 +89,26 @@ def _gcd_ext(a: int, b: int, n: int) -> Tuple[int, int, int, int, int]:
     See Also:
     gcd_ext
     """
-    old_s, s  = 1, 0
-    old_t, t  = 0, 1
-    old_r, r  = a % n, b % n
+    old_s_, s_ = 1, 0
+    old_t_, t_ = 0, 1
+    old_r_, r_ = a % n, b % n
 
-    while r != 0:
-        q = old_r // r
-        old_r, r = r, old_r - q * r
-        old_s, s = s, old_s - q * s
-        old_t, t = t, old_t - q * t
+    while r_ != 0:
+        q_ = old_r_ // r_
+        old_r_, r_ = r_, old_r_ - q_ * r_
+        old_s_, s_ = s_, old_s_ - q_ * s_
+        old_t_, t_ = t_, old_t_ - q_ * t_
 
-    p = int(math.copysign(1, t * old_s - s * old_t))
-    u, v = p * s, p * t
-    g, s, t = old_r, old_s, old_t
+    sgn = int(math.copysign(1, t_ * old_s_ - s_ * old_t_))
+    u_, v_ = sgn * s_, sgn * t_
+    g_, s_, t_ = old_r_, old_s_, old_t_
 
-    return (g, s, t, u, v)
+    return (g_, s_, t_, u_, v_)
 
 
 def quo(a: int, b: int, n: int) -> int:
-    """Computes the quotient of a/b in the ring Z/nZ, i.e. returns integer q such that a = (b * q) mod n. Returns None if b mod n = 0.
+    """Computes the quotient of a/b in the ring Z/nZ, i.e. returns integer q
+    such that a = (b * q) mod n. Returns None if b mod n = 0.
 
     Args:
         a: numerator
@@ -109,7 +125,7 @@ def quo(a: int, b: int, n: int) -> int:
     Examples:
         >>> quo(25, 5, 4)
         1
-        
+
         >>> quo(25, 8, 4)
         None
 
@@ -125,7 +141,8 @@ def quo(a: int, b: int, n: int) -> int:
 
 
 def _quo(a: int, b: int, n: int) -> int:
-    """Computes the quotient of a/b in the ring Z/nZ, i.e. returns integer q such that a = (b * q) mod n. Returns None if b mod n = 0.
+    """Computes the quotient of a/b in the ring Z/nZ, i.e. returns integer q
+    such that a = (b * q) mod n. Returns None if b mod n = 0.
 
     Args:
         a: numerator
@@ -152,7 +169,8 @@ def _quo(a: int, b: int, n: int) -> int:
 
 
 def div(a: int, b: int, n: int) -> int:
-    """Computes the divisor of a/b in the ring Z/nZ, i.e., returns integer d such that b * d = a mod n. Returns None if no such d exists.
+    """Computes the divisor of a/b in the ring Z/nZ, i.e., returns integer d
+    such that b * d = a mod n. Returns None if no such d exists.
 
     Args:
         a: numerator
@@ -188,7 +206,8 @@ def div(a: int, b: int, n: int) -> int:
 
 
 def _div(a: int, b: int, n: int) -> int:
-    """Computes the divisor of a/b in the ring Z/nZ, i.e., returns integer d such that b * d = a mod n. Returns None if no such d exists.
+    """Computes the divisor of a/b in the ring Z/nZ, i.e., returns integer d
+    such that b * d = a mod n. Returns None if no such d exists.
 
     Args:
         a: numerator
@@ -214,8 +233,8 @@ def _div(a: int, b: int, n: int) -> int:
     a, b = a % n, b % n
     if b == 0:
         return None
-    g = math.gcd(b, n)
-    if a % g != 0:
+    gcd = math.gcd(b, n)
+    if a % gcd != 0:
         return None
     else:
         r = a % b
@@ -226,7 +245,8 @@ def _div(a: int, b: int, n: int) -> int:
 
 
 def ann(a: int, n: int) -> int:
-    """Computes the annihilator of a in the ring Z/nZ, i.e., returns integer b such that (b * a) mod N = 0.
+    """Computes the annihilator of a in the ring Z/nZ, i.e., returns integer b
+    such that (b * a) mod N = 0.
 
     Args:
         a: input integer
@@ -258,7 +278,8 @@ def ann(a: int, n: int) -> int:
 
 
 def _ann(a: int, n: int) -> int:
-    """Computes the annihilator of a in the ring Z/nZ, i.e., returns integer b such that (b * a) mod n = 0.
+    """Computes the annihilator of a in the ring Z/nZ, i.e., returns integer b
+    such that (b * a) mod n = 0.
 
     Args:
         a: input integer
@@ -280,15 +301,17 @@ def _ann(a: int, n: int) -> int:
     a = a % n
     if a == 0:
         return 1
-    u = n // math.gcd(a, n)
-    return u % n
+    b = n // math.gcd(a, n)
+    return b % n
 
 
 def stab(a: int, b: int, n: int) -> int:
-    """Returns a ring element c such that gcd(a + b * c, n) = gcd(a, b, n) in the ring Z/nZ.
+    """Returns a ring element c such that gcd(a + b * c, n) = gcd(a, b, n) in
+    the ring Z/nZ.
 
     Args:
-        a, b: input integers
+        a: input integer
+        b: input integer
         n: modulus
 
     Returns:
@@ -317,10 +340,12 @@ def stab(a: int, b: int, n: int) -> int:
 
 
 def _stab(a: int, b: int, n: int) -> int:
-    """Returns a ring element c such that gcd(a + b * c, n) = gcd(a, b, n) in the ring Z/nZ.
+    """Returns a ring element c such that gcd(a + b * c, n) = gcd(a, b, n) in
+    the ring Z/nZ.
 
     Args:
-        a, b: input integers
+        a: input integer
+        b: input integer
         n: modulus
 
     Returns:
@@ -337,9 +362,9 @@ def _stab(a: int, b: int, n: int) -> int:
     stab
     """
     a, b = a % n, b % n
-    g = math.gcd(math.gcd(a, b), n)
+    gcd = math.gcd(math.gcd(a, b), n)
     n_old = n
-    a, n = a // g, n // g
+    a, n = a // gcd, n // gcd
     if n == 0:
         c = 0
     else:
@@ -355,7 +380,8 @@ def _stab(a: int, b: int, n: int) -> int:
 
 
 def unit(a: int, n: int) -> int:
-    """Computes a unit u such that for element a in the ring Z/nZ, i.e., (a * u) mod n = gcd(a, n).
+    """Computes a unit u such that for element a in the ring Z/nZ, i.e.,
+    (a * u) mod n = gcd(a, n).
 
     Args:
         a: input integer
@@ -387,7 +413,8 @@ def unit(a: int, n: int) -> int:
 
 
 def _unit(a: int, n: int) -> int:
-    """Computes a unit u such that for element a in the ring Z/nZ, i.e., (a * u) mod n = gcd(a, n).
+    """Computes a unit u such that for element a in the ring Z/nZ, i.e.,
+    (a * u) mod n = gcd(a, n).
 
     Args:
         a: input integer
@@ -409,9 +436,9 @@ def _unit(a: int, n: int) -> int:
     a = a % n
     if a == 0:
         return 1
-    g = math.gcd(a, n)
-    s = div(g, a, n)
-    if g == 1:
-        return s
-    d = stab(s, n // g, n)
-    return (s + d * n // g) % n
+    gcd = math.gcd(a, n)
+    d = div(gcd, a, n)
+    if gcd == 1:
+        return d
+    c = stab(d, n // gcd, n)
+    return (d + c * n // gcd) % n

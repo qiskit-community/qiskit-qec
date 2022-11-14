@@ -62,7 +62,16 @@ Linear symplectic functions
 
 from .bit.bit import Bit
 from .smatrix_api.smatrix import SMatrix
-from .matrix import create_lambda_matrix, augment_mat, rref, rank, rref_complete, do_row_op, howell, howell_complete
+from .matrix import (
+    create_lambda_matrix,
+    augment_mat,
+    rref,
+    rank,
+    rref_complete,
+    do_row_op,
+    howell,
+    howell_complete,
+)
 from .symplectic import (
     all_commute,
     symplectic_product,
