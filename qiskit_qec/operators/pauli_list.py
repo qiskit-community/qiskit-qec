@@ -10,7 +10,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 # Part of the QEC framework
-"""Module fo Pauli List"""
+#
+# This code is based on the paper: "The XP Stabiliser Formalism: a
+# Generalisation of the Pauli Stabiliser Formalism with Arbitrary Phases", Mark
+# A. Webster, Benjamin J. Brown, and Stephen D. Bartlett. Quantum 6, 815
+# (2022).
+"""Module for Pauli List"""
 import numbers
 from collections import defaultdict
 from typing import Iterable, List, Tuple, Union
