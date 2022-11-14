@@ -15,6 +15,7 @@ import logging
 from logging import NullHandler
 
 from . import (
+    arithmetic,
     circuits,
     codes,
     decoders,
