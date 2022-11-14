@@ -13,6 +13,7 @@
 Random symplectic operator functions
 """
 
+from typing import Union
 import numpy as np
 from numpy.random import default_rng
 
@@ -22,6 +23,7 @@ from qiskit.quantum_info.operators.symplectic.stabilizer_table import Stabilizer
 
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
+from qiskit_qec.operators.xp_pauli import XPPauli
 
 
 def random_pauli(num_qubits, group_phase=False, seed=None):
@@ -194,6 +196,53 @@ def random_clifford(num_qubits, seed=None):
     # Generate random phases
     phase = rng.integers(2, size=2 * num_qubits).astype(bool)
     return Clifford(StabilizerTable(table, phase))
+
+
+def random_xppauli(
+    num_qubits: int,
+    precision: int = None,
+    seed: Union[int, np.random.Generator, None] = None,
+) -> XPPauli:
+    """Return a random XPPauli.
+
+    Note:
+        This method is adapted from XPFpackage:
+        https://github.com/m-webster/XPFpackage, originally developed by
+        Mark Webster. The original code is licensed under the GNU General
+        Public License v3.0 and Mark Webster has given permission to use
+        the code under the Apache License v2.0.
+
+    Args:
+        num_qubits (int): the number of qubits.
+        precision (int): Precision of XP operators. Must be an integer
+                         greater than or equal to 2.
+        seed (int or np.random.Generator): Optional. Set a fixed seed or
+                                           generator for RNG.
+
+    Examples:
+        >>> value = random_xppauli(num_qubits=3, precision=8)
+
+    Returns:
+        XPPauli: a random XPPauli
+    """
+    if seed is None:
+        rng = np.random.default_rng()
+    elif isinstance(seed, np.random.Generator):
+        rng = seed
+    else:
+        rng = default_rng(seed)
+    z = rng.integers(precision, size=num_qubits, dtype=np.int64)
+    x = rng.integers(2, size=num_qubits, dtype=bool)
+    # TODO: Need to decide whether we will add an argument group_phase in
+    # analogy with random_pauli. If yes, its implementation goes here.
+
+    # Mark's code randomizes phase modulo 2*precision.
+    phase = rng.integers(2 * precision, dtype=np.int64)
+    xppauli = XPPauli(data=np.concatenate((z, x)), phase_exp=phase, precision=precision)
+    return xppauli
+
+
+# TODO: def random_xppauli_list():
 
 
 def _sample_qmallows(n, rng=None):

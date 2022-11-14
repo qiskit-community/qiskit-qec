@@ -34,3 +34,5 @@ from .base_pauli import BasePauli
 from .pauli import Pauli
 from .pauli_list import PauliList
 from .base_xp_pauli import BaseXPPauli
+from .xp_pauli import XPPauli
+from .xp_pauli_list import XPPauliList
