@@ -244,7 +244,7 @@ class TestARCCodes(unittest.TestCase):
                     "Error: Single error creates too many nodes",
                 )
                 # check that the nodes are neutral
-                neutral, flipped_logicals = code.check_nodes(nodes)
+                neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
                     neutral and flipped_logicals == [], "Error: Single error nodes are not neutral"
                 )

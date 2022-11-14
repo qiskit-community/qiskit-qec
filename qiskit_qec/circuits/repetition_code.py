@@ -941,7 +941,8 @@ class ArcCircuit:
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
-        flipped by the errors creating such a cluster.
+        flipped by the errors creating such a cluster and how many errors
+        would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
@@ -1007,11 +1008,18 @@ class ArcCircuit:
                         if qubit in self.z_logicals and c == inside_c:
                             flipped_logicals.append(qubit)
                 flipped_logicals = set(flipped_logicals)
+
+                # count the number of nodes of the smallest colur
+                num_nodes = [0,0]
+                for n, _ in node_color.items():
+                    num_nodes[c] += 1
+                num_errors = min(num_nodes)
         else:
             # without bulk nodes, neutral only if no boundary nodes are given
             neutral = not bool(given_logicals)
             # and no flipped logicals
             flipped_logicals = set()
+            num_errors = None
 
         # if unneeded logical zs are given, cluster is not neutral
         # (unless this is ignored)
@@ -1022,7 +1030,7 @@ class ArcCircuit:
             flipped_logicals = flipped_logicals.difference(given_logicals)
         flipped_logicals = list(flipped_logicals)
 
-        return neutral, flipped_logicals
+        return neutral, flipped_logicals, num_errors
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
