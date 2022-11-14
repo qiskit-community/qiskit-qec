@@ -1009,9 +1009,9 @@ class ArcCircuit:
                             flipped_logicals.append(qubit)
                 flipped_logicals = set(flipped_logicals)
 
-                # count the number of nodes of the smallest colur
+                # count the number of nodes of the smallest colour
                 num_nodes = [0,0]
-                for n, _ in node_color.items():
+                for n, c in node_color.items():
                     num_nodes[c] += 1
                 num_errors = min(num_nodes)
         else:
