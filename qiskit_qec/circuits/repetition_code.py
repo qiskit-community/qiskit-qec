@@ -347,9 +347,9 @@ class RepetitionCodeCircuit:
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
         Args:
-            nodes (dict): List of nodes, of the type produced by `string2nodes`, to be flattened.
+            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
         Returns:
-            flat_nodes (dict): List of flattened nodes.
+            flat_nodes (list): List of flattened nodes.
         """
         nodes_per_link = {}
         for node in nodes:
@@ -396,27 +396,27 @@ class RepetitionCodeCircuit:
         # bicolour code qubits according to the domain walls
         walls = []
         for node in nodes:
-            if not node['is_boundary']:
-                walls.append(node['qubits'][1])
+            if not node["is_boundary"]:
+                walls.append(node["qubits"][1])
         walls.sort()
         c = 0
-        colors = ''
+        colors = ""
         for j in range(self.d):
             if walls:
-                if walls[0]==j:
-                    c = (c+1)%2
+                if walls[0] == j:
+                    c = (c + 1) % 2
                     walls.remove(j)
             colors += str(c)
         colors = colors[::-1]
 
         # determine which were in the minority
-        error_c = str(int(colors.count('1')<self.d/2))
+        error_c = str(int(colors.count("1") < self.d / 2))
         num_errors = colors.count(error_c)
 
         # determine the corresponding flipped logicals
         flipped_logicals = []
-        for j in [0,self.d-1]:
-            if colors[-1-j]==error_c:
+        for j in [0, self.d - 1]:
+            if colors[-1 - j] == error_c:
                 flipped_logicals.append(j)
         flipped_logicals = set(flipped_logicals)
 
@@ -1007,9 +1007,9 @@ class ArcCircuit:
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
         Args:
-            nodes (dict): List of nodes, of the type produced by `string2nodes`, to be flattened.
+            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
         Returns:
-            flat_nodes (dict): List of flattened nodes.
+            flat_nodes (list): List of flattened nodes.
         """
         nodes_per_link = {}
         for node in nodes:
@@ -1101,7 +1101,7 @@ class ArcCircuit:
                 flipped_logicals = set(flipped_logicals)
 
                 # count the number of nodes of the smallest colour
-                num_nodes = [0,0]
+                num_nodes = [0, 0]
                 for n, c in node_color.items():
                     num_nodes[c] += 1
                 num_errors = min(num_nodes)
