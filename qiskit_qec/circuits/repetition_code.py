@@ -342,6 +342,96 @@ class RepetitionCodeCircuit:
         """
         return self._separate_string(self._process_string(string))[0]
 
+    def flatten_nodes(self, nodes):
+        """
+        Removes time information from a set of nodes, and consolidates those on
+        the same position at different times.
+        Args:
+            nodes (dict): List of nodes, of the type produced by `string2nodes`, to be flattened.
+        Returns:
+            flat_nodes (dict): List of flattened nodes.
+        """
+        nodes_per_link = {}
+        for node in nodes:
+            link_qubit = node["link qubit"]
+            if link_qubit in nodes_per_link:
+                nodes_per_link[link_qubit] += 1
+            else:
+                nodes_per_link[link_qubit] = 1
+        flat_nodes = []
+        for node in nodes:
+            if nodes_per_link[node["link qubit"]] % 2:
+                flat_node = node.copy()
+                if "time" in flat_node:
+                    flat_node.pop("time")
+                flat_nodes.append(flat_node)
+        return flat_nodes
+
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
+        """
+        Determines whether a given set of nodes are neutral. If so, also
+        determines any additional logical readout qubits that would be
+        flipped by the errors creating such a cluster and how many errors
+        would be required to make the cluster.
+        Args:
+            nodes (list): List of nodes, of the type produced by `string2nodes`.
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
+        Returns:
+            neutral (bool): Whether the nodes independently correspond to a valid
+            set of errors.
+            flipped_logicals (list): List of qubits within `z_logicals`
+            enclosed by the nodes, that aren't already accounted for by given
+            boundary nodes.
+            num_errors (int): Minimum number of errors required to create nodes.
+        """
+
+        # see which qubits for logical zs are given and collect bulk nodes
+        given_logicals = []
+        for node in nodes:
+            if node["is_boundary"]:
+                given_logicals += node["qubits"]
+        given_logicals = set(given_logicals)
+
+        # bicolour code qubits according to the domain walls
+        walls = []
+        for node in nodes:
+            if not node['is_boundary']:
+                walls.append(node['qubits'][1])
+        walls.sort()
+        c = 0
+        colors = ''
+        for j in range(self.d):
+            if walls:
+                if walls[0]==j:
+                    c = (c+1)%2
+                    walls.remove(j)
+            colors += str(c)
+        colors = colors[::-1]
+
+        # determine which were in the minority
+        error_c = str(int(colors.count('1')<self.d/2))
+        num_errors = colors.count(error_c)
+
+        # determine the corresponding flipped logicals
+        flipped_logicals = []
+        for j in [0,self.d-1]:
+            if colors[-1-j]==error_c:
+                flipped_logicals.append(j)
+        flipped_logicals = set(flipped_logicals)
+
+        # if unneeded logical zs are given, cluster is not neutral
+        # (unless this is ignored)
+        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+            neutral = False
+        # otherwise, report only needed logicals that aren't given
+        else:
+            neutral = True
+            flipped_logicals = flipped_logicals.difference(given_logicals)
+        flipped_logicals = list(flipped_logicals)
+
+        return neutral, flipped_logicals, num_errors
+
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
@@ -953,6 +1043,7 @@ class ArcCircuit:
             flipped_logicals (list): List of qubits within `z_logicals`
             enclosed by the nodes, that aren't already accounted for by given
             boundary nodes.
+            num_errors (int): Minimum number of errors required to create nodes.
         """
 
         # see which qubits for logical zs are given and collect bulk nodes
