@@ -702,6 +702,7 @@ class ArcCircuit:
             qubits[1].add(link[1])
         self.qubits = [list(qubits[j]) for j in range(2)]
         self.num_qubits = [len(qubits[j]) for j in range(2)]
+        self.d = self.num_qubits[0]
 
         # define the quantum egisters
         self.code_qubit = QuantumRegister(self.num_qubits[0], "code_qubit")

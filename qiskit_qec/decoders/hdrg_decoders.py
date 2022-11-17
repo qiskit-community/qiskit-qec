@@ -20,6 +20,7 @@ from rustworkx import distance_matrix
 from rustworkx import connected_components
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
 
 
 class ClusteringDecoder:
@@ -28,15 +29,28 @@ class ClusteringDecoder:
     def __init__(
         self,
         code_circuit,
-        logical: str,
         decoding_graph: DecodingGraph = None,
     ):
+
+        if type(code_circuit) not in [ArcCircuit, RepetitionCodeCircuit]:
+            raise 'Error: code_circuit not supported.'
+
         self.code = code_circuit
-        self.logical = logical
         if decoding_graph:
             self.decoding_graph = decoding_graph
         else:
             self.decoding_graph = DecodingGraph(self.code)
+        if type(self.code) is ArcCircuit:
+            self.z_logicals = self.code.z_logicals
+        elif type(self.code) is RepetitionCodeCircuit:
+            if self.code._xbasis:
+                self.z_logicals = self.code.css_x_logical[0]
+            else:
+                self.z_logicals = self.code.css_z_logical[0]
+        if type(self.code) is ArcCircuit:
+            self.code_index = self.code.code_index
+        elif type(self.code) is RepetitionCodeCircuit:
+            self.code_index = {2*j:j for j in range(self.code.d)}
 
     def _cluster(self, ns, dist_max):
         """
@@ -97,8 +111,10 @@ class ClusteringDecoder:
 
     def _get_boundary_nodes(self):
         boundary_nodes = []
-        for element, z_logical in enumerate(self.code.z_logicals):
-            node = {"time": 0, "link qubit": None, "is_boundary": True}
+        for element, z_logical in enumerate(self.z_logicals):
+            node = {"time": 0, "is_boundary": True}
+            if type(self.code) is ArcCircuit:
+                node["link qubit"] = None
             node["qubits"] = [z_logical]
             node["element"] = element
             boundary_nodes.append(node)
@@ -124,7 +140,7 @@ class ClusteringDecoder:
         final_clusters = {}
         con_comps = []
         clusterss = []
-        while ns and dist_max <= len(self.code.links):
+        while ns and dist_max <= self.code.d:
 
             dist_max += 1
             # add boundary nodes to unpaired nodes
@@ -155,7 +171,7 @@ class ClusteringDecoder:
             corrected_z_logicals (list): A list of integers that are 0 or 1.
         These are the corrected values of the final transversal
         measurement, corresponding to the logical operators of
-        self.code.z_logicals.
+        self.z_logicals.
         """
         code = self.code
         decoding_graph = self.decoding_graph
@@ -178,17 +194,18 @@ class ClusteringDecoder:
             cluster_logicals[c] = z_logicals
 
         # get the net effect on each logical
-        net_z_logicals = {z_logical: 0 for z_logical in code.z_logicals}
+        net_z_logicals = {z_logical: 0 for z_logical in self.z_logicals}
         for c, z_logicals in cluster_logicals.items():
-            for z_logical in code.z_logicals:
+            for z_logical in self.z_logicals:
                 if z_logical in z_logicals:
                     net_z_logicals[z_logical] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
 
         corrected_z_logicals = []
-        for z_logical in code.z_logicals:
-            raw_logical = int(string[-1 - code.code_index[z_logical]])
+        string = string.split(' ')[0]
+        for z_logical in self.z_logicals:
+            raw_logical = int(string[-1 - self.code_index[z_logical]])
             corrected_logical = (raw_logical + net_z_logicals[z_logical]) % 2
             corrected_z_logicals.append(corrected_logical)
 
