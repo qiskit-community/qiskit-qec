@@ -21,6 +21,7 @@ from rustworkx import connected_components
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class ClusteringDecoder:
@@ -32,25 +33,25 @@ class ClusteringDecoder:
         decoding_graph: DecodingGraph = None,
     ):
 
-        if type(code_circuit) not in [ArcCircuit, RepetitionCodeCircuit]:
-            raise 'Error: code_circuit not supported.'
+        if isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
+            raise QiskitQECError("Error: code_circuit not supported.")
 
         self.code = code_circuit
         if decoding_graph:
             self.decoding_graph = decoding_graph
         else:
             self.decoding_graph = DecodingGraph(self.code)
-        if type(self.code) is ArcCircuit:
+        if isinstance(self.code, ArcCircuit):
             self.z_logicals = self.code.z_logicals
-        elif type(self.code) is RepetitionCodeCircuit:
+        elif isinstance(self.code, RepetitionCodeCircuit):
             if self.code._xbasis:
                 self.z_logicals = self.code.css_x_logical[0]
             else:
                 self.z_logicals = self.code.css_z_logical[0]
-        if type(self.code) is ArcCircuit:
+        if isinstance(self.code, ArcCircuit):
             self.code_index = self.code.code_index
-        elif type(self.code) is RepetitionCodeCircuit:
-            self.code_index = {2*j:j for j in range(self.code.d)}
+        elif isinstance(self.code, RepetitionCodeCircuit):
+            self.code_index = {2 * j: j for j in range(self.code.d)}
 
     def _cluster(self, ns, dist_max):
         """
@@ -113,7 +114,7 @@ class ClusteringDecoder:
         boundary_nodes = []
         for element, z_logical in enumerate(self.z_logicals):
             node = {"time": 0, "is_boundary": True}
-            if type(self.code) is ArcCircuit:
+            if isinstance(self.code, ArcCircuit):
                 node["link qubit"] = None
             node["qubits"] = [z_logical]
             node["element"] = element
@@ -203,7 +204,7 @@ class ClusteringDecoder:
             net_z_logicals[z_logical] = num % 2
 
         corrected_z_logicals = []
-        string = string.split(' ')[0]
+        string = string.split(" ")[0]
         for z_logical in self.z_logicals:
             raw_logical = int(string[-1 - self.code_index[z_logical]])
             corrected_logical = (raw_logical + net_z_logicals[z_logical]) % 2
