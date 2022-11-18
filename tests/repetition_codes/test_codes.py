@@ -18,6 +18,7 @@
 
 import unittest
 import itertools
+from random import choices
 
 from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.fake_provider import FakeJakarta
@@ -27,6 +28,7 @@ from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as Repetit
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.decoders.hdrg_decoders import ClusteringDecoder
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -399,9 +401,77 @@ class TestARCCodes(unittest.TestCase):
             "Error: Wrong number of cx gates after transpilation.",
         )
 
-    def test_empty_decoding_grapg(self):
+
+class TestDecoding(unittest.TestCase):
+    """Test decoders for repetition codes"""
+
+    def test_empty_decoding_graph(self):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
+
+    def test_clustering_decoder(self):
+        """Test decoding of ARCs and RCCs with ClusteringDecoder"""
+
+        # parameters for test
+        d = 8
+        p = 0.1
+        N = 1000
+
+        codes = []
+        # first make a bunch of ARCs
+        # crossed line
+        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
+        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
+        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+        # ladder (works for even d)
+        half_d = int(d / 2)
+        links_ladder = []
+        for row in [0, 1]:
+            for j in range(half_d - 1):
+                delta = row * (2 * half_d - 1)
+                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
+        q = links_ladder[-1][2] + 1
+        for j in range(half_d):
+            delta = 2 * half_d - 1
+            links_ladder.append((2 * j, q, delta + 2 * j))
+            q += 1
+        # line
+        links_line = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
+        # add them to the code list
+        for links in [links_ladder, links_line, links_cross]:
+            codes.append(ArcCircuit(links, 0))
+        # then an RCC
+        codes.append(RepetitionCode(d, 1))
+        # now run them all and check it works
+        for code in codes:
+            code = ArcCircuit(links, 0)
+            decoding_graph = DecodingGraph(code)
+            decoder = ClusteringDecoder(code, decoding_graph=decoding_graph)
+            errors = {z_logical: 0 for z_logical in decoder.z_logicals}
+            min_error_num = code.d
+            for sample in range(N):
+                # generate random string
+                string = "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)])
+                for _ in range(code.T):
+                    string = string + " " + "0" * (d - 1)
+                # get and check corrected_z_logicals
+                corrected_z_logicals = decoder.process(string)
+                for j, z_logical in enumerate(decoder.z_logicals):
+                    error = corrected_z_logicals[j] != 0
+                    if error:
+                        min_error_num = min(min_error_num, string.count("1"))
+                    errors[z_logical] += error
+            # check that error rates are at least <p^/2
+            # and that min num errors to cause logical errors >d/3
+            for z_logical in decoder.z_logicals:
+                self.assertTrue(
+                    errors[z_logical] / (sample + 1) < p**2,
+                    "Logical error rate greater than p^2.",
+                )
+            self.assertTrue(
+                min_error_num > d / 3,
+                str(min_error_num) + "errors cause logical error despite d=" + str(code.d),
+            )
 
 
 if __name__ == "__main__":

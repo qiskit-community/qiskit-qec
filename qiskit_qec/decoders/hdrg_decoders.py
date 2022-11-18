@@ -33,7 +33,7 @@ class ClusteringDecoder:
         decoding_graph: DecodingGraph = None,
     ):
 
-        if isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
+        if not isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
             raise QiskitQECError("Error: code_circuit not supported.")
 
         self.code = code_circuit
