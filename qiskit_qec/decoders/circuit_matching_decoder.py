@@ -304,18 +304,9 @@ class CircuitModelMatchingDecoder(ABC):
         for source, target in graph.edge_list():
             edge_data = graph.get_edge_data(source, target)
             if "weight_poly" not in edge_data and edge_data["weight"] != 0:
-                if (
-                    "is_boundary" in graph.nodes()[source] and graph.nodes()[source]["is_boundary"]
-                ) or (
-                    "is_boundary" in graph.nodes()[target] and graph.nodes()[target]["is_boundary"]
-                ):
-                    # TODO: we could consider removing the edge
-                    edge_data["weight"] = 1000000
-                    logging.info("increase edge weight (%d, %d)", source, target)
-                else:
-                    # Otherwise, remove the edge
-                    remove_list.append((source, target))
-                    logging.info("remove edge (%d, %d)", source, target)
+                # Remove the edge
+                remove_list.append((source, target))
+                logging.info("remove edge (%d, %d)", source, target)
         graph.remove_edges_from(remove_list)
         return graph
 

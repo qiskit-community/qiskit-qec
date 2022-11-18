@@ -731,7 +731,7 @@ class ArcCircuit:
                 z_logicals.append(node)
         # if there are none, just use the first
         if z_logicals == []:
-            z_logicals = [0]
+            z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
 
     def _get_202(self, t):
@@ -1208,3 +1208,56 @@ class ArcCircuit:
             circuits = transpile(circuits, backend, scheduling_method="alap")
 
         return {basis: circuits[j] for j, basis in enumerate([self.basis, self.basis[::-1]])}
+
+    def _make_syndrome_graph(self):
+
+        # get the list of nodes
+        string = (
+            "1" * len(self.code_qubit)
+            + " "
+            + ("0" * len(self.links) + " ") * (self.T - 1)
+            + "1" * len(self.links)
+        )
+        nodes = []
+        for node in self.string2nodes(string):
+            if not node["is_boundary"]:
+                for t in range(self.T + 1):
+                    new_node = node.copy()
+                    new_node["time"] = t
+                    if new_node not in nodes:
+                        nodes.append(new_node)
+            else:
+                node["time"] = 0
+                nodes.append(node)
+
+        # find pairs that should be connected
+        edges = []
+        for n0, node0 in enumerate(nodes):
+            for n1, node1 in enumerate(nodes):
+                if n0 < n1:
+                    # just record all possible edges for now (should be improved later)
+                    dt = abs(node1["time"] - node0["time"])
+                    adj = set(node0["qubits"]).intersection(set(node1["qubits"]))
+                    if adj:
+                        if (node0["is_boundary"] ^ node1["is_boundary"]) or dt <= 1:
+                            edges.append((n0, n1))
+
+        # put it all in a graph
+        S = rx.PyGraph(multigraph=False)
+        hyperedges = []
+        for node in nodes:
+            S.add_node(node)
+        for n0, n1 in edges:
+            source = nodes[n0]
+            target = nodes[n1]
+            qubits = []
+            if not (source["is_boundary"] and target["is_boundary"]):
+                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+            if source["time"] != target["time"] and len(qubits) > 1:
+                qubits = []
+            edge = {"qubits": qubits, "weight": 1}
+            S.add_edge(n0, n1, edge)
+            # just record edges as hyperedges for now (should be improved later)
+            hyperedges.append({(n0, n1): edge})
+
+        return S, hyperedges
