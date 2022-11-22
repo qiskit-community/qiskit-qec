@@ -1,3 +1,20 @@
+# -*- coding: utf-8 -*-
+
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2019.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
+# pylint: disable=invalid-name
+
+"""Abstract code for testing and education."""
 from random import choice
 from numpy.random import poisson
 
@@ -8,48 +25,59 @@ from qiskit_qec.decoders import DecodingGraph
 
 
 class Decodoku:
-    def __init__(self, p=0.1, k=2, d=10, process=None, errors=None, nonabelian=False):
+    """Decodoku class."""
 
+    def __init__(self, p=0.1, k=2, d=10, process=None, errors=None, nonabelian=False):
+        """
+        Args:
+            p (float): Physical error rate.
+            k (int): Qudit dimension.
+            d (int): Code distance.
+            process (Callable): Function cluster and decode syndrome.
+            errors (list): List of tuples of the form `(x0, y0, x1, y1)`, specifying the
+            coordinates of the plaquttes either side of the error.
+            nonabelian (bool): Whether to present as non-Abelian anyons.
+        """
         self.p = p
         self.k = k
         self.d = d
         self.process = process
-        self.decoder = self.process != None
+        self.decoder = self.process is not None
         if errors:
             self.errors = errors
         else:
             self.errors = []
         self.nonabelian = nonabelian
 
-        self.L = d + 1
+        self.size = d + 1
 
         self.node_color = []
         self.boundary_corrections = []
 
-        self.generate_syndrome()
-        self.generate_graph()
+        self._generate_syndrome()
+        self._generate_graph()
 
-    def generate_syndrome(self):
+    def _generate_syndrome(self):
 
         syndrome = {}
-        for x in range(self.L):
-            for y in range(self.L):
+        for x in range(self.size):
+            for y in range(self.size):
                 syndrome[x, y] = 0
 
         if self.errors:
             error_num = len(self.errors)
         else:
-            error_num = poisson(self.p * 2 * self.L**2)
+            error_num = poisson(self.p * 2 * self.size**2)
             for _ in range(error_num):
 
-                x0 = choice(range(self.L))
-                y0 = choice(range(self.L))
+                x0 = choice(range(self.size))
+                y0 = choice(range(self.size))
 
                 if choice([True, False]):
                     dx = []
                     if x0 > 0:
                         dx.append(-1)
-                    if x0 < (self.L - 1):
+                    if x0 < (self.size - 1):
                         dx.append(+1)
                     x1 = x0 + choice(dx)
                     y1 = y0
@@ -57,17 +85,17 @@ class Decodoku:
                     dy = []
                     if y0 > 0:
                         dy.append(-1)
-                    if y0 < (self.L - 1):
+                    if y0 < (self.size - 1):
                         dy.append(+1)
                     x1 = x0
                     y1 = y0 + choice(dy)
                 self.errors.append((x0, y0, x1, y1))
 
         for x0, y0, x1, y1 in self.errors:
-            if x0 not in [0, self.L - 1] or x1 not in [0, self.L - 1]:
-                e = choice(range(1, self.k))
-                syndrome[x0, y0] += e
-                syndrome[x1, y1] += self.k - e
+            if x0 not in [0, self.size - 1] or x1 not in [0, self.size - 1]:
+                elem = choice(range(1, self.k))
+                syndrome[x0, y0] += elem
+                syndrome[x1, y1] += self.k - elem
 
         # generate colours for clusters
         self.error_colors = [
@@ -277,68 +305,77 @@ class Decodoku:
 
         # compute boundary parities and scrub their syndromes
         parity = [0, 0]
-        for e, x in enumerate([0, self.L - 1]):
-            for y in range(self.L):
-                parity[e] += syndrome[x, y]
+        for elem, x in enumerate([0, self.size - 1]):
+            for y in range(self.size):
+                parity[elem] += syndrome[x, y]
                 syndrome[x, y] = 0
-            parity[e] = parity[e] % self.k
+            parity[elem] = parity[elem] % self.k
         self.boundary_errors = parity
 
         self.syndrome = syndrome
         self.original_syndrome = syndrome.copy()
         self.boundary_errors = parity
 
-    def generate_graph(self):
+    def _generate_graph(self):
 
         dg = DecodingGraph(None)
 
-        d = self.L - 1
+        d = self.size - 1
 
         pos = []
-        for x in range(1, self.L - 1):
-            for y in range(self.L):
-                e = x - 1
-                t = self.L - 1 - y
-                dg.graph.add_node({"y": t, "x": e, "is_boundary": False})
-                pos.append((e, -t))
-        for e in [0, 1]:
+        for x in range(1, self.size - 1):
+            for y in range(self.size):
+                elem = x - 1
+                t_pos = self.size - 1 - y
+                dg.graph.add_node({"y": t_pos, "x": elem, "is_boundary": False})
+                pos.append((elem, -t_pos))
+        for elem in [0, 1]:
             dg.graph.add_node(
-                {"y": 0, "x": (d - 1) * (e == 1) - 1 * (e == 0), "element": e, "is_boundary": True}
+                {
+                    "y": 0,
+                    "x": (d - 1) * (elem == 1) - 1 * (elem == 0),
+                    "element": elem,
+                    "is_boundary": True,
+                }
             )
-            pos.append((d * (e == 1) - 2 * (e == 0), -(self.L - 1) / 2))
+            pos.append((d * (elem == 1) - 2 * (elem == 0), -(self.size - 1) / 2))
 
         nodes = dg.graph.nodes()
         # connect edges to boundary nodes
-        for y in range(self.L):
-            t = y
+        for y in range(self.size):
+            t_pos = y
             n0 = nodes.index({"y": 0, "x": -1, "element": 0, "is_boundary": True})
-            n1 = nodes.index({"y": t, "x": 0, "is_boundary": False})
+            n1 = nodes.index({"y": t_pos, "x": 0, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
             n0 = nodes.index({"y": 0, "x": d - 1, "element": 1, "is_boundary": True})
-            n1 = nodes.index({"y": t, "x": d - 2, "is_boundary": False})
+            n1 = nodes.index({"y": t_pos, "x": d - 2, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with space-like edges
-        for y in range(self.L):
-            for x in range(1, self.L - 2):
-                t = y
-                e = x - 1
-                n0 = nodes.index({"y": t, "x": e, "is_boundary": False})
-                n1 = nodes.index({"y": t, "x": e + 1, "is_boundary": False})
+        for y in range(self.size):
+            for x in range(1, self.size - 2):
+                t_pos = y
+                elem = x - 1
+                n0 = nodes.index({"y": t_pos, "x": elem, "is_boundary": False})
+                n1 = nodes.index({"y": t_pos, "x": elem + 1, "is_boundary": False})
                 dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with time-like edges
-        for y in range(self.L - 1):
-            for x in range(1, self.L - 1):
-                t = y
-                e = x - 1
-                n0 = nodes.index({"y": t, "x": e, "is_boundary": False})
-                n1 = nodes.index({"y": t + 1, "x": e, "is_boundary": False})
+        for y in range(self.size - 1):
+            for x in range(1, self.size - 1):
+                t_pos = y
+                elem = x - 1
+                n0 = nodes.index({"y": t_pos, "x": elem, "is_boundary": False})
+                n1 = nodes.index({"y": t_pos + 1, "x": elem, "is_boundary": False})
                 dg.graph.add_edge(n0, n1, None)
 
         self.decoding_graph = dg
         self.graph_pos = pos
-        self.update_graph()
+        self._update_graph()
 
-    def update_graph(self, original=False):
+    def reset_graph(self):
+        """Reset graph to original syndrome."""
+        self._update_graph(original=False)
+
+    def _update_graph(self, original=False):
 
         for node in self.decoding_graph.graph.nodes():
             node["highlighted"] = False
@@ -368,28 +405,28 @@ class Decodoku:
                         highlighted_color.append("cornflowerblue")
         self.node_color = highlighted_color
 
-    def start(self, engine):
+    def _start(self, engine):
 
         d = self.k
         syndrome = self.syndrome
 
         # set edges to orange
-        for x in [0, engine.L - 1]:
-            for y in range(engine.L):
+        for x in [0, engine.size - 1]:
+            for y in range(engine.size):
                 engine.screen.pixel[x, y].set_text("")
                 engine.screen.pixel[x, y].set_color("orange")
 
         # set bulk to blue
-        for x in range(1, engine.L - 1):
-            for y in range(engine.L):
+        for x in range(1, engine.size - 1):
+            for y in range(engine.size):
                 engine.screen.pixel[x, y].set_text("")
                 engine.screen.pixel[x, y].set_color("blue")
 
         # display changed syndromes
-        for x in range(1, engine.L - 1):
-            for y in range(engine.L):
+        for x in range(1, engine.size - 1):
+            for y in range(engine.size):
                 if syndrome[x, y] % d != 0:
-                    if x not in [0, engine.L - 1]:
+                    if x not in [0, engine.size - 1]:
                         if d != 2:
                             if not self.nonabelian:
                                 engine.screen.pixel[x, y].set_text(str(syndrome[x, y] % d))
@@ -404,14 +441,14 @@ class Decodoku:
         engine.screen.pixel["text"].set_text("Choose node with an error")
 
     # this is the function that does everything
-    def next_frame(self, engine):
+    def _next_frame(self, engine):
 
         d = self.k
         syndrome = self.syndrome
 
         if len(engine.pressed_pixels) == 1:
-            (x, y) = engine.pressed_pixels[0]
-            if x not in [0, engine.L - 1] and syndrome[x, y] > 0:
+            (x_pos, y_pos) = engine.pressed_pixels[0]
+            if x_pos not in [0, engine.size - 1] and syndrome[x_pos, y_pos] > 0:
                 engine.screen.pixel["text"].set_text("Choose node to move it to")
             else:
                 engine.pressed_pixels = []
@@ -421,22 +458,24 @@ class Decodoku:
             if (x0, y0) != (x1, y1):
                 syndrome[x1, y1] += syndrome[x0, y0]
                 syndrome[x0, y0] = 0
-                for x, y in [(x0, y0), (x1, y1)]:
-                    if syndrome[x, y] % d == 0:
-                        if x not in [0, engine.L - 1]:
-                            engine.screen.pixel[x, y].set_text("")
-                            engine.screen.pixel[x, y].set_color("blue")
+                for x_pos, y_pos in [(x0, y0), (x1, y1)]:
+                    if syndrome[x_pos, y_pos] % d == 0:
+                        if x_pos not in [0, engine.size - 1]:
+                            engine.screen.pixel[x_pos, y_pos].set_text("")
+                            engine.screen.pixel[x_pos, y_pos].set_color("blue")
                     else:
-                        if x not in [0, engine.L - 1]:
+                        if x_pos not in [0, engine.size - 1]:
                             if d != 2:
                                 if not self.nonabelian:
-                                    engine.screen.pixel[x, y].set_text(str(syndrome[x, y] % d))
+                                    engine.screen.pixel[x_pos, y_pos].set_text(
+                                        str(syndrome[x_pos, y_pos] % d)
+                                    )
                                 else:
-                                    if syndrome[x, y] % d == d / 2:
-                                        engine.screen.pixel[x, y].set_text("Λ")
+                                    if syndrome[x_pos, y_pos] % d == d / 2:
+                                        engine.screen.pixel[x_pos, y_pos].set_text("Λ")
                                     else:
-                                        engine.screen.pixel[x, y].set_text("Φ")
-                            engine.screen.pixel[x, y].set_color("red")
+                                        engine.screen.pixel[x_pos, y_pos].set_text("Φ")
+                            engine.screen.pixel[x_pos, y_pos].set_color("red")
 
                 engine.pressed_pixels = []
                 engine.screen.pixel["text"].set_text("Choose syndrome element")
@@ -453,44 +492,51 @@ class Decodoku:
 
         # see how many non-trivial syndromes are left
         num_elems = 0
-        for x in range(1, engine.L - 1):
-            for y in range(engine.L):
-                num_elems += syndrome[x, y] % d
+        for x_pos in range(1, engine.size - 1):
+            for y_pos in range(engine.size):
+                num_elems += syndrome[x_pos, y_pos] % d
 
         if num_elems == 0:
             parity = [0, 0]
-            for e, x in enumerate([0, engine.L - 1]):
-                for y in range(engine.L):
-                    parity[e] += syndrome[x, y]
-                parity[e] = parity[e] % d
+            for elem, x_pos in enumerate([0, engine.size - 1]):
+                for y_pos in range(engine.size):
+                    parity[elem] += syndrome[x_pos, y_pos]
+                parity[elem] = parity[elem] % d
                 self.boundary_corrections = parity
-            for e, x in enumerate([0, engine.L - 1]):
-                engine.screen.pixel[x, 0].set_text(str(self.boundary_errors[e]))
-                engine.screen.pixel[x, self.L - 1].set_text(str(self.boundary_corrections[e]))
+            for elem, x_pos in enumerate([0, engine.size - 1]):
+                engine.screen.pixel[x_pos, 0].set_text(str(self.boundary_errors[elem]))
+                engine.screen.pixel[x_pos, self.size - 1].set_text(
+                    str(self.boundary_corrections[elem])
+                )
 
             if (self.boundary_corrections[0] + self.boundary_errors[0]) % d == 0:
                 engine.screen.pixel["text"].set_text("Correction successful! :D")
-                for y in range(engine.L):
-                    for x in [0, engine.L - 1]:
-                        engine.screen.pixel[x, y].set_color("green")
+                for y_pos in range(engine.size):
+                    for x_pos in [0, engine.size - 1]:
+                        engine.screen.pixel[x_pos, y_pos].set_color("green")
             else:
                 engine.screen.pixel["text"].set_text("Correction unsuccessful! :(")
-                for y in range(engine.L):
-                    for x in [0, engine.L - 1]:
-                        engine.screen.pixel[x, y].set_color("red")
+                for y_pos in range(engine.size):
+                    for x_pos in [0, engine.size - 1]:
+                        engine.screen.pixel[x_pos, y_pos].set_color("red")
 
             if engine.controller["next"].value:
                 self.restart()
                 engine.start(engine)
 
-        self.update_graph()
+        self._update_graph()
 
     def restart(self):
+        """Generate and display a new set of errors."""
         self.errors = []
-        self.generate_syndrome()
-        self.update_graph()
+        self._generate_syndrome()
+        self._update_graph()
 
     def draw_graph(self, clusters=True):
+        """Draw the decoding graph.
+
+        Args:
+            clusters (dict): clusters dictionary, used to color nodes."""
         if self.decoder and clusters:
             parity, clusters = self.process(self)
         else:
@@ -518,4 +564,5 @@ class Decodoku:
         )
 
     def run(self):
-        return QiskitGameEngine(self.start, self.next_frame, L=self.L, active_screen=True)
+        """Runs a Decodoku game."""
+        return QiskitGameEngine(self._start, self._next_frame, size=self.size, active_screen=True)

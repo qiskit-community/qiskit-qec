@@ -30,4 +30,4 @@ Utils module classes and functions
     pauli_rep
 """
 
-from . import indexer, pauli_rep
+from . import indexer, pauli_rep, visualizations
