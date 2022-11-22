@@ -34,3 +34,4 @@ Codes module classes and functions
 from .qec_code import QECCode
 from .stabsubsystemcodes import StabSubSystemCode
 from .codebase import CodeLibrary, CodeLibrarian, small_code, all_small_codes
+from .decodoku import Decodoku
