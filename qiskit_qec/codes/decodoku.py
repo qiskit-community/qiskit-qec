@@ -93,9 +93,9 @@ class Decodoku:
 
         for x0, y0, x1, y1 in self.errors:
             if x0 not in [0, self.size - 1] or x1 not in [0, self.size - 1]:
-                elem = choice(range(1, self.k))
-                syndrome[x0, y0] += elem
-                syndrome[x1, y1] += self.k - elem
+                e = choice(range(1, self.k))
+                syndrome[x0, y0] += e
+                syndrome[x1, y1] += self.k - e
 
         # generate colours for clusters
         self.error_colors = [
@@ -325,46 +325,43 @@ class Decodoku:
         pos = []
         for x in range(1, self.size - 1):
             for y in range(self.size):
-                elem = x - 1
-                t_pos = self.size - 1 - y
-                dg.graph.add_node({"y": t_pos, "x": elem, "is_boundary": False})
-                pos.append((elem, -t_pos))
-        for elem in [0, 1]:
+                xx = x - 1
+                y = self.size - 1 - y
+                dg.graph.add_node({"y": y, "x": xx, "is_boundary": False})
+                pos.append((xx, -y))
+        for xx in [0, 1]:
             dg.graph.add_node(
                 {
                     "y": 0,
-                    "x": (d - 1) * (elem == 1) - 1 * (elem == 0),
-                    "element": elem,
+                    "x": (d - 1) * (xx == 1) - 1 * (xx == 0),
+                    "element": xx,
                     "is_boundary": True,
                 }
             )
-            pos.append((d * (elem == 1) - 2 * (elem == 0), -(self.size - 1) / 2))
+            pos.append((d * (xx == 1) - 2 * (xx == 0), -(self.size - 1) / 2))
 
         nodes = dg.graph.nodes()
         # connect edges to boundary nodes
         for y in range(self.size):
-            t_pos = y
             n0 = nodes.index({"y": 0, "x": -1, "element": 0, "is_boundary": True})
-            n1 = nodes.index({"y": t_pos, "x": 0, "is_boundary": False})
+            n1 = nodes.index({"y": y, "x": 0, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
             n0 = nodes.index({"y": 0, "x": d - 1, "element": 1, "is_boundary": True})
-            n1 = nodes.index({"y": t_pos, "x": d - 2, "is_boundary": False})
+            n1 = nodes.index({"y": y, "x": d - 2, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with space-like edges
         for y in range(self.size):
             for x in range(1, self.size - 2):
-                t_pos = y
-                elem = x - 1
-                n0 = nodes.index({"y": t_pos, "x": elem, "is_boundary": False})
-                n1 = nodes.index({"y": t_pos, "x": elem + 1, "is_boundary": False})
+                xx = x - 1
+                n0 = nodes.index({"y": y, "x": xx, "is_boundary": False})
+                n1 = nodes.index({"y": y, "x": xx + 1, "is_boundary": False})
                 dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with time-like edges
         for y in range(self.size - 1):
             for x in range(1, self.size - 1):
-                t_pos = y
-                elem = x - 1
-                n0 = nodes.index({"y": t_pos, "x": elem, "is_boundary": False})
-                n1 = nodes.index({"y": t_pos + 1, "x": elem, "is_boundary": False})
+                xx = x - 1
+                n0 = nodes.index({"y": y, "x": xx, "is_boundary": False})
+                n1 = nodes.index({"y": y + 1, "x": xx, "is_boundary": False})
                 dg.graph.add_edge(n0, n1, None)
 
         self.decoding_graph = dg
@@ -447,8 +444,8 @@ class Decodoku:
         syndrome = self.syndrome
 
         if len(engine.pressed_pixels) == 1:
-            (x_pos, y_pos) = engine.pressed_pixels[0]
-            if x_pos not in [0, engine.size - 1] and syndrome[x_pos, y_pos] > 0:
+            (x, y) = engine.pressed_pixels[0]
+            if x not in [0, engine.size - 1] and syndrome[x, y] > 0:
                 engine.screen.pixel["text"].set_text("Choose node to move it to")
             else:
                 engine.pressed_pixels = []
@@ -458,24 +455,22 @@ class Decodoku:
             if (x0, y0) != (x1, y1):
                 syndrome[x1, y1] += syndrome[x0, y0]
                 syndrome[x0, y0] = 0
-                for x_pos, y_pos in [(x0, y0), (x1, y1)]:
-                    if syndrome[x_pos, y_pos] % d == 0:
-                        if x_pos not in [0, engine.size - 1]:
-                            engine.screen.pixel[x_pos, y_pos].set_text("")
-                            engine.screen.pixel[x_pos, y_pos].set_color("blue")
+                for x, y in [(x0, y0), (x1, y1)]:
+                    if syndrome[x, y] % d == 0:
+                        if x not in [0, engine.size - 1]:
+                            engine.screen.pixel[x, y].set_text("")
+                            engine.screen.pixel[x, y].set_color("blue")
                     else:
-                        if x_pos not in [0, engine.size - 1]:
+                        if x not in [0, engine.size - 1]:
                             if d != 2:
                                 if not self.nonabelian:
-                                    engine.screen.pixel[x_pos, y_pos].set_text(
-                                        str(syndrome[x_pos, y_pos] % d)
-                                    )
+                                    engine.screen.pixel[x, y].set_text(str(syndrome[x, y] % d))
                                 else:
-                                    if syndrome[x_pos, y_pos] % d == d / 2:
-                                        engine.screen.pixel[x_pos, y_pos].set_text("Λ")
+                                    if syndrome[x, y] % d == d / 2:
+                                        engine.screen.pixel[x, y].set_text("Λ")
                                     else:
-                                        engine.screen.pixel[x_pos, y_pos].set_text("Φ")
-                            engine.screen.pixel[x_pos, y_pos].set_color("red")
+                                        engine.screen.pixel[x, y].set_text("Φ")
+                            engine.screen.pixel[x, y].set_color("red")
 
                 engine.pressed_pixels = []
                 engine.screen.pixel["text"].set_text("Choose syndrome element")
@@ -492,33 +487,31 @@ class Decodoku:
 
         # see how many non-trivial syndromes are left
         num_elems = 0
-        for x_pos in range(1, engine.size - 1):
-            for y_pos in range(engine.size):
-                num_elems += syndrome[x_pos, y_pos] % d
+        for x in range(1, engine.size - 1):
+            for y in range(engine.size):
+                num_elems += syndrome[x, y] % d
 
         if num_elems == 0:
             parity = [0, 0]
-            for elem, x_pos in enumerate([0, engine.size - 1]):
-                for y_pos in range(engine.size):
-                    parity[elem] += syndrome[x_pos, y_pos]
+            for elem, x in enumerate([0, engine.size - 1]):
+                for y in range(engine.size):
+                    parity[elem] += syndrome[x, y]
                 parity[elem] = parity[elem] % d
                 self.boundary_corrections = parity
-            for elem, x_pos in enumerate([0, engine.size - 1]):
-                engine.screen.pixel[x_pos, 0].set_text(str(self.boundary_errors[elem]))
-                engine.screen.pixel[x_pos, self.size - 1].set_text(
-                    str(self.boundary_corrections[elem])
-                )
+            for elem, x in enumerate([0, engine.size - 1]):
+                engine.screen.pixel[x, 0].set_text(str(self.boundary_errors[elem]))
+                engine.screen.pixel[x, self.size - 1].set_text(str(self.boundary_corrections[elem]))
 
             if (self.boundary_corrections[0] + self.boundary_errors[0]) % d == 0:
                 engine.screen.pixel["text"].set_text("Correction successful! :D")
-                for y_pos in range(engine.size):
-                    for x_pos in [0, engine.size - 1]:
-                        engine.screen.pixel[x_pos, y_pos].set_color("green")
+                for y in range(engine.size):
+                    for x in [0, engine.size - 1]:
+                        engine.screen.pixel[x, y].set_color("green")
             else:
                 engine.screen.pixel["text"].set_text("Correction unsuccessful! :(")
-                for y_pos in range(engine.size):
-                    for x_pos in [0, engine.size - 1]:
-                        engine.screen.pixel[x_pos, y_pos].set_color("red")
+                for y in range(engine.size):
+                    for x in [0, engine.size - 1]:
+                        engine.screen.pixel[x, y].set_color("red")
 
             if engine.controller["next"].value:
                 self.restart()
