@@ -329,16 +329,16 @@ class Decodoku:
                 y = self.size - 1 - y
                 dg.graph.add_node({"y": y, "x": xx, "is_boundary": False})
                 pos.append((xx, -y))
-        for xx in [0, 1]:
+        for elem in [0, 1]:
             dg.graph.add_node(
                 {
                     "y": 0,
-                    "x": (d - 1) * (xx == 1) - 1 * (xx == 0),
-                    "element": xx,
+                    "x": (d - 1) * (elem == 1) - 1 * (elem == 0),
+                    "element": elem,
                     "is_boundary": True,
                 }
             )
-            pos.append((d * (xx == 1) - 2 * (xx == 0), -(self.size - 1) / 2))
+            pos.append((d * (elem == 1) - 2 * (elem == 0), -(self.size - 1) / 2))
 
         nodes = dg.graph.nodes()
         # connect edges to boundary nodes
