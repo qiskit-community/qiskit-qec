@@ -380,9 +380,9 @@ class RepetitionCodeCircuit:
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
-            flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes, that aren't already accounted for by given
-            boundary nodes.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
@@ -428,9 +428,18 @@ class RepetitionCodeCircuit:
         else:
             neutral = True
             flipped_logicals = flipped_logicals.difference(given_logicals)
-        flipped_logicals = list(flipped_logicals)
 
-        return neutral, flipped_logicals, num_errors
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            qubits = [flipped_logical]
+            if self.basis == "z":
+                elem = self.css_z_boundary.index(qubits)
+            else:
+                elem = self.css_x_boundary.index(qubits)
+            node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
 
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
@@ -731,7 +740,7 @@ class ArcCircuit:
                 z_logicals.append(node)
         # if there are none, just use the first
         if z_logicals == []:
-            z_logicals = [min(self.code_index.keys())]
+            z_logicals = [0]
         self.z_logicals = z_logicals
 
     def _get_202(self, t):
@@ -1041,9 +1050,9 @@ class ArcCircuit:
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
-            flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes, that aren't already accounted for by given
-            boundary nodes.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
@@ -1120,9 +1129,19 @@ class ArcCircuit:
         # otherwise, report only needed logicals that aren't given
         else:
             flipped_logicals = flipped_logicals.difference(given_logicals)
-        flipped_logicals = list(flipped_logicals)
 
-        return neutral, flipped_logicals, num_errors
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            node = {
+                "time": 0,
+                "qubits": [flipped_logical],
+                "link qubit": None,
+                "is_boundary": True,
+                "element": self.z_logicals.index(flipped_logical),
+            }
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
@@ -1208,56 +1227,3 @@ class ArcCircuit:
             circuits = transpile(circuits, backend, scheduling_method="alap")
 
         return {basis: circuits[j] for j, basis in enumerate([self.basis, self.basis[::-1]])}
-
-    def _make_syndrome_graph(self):
-
-        # get the list of nodes
-        string = (
-            "1" * len(self.code_qubit)
-            + " "
-            + ("0" * len(self.links) + " ") * (self.T - 1)
-            + "1" * len(self.links)
-        )
-        nodes = []
-        for node in self.string2nodes(string):
-            if not node["is_boundary"]:
-                for t in range(self.T + 1):
-                    new_node = node.copy()
-                    new_node["time"] = t
-                    if new_node not in nodes:
-                        nodes.append(new_node)
-            else:
-                node["time"] = 0
-                nodes.append(node)
-
-        # find pairs that should be connected
-        edges = []
-        for n0, node0 in enumerate(nodes):
-            for n1, node1 in enumerate(nodes):
-                if n0 < n1:
-                    # just record all possible edges for now (should be improved later)
-                    dt = abs(node1["time"] - node0["time"])
-                    adj = set(node0["qubits"]).intersection(set(node1["qubits"]))
-                    if adj:
-                        if (node0["is_boundary"] ^ node1["is_boundary"]) or dt <= 1:
-                            edges.append((n0, n1))
-
-        # put it all in a graph
-        S = rx.PyGraph(multigraph=False)
-        hyperedges = []
-        for node in nodes:
-            S.add_node(node)
-        for n0, n1 in edges:
-            source = nodes[n0]
-            target = nodes[n1]
-            qubits = []
-            if not (source["is_boundary"] and target["is_boundary"]):
-                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-            if source["time"] != target["time"] and len(qubits) > 1:
-                qubits = []
-            edge = {"qubits": qubits, "weight": 1}
-            S.add_edge(n0, n1, edge)
-            # just record edges as hyperedges for now (should be improved later)
-            hyperedges.append({(n0, n1): edge})
-
-        return S, hyperedges
