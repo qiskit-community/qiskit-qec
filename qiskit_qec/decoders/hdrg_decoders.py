@@ -191,7 +191,8 @@ class ClusteringDecoder:
         # get the list of required logicals for each cluster
         cluster_logicals = {}
         for c, nodes in cluster_nodes.items():
-            _, z_logicals, _ = code.check_nodes(nodes)
+            _, logical_nodes, _ = code.check_nodes(nodes)
+            z_logicals = [node["qubits"][0] for node in logical_nodes]
             cluster_logicals[c] = z_logicals
 
         # get the net effect on each logical

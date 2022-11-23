@@ -380,9 +380,9 @@ class RepetitionCodeCircuit:
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
-            flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes, that aren't already accounted for by given
-            boundary nodes.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
@@ -428,9 +428,18 @@ class RepetitionCodeCircuit:
         else:
             neutral = True
             flipped_logicals = flipped_logicals.difference(given_logicals)
-        flipped_logicals = list(flipped_logicals)
 
-        return neutral, flipped_logicals, num_errors
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            qubits = [flipped_logical]
+            if self.basis == "z":
+                elem = self.css_z_boundary.index(qubits)
+            else:
+                elem = self.css_x_boundary.index(qubits)
+            node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
 
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
@@ -1041,9 +1050,9 @@ class ArcCircuit:
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
-            flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes, that aren't already accounted for by given
-            boundary nodes.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
@@ -1120,9 +1129,19 @@ class ArcCircuit:
         # otherwise, report only needed logicals that aren't given
         else:
             flipped_logicals = flipped_logicals.difference(given_logicals)
-        flipped_logicals = list(flipped_logicals)
 
-        return neutral, flipped_logicals, num_errors
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            node = {
+                "time": 0,
+                "qubits": [flipped_logical],
+                "link qubit": None,
+                "is_boundary": True,
+                "element": self.z_logicals.index(flipped_logical),
+            }
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
