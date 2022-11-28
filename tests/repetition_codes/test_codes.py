@@ -307,7 +307,7 @@ class TestARCCodes(unittest.TestCase):
     def test_feedforward(self):
         """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
-        T = 5 * len(links)
+        T = 10
         # try codes with and without feedforward correction
         for ff in [True, False]:
             code = ArcCircuit(
@@ -333,13 +333,13 @@ class TestARCCodes(unittest.TestCase):
             for j in range(2):
                 counts = result.get_counts(j)
                 for string in counts:
-                    string = string.split(" ")[::-1]
                     if ff:
-                        # post 202 result should be same as initial
-                        correct = correct and string[10] == string[0]
+                        # final result should be same as initial
+                        correct = correct and string[0:4] == "0100"
                     else:
                         # final 202 result should be same as those that follow
-                        correct = correct and string[9] == string[10]
+                        string = string.split(" ")[::-1]
+                        correct = correct and string[8] == string[9]
             self.assertTrue(correct, "Result string not as required for ff=" + str(ff))
 
     def test_bases(self):

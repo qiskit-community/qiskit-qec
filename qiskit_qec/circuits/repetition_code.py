@@ -664,7 +664,7 @@ class ArcCircuit:
         """
         # null values in case no 202 done during this round
         tau, qubit_l_202, qubit_l_nghbrs = None, None, [[], []]
-        if self.run_202 and int(t / self.rounds_per_link) <= len(self.links_202):
+        if self.run_202 and int(t / self.rounds_per_link) < len(self.links_202):
             # determine the link qubit for which the 202 sequence is run
             link = self.links_202[int(t / self.rounds_per_link)]
             # set the 202 link
@@ -718,7 +718,7 @@ class ArcCircuit:
                         qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
                         links_to_measure.add(q_l)
-                        if tau == 0 and neighbor:
+                        if type(tau) == int and tau == 0 and neighbor:
                             if not self._ff:
                                 links_to_reset.add(q_l)
                         else:
