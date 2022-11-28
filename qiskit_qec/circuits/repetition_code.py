@@ -718,7 +718,7 @@ class ArcCircuit:
                         qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
                         links_to_measure.add(q_l)
-                        if type(tau) == int and tau == 0 and neighbor:
+                        if isinstance(tau, int) and tau == 0 and neighbor:
                             if not self._ff:
                                 links_to_reset.add(q_l)
                         else:
