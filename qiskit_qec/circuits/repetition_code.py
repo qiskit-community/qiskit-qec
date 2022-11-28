@@ -432,7 +432,7 @@ class ArcCircuit:
         self._max_dist = max_dist
         self.delay = delay or 0
 
-        # calculate coloring and schedule (if required)
+        # calculate coloring and schedule, etc
         if color is None:
             self._coloring()
         else:
@@ -441,18 +441,29 @@ class ArcCircuit:
             self._scheduling()
         else:
             self.schedule = schedule
+        self._preparation()
 
         # determine the placement of [2,0,2] rounds
-        num_links = len(self.links)
-        self.rounds_per_link = np.floor(T / num_links)
-        self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
-        self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
-        self.run_202 = run_202 and self.rounds_per_link >= 5
+        if run_202:
+            self.links_202 = []
+            for link in self.links:
+                logical_overlap = {link[0], link[2]}.intersection(set(self.z_logicals))
+                if not logical_overlap:
+                    self.links_202.append(link)
+            num_links = len(self.links_202)
+            if num_links > 0:
+                self.rounds_per_link = np.floor(T / num_links)
+                self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
+                self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
+                self.run_202 = self.rounds_per_link >= 5
+            else:
+                self.run_202 = False
+        else:
+            self.run_202 = False
         self._ff = ff and self.run_202
 
         # create the circuit
         self.base = basis
-        self._preparation()
         self.T = 0
         for _ in range(T - 1):
             self._syndrome_measurement()
@@ -653,30 +664,27 @@ class ArcCircuit:
         """
         # null values in case no 202 done during this round
         tau, qubit_l_202, qubit_l_nghbrs = None, None, [[], []]
-        if self.run_202 and int(t / self.rounds_per_link) < len(self.links):
+        if self.run_202 and int(t / self.rounds_per_link) <= len(self.links_202):
             # determine the link qubit for which the 202 sequence is run
-            link = self.links[int(t / self.rounds_per_link)]
-            # see if the planned link has overlap with the logicals
-            logical_overlap = {link[0], link[2]}.intersection(set(self.z_logicals))
-            if not logical_overlap:
-                # set the 202 link
-                qubit_l_202 = link[1]
-                #  determine where we are in the sequence
-                tau = int((t - self.metabuffer) % self.rounds_per_link - self.roundbuffer)
-                if t < self.metabuffer or tau not in range(5):
-                    tau = False
-                # determine the neighbouring link qubits that are suppressed
-                graph = self._get_link_graph(0)
-                nodes = graph.nodes()
-                edges = graph.edge_list()
-                ns = [nodes.index(link[j]) for j in [0, 2]]
-                qubit_l_nghbrs = []
-                for n in ns:
-                    neighbors = list(graph.incident_edges(n))
-                    neighbors.remove(list(edges).index(tuple(ns)))
-                    qubit_l_nghbrs.append(
-                        [graph.get_edge_data_by_index(ngbhr)["link qubit"] for ngbhr in neighbors]
-                    )
+            link = self.links_202[int(t / self.rounds_per_link)]
+            # set the 202 link
+            qubit_l_202 = link[1]
+            #  determine where we are in the sequence
+            tau = int((t - self.metabuffer) % self.rounds_per_link - self.roundbuffer)
+            if t < self.metabuffer or tau not in range(5):
+                tau = False
+            # determine the neighbouring link qubits that are suppressed
+            graph = self._get_link_graph(0)
+            nodes = graph.nodes()
+            edges = graph.edge_list()
+            ns = [nodes.index(link[j]) for j in [0, 2]]
+            qubit_l_nghbrs = []
+            for n in ns:
+                neighbors = list(graph.incident_edges(n))
+                neighbors.remove(list(edges).index(tuple(ns)))
+                qubit_l_nghbrs.append(
+                    [graph.get_edge_data_by_index(ngbhr)["link qubit"] for ngbhr in neighbors]
+                )
         return tau, qubit_l_202, qubit_l_nghbrs
 
     def _syndrome_measurement(self, final: bool = False):
@@ -814,12 +822,13 @@ class ArcCircuit:
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
         last_neighbors = []
+        just_finished = False
         for t in range(self.T + 1):
             tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
+            all_neighbors = qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
             for j in range(self.num_qubits[1]):
                 q_l = self.num_qubits[1] - 1 - j
                 qubit_l = self.links[q_l][1]
-                all_neighbors = qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
                 if qubit_l in all_neighbors and tau in [1, 2, 3]:
                     # don't calculate changes for neighbours of the 202
                     change = False
@@ -847,12 +856,12 @@ class ArcCircuit:
                                 if tau in [2, 3, 4]:
                                     dt = 2
                                 else:
-                                    if self._ff and qubit_l in last_neighbors and t % 5 == 0:
+                                    if self._ff and qubit_l in last_neighbors and just_finished:
                                         dt = 5
                                     else:
                                         dt = 1
                                 change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
-                        elif qubit_l in last_neighbors and t % 5 == 0:
+                        elif qubit_l in last_neighbors and just_finished:
                             if self._ff:
                                 dt = 5
                             else:
@@ -864,6 +873,7 @@ class ArcCircuit:
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
             last_neighbors = all_neighbors.copy()
+            just_finished = tau == 4
 
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end
