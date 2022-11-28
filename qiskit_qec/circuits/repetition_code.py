@@ -670,8 +670,8 @@ class ArcCircuit:
             # set the 202 link
             qubit_l_202 = link[1]
             #  determine where we are in the sequence
-            tau = int((t - self.metabuffer) % self.rounds_per_link - self.roundbuffer)
-            if t < self.metabuffer or tau not in range(5):
+            tau = int(t % self.rounds_per_link - self.roundbuffer)
+            if t < 0 or tau not in range(5):
                 tau = False
             # determine the neighbouring link qubits that are suppressed
             graph = self._get_link_graph(0)

@@ -269,7 +269,7 @@ class TestARCCodes(unittest.TestCase):
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        T = 5 * len(links)
+        T = 11
         # first, do they appear when needed
         for run_202 in [True, False]:
             code = ArcCircuit(links, T=T, run_202=run_202)
