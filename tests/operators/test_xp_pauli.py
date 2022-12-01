@@ -109,7 +109,8 @@ class TestXPPauli(QiskitTestCase):
         phase_exp = 0
         precision = 8
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
-        value = xppauli.antisymmetric_op()
+        dinput = np.array(xppauli.z)
+        value = xppauli.antisymmetric_op(dinput)
 
         target_matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
         target_phase_exp = 15
@@ -147,7 +148,7 @@ class TestXPPauli(QiskitTestCase):
         b_phase_exp = 2
         b_precision = 4
         b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
-        value = XPPauli.compose(a, b)
+        value = a.compose(b)
 
         target_matrix = np.array([1, 0, 1, 3, 3, 0], dtype=np.int64)
         target_phase_exp = 6

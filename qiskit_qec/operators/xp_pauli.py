@@ -177,7 +177,7 @@ class XPPauli(BaseXPPauli):
         Examples:
             >>> a = XPPauli(data=np.array([0, 1, 0, 0, 2, 0], dtype=np.int64), phase_exp=6, precision=4)
             >>> b = XPPauli(data=np.array([1, 1, 1, 3, 3, 0], dtype=np.int64), phase_exp=2, precision=4)
-            >>> value = XPPauli.compose(a, b)
+            >>> value = a.compose(b)
             >>> value.matrix
             array([[1, 0, 1, 3, 3, 0]], dtype=int64)
             >>> value._phase_exp
@@ -261,9 +261,9 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().rescale_precision(new_precision))
 
-    def antisymmetric_op(self) -> "XPPauli":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0.
+    def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauli":
+        """Return the antisymmetric operator corresponding to an integer vector,
+        with precision specified by BaseXPPauli.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -272,14 +272,17 @@ class XPPauli(BaseXPPauli):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec: An integer vector
+
         Returns:
-            XPPauli: Antisymmetric operator corresponding to XPPauli, if x is 0
+            XPPauli: The antisymmetric operator
 
         Examples:
             >>> a = XPPauli(
             ... data=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64),
             ... phase_exp=0, precision=8)
-            >>> value = a.antisymmetric_op()
+            >>> value = a.antisymmetric_op(data.z)
             >>> value.matrix
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
             >>> value._phase_exp
@@ -288,7 +291,7 @@ class XPPauli(BaseXPPauli):
         See also:
             _antisymmetric_op
         """
-        return XPPauli(super().antisymmetric_op())
+        return XPPauli(super().antisymmetric_op(int_vec))
 
     def power(self, n: int) -> "XPPauli":
         """Return the XP operator of specified precision raised to the power n.

@@ -282,7 +282,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> b = XPPauliList(
             ... data=np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64),
             ... phase_exp=np.array([2, 2]), precision=4)
-            >>> value = XPPauliList.compose(a, b)
+            >>> value = a.compose(b)
             >>> value.matrix
             array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=int64)
             >>> value._phase_exp
@@ -349,9 +349,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().rescale_precision(new_precision))
 
-    def antisymmetric_op(self) -> "XPPauliList":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0.
+    def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauliList":
+        """Return the antisymmetric operators corresponding to the list of
+        integer vectors, with precision specified by BaseXPPauli.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -360,8 +360,11 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec (np.ndarray): Array containing integer vectors
+
         Returns:
-            XPPauliList: Antisymmetric operator corresponding to XPPauliList, if x is 0
+            XPPauliList: The antisymmetric operators corresponding to the input vectors
 
         Examples:
             >>> matrix = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3],
@@ -369,7 +372,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> phase_exp = np.array([0, 0])
             >>> precision = 8
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
-            >>> value = xppauli_list.antisymmetric_op()
+            >>> value = xppauli_list.antisymmetric_op(xppauli_list.z)
             >>> value.matrix
             array([[0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3],
                 [0, 0, 0, 0, 0, 0, 0, -3, -1, -2, -3, -7, -6, -3]], dtype=np.int64)
@@ -379,7 +382,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         See also:
             _antisymmetric_op
         """
-        return XPPauliList(super().antisymmetric_op())
+        return XPPauliList(super().antisymmetric_op(int_vec))
 
     def power(self, n: int) -> "XPPauliList":
         """Return the XP operator of specified precision raised to the power n.

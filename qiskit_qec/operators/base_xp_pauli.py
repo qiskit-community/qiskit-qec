@@ -96,11 +96,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See Also:
             XPPauli, XPPauliList
         """
-
-        if not (isinstance(precision, int) and (precision > 1)):
-            raise QiskitError(
-                "Precision of XP operators must be an integer greater than or equal to 2."
-            )
+        if precision is not None:
+            if not (isinstance(precision, int) and (precision > 1)):
+                raise QiskitError(
+                    "Precision of XP operators must be an integer greater than or equal to 2."
+                )
 
         if matrix is None or matrix.size == 0:
             matrix = np.empty(shape=(0, 0), dtype=np.int64)
@@ -148,7 +148,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     # @final Add when python >= 3.8
     @_x.setter
-    def _x(self, val):  # pylint: disable=invalid-name
+    def _x(self, val: np.ndarray):  # pylint: disable=invalid-name
         """_summary_"""
         self.matrix[:, : self.num_qubits] = val
 
@@ -158,7 +158,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return self.matrix[:, self.num_qubits :]
 
     @z.setter
-    def z(self, val):
+    def z(self, val: np.ndarray):
         """_summary_"""
         self.matrix[:, self.num_qubits :] = val
 
@@ -170,7 +170,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     # @final Add when python >= 3.8
     @_z.setter
-    def _z(self, val):  # pylint: disable=invalid-name
+    def _z(self, val: np.ndarray):  # pylint: disable=invalid-name
         """_summary_"""
         self.matrix[:, self.num_qubits :] = val
 
@@ -319,7 +319,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=6, precision=4)
             >>> b = BaseXPPauli(matrix=np.array([1, 1, 1, 3, 3, 0], dtype=np.int64),
             ... phase_exp=2, precision=4)
-            >>> value = BaseXPPauli.compose(a, b)
+            >>> value = a.compose(b)
             >>> value.matrix
             array([[1, 0, 1, 3, 3, 0]], dtype=int64)
             >>> value._phase_exp
@@ -390,27 +390,25 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         bmat = b.matrix
 
         # Calculate the sum of generalized symplectic matrix for the composition, excluding D
-        x = np.logical_xor(amat[:, : a.num_qubits], bmat[:, : b.num_qubits])
+        # x = np.logical_xor(amat[:, : a.num_qubits], bmat[:, : b.num_qubits])
+        x = amat[:, : a.num_qubits] + bmat[:, : b.num_qubits]
         z = amat[:, a.num_qubits :] + bmat[:, b.num_qubits :]
         mat = np.concatenate((x, z), axis=-1)
 
         # Calculate the phase of the composition, excluding D
         phase_exp = a._phase_exp + b._phase_exp
-        # Calculate antisymmetric operator, i.e. D
+        # Calculate the antisymmetric operator, i.e. D
         if front:
-            dx = np.zeros(np.shape(a.x))
-            dz = 2 * np.multiply(b.x, a.z)
-            dmat = np.concatenate((dx, dz), axis=-1)
-            d = BaseXPPauli(matrix=dmat, precision=a.precision)._antisymmetric_op()
+            dinput = 2 * np.multiply(b.x, a.z)
+            d = b.antisymmetric_op(dinput)
         else:
-            dx = np.zeros(np.shape(a.x))
-            dz = 2 * np.multiply(a.x, b.z)
-            dmat = np.concatenate((dx, dz), axis=-1)
-            d = BaseXPPauli(matrix=dmat, precision=a.precision)._antisymmetric_op()
+            dinput = 2 * np.multiply(a.x, b.z)
+            d = a.antisymmetric_op(dinput)
 
         if qargs is None:
             if not inplace:
-                result_x = np.logical_xor(x, d.x)
+                # result_x = np.logical_xor(x, d.x)
+                result_x = x + d.x
                 result_z = z + d.z
                 result_phase_exp = phase_exp + d._phase_exp
                 result_mat = np.concatenate((result_x, result_z), axis=-1)
@@ -418,7 +416,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                     matrix=result_mat, phase_exp=result_phase_exp, precision=a.precision
                 )._unique_vector_rep()
             # Inplace update
-            a.x = np.logical_xor(x, d.x)
+            # a.x = np.logical_xor(x, d.x)
+            a.x = x + d.x
             a.z = z + d.z
             a._phase_exp = phase_exp + d._phase_exp
             return a._unique_vector_rep()
@@ -689,7 +688,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         phase_exp = np.empty(shape=np.shape(unique_xp_op._phase_exp))
 
         if new_precision > old_precision:
-            if np.mod(new_precision, old_precision > 0):
+            if np.mod(new_precision, old_precision) > 0:
                 return None
             scale_factor = new_precision // old_precision
             phase_exp = scale_factor * unique_xp_op._phase_exp
@@ -796,9 +795,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
         return np.where(np.sum(self.x, axis=-1) == 0, True, False)
 
-    def antisymmetric_op(self) -> "BaseXPPauli":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0.
+    def antisymmetric_op(self, int_vec: np.ndarray) -> "BaseXPPauli":
+        """Return the antisymmetric operator corresponding to an integer vector,
+        with precision specified by BaseXPPauli.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -807,14 +806,20 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec: An integer vector
+
         Returns:
-            BaseXPPauli: Antisymmetric operator corresponding to BaseXPPauli, if x is 0
+            BaseXPPauli: The antisymmetric operator
+
+        Raises:
+            QiskitError: Input vector must be an integer array
 
         Examples:
             >>> a = BaseXPPauli(
             ... matrix=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64),
             ... phase_exp=0, precision=8)
-            >>> value = a.antisymmetric_op()
+            >>> value = a.antisymmetric_op(a.z)
             >>> value.matrix
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
             >>> value._phase_exp
@@ -823,12 +828,17 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             _antisymmetric_op
         """
-        return self._antisymmetric_op()
+        # Check if int_vec is a valid integer vector
+        int_vec = np.atleast_2d(int_vec)
+        if int_vec.dtype != np.int64:
+            raise TypeError("Input vector must be an integer array.")
 
-    def _antisymmetric_op(self) -> "BaseXPPauli":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0, else it returns
-        None.
+        return self._antisymmetric_op(int_vec, self.precision)
+
+    @staticmethod
+    def _antisymmetric_op(int_vec: np.ndarray, precision: int) -> "BaseXPPauli":
+        """Return the antisymmetric operator of specified precision
+        corresponding to an integer vector.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -837,19 +847,19 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec: An integer vector
+            precision: Precision of the antisymmetric operator
+
         Returns:
-            BaseXPPauli: Antisymmetric operator corresponding to BaseXPPauli, if x is 0
+            BaseXPPauli: The antisymmetric operator of specified precision
         """
+        phase_exp = np.sum(int_vec, axis=-1, dtype=np.int64)
+        x = np.zeros(np.shape(int_vec), dtype=np.int64)
+        z = -int_vec
+        matrix = np.concatenate((x, z), axis=-1)
 
-        if np.any(self.x):
-            # TODO should there be an assertion here?
-            return None
-
-        phase_exp = np.sum(self.z, axis=-1)
-        x = np.zeros(np.shape(self.z))
-        matrix = np.concatenate((x, -self.z), axis=-1)
-
-        return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
+        return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=precision)
 
     def power(self, n: int) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
@@ -913,10 +923,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         matrix = np.concatenate((x, z), axis=-1)
         first = BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
-        x = np.zeros(np.shape(self.z))
-        z = np.multiply((n - a), np.multiply(self.x, self.z))
-        matrix = np.concatenate((x, z), axis=-1)
-        second = BaseXPPauli(matrix=matrix, precision=self.precision).antisymmetric_op()
+        dinput = np.multiply((n - a), np.multiply(self.x, self.z))
+        second = self._antisymmetric_op(dinput, self.precision)
 
         product = BaseXPPauli(
             matrix=first.matrix + second.matrix,
@@ -974,7 +982,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             for j in val:
                 lcm[i] = np.lcm(lcm[i], j)
 
-        square = BaseXPPauli.compose(self, self)
+        square = self.compose(self)
         if not isinstance(square, type(self)):
             square = type(self)(square)
         gcd_square = np.gcd(square.z, square.precision)
