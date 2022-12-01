@@ -120,6 +120,23 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
 
+    def test_inverse(self):
+        """Test inverse method."""
+
+        matrix = np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64)
+        phase_exp = 1
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.inverse()
+
+        target_matrix = np.array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
+        target_phase_exp = 5
+        target_precision = 8
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
     def test_power(self):
         """Test power method."""
         matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)

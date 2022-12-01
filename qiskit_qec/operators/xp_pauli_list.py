@@ -384,8 +384,36 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().antisymmetric_op(int_vec))
 
+    def inverse(self) -> "XPPauli":
+        """Return the inverse of the list of XP operators.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauliList: Inverse of XPPauliList
+        
+        Examples:
+            >>> matrix = np.array([[1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 6, 1],
+            ... [0, 1, 0, 0, 1, 0, 1, 7, 7, 3, 4, 6, 2, 7]], dtype=np.int64)
+            >>> phase_exp = np.array([1, 0])
+            >>> precision = 8
+            >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+            >>> value = xppauli_list.inverse()
+            >>> value.matrix
+            array([[1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 2, 1],
+                [0, 1, 0, 0, 1, 0, 1, 1, 7, 5, 4, 6, 6, 7]], dtype=np.int64)
+            >>> value._phase_exp
+            np.array([9, 8])
+        """
+        return XPPauliList(super().inverse())
+
     def power(self, n: int) -> "XPPauliList":
-        """Return the XP operator of specified precision raised to the power n.
+        """Return the XP operators of specified precision raised to the power n.
 
         Note:
             This method is adapted from method XPPower from XPFpackage:
@@ -410,7 +438,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> value = xppauli_list.power(n=n)
             >>> value.matrix
             array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]] ,dtype=np.int64)
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]], dtype=np.int64)
             >>> value._phase_exp
             np.array([8, 8])
 

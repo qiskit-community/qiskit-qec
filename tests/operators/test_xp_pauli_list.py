@@ -133,6 +133,37 @@ class TestXPPauliListOperator(QiskitTestCase):
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
 
+    def test_inverse(self):
+        """Test inverse method."""
+
+        matrix = np.array(
+            [
+                [1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 6, 1],
+                [0, 1, 0, 0, 1, 0, 1, 7, 7, 3, 4, 6, 2, 7],
+            ],
+            dtype=np.int64,
+        )
+        phase_exp = np.array([1, 0])
+        precision = 8
+        xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli_list.inverse()
+
+        target_matrix = np.array(
+            [
+                [1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 2, 1],
+                [0, 1, 0, 0, 1, 0, 1, 1, 7, 5, 4, 6, 6, 7],
+            ],
+            dtype=np.int64,
+        )
+        target_phase_exp = np.array([9, 8])
+        target_precision = 8
+        target = XPPauliList(
+            data=target_matrix, phase_exp=target_phase_exp, precision=target_precision
+        )
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
     def test_multiplication(self):
         """Test multiplication method."""
         a_matrix = np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64)

@@ -861,6 +861,65 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=precision)
 
+    def inverse(self) -> "BaseXPPauli":
+        """Return the inverse of the XP operator.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            BaseXPPauli: Inverse of BaseXPPauli
+        
+        Examples:
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
+            ... phase_exp=1, precision=8)
+            >>> value = a.inverse()
+            >>> value.matrix
+            array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=int64)
+            >>> value._phase_exp
+            array([5])
+        
+        See also:
+            _inverse
+        """
+        return self._inverse()
+
+    def _inverse(self) -> "BaseXPPauli":
+        """Return the inverse of the XP operator.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            BaseXPPauli: Inverse of BaseXPPauli
+        
+        See also:
+            _unique_vec_rep
+        """
+        phase_exp = -self._phase_exp
+        matrix = np.concatenate((self.x, -self.z), axis=-1)
+        first = BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
+
+        dinput = -2 * np.multiply(self.x, self.z)
+        second = self._antisymmetric_op(dinput, self.precision)
+
+        product = BaseXPPauli(
+            matrix=first.matrix + second.matrix,
+            phase_exp=first._phase_exp + second._phase_exp,
+            precision=self.precision,
+        )
+
+        return product._unique_vector_rep()
+
     def power(self, n: int) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
@@ -879,8 +938,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Examples:
             >>> a = BaseXPPauli(
-            ... matrix=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
-            ... phase_exp=12, precision=8)
+            ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
+            ... phase_exp=1, precision=8)
             >>> value = a.power(n=5)
             >>> value.matrix
             array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)

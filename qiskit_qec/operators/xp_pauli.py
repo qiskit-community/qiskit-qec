@@ -182,9 +182,6 @@ class XPPauli(BaseXPPauli):
             array([[1, 0, 1, 3, 3, 0]], dtype=int64)
             >>> value._phase_exp
             array([6])
-
-        See also:
-            _compose
         """
         if qargs is None:
             qargs = getattr(other, "qargs", None)
@@ -220,9 +217,6 @@ class XPPauli(BaseXPPauli):
             np.array([[0, 1, 1, 2, 0, 3]], dtype=int64)
             >>> a._phase_exp
             array([3], dtype=int32)
-
-        See also:
-            _unique_vector_rep
         """
         return XPPauli(super().unique_vector_rep())
 
@@ -255,15 +249,12 @@ class XPPauli(BaseXPPauli):
             array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=int64)
             >>> a._phase_exp
             array([3, dtype=int32])
-
-        See also:
-            _rescale_precision
         """
         return XPPauli(super().rescale_precision(new_precision))
 
     def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauli":
         """Return the antisymmetric operator corresponding to an integer vector,
-        with precision specified by BaseXPPauli.
+        with precision specified by the XP operator.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -287,11 +278,33 @@ class XPPauli(BaseXPPauli):
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
             >>> value._phase_exp
             array([15])
-
-        See also:
-            _antisymmetric_op
         """
         return XPPauli(super().antisymmetric_op(int_vec))
+
+    def inverse(self) -> "XPPauli":
+        """Return the inverse of the XP operator.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauli: Inverse of XPPauli
+        
+        Examples:
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
+            ... phase_exp=1, precision=8)
+            >>> value = a.inverse()
+            >>> value.matrix
+            array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=int64)
+            >>> value._phase_exp
+            array([5])
+        """
+        return XPPauli(super().inverse())
 
     def power(self, n: int) -> "XPPauli":
         """Return the XP operator of specified precision raised to the power n.
