@@ -31,3 +31,4 @@ Utils module classes and functions
 """
 
 from . import indexer, pauli_rep, visualizations
+from .decodoku import Decodoku
