@@ -379,7 +379,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: _description_
 
         See also:
-            unique_vector_rep, _unique_vector_rep
+            antisymmetric_op, unique_vector_rep, _unique_vector_rep
         """
 
         if qargs is not None:
@@ -390,7 +390,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         bmat = b.matrix
 
         # Calculate the sum of generalized symplectic matrix for the composition, excluding D
-        # x = np.logical_xor(amat[:, : a.num_qubits], bmat[:, : b.num_qubits])
         x = amat[:, : a.num_qubits] + bmat[:, : b.num_qubits]
         z = amat[:, a.num_qubits :] + bmat[:, b.num_qubits :]
         mat = np.concatenate((x, z), axis=-1)
@@ -407,7 +406,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         if qargs is None:
             if not inplace:
-                # result_x = np.logical_xor(x, d.x)
                 result_x = x + d.x
                 result_z = z + d.z
                 result_phase_exp = phase_exp + d._phase_exp
@@ -416,7 +414,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                     matrix=result_mat, phase_exp=result_phase_exp, precision=a.precision
                 )._unique_vector_rep()
             # Inplace update
-            # a.x = np.logical_xor(x, d.x)
             a.x = x + d.x
             a.z = z + d.z
             a._phase_exp = phase_exp + d._phase_exp
@@ -903,7 +900,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: Inverse of BaseXPPauli
         
         See also:
-            _unique_vec_rep
+            _antisymmetric_op, _unique_vec_rep
         """
         phase_exp = -self._phase_exp
         matrix = np.concatenate((self.x, -self.z), axis=-1)
@@ -968,12 +965,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             BaseXPPauli: BaseXPPauli raised to the power n
 
         See also:
-            _unique_vector_rep
+            _antisymmetric_op, _unique_vector_rep
         """
-        # TODO at present, this function only handles positive powers. If it is
-        # supposed to calculate inverses as well, that functionality needs to
-        # be coded.
-
         a = np.mod(n, 2)
 
         x = np.multiply(self.x, a)
@@ -992,6 +985,131 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         )
 
         return product._unique_vector_rep()
+
+    def conjugate(self, other: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+        """Return the conjugation of two BaseXPPauli operators.
+
+        For single XP operators, this means
+
+        A.conjugate(B, front=True) = A . B . A^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise, 
+
+        A.conjugate(B, front=False) = B . A . B^{-1}.
+
+        For a list of XP operators, conjugation is performed element-wise:
+
+        [A_1, ..., A_k].conjugate([B_1, ..., B_k]) = [A_1.conjugate(B_1), ..., A_k.conjugate(B_k)].
+
+        TODO: This method currently only supports conjugation of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPConjugate from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: BaseXPPauli object
+            front (bool, optional): Whether to conjugate in front (True) or
+            behind (False), defaults to True
+            inplace (bool, optional): Whether to perform the conjugation in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            BaseXPPauli: Conjugated XP operator
+
+        Raises:
+            QiskitError: Other BaseXPPauli must be on the same number of qubits
+            QiskitError: Incompatible BaseXPPaulis. Second list must either have
+            1 or the same number of XPPaulis
+            QiskitError: Precision of the two BaseXPPaulis to be conjugated must
+            be the same
+
+        Examples:
+            >>> a = BaseXPPauli(matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> b = BaseXPPauli(matrix=np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64),
+            ... phase_exp=11, precision=6)
+            >>> value = a.conjugate(b)
+            >>> value.matrix
+            array([[1, 0, 0, 1, 0, 1, 0, 1]], dtype=int64)
+            >>> value._phase_exp
+            array([3])
+
+        See also:
+            _conjugate
+        """
+        # Validation
+        if other.num_qubits != self.num_qubits:
+            raise QiskitError(f"Other {type(self).__name__} must be on the same number of qubits.")
+
+        if other._num_xppaulis not in [1, self._num_xppaulis]:
+            raise QiskitError(
+                "Incompatible BaseXPPaulis. Second list must "
+                "either have 1 or the same number of XPPaulis."
+            )
+
+        if self.precision != other.precision:
+            raise QiskitError(
+                "Precision of the two BaseXPPaulis to be conjugated must be the same."
+            )
+
+        return self._conjugate(self, other, front=front, inplace=inplace)
+        
+    @staticmethod
+    def _conjugate(a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+        """Return the conjugation of two BaseXPPauli operators.
+
+        Note:
+            This method is adapted from method XPConjugate from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            a: BaseXPPauli object
+            b: BaseXPPauli object
+            front (bool, optional): Whether to conjugate in front (True) or
+            behind (False), defaults to True
+            inplace (bool, optional): Whether to perform the conjugation in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            BaseXPPauli: Conjugation of XP operators a and b
+
+        See also:
+            antisymmetric_op, _unique_vector_rep
+        """
+        if front:
+            dinput = 2 * np.multiply(a.x, b.z) + 2 * np.multiply(a.z, b.x) - 4 * np.multiply(np.multiply(a.x, b.x), a.z)
+            d = b.antisymmetric_op(dinput)
+            product = BaseXPPauli(
+                matrix=b.matrix + d.matrix,
+                phase_exp=b._phase_exp + d._phase_exp,
+                precision=b.precision,
+            )
+        else:
+            dinput = 2 * np.multiply(b.x, a.z) + 2 * np.multiply(b.z, a.x) - 4 * np.multiply(np.multiply(b.x, a.x), b.z)
+            d = a.antisymmetric_op(dinput)
+            product = BaseXPPauli(
+                matrix=a.matrix + d.matrix,
+                phase_exp=a._phase_exp + d._phase_exp,
+                precision=a.precision,
+            )
+        if not inplace:
+            return product._unique_vector_rep()
+        else:
+            a.matrix = product.matrix
+            a._phase_exp = product._phase_exp
+            return a
 
     def degree(self) -> np.ndarray:
         """Return the degree of XP operator.

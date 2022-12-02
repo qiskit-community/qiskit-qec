@@ -155,7 +155,7 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target.precision, value.precision)
 
     def test_multiplication(self):
-        """Test multiplication method."""
+        """Test compose method."""
         # Test case taken from Mark's code.
         a_matrix = np.array([0, 1, 0, 0, 2, 0], dtype=np.int64)
         a_phase_exp = 6
@@ -174,6 +174,34 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target.matrix, value.matrix)
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
+
+    def test_conjugate(self):
+        """Test conjugate method."""
+        a_matrix = np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
+        a_phase_exp = 4
+        a_precision = 6
+        a = XPPauli(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
+        b_matrix = np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64)
+        b_phase_exp = 11
+        b_precision = 6
+        b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
+        value_front = a.conjugate(b, front=True)
+        value_back = a.conjugate(b, front=False)
+
+        target_matrix_front = np.array([1, 0, 0, 1, 0, 1, 0, 1], dtype=np.int64)
+        target_phase_exp_front = 3
+        target_precision_front = 6
+        target_front = XPPauli(data=target_matrix_front, phase_exp=target_phase_exp_front, precision=target_precision_front)
+        target_matrix_back = np.array([1, 0, 1, 1, 3, 3, 5, 4], dtype=np.int64)
+        target_phase_exp_back = 0
+        target_precision_back = 6
+        target_back = XPPauli(data=target_matrix_back, phase_exp=target_phase_exp_back, precision=target_precision_back)
+        np.testing.assert_equal(target_front.matrix, value_front.matrix)
+        np.testing.assert_equal(target_front._phase_exp, value_front._phase_exp)
+        np.testing.assert_equal(target_front.precision, value_front.precision)
+        np.testing.assert_equal(target_back.matrix, value_back.matrix)
+        np.testing.assert_equal(target_back._phase_exp, value_back._phase_exp)
+        np.testing.assert_equal(target_back.precision, value_back.precision)
 
     def test_degree(self):
         """Test degree method."""

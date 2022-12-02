@@ -245,7 +245,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     def compose(
         self,
-        other: "BaseXPPauli",
+        other: "XPPauliList",
         qargs: Optional[list] = None,
         front: bool = False,
         inplace: bool = False,
@@ -446,6 +446,72 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             _power
         """
         return XPPauliList(super().power(n))
+
+    def conjugate(self, other: "XPPauliList", front: bool = True, inplace: bool = False) -> "XPPauliList":
+        """Return the conjugation of two BaseXPPauli operators.
+
+        For single XP operators, this means
+
+        A.conjugate(B, front=True) = A . B . A^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise, 
+
+        A.conjugate(B, front=False) = B . A . B^{-1}.
+
+        For a list of XP operators, conjugation is performed element-wise:
+
+        [A_1, ..., A_k].conjugate([B_1, ..., B_k]) = [A_1.conjugate(B_1), ..., A_k.conjugate(B_k)].
+
+        TODO: This method currently only supports conjugation of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPConjugate from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: BaseXPPauli object
+            front (bool, optional): Whether to conjugate in front (True) or
+            behind (False), defaults to True
+            inplace (bool, optional): Whether to perform the conjugation in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauli: Conjugated XP operator
+
+        Raises:
+            QiskitError: Other list must have either 1 or the same number of
+            XPPaulis
+
+        Examples:
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4], 
+            ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
+            ... phase_exp=np.array([4, 7]), precision=6)
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1], 
+            ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
+            ... phase_exp=np.array([11, 2]), precision=6)
+            >>> value = a.conjugate(b)
+            >>> value.matrix
+            array([[1, 0, 0, 1, 0, 1, 0, 1], 
+            [0, 1, 1, 0, 5, 5, 4, 5]], dtype=int64)
+            >>> value._phase_exp
+            array([3, 10])
+        """
+        if not isinstance(other, XPPauliList):
+            other = XPPauliList(other)
+        if len(other) not in [1, len(self)]:
+            raise QiskitError(
+                "Incompatible XPPauliLists. Other list must "
+                "have either 1 or the same number of XPPaulis."
+            )
+
+        return XPPauliList(super().conjugate(other, front=front, inplace=inplace))
 
     # def conjugate(self):
     #     """Return the conjugate of each XPPauli in the list."""
