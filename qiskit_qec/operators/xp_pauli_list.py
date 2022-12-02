@@ -448,7 +448,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         return XPPauliList(super().power(n))
 
     def conjugate(self, other: "XPPauliList", front: bool = True, inplace: bool = False) -> "XPPauliList":
-        """Return the conjugation of two BaseXPPauli operators.
+        """Return the conjugation of two XP operators.
 
         For single XP operators, this means
 
@@ -475,7 +475,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             the code under the Apache License v2.0.
 
         Args:
-            other: BaseXPPauli object
+            other: List of XP operators to be conjugated with self
             front (bool, optional): Whether to conjugate in front (True) or
             behind (False), defaults to True
             inplace (bool, optional): Whether to perform the conjugation in
@@ -483,7 +483,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             False
 
         Returns:
-            XPPauli: Conjugated XP operator
+            XPPauliList: List of conjugated XP operator
 
         Raises:
             QiskitError: Other list must have either 1 or the same number of
@@ -512,6 +512,72 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             )
 
         return XPPauliList(super().conjugate(other, front=front, inplace=inplace))
+
+    def commutator(self, other: "XPPauliList", front: bool = True, inplace: bool = False) -> "XPPauliList":
+        """Return the commutator of two XP operators.
+
+        For single XP operators, this means
+
+        A.commutator(B, front=True) = [A, B] = A . B . A^{-1} . B^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise, 
+
+        A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
+
+        For a list of XP operators, commutator is computed element-wise:
+
+        [A_1, ..., A_k].commutator([B_1, ..., B_k]) = [A_1.commutator(B_1), ..., A_k.commutator(B_k)].
+
+        TODO: This method currently only supports commutator of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: List of XP operators to be in the commutator with self
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauliList: List of commutators of XP operators
+
+        Raises:
+            QiskitError: Other list must have either 1 or the same number of
+            XPPaulis
+
+        Examples:
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4], 
+            ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
+            ... phase_exp=np.array([4, 7]), precision=6)
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1], 
+            ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
+            ... phase_exp=np.array([11, 2]), precision=6)
+            >>> value = a.commutator(b)
+            >>> value.matrix
+            array([[0, 0, 0, 0, 4, 0, 0, 0], 
+            [0, 0, 0, 0, 4, 4, 2, 0]], dtype=int64)
+            >>> value._phase_exp
+            array([8, 8])
+        """
+        if not isinstance(other, XPPauliList):
+            other = XPPauliList(other)
+        if len(other) not in [1, len(self)]:
+            raise QiskitError(
+                "Incompatible XPPauliLists. Other list must "
+                "have either 1 or the same number of XPPaulis."
+            )
+
+        return XPPauliList(super().commutator(other, front=front, inplace=inplace))
 
     # def conjugate(self):
     #     """Return the conjugate of each XPPauli in the list."""

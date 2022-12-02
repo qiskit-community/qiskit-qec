@@ -335,7 +335,7 @@ class XPPauli(BaseXPPauli):
         return XPPauli(super().power(n))
 
     def conjugate(self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False) -> "XPPauli":
-        """Return the conjugation of two BaseXPPauli operators.
+        """Return the conjugation of two XP operators.
 
         For single XP operators, this means
 
@@ -362,7 +362,7 @@ class XPPauli(BaseXPPauli):
             the code under the Apache License v2.0.
 
         Args:
-            other: BaseXPPauli object
+            other: an XP operator
             front (bool, optional): Whether to conjugate in front (True) or
             behind (False), defaults to True
             inplace (bool, optional): Whether to perform the conjugation in
@@ -387,6 +387,60 @@ class XPPauli(BaseXPPauli):
             other = XPPauli(other)
 
         return XPPauli(super().conjugate(other, front=front, inplace=inplace))
+
+    def commutator(self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False) -> "XPPauli":
+        """Return the commutator of two XP operators.
+
+        For single XP operators, this means
+
+        A.commutator(B, front=True) = [A, B] = A . B . A^{-1} . B^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise, 
+
+        A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
+
+        For a list of XP operators, commutator is computed element-wise:
+
+        [A_1, ..., A_k].commutator([B_1, ..., B_k]) = [A_1.commutator(B_1), ..., A_k.commutator(B_k)].
+
+        TODO: This method currently only supports commutator of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: an XP operator
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauli: Commutator of XP operators
+
+        Examples:
+            >>> a = XPPauli(data=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> b = XPPauli(data=np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64),
+            ... phase_exp=11, precision=6)
+            >>> value = a.commutator(b)
+            >>> value.matrix
+            array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=int64)
+            >>> value._phase_exp
+            array([8])
+        """
+        if not isinstance(other, XPPauli):
+            other = XPPauli(other)
+
+        return XPPauli(super().commutator(other, front=front, inplace=inplace))
 
 
 # Update docstrings for API docs

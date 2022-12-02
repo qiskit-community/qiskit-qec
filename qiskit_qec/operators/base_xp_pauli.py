@@ -453,10 +453,6 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     # Needed by AdjointMixin class
 
-    def conjugate(self, inplace=False) -> "BaseXPPauli":
-        """_summary_"""
-        pass
-
     def transpose(self, inplace: bool = False) -> "BaseXPPauli":
         """_summary_"""
         pass
@@ -1109,6 +1105,121 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         else:
             a.matrix = product.matrix
             a._phase_exp = product._phase_exp
+            return a
+
+    def commutator(self, other: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+        """Return the commutator of two BaseXPPauli operators.
+
+        For single XP operators, this means
+
+        A.commutator(B, front=True) = [A, B] = A . B . A^{-1} . B^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise, 
+
+        A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
+
+        For a list of XP operators, commutator is computed element-wise:
+
+        [A_1, ..., A_k].commutator([B_1, ..., B_k]) = [A_1.commutator(B_1), ..., A_k.commutator(B_k)].
+
+        TODO: This method currently only supports commutator of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: BaseXPPauli object
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            BaseXPPauli: Commutator of XP operators
+
+        Raises:
+            QiskitError: Other BaseXPPauli must be on the same number of qubits
+            QiskitError: Incompatible BaseXPPaulis. Second list must either have
+            1 or the same number of XPPaulis
+            QiskitError: Precision of the two BaseXPPaulis in a commutator must
+            be the same
+
+        Examples:
+            >>> a = BaseXPPauli(matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> b = BaseXPPauli(matrix=np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64),
+            ... phase_exp=11, precision=6)
+            >>> value = a.commutator(b)
+            >>> value.matrix
+            array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=int64)
+            >>> value._phase_exp
+            array([8])
+
+        See also:
+            _commutator
+        """
+        # Validation
+        if other.num_qubits != self.num_qubits:
+            raise QiskitError(f"Other {type(self).__name__} must be on the same number of qubits.")
+
+        if other._num_xppaulis not in [1, self._num_xppaulis]:
+            raise QiskitError(
+                "Incompatible BaseXPPaulis. Second list must "
+                "either have 1 or the same number of XPPaulis."
+            )
+
+        if self.precision != other.precision:
+            raise QiskitError(
+                "Precision of the two BaseXPPaulis in a commutator must be the same."
+            )
+
+        return self._commutator(self, other, front=front, inplace=inplace)
+
+    @staticmethod
+    def _commutator(a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+        """Return the commutator of two BaseXPPauli operators.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            a: BaseXPPauli object
+            b: BaseXPPauli object
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            BaseXPPauli: Commutator of XP operators a and b
+
+        See also:
+            antisymmetric_op, _unique_vector_rep
+        """
+        if front:
+            dinput = 2 * np.multiply(a.x, b.z) - 2 * np.multiply(a.z, b.x) + 4 * np.multiply(np.multiply(a.x, b.x), a.z) - 4 * np.multiply(np.multiply(a.x, b.x), b.z)
+            result = a.antisymmetric_op(dinput)
+        else:
+            dinput = 2 * np.multiply(b.x, a.z) - 2 * np.multiply(b.z, a.x) + 4 * np.multiply(np.multiply(b.x, a.x), b.z) - 4 * np.multiply(np.multiply(b.x, a.x), a.z)
+            result = b.antisymmetric_op(dinput)
+        if not inplace:
+            return result._unique_vector_rep()
+        else:
+            a.matrix = result.matrix
+            a._phase_exp = result._phase_exp
             return a
 
     def degree(self) -> np.ndarray:
