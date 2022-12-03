@@ -913,8 +913,12 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return product._unique_vector_rep()
 
-    def power(self, n: int) -> "BaseXPPauli":
+    def power(self, n: np.ndarray) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
+
+        For a list of XP operators, power is performed element-wise:
+
+        [A_1, ..., A_k].power([n_1, ..., n_k]) = [A_1.power(n_1), ..., A_k.power(n_k)].
 
         Note:
             This method is adapted from method XPPower from XPFpackage:
@@ -931,20 +935,20 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Examples:
             >>> a = BaseXPPauli(
-            ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
-            ... phase_exp=1, precision=8)
-            >>> value = a.power(n=5)
+            ... matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> value = a.power(n=np.array([5]))
             >>> value.matrix
-            array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)
+            array([1, 0, 1, 1, 5, 3, 5, 4], dtype=int64)
             >>> value._phase_exp
-            array([8])
+            array([4])
 
         See also:
             _power
         """
         return self._power(n)
 
-    def _power(self, n: int) -> "BaseXPPauli":
+    def _power(self, n: np.ndarray) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         Note:
@@ -965,13 +969,13 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
         a = np.mod(n, 2)
 
-        x = np.multiply(self.x, a)
-        z = np.multiply(self.z, n)
+        x = self.x * a[:, None]
+        z = self.z * n[:, None]
         phase_exp = np.multiply(self._phase_exp, n)
         matrix = np.concatenate((x, z), axis=-1)
         first = BaseXPPauli(matrix=matrix, phase_exp=phase_exp, precision=self.precision)
 
-        dinput = np.multiply((n - a), np.multiply(self.x, self.z))
+        dinput = np.multiply(self.x, self.z) * (n - a)[:, None]
         second = self._antisymmetric_op(dinput, self.precision)
 
         product = BaseXPPauli(
@@ -1223,7 +1227,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             return a
 
     def degree(self) -> np.ndarray:
-        """Return the degree of XP operator.
+        """Return the degree of the XP operator.
 
         Note:
             This method is adapted from method XPDegree from XPFpackage:
@@ -1247,7 +1251,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         return self._degree()
 
     def _degree(self) -> np.ndarray:
-        """Return the degree of XP operator.
+        """Return the degree of the XP operator.
 
         Note:
             This method is adapted from method XPDegree from XPFpackage:
@@ -1289,6 +1293,46 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         # Webster is the operator -I, where the faulty method would give the
         # degree 2, while the actual degree is 1.
         return np.where(self.is_diagonal(), lcm, lcm_square)
+
+    def fundamental_phase(self) -> np.ndarray:
+        """Return the fundamental phase of the XP operator.
+
+        Note:
+            This method is adapted from method XPFundamentalPhase from
+            XPFpackage: https://github.com/m-webster/XPFpackage, originally
+            developed by Mark Webster. The original code is licensed under the
+            GNU General Public License v3.0 and Mark Webster has given
+            permission to use the code under the Apache License v2.0.
+
+        Returns:
+            np.ndarray: Fundamental phase of BaseXPPauli
+
+        Examples:
+        >>> a = BaseXPPauli(matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+        ... phase_exp=4, precision=6)
+        >>> a.fundamental_phase()
+        array([0], dtype=int64)
+
+        See also:
+            _fundamental_phase
+        """
+        return self._fundamental_phase()
+
+    def _fundamental_phase(self) -> np.ndarray:
+        """Return the fundamental phase of the XP operator.
+
+        Note:
+            This method is adapted from method XPFundamentalPhase from
+            XPFpackage: https://github.com/m-webster/XPFpackage, originally
+            developed by Mark Webster. The original code is licensed under the
+            GNU General Public License v3.0 and Mark Webster has given
+            permission to use the code under the Apache License v2.0.
+
+        See also:
+            _degree, _power
+        """
+        deg = self._degree()
+        return self._power(deg)._phase_exp
 
 
 # ---------------------------------------------------------------------

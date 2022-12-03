@@ -306,7 +306,7 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().inverse())
 
-    def power(self, n: int) -> "XPPauli":
+    def power(self, n: np.ndarray) -> "XPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         Note:
@@ -324,13 +324,13 @@ class XPPauli(BaseXPPauli):
 
         Examples:
             >>> a = XPPauli(
-            ... data=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
-            ... phase_exp=12, precision=8)
-            >>> value = a.power(n=5)
+            ... data=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> value = a.power(n=np.array([5]))
             >>> value.matrix
-            array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)
+            array([1, 0, 1, 1, 5, 3, 5, 4], dtype=int64)
             >>> value._phase_exp
-            array([8])
+            array([4])
         """
         return XPPauli(super().power(n))
 

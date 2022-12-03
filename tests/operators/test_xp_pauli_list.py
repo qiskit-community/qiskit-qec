@@ -164,6 +164,37 @@ class TestXPPauliListOperator(QiskitTestCase):
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
 
+    def test_power(self):
+        """Test power method."""
+        matrix = np.array(
+            [
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
+            ],
+            dtype=np.int64,
+        )
+        phase_exp = np.array([12, 12])
+        precision = 8
+        n = np.array([5, 5])
+        xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli_list.power(n=n)
+
+        target_matrix = np.array(
+            [
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
+                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
+            ],
+            dtype=np.int64,
+        )
+        target_phase_exp = np.array([8, 8])
+        target_precision = 8
+        target = XPPauliList(
+            data=target_matrix, phase_exp=target_phase_exp, precision=target_precision
+        )
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
     def test_multiplication(self):
         """Test compose method."""
         a_matrix = np.array([[0, 1, 0, 0, 2, 0], [0, 1, 0, 0, 2, 0]], dtype=np.int64)
@@ -244,45 +275,25 @@ class TestXPPauliListOperator(QiskitTestCase):
 
     def test_degree(self):
         """Test degree method."""
-        matrix = np.array([[0, 0, 0, 2, 1, 0], [0, 0, 0, 2, 1, 0]], dtype=np.int64)
-        phase_exp = np.array([2, 2])
-        precision = 4
+        matrix = np.array([[1, 0, 1, 1, 5, 3, 5, 4], [1, 0, 1, 1, 5, 4, 1, 5]], dtype=np.int64)
+        phase_exp = np.array([4, 3])
+        precision = 6
         xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli_list.degree()
 
-        target = np.array([4, 4])
+        target = np.array([2, 6])
         np.testing.assert_equal(target, value)
 
-    def test_power(self):
-        """Test power method."""
-        matrix = np.array(
-            [
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
-            ],
-            dtype=np.int64,
-        )
-        phase_exp = np.array([12, 12])
-        precision = 8
-        n = 5
+    def test_fundamental_phase(self):
+        """Test fundamental_phase method."""
+        matrix = np.array([[1, 0, 1, 1, 5, 3, 5, 4], [1, 0, 1, 1, 5, 4, 1, 5]], dtype=np.int64)
+        phase_exp = np.array([4, 3])
+        precision = 6
         xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
-        value = xppauli_list.power(n=n)
+        value = xppauli_list.fundamental_phase()
 
-        target_matrix = np.array(
-            [
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
-            ],
-            dtype=np.int64,
-        )
-        target_phase_exp = np.array([8, 8])
-        target_precision = 8
-        target = XPPauliList(
-            data=target_matrix, phase_exp=target_phase_exp, precision=target_precision
-        )
-        np.testing.assert_equal(target.matrix, value.matrix)
-        np.testing.assert_equal(target._phase_exp, value._phase_exp)
-        np.testing.assert_equal(target.precision, value.precision)
+        target = np.array([0, 0])
+        np.testing.assert_equal(target, value)
 
 
 if __name__ == "__main__":

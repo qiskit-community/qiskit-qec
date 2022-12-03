@@ -142,7 +142,7 @@ class TestXPPauli(QiskitTestCase):
         matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)
         phase_exp = 12
         precision = 8
-        n = 5
+        n = np.array([5])
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.power(n=n)
 
@@ -242,6 +242,16 @@ class TestXPPauli(QiskitTestCase):
         target = 4
         self.assertEqual(target, value)
 
+    def test_fundamental_phase(self):
+        """Test fundamental_phase method."""
+        matrix = np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
+        phase_exp = 4
+        precision = 6
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.fundamental_phase()
+
+        target = np.array([0])
+        self.assertEqual(target, value)
 
 if __name__ == "__main__":
     unittest.main()

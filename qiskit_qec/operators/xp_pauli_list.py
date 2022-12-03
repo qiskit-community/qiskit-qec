@@ -412,7 +412,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().inverse())
 
-    def power(self, n: int) -> "XPPauliList":
+    def power(self, n: np.ndarray) -> "XPPauliList":
         """Return the XP operators of specified precision raised to the power n.
 
         Note:
@@ -429,18 +429,18 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: XPPauliList raised to the power n
 
         Examples:
-            >>> matrix = np.array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
-            ... [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1]], dtype=np.int64)
-            >>> phase_exp = np.array([12, 12])
-            >>> precision = 8
-            >>> n = 5
+            >>> matrix = np.array([[1, 0, 1, 1, 5, 3, 5, 4],
+            ... [1, 0, 1, 1, 5, 4, 1, 5]], dtype=np.int64)
+            >>> phase_exp = np.array([4, 3])
+            >>> precision = 6
+            >>> n = np.array([5, 3])
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
             >>> value = xppauli_list.power(n=n)
             >>> value.matrix
-            array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]], dtype=np.int64)
+            array([[1, 0, 1, 1, 5, 3, 5, 4],
+                [1, 0, 1, 1, 5, 0, 1, 5]], dtype=np.int64)
             >>> value._phase_exp
-            np.array([8, 8])
+            np.array([4, 7])
 
         See also:
             _power
