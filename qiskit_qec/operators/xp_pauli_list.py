@@ -396,7 +396,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         Returns:
             XPPauliList: Inverse of XPPauliList
-        
+
         Examples:
             >>> matrix = np.array([[1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 6, 1],
             ... [0, 1, 0, 0, 1, 0, 1, 7, 7, 3, 4, 6, 2, 7]], dtype=np.int64)
@@ -447,7 +447,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().power(n))
 
-    def conjugate(self, other: "XPPauliList", front: bool = True, inplace: bool = False) -> "XPPauliList":
+    def conjugate(
+        self, other: "XPPauliList", front: bool = True, inplace: bool = False
+    ) -> "XPPauliList":
         """Return the conjugation of two XP operators.
 
         For single XP operators, this means
@@ -456,7 +458,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.conjugate(B, front=False) = B . A . B^{-1}.
 
@@ -490,15 +492,15 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPaulis
 
         Examples:
-            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4], 
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4],
             ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
             ... phase_exp=np.array([4, 7]), precision=6)
-            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1], 
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1],
             ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
             ... phase_exp=np.array([11, 2]), precision=6)
             >>> value = a.conjugate(b)
             >>> value.matrix
-            array([[1, 0, 0, 1, 0, 1, 0, 1], 
+            array([[1, 0, 0, 1, 0, 1, 0, 1],
             [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64)
             >>> value._phase_exp
             array([3, 10])
@@ -513,7 +515,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         return XPPauliList(super().conjugate(other, front=front, inplace=inplace))
 
-    def commutator(self, other: "XPPauliList", front: bool = True, inplace: bool = False) -> "XPPauliList":
+    def commutator(
+        self, other: "XPPauliList", front: bool = True, inplace: bool = False
+    ) -> "XPPauliList":
         """Return the commutator of two XP operators.
 
         For single XP operators, this means
@@ -522,7 +526,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
 
@@ -556,15 +560,15 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPaulis
 
         Examples:
-            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4], 
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4],
             ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
             ... phase_exp=np.array([4, 7]), precision=6)
-            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1], 
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1],
             ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
             ... phase_exp=np.array([11, 2]), precision=6)
             >>> value = a.commutator(b)
             >>> value.matrix
-            array([[0, 0, 0, 0, 4, 0, 0, 0], 
+            array([[0, 0, 0, 0, 4, 0, 0, 0],
             [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([8, 8])
@@ -593,12 +597,12 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: XP operators with +1 as an eigenvalue
 
         Examples:
-        >>> a = XPPauliList(data=np.array([[0, 0, 1, 1, 1, 0, 4, 2], 
+        >>> a = XPPauliList(data=np.array([[0, 0, 1, 1, 1, 0, 4, 2],
         ... [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64),
         ... phase_exp=np.array([7, 4]), precision=6)
         >>> value = a.reset_eigenvalue()
         >>> value.matrix
-        array([[0, 0, 1, 1, 1, 0, 4, 2], 
+        array([[0, 0, 1, 1, 1, 0, 4, 2],
         [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
         >>> value._phase_exp
         array([6, 1])

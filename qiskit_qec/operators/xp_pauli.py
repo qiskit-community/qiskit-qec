@@ -293,7 +293,7 @@ class XPPauli(BaseXPPauli):
 
         Returns:
             XPPauli: Inverse of XPPauli
-        
+
         Examples:
             >>> a = BaseXPPauli(
             ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
@@ -334,7 +334,9 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().power(n))
 
-    def conjugate(self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False) -> "XPPauli":
+    def conjugate(
+        self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False
+    ) -> "XPPauli":
         """Return the conjugation of two XP operators.
 
         For single XP operators, this means
@@ -343,7 +345,7 @@ class XPPauli(BaseXPPauli):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.conjugate(B, front=False) = B . A . B^{-1}.
 
@@ -388,7 +390,9 @@ class XPPauli(BaseXPPauli):
 
         return XPPauli(super().conjugate(other, front=front, inplace=inplace))
 
-    def commutator(self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False) -> "XPPauli":
+    def commutator(
+        self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False
+    ) -> "XPPauli":
         """Return the commutator of two XP operators.
 
         For single XP operators, this means
@@ -397,7 +401,7 @@ class XPPauli(BaseXPPauli):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
 

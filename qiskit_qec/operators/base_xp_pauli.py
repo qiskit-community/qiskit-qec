@@ -866,7 +866,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Returns:
             BaseXPPauli: Inverse of BaseXPPauli
-        
+
         Examples:
             >>> a = BaseXPPauli(
             ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
@@ -876,7 +876,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
             >>> value._phase_exp
             array([5])
-        
+
         See also:
             _inverse
         """
@@ -894,7 +894,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Returns:
             BaseXPPauli: Inverse of BaseXPPauli
-        
+
         See also:
             _antisymmetric_op, _unique_vec_rep
         """
@@ -986,7 +986,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return product._unique_vector_rep()
 
-    def conjugate(self, other: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+    def conjugate(
+        self, other: "BaseXPPauli", front: bool = True, inplace: bool = False
+    ) -> "BaseXPPauli":
         """Return the conjugation of two BaseXPPauli operators.
 
         For single XP operators, this means
@@ -995,7 +997,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.conjugate(B, front=False) = B . A . B^{-1}.
 
@@ -1061,9 +1063,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             )
 
         return self._conjugate(self, other, front=front, inplace=inplace)
-        
+
     @staticmethod
-    def _conjugate(a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+    def _conjugate(
+        a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False
+    ) -> "BaseXPPauli":
         """Return the conjugation of two BaseXPPauli operators.
 
         Note:
@@ -1089,7 +1093,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             antisymmetric_op, _unique_vector_rep
         """
         if front:
-            dinput = 2 * np.multiply(a.x, b.z) + 2 * np.multiply(a.z, b.x) - 4 * np.multiply(np.multiply(a.x, b.x), a.z)
+            dinput = (
+                2 * np.multiply(a.x, b.z)
+                + 2 * np.multiply(a.z, b.x)
+                - 4 * np.multiply(np.multiply(a.x, b.x), a.z)
+            )
             d = b.antisymmetric_op(dinput)
             product = BaseXPPauli(
                 matrix=b.matrix + d.matrix,
@@ -1097,7 +1105,11 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 precision=b.precision,
             )
         else:
-            dinput = 2 * np.multiply(b.x, a.z) + 2 * np.multiply(b.z, a.x) - 4 * np.multiply(np.multiply(b.x, a.x), b.z)
+            dinput = (
+                2 * np.multiply(b.x, a.z)
+                + 2 * np.multiply(b.z, a.x)
+                - 4 * np.multiply(np.multiply(b.x, a.x), b.z)
+            )
             d = a.antisymmetric_op(dinput)
             product = BaseXPPauli(
                 matrix=a.matrix + d.matrix,
@@ -1111,7 +1123,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             a._phase_exp = product._phase_exp
             return a
 
-    def commutator(self, other: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+    def commutator(
+        self, other: "BaseXPPauli", front: bool = True, inplace: bool = False
+    ) -> "BaseXPPauli":
         """Return the commutator of two BaseXPPauli operators.
 
         For single XP operators, this means
@@ -1120,7 +1134,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
 
-        Likewise, 
+        Likewise,
 
         A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
 
@@ -1181,14 +1195,14 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             )
 
         if self.precision != other.precision:
-            raise QiskitError(
-                "Precision of the two BaseXPPaulis in a commutator must be the same."
-            )
+            raise QiskitError("Precision of the two BaseXPPaulis in a commutator must be the same.")
 
         return self._commutator(self, other, front=front, inplace=inplace)
 
     @staticmethod
-    def _commutator(a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False) -> "BaseXPPauli":
+    def _commutator(
+        a: "BaseXPPauli", b: "BaseXPPauli", front: bool = True, inplace: bool = False
+    ) -> "BaseXPPauli":
         """Return the commutator of two BaseXPPauli operators.
 
         Note:
@@ -1214,10 +1228,20 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             antisymmetric_op, _unique_vector_rep
         """
         if front:
-            dinput = 2 * np.multiply(a.x, b.z) - 2 * np.multiply(a.z, b.x) + 4 * np.multiply(np.multiply(a.x, b.x), a.z) - 4 * np.multiply(np.multiply(a.x, b.x), b.z)
+            dinput = (
+                2 * np.multiply(a.x, b.z)
+                - 2 * np.multiply(a.z, b.x)
+                + 4 * np.multiply(np.multiply(a.x, b.x), a.z)
+                - 4 * np.multiply(np.multiply(a.x, b.x), b.z)
+            )
             result = a.antisymmetric_op(dinput)
         else:
-            dinput = 2 * np.multiply(b.x, a.z) - 2 * np.multiply(b.z, a.x) + 4 * np.multiply(np.multiply(b.x, a.x), b.z) - 4 * np.multiply(np.multiply(b.x, a.x), a.z)
+            dinput = (
+                2 * np.multiply(b.x, a.z)
+                - 2 * np.multiply(b.z, a.x)
+                + 4 * np.multiply(np.multiply(b.x, a.x), b.z)
+                - 4 * np.multiply(np.multiply(b.x, a.x), a.z)
+            )
             result = b.antisymmetric_op(dinput)
         if not inplace:
             return result._unique_vector_rep()
@@ -1381,6 +1405,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         deg = self._degree()
         new_phase = np.mod(self.phase() - np.floor_divide(fphase, deg), 2 * self.precision)
         return BaseXPPauli(matrix=self.matrix, phase_exp=new_phase, precision=self.precision)
+
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates
