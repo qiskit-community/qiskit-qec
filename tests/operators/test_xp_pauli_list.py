@@ -295,6 +295,22 @@ class TestXPPauliListOperator(QiskitTestCase):
         target = np.array([0, 0])
         np.testing.assert_equal(target, value)
 
+    def test_reset_eigenvalue(self):
+        """Test reset_eigenvalue method."""
+        matrix = np.array([[0, 0, 1, 1, 1, 0, 4, 2], [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
+        phase_exp = np.array([7, 4])
+        precision = 6
+        xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli_list.reset_eigenvalue()
+
+        target_matrix = np.array([[0, 0, 1, 1, 1, 0, 4, 2], [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
+        target_phase_exp = np.array([6, 1])
+        target_precision = 6
+        target = XPPauliList(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
 
 if __name__ == "__main__":
     unittest.main()

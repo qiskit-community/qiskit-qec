@@ -321,7 +321,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=2, precision=4)
             >>> value = a.compose(b)
             >>> value.matrix
-            array([[1, 0, 1, 3, 3, 0]], dtype=int64)
+            array([[1, 0, 1, 3, 3, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([6])
 
@@ -571,9 +571,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=11, precision=4)
             >>> a = a.unique_vector_rep()
             >>> a.matrix
-            np.array([[0, 1, 1, 2, 0, 3]], dtype=int64)
+            np.array([[0, 1, 1, 2, 0, 3]], dtype=np.int64)
             >>> a._phase_exp
-            array([3], dtype=int32)
+            array([3])
 
         See also:
             _unique_vector_rep
@@ -631,7 +631,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             >>> a.matrix
             array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=int64)
             >>> a._phase_exp
-            array([3, dtype=int32])
+            array([3])
 
         See also:
             _rescale_precision
@@ -814,7 +814,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=0, precision=8)
             >>> value = a.antisymmetric_op(a.z)
             >>> value.matrix
-            array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
+            array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
             >>> value._phase_exp
             array([15])
 
@@ -873,7 +873,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=1, precision=8)
             >>> value = a.inverse()
             >>> value.matrix
-            array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=int64)
+            array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
             >>> value._phase_exp
             array([5])
         
@@ -939,7 +939,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=4, precision=6)
             >>> value = a.power(n=np.array([5]))
             >>> value.matrix
-            array([1, 0, 1, 1, 5, 3, 5, 4], dtype=int64)
+            array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
             >>> value._phase_exp
             array([4])
 
@@ -1038,7 +1038,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=11, precision=6)
             >>> value = a.conjugate(b)
             >>> value.matrix
-            array([[1, 0, 0, 1, 0, 1, 0, 1]], dtype=int64)
+            array([[1, 0, 0, 1, 0, 1, 0, 1]], dtype=np.int64)
             >>> value._phase_exp
             array([3])
 
@@ -1163,7 +1163,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             ... phase_exp=11, precision=6)
             >>> value = a.commutator(b)
             >>> value.matrix
-            array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=int64)
+            array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([8])
 
@@ -1243,7 +1243,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         >>> a = BaseXPPauli(matrix=np.array([0, 0, 0, 2, 1, 0], dtype=np.int64),
         ... phase_exp=2, precision=4)
         >>> a.degree()
-        array([4], dtype=int64)
+        array([4])
 
         See also:
             _degree
@@ -1311,7 +1311,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         >>> a = BaseXPPauli(matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
         ... phase_exp=4, precision=6)
         >>> a.fundamental_phase()
-        array([0], dtype=int64)
+        array([0])
 
         See also:
             _fundamental_phase
@@ -1334,6 +1334,53 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         deg = self._degree()
         return self._power(deg)._phase_exp
 
+    def reset_eigenvalue(self) -> "BaseXPPauli":
+        """Returns the adjusted XP operator such that +1 is an eigenvalue of it.
+
+        Note:
+            This method is adapted from method XPSetEval from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            BaseXPPauli: XP operator with +1 as an eigenvalue
+
+        Examples:
+        >>> a = BaseXPPauli(matrix=np.array([1, 0, 1, 1, 0, 1, 0, 4], dtype=np.int64),
+        ... phase_exp=4, precision=6)
+        >>> value = a.reset_eigenvalue()
+        >>> value.matrix
+        array([[1, 0, 1, 1, 0, 1, 0, 4]], dtype=np.int64)
+        >>> value._phase_exp
+        array([1])
+
+        See also:
+            _reset_eigenvalue
+        """
+        return self._reset_eigenvalue()
+
+    def _reset_eigenvalue(self) -> "BaseXPPauli":
+        """Returns the adjusted XP operator such that +1 is an eigenvalue of it.
+
+        Note:
+            This method is adapted from method XPSetEval from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            BaseXPPauli: XP operator with +1 as an eigenvalue
+
+        See also:
+            _fundamental_phase, _degree
+        """
+        fphase = self._fundamental_phase()
+        deg = self._degree()
+        new_phase = np.mod(self.phase() - np.floor_divide(fphase, deg), 2 * self.precision)
+        return BaseXPPauli(matrix=self.matrix, phase_exp=new_phase, precision=self.precision)
 
 # ---------------------------------------------------------------------
 # Evolution by Clifford gates

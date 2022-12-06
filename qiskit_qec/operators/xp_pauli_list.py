@@ -284,7 +284,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             ... phase_exp=np.array([2, 2]), precision=4)
             >>> value = a.compose(b)
             >>> value.matrix
-            array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=int64)
+            array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([6, 6])
 
@@ -483,7 +483,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             False
 
         Returns:
-            XPPauliList: List of conjugated XP operator
+            XPPauliList: List of conjugated XP operators
 
         Raises:
             QiskitError: Other list must have either 1 or the same number of
@@ -499,7 +499,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> value = a.conjugate(b)
             >>> value.matrix
             array([[1, 0, 0, 1, 0, 1, 0, 1], 
-            [0, 1, 1, 0, 5, 5, 4, 5]], dtype=int64)
+            [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64)
             >>> value._phase_exp
             array([3, 10])
         """
@@ -565,7 +565,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> value = a.commutator(b)
             >>> value.matrix
             array([[0, 0, 0, 0, 4, 0, 0, 0], 
-            [0, 0, 0, 0, 4, 4, 2, 0]], dtype=int64)
+            [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([8, 8])
         """
@@ -578,6 +578,32 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             )
 
         return XPPauliList(super().commutator(other, front=front, inplace=inplace))
+
+    def reset_eigenvalue(self) -> "XPPauliList":
+        """Returns the list of adjusted XP operators such that +1 is an eigenvalue of them.
+
+        Note:
+            This method is adapted from method XPSetEval from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauliList: XP operators with +1 as an eigenvalue
+
+        Examples:
+        >>> a = XPPauliList(data=np.array([[0, 0, 1, 1, 1, 0, 4, 2], 
+        ... [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64),
+        ... phase_exp=np.array([7, 4]), precision=6)
+        >>> value = a.reset_eigenvalue()
+        >>> value.matrix
+        array([[0, 0, 1, 1, 1, 0, 4, 2], 
+        [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
+        >>> value._phase_exp
+        array([6, 1])
+        """
+        return XPPauliList(super().reset_eigenvalue())
 
     # def conjugate(self):
     #     """Return the conjugate of each XPPauli in the list."""
