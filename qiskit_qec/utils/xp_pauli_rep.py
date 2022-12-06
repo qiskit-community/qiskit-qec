@@ -30,6 +30,7 @@ from typing import Any, Iterable, List, Optional, Tuple, Union
 import numpy as np
 from qiskit.circuit import Gate
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
+from qiskit.exceptions import QiskitError
 from scipy.sparse import csr_matrix
 
 
@@ -221,7 +222,7 @@ INDEX_SYNTAX = 1
 LATEX_SYNTAX = 2
 XP_SYMPLECTIC_SYNTAX = 3
 DEFAULT_SYNTAX = 0
-SYNTAX_TO_TEXT = ["product", "index"]
+SYNTAX_TO_TEXT = ["product", "index", "latex", "XP symplectic"]
 
 DEFAULT_QUBIT_ORDER = "right-to-left"
 QUBIT_ORDERS = ["right-to-left", "left-to-right"]
@@ -248,7 +249,7 @@ def get_phase_encodings() -> List[str]:
         ['w']
 
     See Also
-        get_tensor_encodings, get_pauli_encldings
+        get_tensor_encodings, get_pauli_encodings
     """
     return PHASE_ENCODINGS
 
@@ -514,17 +515,66 @@ def _expstr2exp(exp_string, encoding: str) -> np.ndarray:
 # pylint: disable=unused-argument
 def exp2expstr(
     phase_exp: Any,
-    input_encoding: str,
+    input_encoding: str = DEFAULT_EXTERNAL_XP_PAULI_ENCODING,
     same_type: bool = True,
 ) -> Union[np.ndarray, str]:
-    """_summary_"""
-    pass
+    """Converts encoded phases (exponents) to their string representations
+
+    Note: This method does more than apply str method as the string representations of the
+    different encodings have a specific syntaxs.
+
+    Args:
+        phase_exp: Phase encosings to convert to string representations
+        input_encoding: Encoding of the input phase exponents. Defaults to 
+        DEFAULT_EXTERNAL_XP_PAULI_ENCODING.
+        same_type (optional): Scalar/Vector return flag. Defaults to True.
+
+    Raises:
+        QiskitError: Invalid phase exponent encoding
+
+    Returns:
+        exp_str: string representations of given phase exponents
+
+    Examples:
+        TODO
+
+    See Also:
+        _exp2expstr
+    """
+    if input_encoding not in PHASE_ENCODINGS:
+        raise QiskitError(f"Invalid phase exponent encoding: {input_encoding}")
+
+    phase_exp = np.atleast_1d(phase_exp)
+
+    return _exp2expstr(phase_exp, input_encoding)
 
 
-# pylint: disable=unused-argument
 def _exp2expstr(phase_exp: np.ndarray, encoding: str) -> np.ndarray:
-    """_summary_"""
-    pass
+    """Converts encoded phases (exponents) to their string representations
+
+    Note: This method does more than apply str as the string representations of the
+    different encodings have a specific syntax.
+
+    Args:
+        phase_exp: Phase encosings to convert to string representations
+        encoding: Encoding of the input phase exponents
+
+    Raises:
+        QiskitError: Invalid phase exponent encoding
+
+    Returns:
+        exp_str: The encoding is not supported
+
+    Examples:
+        TODO
+
+    See Also:
+        exp2expstr
+    """
+    if encoding == "w":
+        return np.array(["(w," + str(item) + ")" for item in phase_exp])
+    else:
+        raise QiskitError(f"The encoding {encoding} is not supported.")
 
 
 # ----------------------------------------------------------------------
@@ -711,7 +761,7 @@ def _str2symplectic(
 def xp_symplectic2str(
     matrix: np.ndarray,
     phase_exp: Any = None,
-    precision:int,
+    precision:int = None,
     input_encoding: str = INTERNAL_XP_PAULI_ENCODING,
     output_phase_encoding: str = None,
     no_phase=False,
@@ -761,7 +811,9 @@ def xp_symplectic2str(
         TODO
     """
     matrix = np.atleast_2d(matrix)
-    # TODO convert to unique vector representation
+    num_qubits = matrix.shape[1] >> 1
+    matrix[:,0:num_qubits] = np.mod(matrix[:,0:num_qubits], 2)
+    matrix[:,num_qubits:] = np.mod(matrix[:,num_qubits:], precision)
     if no_phase:
         phase_str = np.full((matrix.shape[0],), "")
     else:
@@ -769,147 +821,84 @@ def xp_symplectic2str(
             phase_exp = np.zeros(shape=(matrix.shape[0],), dtype=np.int64)
         else:
             phase_exp = np.atleast_1d(phase_exp)
+            phase_exp = np.mod(phase_exp, 2*precision)
 
         # If multiple phase/tensor encodings are implemented, the conversion
         # needs to go here.
 
-        if syntax != XP_SYMPLECTIC_SYNTAX:
-            phase_str = exp2expstr(phase_exp, output_phase_encoding)
+        if output_phase_encoding is None:
+            if syntax != XP_SYMPLECTIC_SYNTAX:
+                phase_str = exp2expstr(phase_exp, "w")
 
     tensor_str = []
 
     _XPENC = ["(I)", "(X)", "(P{zexp})", "(XP{zexp})"]
     _ENC = {"XP": _XPENC}
 
-    num_qubits = matrix.shape[1] >> 1
     if syntax == PRODUCT_SYNTAX:
         for xppauli in matrix:
             tmp_tensor_str = ""
-            for mark in range(num_qubits):
+            for index in range(num_qubits):
                 tmp_enc = ""
-                if xppauli[mark] == 0 and xppauli[mark+num_qubits] == 0:
-                    tmp_enc = _ENC[output_tensor_encoding][0]
-                elif xppauli[mark] == 1 and xppauli[mark+num_qubits] == 0:
-                    tmp_enc = _ENC[output_tensor_encoding][1]
-                elif xppauli[mark] == 0 and xppauli[mark+num_qubits] > 0:
-                    tmp_enc = _ENC[output_tensor_encoding][2].replace("{zexp}", str(xppauli[mark+num_qubits]))
+                rep = ""
+                if xppauli[index+num_qubits] > 1:
+                    rep = str(xppauli[index+num_qubits])
+                if xppauli[index+num_qubits] == 0:
+                   tmp_enc = _ENC[output_tensor_encoding][xppauli[index]]
                 else:
-                    tmp_enc = _ENC[output_tensor_encoding][3].replace("{zexp}", str(xppauli[mark+num_qubits]))
-                # TODO perhaps it could be simplified as
-                #if xppauli[mark+num_qubits] == 0:
-                #   tmp_enc = _ENC[output_tensor_encoding][xppauli[mark]]
-                #else:
-                #   tmp_enc = _ENC[output_tensor_encoding][2+xppauli[mark]].replace("{zexp}", str(xppauli[mark+num_qubits]))
-                if qubit_order == "left-to-right":
-                    tmp_tensor_str += tmp_enc
-                else:
-                    tmp_tensor_str = tmp_enc + tmp_tensor_str
+                   tmp_enc = _ENC[output_tensor_encoding][2+xppauli[index]].replace("{zexp}", rep)
+                if tmp_enc:
+                    if qubit_order == "left-to-right":
+                        tmp_tensor_str += tmp_enc
+                    else:
+                        tmp_tensor_str = tmp_enc + tmp_tensor_str
 
             tensor_str.append(tmp_tensor_str)
     elif syntax == XP_SYMPLECTIC_SYNTAX:
         for i, xppauli in enumerate(matrix):
-            tmp_tensor_str = "XP_{"+str(precision)+"}"
-            tmp_tensor_str += "("+str(phase_exp[i])+"|"+str(xppauli[:num_qubits])+"|"+str(xppauli[num_qubits:])+")"
+            tmp_tensor_str = "XP"+str(precision)
+            tmp_tensor_str += "("+str(phase_exp[i])+"|"+str(xppauli[:num_qubits])[1:-1]+"|"+str(xppauli[num_qubits:])[1:-1]+")"
 
             tensor_str.append(tmp_tensor_str)
     elif syntax in (INDEX_SYNTAX, LATEX_SYNTAX):
         if syntax == LATEX_SYNTAX:
-            str_repr = _ind_to_latex_repr
+            ind_str_repr = _ind_to_latex_repr
+            sup_str_repr = _sup_to_latex_repr
         else:
-            str_repr = str
+            ind_str_repr = str
+            sup_str_repr = str
 
         for xppauli in matrix:
             tmp_tensor_str = ""
-            marker = xppauli[:num_qubits].astype(np.int8) + 2 * xppauli[num_qubits:].astype(np.int8)
-            if output_tensor_encoding in Y_TENSOR_ENCODINGS:
-                for index, mark in enumerate(marker):
-                    if mark != 0:
+            for index in range(num_qubits):
+                if output_tensor_encoding == "XP":
+                    tmp_enc = ""
+                    rep = ""
+                    if xppauli[index+num_qubits] > 1:
+                        rep = sup_str_repr(xppauli[index+num_qubits])
+                    if xppauli[index] == 1 and xppauli[index+num_qubits] == 0:
+                        tmp_enc = _ENC[output_tensor_encoding][1]
+                    elif xppauli[index+num_qubits] > 0:
+                        tmp_enc = _ENC[output_tensor_encoding][2+xppauli[index]].replace("{zexp}", rep)
+                    
+                    if tmp_enc:
                         if qubit_order == "left-to-right":
-                            tmp_tensor_str += (
-                                _ENC[output_tensor_encoding][mark]
-                                + index_str
-                                + str_repr(index + index_start)
-                            )
+                            tmp_tensor_str += (tmp_enc + index_str + ind_str_repr(index + index_start))
                         else:
-                            tmp_tensor_str = (
-                                _ENC[output_tensor_encoding][mark]
-                                + index_str
-                                + str_repr(index + index_start)
-                                + tmp_tensor_str
-                            )
-            else:
-                for index, mark in enumerate(marker):
-                    if mark != 0:
-                        if mark == 3:
-                            if output_tensor_encoding == "XZ":
-                                if qubit_order == "left-to-right":
-                                    tmp_tensor_str += (
-                                        "(X"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + "Z"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + ")"
-                                    )
-                                else:
-                                    tmp_tensor_str = (
-                                        "(X"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + "Z"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + ")"
-                                        + tmp_tensor_str
-                                    )
-                            else:
-                                if qubit_order == "left-to-right":
-                                    tmp_tensor_str += (
-                                        "(Z"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + "X"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + ")"
-                                    )
-                                else:
-                                    tmp_tensor_str = (
-                                        "(Z"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + "X"
-                                        + index_str
-                                        + str_repr(index + index_start)
-                                        + ")"
-                                        + tmp_tensor_str
-                                    )
-                        else:
-                            if qubit_order == "left-to-right":
-                                tmp_tensor_str += (
-                                    "("
-                                    + _YENC[mark]
-                                    + index_str
-                                    + str_repr(index + index_start)
-                                    + ")"
-                                )
-                            else:
-                                tmp_tensor_str = (
-                                    "("
-                                    + _YENC[mark]
-                                    + index_str
-                                    + str_repr(index + index_start)
-                                    + ")"
-                                    + tmp_tensor_str
-                                )
+                            tmp_tensor_str = (tmp_enc + index_str + ind_str_repr(index + index_start) + tmp_tensor_str)
 
             tensor_str.append(tmp_tensor_str)
-    else:
-        raise QiskitError(f"Unsupport syntax: {syntax}")
 
-    result = [p_str + t_str for p_str, t_str in zip(phase_str, tensor_str)]
-    # TODO add precision annotation to result
+    else:
+        raise QiskitError(f"Unsupported syntax: {syntax}")
+
+    if syntax != XP_SYMPLECTIC_SYNTAX:
+        if syntax in (PRODUCT_SYNTAX, INDEX_SYNTAX):
+            result = ["XP"+str(precision)+"("+ p_str + t_str+")" for p_str, t_str in zip(phase_str, tensor_str)]
+        else:
+            result = ["XP"+_ind_to_latex_repr(precision)+"("+ p_str + t_str+")" for p_str, t_str in zip(phase_str, tensor_str)]
+    else:
+        result = tensor_str
     if matrix.shape[0] == 1 and same_type:
         return result[0]
     else:
@@ -1016,10 +1005,29 @@ def indices_to_boolean(indices: Iterable[int], dim: int) -> np.ndarray:
 
 
 # ----------------------------------------------------------------------
-# pylint: disable=unused-argument
 def _ind_to_latex_repr(index: int) -> str:
-    """_summary_"""
-    pass
+    """Adds curly braces and an underscore to an index.
+
+    Args:
+        index: An integer
+
+    Returns:
+        str: string in LaTeX syntax
+    """
+    return f"_{{{index}}}"
+
+
+# ----------------------------------------------------------------------
+def _sup_to_latex_repr(superscript: int) -> str:
+    """Adds curly braces and a caret to a superscript.
+
+    Args:
+        superscript: An integer
+
+    Returns:
+        str: string in LaTeX syntax
+    """
+    return f"^{{{superscript}}}"
 
 
 # pylint: disable=unused-argument
