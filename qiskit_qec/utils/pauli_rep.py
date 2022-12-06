@@ -102,13 +102,13 @@ PAULI_ENCODINGS_SPLIT = {
 # Different string syntax formats are available. The they are "product" syntax and
 # "index" syntax. "product" syntax represents a Pauli operator of the form
 # :math: $p * T_1 \otimes T_2 \otimes ... \otimes T_n$ as :math" $pT1T2T3...Tn$. See the
-# following exmaples:
+# following examples:
 #
 # -iX \otimes Y \otimes Z -> -iXYZ
 # X \otimes Y \otimes Z \otimes I \otimes I \otimes I  -> XYZII
 #
 # The index syntax only represents the non identity Paulis. Index syntax specifically
-# indiciates the index that the Pauli's are acting on. Following Qiskit's current internal
+# indicates the index that the Pauli's are acting on. Following Qiskit's current internal
 # indexing:
 #
 # -iX \otimes Y \otimes Z -> -iZ0Y1X2
@@ -328,7 +328,7 @@ def split_pauli_enc(encoding: str) -> Tuple[str, str]:
     """Splits the Pauli encoding into the phase and tensor encodings
 
     Args:
-        encoding: Pauli encpoding
+        encoding: Pauli encoding
 
     Raises:
         QiskitError: Encoding not valid
@@ -359,7 +359,7 @@ def _split_pauli_enc(encoding: str) -> Tuple[str, str]:
 
 
 def get_phase_enc(encoding: str) -> str:
-    """Returns the phase encodeing part of the Pauli encoding string
+    """Returns the phase encoding part of the Pauli encoding string
 
     Args:
         encoding: Pauli encoding string
@@ -372,7 +372,7 @@ def get_phase_enc(encoding: str) -> str:
 
 
 def get_tensor_enc(encoding: str) -> str:
-    """Returns the tensor encodeing part of the Pauli encoding string
+    """Returns the tensor encoding part of the Pauli encoding string
 
     Args:
         encoding: Pauli encoding string
