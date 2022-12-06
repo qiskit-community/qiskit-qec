@@ -1403,7 +1403,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         """
         fphase = self._fundamental_phase()
         deg = self._degree()
-        new_phase = np.mod(self.phase() - np.floor_divide(fphase, deg), 2 * self.precision)
+        new_phase = np.mod(self._phase_exp - np.floor_divide(fphase, deg), 2 * self.precision)
         return BaseXPPauli(matrix=self.matrix, phase_exp=new_phase, precision=self.precision)
 
 

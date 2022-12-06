@@ -230,14 +230,26 @@ class TestXPPauliListOperator(QiskitTestCase):
         value_front = a.conjugate(b, front=True)
         value_back = a.conjugate(b, front=False)
 
-        target_matrix_front = np.array([[1, 0, 0, 1, 0, 1, 0, 1], [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64)
+        target_matrix_front = np.array(
+            [[1, 0, 0, 1, 0, 1, 0, 1], [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64
+        )
         target_phase_exp_front = np.array([3, 10])
         target_precision_front = 6
-        target_front = XPPauliList(data=target_matrix_front, phase_exp=target_phase_exp_front, precision=target_precision_front)
-        target_matrix_back = np.array([[1, 0, 1, 1, 3, 3, 5, 4], [1, 0, 1, 0, 5, 1, 4, 0]], dtype=np.int64)
+        target_front = XPPauliList(
+            data=target_matrix_front,
+            phase_exp=target_phase_exp_front,
+            precision=target_precision_front,
+        )
+        target_matrix_back = np.array(
+            [[1, 0, 1, 1, 3, 3, 5, 4], [1, 0, 1, 0, 5, 1, 4, 0]], dtype=np.int64
+        )
         target_phase_exp_back = np.array([0, 11])
         target_precision_back = 6
-        target_back = XPPauliList(data=target_matrix_back, phase_exp=target_phase_exp_back, precision=target_precision_back)
+        target_back = XPPauliList(
+            data=target_matrix_back,
+            phase_exp=target_phase_exp_back,
+            precision=target_precision_back,
+        )
         np.testing.assert_equal(target_front.matrix, value_front.matrix)
         np.testing.assert_equal(target_front._phase_exp, value_front._phase_exp)
         np.testing.assert_equal(target_front.precision, value_front.precision)
@@ -258,14 +270,26 @@ class TestXPPauliListOperator(QiskitTestCase):
         value_front = a.commutator(b, front=True)
         value_back = a.commutator(b, front=False)
 
-        target_matrix_front = np.array([[0, 0, 0, 0, 4, 0, 0, 0], [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64)
+        target_matrix_front = np.array(
+            [[0, 0, 0, 0, 4, 0, 0, 0], [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64
+        )
         target_phase_exp_front = np.array([8, 8])
         target_precision_front = 6
-        target_front = XPPauliList(data=target_matrix_front, phase_exp=target_phase_exp_front, precision=target_precision_front)
-        target_matrix_back = np.array([[0, 0, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 2, 2, 4, 0]], dtype=np.int64)
+        target_front = XPPauliList(
+            data=target_matrix_front,
+            phase_exp=target_phase_exp_front,
+            precision=target_precision_front,
+        )
+        target_matrix_back = np.array(
+            [[0, 0, 0, 0, 2, 0, 0, 0], [0, 0, 0, 0, 2, 2, 4, 0]], dtype=np.int64
+        )
         target_phase_exp_back = np.array([4, 4])
         target_precision_back = 6
-        target_back = XPPauliList(data=target_matrix_back, phase_exp=target_phase_exp_back, precision=target_precision_back)
+        target_back = XPPauliList(
+            data=target_matrix_back,
+            phase_exp=target_phase_exp_back,
+            precision=target_precision_back,
+        )
         np.testing.assert_equal(target_front.matrix, value_front.matrix)
         np.testing.assert_equal(target_front._phase_exp, value_front._phase_exp)
         np.testing.assert_equal(target_front.precision, value_front.precision)
@@ -303,10 +327,14 @@ class TestXPPauliListOperator(QiskitTestCase):
         xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli_list.reset_eigenvalue()
 
-        target_matrix = np.array([[0, 0, 1, 1, 1, 0, 4, 2], [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
+        target_matrix = np.array(
+            [[0, 0, 1, 1, 1, 0, 4, 2], [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64
+        )
         target_phase_exp = np.array([6, 1])
         target_precision = 6
-        target = XPPauliList(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        target = XPPauliList(
+            data=target_matrix, phase_exp=target_phase_exp, precision=target_precision
+        )
         np.testing.assert_equal(target.matrix, value.matrix)
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
