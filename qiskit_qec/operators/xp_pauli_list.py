@@ -55,6 +55,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         Raises:
             QiskitError: Something went wrong.
+
+        See also:
+            BaseXPPauli, XPPauli
         """
         if data is None:
             matrix = np.empty(shape=(0, 0), dtype=np.bool_)
@@ -409,6 +412,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
                 [0, 1, 0, 0, 1, 0, 1, 1, 7, 5, 4, 6, 6, 7]], dtype=np.int64)
             >>> value._phase_exp
             np.array([9, 8])
+
+        See also:
+            _inverse
         """
         return XPPauliList(super().inverse())
 
@@ -504,6 +510,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64)
             >>> value._phase_exp
             array([3, 10])
+
+        See also:
+            _conjugate
         """
         if not isinstance(other, XPPauliList):
             other = XPPauliList(other)
@@ -572,6 +581,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([8, 8])
+
+        See also:
+            _commutator
         """
         if not isinstance(other, XPPauliList):
             other = XPPauliList(other)
@@ -606,6 +618,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
         >>> value._phase_exp
         array([6, 1])
+
+        See also:
+            _reset_eigenvalue
         """
         return XPPauliList(super().reset_eigenvalue())
 

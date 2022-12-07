@@ -93,7 +93,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
             >>> matrix = numpy.array([[1,1,0,0],[0,1,0,1]])
             >>> base_xp_pauli = BaseXPPauli(matrix)
 
-        See Also:
+        See also:
             XPPauli, XPPauliList
         """
         if precision is not None:

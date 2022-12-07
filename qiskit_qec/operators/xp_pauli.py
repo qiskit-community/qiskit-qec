@@ -49,6 +49,9 @@ class XPPauli(BaseXPPauli):
 
         Raises:
             QiskitError: Something went wrong.
+
+        See also:
+            BaseXPPauli, XPPauliList
         """
         if isinstance(data, np.ndarray):
             matrix = np.atleast_2d(data)
@@ -182,6 +185,9 @@ class XPPauli(BaseXPPauli):
             array([[1, 0, 1, 3, 3, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([6])
+
+        See also:
+            _compose
         """
         if qargs is None:
             qargs = getattr(other, "qargs", None)
@@ -217,6 +223,9 @@ class XPPauli(BaseXPPauli):
             np.array([[0, 1, 1, 2, 0, 3]], dtype=np.int64)
             >>> a._phase_exp
             array([3])
+
+        See also:
+            _unique_vector_rep
         """
         return XPPauli(super().unique_vector_rep())
 
@@ -249,6 +258,9 @@ class XPPauli(BaseXPPauli):
             array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=np.int64)
             >>> a._phase_exp
             array([3])
+
+        See also:
+            _rescale_precision
         """
         return XPPauli(super().rescale_precision(new_precision))
 
@@ -278,6 +290,9 @@ class XPPauli(BaseXPPauli):
             array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
             >>> value._phase_exp
             array([15])
+
+        See also:
+            _antisymmetric_op
         """
         return XPPauli(super().antisymmetric_op(int_vec))
 
@@ -303,6 +318,9 @@ class XPPauli(BaseXPPauli):
             array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
             >>> value._phase_exp
             array([5])
+
+        See also:
+            _inverse
         """
         return XPPauli(super().inverse())
 
@@ -331,6 +349,9 @@ class XPPauli(BaseXPPauli):
             array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
             >>> value._phase_exp
             array([4])
+
+        See also:
+            _power
         """
         return XPPauli(super().power(n))
 
@@ -384,6 +405,9 @@ class XPPauli(BaseXPPauli):
             array([[1, 0, 0, 1, 0, 1, 0, 1]], dtype=np.int64)
             >>> value._phase_exp
             array([3])
+
+        See also:
+            _conjugate
         """
         if not isinstance(other, XPPauli):
             other = XPPauli(other)
@@ -440,6 +464,9 @@ class XPPauli(BaseXPPauli):
             array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([8])
+
+        See also:
+            _commutator
         """
         if not isinstance(other, XPPauli):
             other = XPPauli(other)
@@ -467,6 +494,9 @@ class XPPauli(BaseXPPauli):
         array([[1, 0, 1, 1, 0, 1, 0, 4]], dtype=np.int64)
         >>> value._phase_exp
         array([1])
+
+        See also:
+            _reset_eigenvalue
         """
         return XPPauli(super().reset_eigenvalue())
 
