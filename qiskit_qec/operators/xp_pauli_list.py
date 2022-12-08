@@ -418,7 +418,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().inverse())
 
-    def power(self, n: np.ndarray) -> "XPPauliList":
+    def power(self, n: Union[int, list, np.ndarray]) -> "XPPauliList":
         """Return the XP operators of specified precision raised to the power n.
 
         Note:
@@ -624,11 +624,6 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         """
         return XPPauliList(super().reset_eigenvalue())
 
-    # def conjugate(self):
-    #     """Return the conjugate of each XPPauli in the list."""
-    #     # TODO
-    #     pass
-
     # def transpose(self):
     #     """Return the transpose of each XPPauli in the list."""
     #     # TODO
@@ -636,11 +631,6 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     # def adjoint(self):
     #     """Return the adjoint of each XPPauli in the list."""
-    #     # TODO
-    #     pass
-
-    # def inverse(self):
-    #     """Return the inverse of each XPPauli in the list."""
     #     # TODO
     #     pass
 

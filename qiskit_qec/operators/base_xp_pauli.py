@@ -913,7 +913,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return product._unique_vector_rep()
 
-    def power(self, n: np.ndarray) -> "BaseXPPauli":
+    def power(self, n: Union[int, list, np.ndarray]) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         For a list of XP operators, power is performed element-wise:
@@ -933,11 +933,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Returns:
             BaseXPPauli: BaseXPPauli raised to the power n
 
+        Raises:
+            QiskitError: The number of powers in the array n must match the
+            number of XP operators
+
         Examples:
             >>> a = BaseXPPauli(
             ... matrix=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
             ... phase_exp=4, precision=6)
-            >>> value = a.power(n=np.array([5]))
+            >>> value = a.power(n=5)
             >>> value.matrix
             array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
             >>> value._phase_exp
@@ -946,9 +950,15 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             _power
         """
+        if isinstance(n, list):
+            n = np.array(n, dtype=np.int64)
+        if isinstance(n, np.ndarray) and n.shape != self.matrix.shape[:-1]:
+            raise QiskitError(
+                "The number of powers in the array n must match the number of XP operators."
+            )
         return self._power(n)
 
-    def _power(self, n: np.ndarray) -> "BaseXPPauli":
+    def _power(self, n: Union[int, np.ndarray]) -> "BaseXPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         Note:
@@ -967,6 +977,9 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             _antisymmetric_op, _unique_vector_rep
         """
+        if isinstance(n, int):
+            n = np.array([n] * self.matrix.shape[0], dtype=np.int64)
+
         a = np.mod(n, 2)
 
         x = self.x * a[:, None]
