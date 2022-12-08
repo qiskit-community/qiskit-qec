@@ -917,50 +917,77 @@ class ArcCircuit:
         for t in range(self.T + 1):
             tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
             for j in range(self.num_qubits[1]):
+                dt = None
                 q_l = self.num_qubits[1] - 1 - j
                 qubit_l = self.links[q_l][1]
                 all_neighbors = qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
                 if qubit_l in all_neighbors and tau in [1, 2, 3]:
-                    # don't calculate changes for neighbours of the 202
+                    # don't calculate changes for the unmeasured neighbours of the 202
                     change = False
                 elif qubit_l in all_neighbors and tau == 4:
-                    # index for neighbours on the other side of the 202 link
-                    opp_index = int(qubit_l in qubit_l_nghbrs[0])
-                    # first listed link on the other side
-                    qubit_l_opp = qubit_l_nghbrs[opp_index][0]
-                    # position in register for this link
-                    k = self.num_qubits[1] - 1 - self.link_index[qubit_l_opp]
-                    # determine change for product of these two over the past four rounds
-                    changes = 0
-                    for jj in [j, k]:
-                        dt = 4
-                        changes += syndrome_list[-t - 1][jj] != syndrome_list[-t - 1 + dt][jj]
-                    change = changes % 2 == 1
+                    if self._ff:
+                        # the first measured neighbours at the end of a 202
+                        # are used to decide on the ff, and not inlucded in
+                        # the syndrome
+                        change = False
+                    else:
+                        # without ff we need these changes, but we need to calculate
+                        # then for products of links from both sides of the 202.
+                        # we take the product of the given link with the first listed
+                        # link from the other side
+                        if qubit_l == qubit_l_nghbrs[1][0]:
+                            # we don't calculate a change for the first link for
+                            # the second listed side, to avoid double counting
+                            change = False
+                        else:
+                            # index for neighbours on the other side of the 202 link
+                            opp_index = int(qubit_l in qubit_l_nghbrs[0])
+                            # first listed link on the other side
+                            qubit_l_opp = qubit_l_nghbrs[opp_index][0]
+                            # position in register for this link
+                            k = self.num_qubits[1] - 1 - self.link_index[qubit_l_opp]
+                            # determine change for product of these two over the past four rounds
+                            changes = 0
+                            for jj in [j, k]:
+                                dt = 4
+                                changes += (
+                                    syndrome_list[-t - 1][jj] != syndrome_list[-t - 1 + dt][jj]
+                                )
+                            change = changes % 2 == 1
                 else:
+                    # for the first round, syndrome changes are just the syndrome
                     if t == 0:
                         change = syndrome_list[-1][j] != "0"
+                    # overwise, syndromes need to be compared with those dt rounds ago
+                    # dt depends on various factors, and is determined below
                     else:
+                        # normal case is comparison to last round
+                        dt = 1
+                        change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
+                        # this will be overwritten in the following cases
                         if qubit_l == qubit_l_202:
                             if tau == 1:
+                                # first measurement of the 202 link in the opposite basis
+                                # nothing to compare with, so no change
                                 change = False
                             else:
                                 if tau in [2, 3, 4]:
+                                    # when alternating between standard and opposite basis
                                     dt = 2
                                 else:
-                                    if self._ff and qubit_l in last_neighbors and t % 5 == 0:
-                                        dt = 5
-                                    else:
-                                        dt = 1
+                                    # for the beginning of the 202, just compare with the previous
+                                    # (unless overwritten by the below)
+                                    dt = 1
                                 change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
-                        elif qubit_l in last_neighbors and t % 5 == 0:
+                        if qubit_l in last_neighbors and t % 5 == 0:
                             if self._ff:
+                                # compare with the beginning of the 202 if they may
+                                # have seen a corrected from feedforward
                                 dt = 5
                             else:
+                                # compare with the previous if no corrections applied
                                 dt = 1
                             change = syndrome_list[-t - 1][j] != syndrome_list[-t - 1 + dt][j]
-                        else:
-                            change = syndrome_list[-t - 1][j] != syndrome_list[-t][j]
-
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
             last_neighbors = all_neighbors.copy()
@@ -1004,7 +1031,10 @@ class ArcCircuit:
                             link = self.links[-elem_num - 1]
                             code_qubits = [link[0], link[2]]
                             link_qubit = link[1]
+                        tau, _, _ = self._get_202(syn_round)
                         node = {"time": syn_round}
+                        if tau == 2:
+                            node["conjugate"] = True
                         node["qubits"] = code_qubits
                         node["link qubit"] = link_qubit
                         node["is_boundary"] = is_boundary
@@ -1015,12 +1045,23 @@ class ArcCircuit:
     def flatten_nodes(self, nodes):
         """
         Removes time information from a set of nodes, and consolidates those on
-        the same position at different times.
+        the same position at different times. Also removes nodes corresponding
+        to the conjugate error from [[2,0,2]]s.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
         Returns:
             flat_nodes (list): List of flattened nodes.
         """
+        # strip out conjugate nodes
+        non_conj_nodes = []
+        for node in nodes:
+            if "conjugate" not in node:
+                non_conj_nodes.append(node)
+            else:
+                if not node["conjugate"]:
+                    non_conj_nodes.append(node)
+        nodes = non_conj_nodes
+        # remove time info
         nodes_per_link = {}
         for node in nodes:
             link_qubit = node["link qubit"]
