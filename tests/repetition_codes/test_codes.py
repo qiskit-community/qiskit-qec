@@ -262,7 +262,7 @@ class TestARCCodes(unittest.TestCase):
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
         triangle = [(0, 1, 2), (2, 3, 4), (4, 5, 0)]
-        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (4, 6, 7)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
         for links in [triangle, tadpole, t_pose]:
             for resets in [True, False]:
@@ -304,11 +304,50 @@ class TestARCCodes(unittest.TestCase):
                 + ".",
             )
 
+    def test_single_error_202s(self):
+        """Test a range of single errors for a code with [[2,0,2]] codes."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
+        T = 20
+        code = ArcCircuit(links, T, run_202=True, barriers=True)
+        assert code.run_202
+        # insert errors on a selection of qubits during a selection of rounds
+        qc = code.circuit[code.base]
+        for q in [0, 2, 5, 6, 1, 7]:
+            for t in [2 + 5 * l for l in range(len(links))]:
+                error_qc = QuantumCircuit()
+                for qreg in qc.qregs:
+                    error_qc.add_register(qreg)
+                for creg in qc.cregs:
+                    error_qc.add_register(creg)
+                barrier_num = 0
+                for gate in qc.data:
+                    if gate[0].name == "barrier":
+                        barrier_num += 1
+                        if barrier_num == 2 * t + 1:
+                            if q % 2 == 0:
+                                error_qc.z(code.code_qubit[code.code_index[q]])
+                            else:
+                                error_qc.x(code.link_qubit[code.link_index[q]])
+                    error_qc.append(gate)
+                counts = Aer.get_backend("qasm_simulator").run(error_qc).result().get_counts()
+                for string in counts:
+                    # look at only bulk non-conjugate nodes
+                    nodes = [
+                        node
+                        for node in code.string2nodes(string)
+                        if "conjugate" not in node and not node["is_boundary"]
+                    ]
+                    # require at most two (or three for the trivalent vertex or neighbouring aux)
+                    self.assertTrue(
+                        len(nodes) <= (2 + int(q in (2, 7))),
+                        "Too many nodes for a single error in a [[2,0,2]] code.",
+                    )
+
     def test_feedforward(self):
-        """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""
+        """Test that the correct behaviour is seen with feedforward for [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
         T = 5 * len(links)
-        # try codes with and without feedforward correction
+        # try codes with feedforward correction
         code = ArcCircuit(links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1})
         correct = True
         # insert an initial bitflip on qubit 2
