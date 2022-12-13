@@ -310,7 +310,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
-    def rescale_precision(self, new_precision: int) -> "XPPauliList":
+    def rescale_precision(self, new_precision: int, inplace: bool = False) -> "XPPauliList":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -323,6 +323,8 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         Args:
             new_precision: The target precision in which XPPauli is to be expressed
+            inplace: If True, rescale XPPauliList in place, else return a new
+            XPPauliList. Defaults to False
 
         Returns:
             XPPauliList: Resultant of rescaling the precision of XPPauliList
@@ -350,7 +352,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         See also:
             _rescale_precision
         """
-        return XPPauliList(super().rescale_precision(new_precision))
+        return XPPauliList(super().rescale_precision(new_precision, inplace))
 
     def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauliList":
         """Return the antisymmetric operators corresponding to the list of
@@ -595,7 +597,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         return XPPauliList(super().commutator(other, front=front, inplace=inplace))
 
-    def reset_eigenvalue(self) -> "XPPauliList":
+    def reset_eigenvalue(self, inplace: bool = False) -> "XPPauliList":
         """Returns the list of adjusted XP operators such that +1 is an eigenvalue of them.
 
         Note:
@@ -604,6 +606,10 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        Args:
+            inplace: If True, adjust XPPauliList in place, else return a new
+            XPPauliList. Defaults to False
 
         Returns:
             XPPauliList: XP operators with +1 as an eigenvalue
@@ -622,7 +628,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         See also:
             _reset_eigenvalue
         """
-        return XPPauliList(super().reset_eigenvalue())
+        return XPPauliList(super().reset_eigenvalue(inplace))
 
     # def transpose(self):
     #     """Return the transpose of each XPPauli in the list."""

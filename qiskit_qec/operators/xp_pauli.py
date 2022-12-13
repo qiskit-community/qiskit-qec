@@ -229,7 +229,7 @@ class XPPauli(BaseXPPauli):
         """
         return XPPauli(super().unique_vector_rep())
 
-    def rescale_precision(self, new_precision: int) -> "XPPauli":
+    def rescale_precision(self, new_precision: int, inplace: bool = False) -> "XPPauli":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -242,6 +242,8 @@ class XPPauli(BaseXPPauli):
 
         Args:
             new_precision: The target precision in which XPPauli is to be expressed
+            inplace: If True, rescale XPPauli in place, else return a new XPPauli.
+            Defaults to False
 
         Returns:
             XPPauli: Resultant of rescaling the precision of XPPauli
@@ -262,7 +264,7 @@ class XPPauli(BaseXPPauli):
         See also:
             _rescale_precision
         """
-        return XPPauli(super().rescale_precision(new_precision))
+        return XPPauli(super().rescale_precision(new_precision, inplace))
 
     def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauli":
         """Return the antisymmetric operator corresponding to an integer vector,
@@ -473,7 +475,7 @@ class XPPauli(BaseXPPauli):
 
         return XPPauli(super().commutator(other, front=front, inplace=inplace))
 
-    def reset_eigenvalue(self) -> "XPPauli":
+    def reset_eigenvalue(self, inplace: bool = False) -> "XPPauli":
         """Returns the adjusted XP operator such that +1 is an eigenvalue of it.
 
         Note:
@@ -482,6 +484,10 @@ class XPPauli(BaseXPPauli):
             Mark Webster. The original code is licensed under the GNU General
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
+
+        Args:
+            inplace: If True, adjust XPPauli in place, else return a new XPPauli.
+            Defaults to False
 
         Returns:
             XPPauli: XP operator with +1 as an eigenvalue
@@ -498,7 +504,7 @@ class XPPauli(BaseXPPauli):
         See also:
             _reset_eigenvalue
         """
-        return XPPauli(super().reset_eigenvalue())
+        return XPPauli(super().reset_eigenvalue(inplace))
 
 
 # Update docstrings for API docs
