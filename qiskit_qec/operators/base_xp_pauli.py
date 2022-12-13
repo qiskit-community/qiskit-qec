@@ -96,11 +96,10 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         See also:
             XPPauli, XPPauliList
         """
-        if precision is not None:
-            if not (isinstance(precision, int) and (precision > 1)):
-                raise QiskitError(
-                    "Precision of XP operators must be an integer greater than or equal to 2."
-                )
+        if not (isinstance(precision, int) and (precision > 1)):
+            raise QiskitError(
+                "Precision of XP operators must be an integer greater than or equal to 2."
+            )
 
         if matrix is None or matrix.size == 0:
             matrix = np.empty(shape=(0, 0), dtype=np.int64)
