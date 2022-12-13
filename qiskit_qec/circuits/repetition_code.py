@@ -508,7 +508,6 @@ class ArcCircuit:
             T (int): Number of rounds of syndrome measurement.
             basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
             used.
-            ff (bool): Whether to correct the effects of [[2,0,2]] sequences via feed forward.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
             barriers (bool): Whether to include barriers between different sections of the code.
             color (dict): Dictionary with code qubits as keys and 0 or 1 for each value, to specify
