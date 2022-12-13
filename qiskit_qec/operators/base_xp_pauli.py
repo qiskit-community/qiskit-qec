@@ -131,46 +131,190 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @property
     def x(self):
-        """_summary_"""
+        """
+        Returns the X component of symplectic representation as a 2d matrix.
+
+        Note: The XPPauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._x method
+        if a 2d array is needed as _x method is markeded as @final
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli.x
+            array([[1, 0],
+                   [0, 1]])
+
+        See Also:
+            _x, z, _z
+        """
         return self.matrix[:, : self.num_qubits]
 
     @x.setter
     def x(self, val: np.ndarray):
-        """_summary_"""
+        """
+        Sets the X component of symplectic representation
+
+        Args:
+            val: integer matrix used to set the X component of the symplectic representation
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli.x = np.array([[1,1],[0,0]], dtype=np.int64)
+            >>> base_xp_pauli.x
+            array([[1, 1],
+                   [0, 0]])
+
+        See Also:
+            x, z, _z
+        """
         self.matrix[:, : self.num_qubits] = val
 
     # @final Add when python >= 3.8
     @property
     def _x(self):  # pylint: disable=invalid-name
-        """_summary_"""
+        """
+        Returns the X component of symplectic representation as a 2d matrix.
+
+        Note: The XPPauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._x method
+        if a 2d array is needed as _x method is markeded as @final
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli._x
+            array([[1, 0],
+                   [0, 1]])
+
+        See Also:
+            x, z, _z
+        """
         return self.matrix[:, : self.num_qubits]
 
     # @final Add when python >= 3.8
     @_x.setter
     def _x(self, val: np.ndarray):  # pylint: disable=invalid-name
-        """_summary_"""
+        """
+        Sets the X component of symplectic representation
+
+        Args:
+            val: integer matrix used to set the X component of the symplectic representation
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli._x = np.array([[1,1],[0,0]], dtype=np.int64)
+            >>> base_xp_pauli._x
+            array([[1, 1],
+                   [0, 0]])
+
+        See Also:
+            _x, z, _z
+        """
         self.matrix[:, : self.num_qubits] = val
 
     @property
     def z(self):
-        """_summary_"""
+        """
+        Returns the Z component of symplectic representation as a 2d matrix.
+
+        Note: The XPPauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._z method
+        if a 2d array is needed as _z method is markeded as @final
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli.z
+            array([[0, 0],
+                   [1, 1]])
+
+        See Also:
+            _z, x, _x
+        """
         return self.matrix[:, self.num_qubits :]
 
     @z.setter
     def z(self, val: np.ndarray):
-        """_summary_"""
+        """
+        Sets the Z component of symplectic representation
+
+        Args:
+            val: integer matrix used to set the Z component of the symplectic representation
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli.z = np.array([[1,1],[0,0]], dtype=np.int64)
+            >>> base_xp_pauli.z
+            array([[1, 1],
+                   [0, 0]])
+
+        See Also:
+            z, x, _x
+        """
         self.matrix[:, self.num_qubits :] = val
 
     # @final Add when python >= 3.8
     @property
     def _z(self):  # pylint: disable=invalid-name
-        """_summary_"""
+        """
+        Returns the Z component of symplectic representation as a 2d matrix.
+
+        Note: The XPPauli class over writes this method to return
+        a 1d array instead of a 2d array. Use the self._z method
+        if a 2d array is needed as _z method is markeded as @final
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli._z
+            array([[0, 0],
+                   [1, 1]])
+
+        See Also:
+            z, x, _x
+        """
         return self.matrix[:, self.num_qubits :]
 
     # @final Add when python >= 3.8
     @_z.setter
     def _z(self, val: np.ndarray):  # pylint: disable=invalid-name
-        """_summary_"""
+        """
+        Sets the Z component of symplectic representation
+
+        Args:
+            val: integer matrix used to set the Z component of the symplectic representation
+
+        Examples:
+            >>> matrix = np.array([[1,0,0,0],[0,1,1,1]], dtype=np.int64)
+            >>> phase_exp = np.array([0,1])
+            >>> precision = 4
+            >>> base_xp_pauli = BaseXPPauli(matrix, phase_exp, precision)
+            >>> base_xp_pauli._z = np.array([[1,1],[0,0]], dtype=np.int64)
+            >>> base_xp_pauli._z
+            array([[1, 1],
+                   [0, 0]])
+
+        See Also:
+            _z, x, _x
+        """
         self.matrix[:, self.num_qubits :] = val
 
     @property
