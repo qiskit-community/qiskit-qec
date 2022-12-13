@@ -492,7 +492,6 @@ class ArcCircuit:
         links: list,
         T: int,
         basis: str = "xy",
-        resets: bool = True,
         delay: Optional[int] = None,
         barriers: bool = False,
         color: Optional[dict] = None,
@@ -509,7 +508,6 @@ class ArcCircuit:
             T (int): Number of rounds of syndrome measurement.
             basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
             used.
-            resets (bool): Whether to include a reset gate after mid-circuit measurements.
             ff (bool): Whether to correct the effects of [[2,0,2]] sequences via feed forward.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
             barriers (bool): Whether to include barriers between different sections of the code.
@@ -525,7 +523,6 @@ class ArcCircuit:
 
         self.links = links
         self.basis = basis
-        self._resets = resets
         self._barriers = barriers
         self._max_dist = max_dist
         self.delay = delay or 0
@@ -810,7 +807,7 @@ class ArcCircuit:
                         if not (tau == 0 and neighbor):
                             links_to_reset.add(q_l)
 
-        # measurement, etc
+        # measurement and resets
         for basis, qc in self.circuit.items():
 
             # measurement
@@ -824,11 +821,9 @@ class ArcCircuit:
                 qc.measure(self.link_qubit[q_l], self.link_bits[self.T][q_l])
 
             # resets
-            if self._resets and not final:
+            if not final:
                 for q_l in links_to_reset:
                     qc.reset(self.link_qubit[q_l])
-                    # might at some point add an option for reset via
-                    # qc.x(self.link_qubit[q_l]).c_if(self.link_bits[self.T][q_l], 1)
 
             # correct
             if self.run_202:
@@ -887,19 +882,7 @@ class ArcCircuit:
             j = self.code_index[qubit]
             measured_log += string[self.num_qubits[0] - j - 1] + " "
 
-        if self._resets:
-            syndrome = string[self.num_qubits[0] :]
-        else:
-            # if there are no resets, results are cumulative and need to be separated
-            cumsyn_list = string[self.num_qubits[0] :].split(" ")
-            syndrome_list = []
-            for tt, cum_syn in enumerate(cumsyn_list[0:-1]):
-                syn = ""
-                for j in range(len(cum_syn)):
-                    syn += str(int(cumsyn_list[tt][j] != cumsyn_list[tt + 1][j]))
-                syndrome_list.append(syn)
-            syndrome_list.append(cumsyn_list[-1])
-            syndrome = " ".join(syndrome_list)
+        syndrome = string[self.num_qubits[0] :]
 
         # final syndrome deduced from final code qubit readout
         full_syndrome = ""

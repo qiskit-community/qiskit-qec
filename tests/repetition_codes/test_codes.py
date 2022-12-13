@@ -265,11 +265,8 @@ class TestARCCodes(unittest.TestCase):
         tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
         for links in [triangle, tadpole, t_pose]:
-            for resets in [True, False]:
-                code = ArcCircuit(
-                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
-                )
-                self.single_error_test(code)
+            code = ArcCircuit(links, T=2, barriers=True, delay=1, basis="xy", run_202=False)
+            self.single_error_test(code)
 
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
@@ -289,20 +286,14 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        for resets in [True, False]:
-            code = ArcCircuit(links, T=T, run_202=True, resets=resets)
-            backend = Aer.get_backend("aer_simulator")
-            counts = backend.run(code.circuit[code.basis]).result().get_counts()
-            self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
-            nodeless = True
-            for string in counts:
-                nodeless = nodeless and code.string2nodes(string) == []
-            self.assertTrue(
-                nodeless,
-                "Non-trivial nodes found for noiseless [[2,0,2]] circuits with resets="
-                + str(resets)
-                + ".",
-            )
+        code = ArcCircuit(links, T=T, run_202=True)
+        backend = Aer.get_backend("aer_simulator")
+        counts = backend.run(code.circuit[code.basis]).result().get_counts()
+        self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
+        nodeless = True
+        for string in counts:
+            nodeless = nodeless and code.string2nodes(string) == []
+        self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
 
     def test_single_error_202s(self):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
@@ -412,7 +403,7 @@ class TestARCCodes(unittest.TestCase):
         backend = FakeJakarta()
         links = [(0, 1, 3), (3, 5, 6)]
         schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
-        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, resets=True)
+        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000)
         circuit = code.transpile(backend)
         self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
         circuit = code.transpile(backend, echo_num=(0, 2))
