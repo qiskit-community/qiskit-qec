@@ -20,6 +20,7 @@
 
 import numbers
 from typing import List, Optional, Union
+import warnings
 
 import numpy as np
 
@@ -746,7 +747,7 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         return BaseXPPauli(matrix, phase_exp, self.precision)
 
-    def rescale_precision(self, new_precision: int) -> "BaseXPPauli":
+    def rescale_precision(self, new_precision: int, inplace: bool = False) -> "BaseXPPauli":
         """Rescale the generalized symplectic vector components of BaseXPPauli
         operator to the new precision.
 
@@ -759,6 +760,8 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Args:
             new_precision: The target precision in which BaseXPPauli is to be expressed
+            inplace: If True, rescale BaseXPPauli in place, otherwise return a new
+            BaseXPPauli object. Defaults to False
 
         Returns:
             BaseXPPauli: Resultant of rescaling the precision of BaseXPPauli
@@ -784,17 +787,17 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
         if new_precision < old_precision:
             scale_factor = old_precision // new_precision
         if (new_precision > old_precision) and (new_precision % old_precision > 0):
-            raise QiskitError("XP Operator can not be expressed in new_precision.")
+            raise QiskitError("XP Operator cannot be expressed in new_precision.")
         if (new_precision < old_precision) and (
             (old_precision % new_precision > 0)
             or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
             or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
         ):
-            raise QiskitError("XP Operator can not be expressed in new_precision.")
+            raise QiskitError("XP Operator cannot be expressed in new_precision.")
 
-        return self._rescale_precision(new_precision)
+        return self._rescale_precision(new_precision, inplace)
 
-    def _rescale_precision(self, new_precision: int) -> "BaseXPPauli":
+    def _rescale_precision(self, new_precision: int, inplace: bool = False) -> "BaseXPPauli":
         """Rescale the generalized symplectic vector components
         of BaseXPPauli operator to the new precision. Returns None if the
         rescaling is not possible, else returns the rescaled BaseXPPauli object.
@@ -808,16 +811,19 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Args:
             new_precision: The target precision in which BaseXPPauli is to be expressed
+            inplace: If True, rescale BaseXPPauli in place, else return a new
+            BaseXPPauli. Defaults to False
 
         Returns:
             BaseXPPauli: Resultant of rescaling the precision of BaseXPPauli
 
+        Warning:
+            If precision rescaling is not possible, a warning is raised and the unique vector
+            representation of the original XP operator is returned.
+
         See also:
             unique_vector_rep
         """
-
-        # TODO Currently, if any operator in an XPPauliList can not be
-        # rescaled, this function will return None.
         unique_xp_op = self.unique_vector_rep()
         old_precision = unique_xp_op.precision
         matrix = np.empty(shape=np.shape(unique_xp_op.matrix), dtype=np.int64)
@@ -825,7 +831,10 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         if new_precision > old_precision:
             if np.mod(new_precision, old_precision) > 0:
-                return None
+                warnings.warn(
+                    "Precision rescaling is not possible. Returning the unique vector representation of the original XP operator."
+                )
+                return unique_xp_op
             scale_factor = new_precision // old_precision
             phase_exp = scale_factor * unique_xp_op._phase_exp
             matrix[:, unique_xp_op.num_qubits :] = scale_factor * np.atleast_2d(unique_xp_op.z)
@@ -837,13 +846,21 @@ class BaseXPPauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 or (np.sum(np.mod(unique_xp_op._phase_exp, scale_factor)) > 0)
                 or (np.sum(np.mod(unique_xp_op.z, scale_factor)) > 0)
             ):
-                return None
+                warnings.warn(
+                    "Precision rescaling is not possible. Returning the unique vector representation of the original XP operator."
+                )
+                return unique_xp_op
             phase_exp = unique_xp_op._phase_exp // scale_factor
             matrix[:, unique_xp_op.num_qubits :] = np.atleast_2d(unique_xp_op.z) // scale_factor
 
         matrix[:, 0 : unique_xp_op.num_qubits] = unique_xp_op.x
 
-        return BaseXPPauli(matrix, phase_exp, new_precision)
+        if not inplace:
+            return BaseXPPauli(matrix, phase_exp, new_precision)
+        self.matrix = matrix
+        self._phase_exp = phase_exp
+        self.precision = new_precision
+        return self
 
     def weight(self) -> Union[int, np.ndarray]:
         """Return the weight, i.e. count of qubits where either z or x component is nonzero.
