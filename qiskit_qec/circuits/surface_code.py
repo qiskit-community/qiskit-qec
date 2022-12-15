@@ -65,15 +65,23 @@ class SurfaceCodeCircuit:
         # get layout of plaquettes
         self.zplaqs, self.xplaqs = self._get_plaquettes()
 
+        self._logicals = {"x":[], "z":[]}
+        # X logicals for left and right sides
+        self._logicals["x"].append([j * self.d for j in range(self.d)])
+        self._logicals["x"].append([(j + 1) * self.d - 1 for j in range(self.d)])
+        # Z logicals for top and bottom rows
+        self._logicals["z"].append([j for j in range(self.d)])
+        self._logicals["z"].append([self.d**2 - 1 - j for j in range(self.d)])
+
         # set info needed for css codes
         self.css_x_gauge_ops = [ [q for q in plaq if q != None] for plaq in self.xplaqs]
         self.css_x_stabilizer_ops = self.css_x_gauge_ops
-        self.css_x_logical = 'tbc'
-        self.css_x_boundary = 'tbc'
+        self.css_x_logical = self._logicals["x"][0]
+        self.css_x_boundary = self._logicals["x"][0] + self._logicals["x"][1]
         self.css_z_gauge_ops = [ [q for q in plaq if q != None] for plaq in self.zplaqs]
         self.css_z_stabilizer_ops = self.css_z_gauge_ops
-        self.css_z_logical = 'tbc'
-        self.css_z_boundary = 'tbc'
+        self.css_z_logical = self._logicals["z"][0]
+        self.css_z_boundary = self._logicals["z"][0] + self._logicals["z"][1]
         self.round_schedule = self.basis
         self.blocks = T
 
@@ -392,9 +400,7 @@ class SurfaceCodeCircuit:
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
                 bnode = {"time": 0}
-                i = [0, -1][bqec_index]
-                bqubits = 'tbc'
-                bnode["qubits"] = bqubits
+                bnode["qubits"] = self._logicals[self.basis][-bqec_index - 1]
                 bnode["is_boundary"] = True
                 bnode["element"] = bqec_index
                 nodes.append(bnode)
@@ -406,9 +412,33 @@ class SurfaceCodeCircuit:
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
                         node = {"time": syn_round}
-                        qubits = 'tbc'
+                        if self.basis == "x":
+                            qubits  = self.css_x_stabilizer_ops[qec_index]
+                        else:
+                            qubits  = self.css_z_stabilizer_ops[qec_index]
                         node["qubits"] = qubits
                         node["is_boundary"] = False
                         node["element"] = qec_index
                         nodes.append(node)
         return nodes
+
+    def partition_outcomes(
+        self, round_schedule: str, outcome: List[int]
+    ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
+        """Extract measurement outcomes."""
+        # split into gauge and final outcomes
+        outcome = "".join([str(c) for c in outcome])
+        outcome = outcome.split(" ")
+        gs = outcome[0:-1]
+        gauge_outcomes = [[int(c) for c in r] for r in gs]
+        finals = outcome[-1]
+        # assign outcomes to the correct gauge ops
+        if round_schedule == "z":
+            x_gauge_outcomes = []
+            z_gauge_outcomes = gauge_outcomes
+        else:
+            x_gauge_outcomes = gauge_outcomes
+            z_gauge_outcomes = []
+        final_outcomes = [int(c) for c in finals]
+
+        return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
