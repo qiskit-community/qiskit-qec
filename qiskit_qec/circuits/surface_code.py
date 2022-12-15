@@ -33,12 +33,7 @@ class SurfaceCodeCircuit:
     T syndrome measurement rounds.
     """
 
-    def __init__(
-        self, 
-        d: int, 
-        T: int, 
-        basis: str = "z",
-        resets=True):
+    def __init__(self, d: int, T: int, basis: str = "z", resets=True):
         """
         Creates the circuits corresponding to logical basis states encoded
         using a rotated surface code.
@@ -65,7 +60,7 @@ class SurfaceCodeCircuit:
         # get layout of plaquettes
         self.zplaqs, self.xplaqs = self._get_plaquettes()
 
-        self._logicals = {"x":[], "z":[]}
+        self._logicals = {"x": [], "z": []}
         # X logicals for left and right sides
         self._logicals["x"].append([j * self.d for j in range(self.d)])
         self._logicals["x"].append([(j + 1) * self.d - 1 for j in range(self.d)])
@@ -74,11 +69,11 @@ class SurfaceCodeCircuit:
         self._logicals["z"].append([self.d**2 - 1 - j for j in range(self.d)])
 
         # set info needed for css codes
-        self.css_x_gauge_ops = [ [q for q in plaq if q != None] for plaq in self.xplaqs]
+        self.css_x_gauge_ops = [[q for q in plaq if q != None] for plaq in self.xplaqs]
         self.css_x_stabilizer_ops = self.css_x_gauge_ops
         self.css_x_logical = self._logicals["x"][0]
         self.css_x_boundary = self._logicals["x"][0] + self._logicals["x"][1]
-        self.css_z_gauge_ops = [ [q for q in plaq if q != None] for plaq in self.zplaqs]
+        self.css_z_gauge_ops = [[q for q in plaq if q != None] for plaq in self.zplaqs]
         self.css_z_stabilizer_ops = self.css_z_gauge_ops
         self.css_z_logical = self._logicals["z"][0]
         self.css_z_boundary = self._logicals["z"][0] + self._logicals["z"][1]
@@ -413,32 +408,11 @@ class SurfaceCodeCircuit:
                     if element == "1":
                         node = {"time": syn_round}
                         if self.basis == "x":
-                            qubits  = self.css_x_stabilizer_ops[qec_index]
+                            qubits = self.css_x_stabilizer_ops[qec_index]
                         else:
-                            qubits  = self.css_z_stabilizer_ops[qec_index]
+                            qubits = self.css_z_stabilizer_ops[qec_index]
                         node["qubits"] = qubits
                         node["is_boundary"] = False
                         node["element"] = qec_index
                         nodes.append(node)
         return nodes
-
-    def partition_outcomes(
-        self, round_schedule: str, outcome: List[int]
-    ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
-        """Extract measurement outcomes."""
-        # split into gauge and final outcomes
-        outcome = "".join([str(c) for c in outcome])
-        outcome = outcome.split(" ")
-        gs = outcome[0:-1]
-        gauge_outcomes = [[int(c) for c in r] for r in gs]
-        finals = outcome[-1]
-        # assign outcomes to the correct gauge ops
-        if round_schedule == "z":
-            x_gauge_outcomes = []
-            z_gauge_outcomes = gauge_outcomes
-        else:
-            x_gauge_outcomes = gauge_outcomes
-            z_gauge_outcomes = []
-        final_outcomes = [int(c) for c in finals]
-
-        return x_gauge_outcomes, z_gauge_outcomes, final_outcomes
