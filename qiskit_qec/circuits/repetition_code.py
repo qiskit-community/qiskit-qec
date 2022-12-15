@@ -32,7 +32,7 @@ class RepetitionCodeCircuit:
     def __init__(
         self,
         d: int,
-        T: Optional[int] = None,
+        T: int,
         xbasis: bool = False,
         resets: bool = False,
         delay: Optional[int] = None,
