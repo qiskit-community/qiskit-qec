@@ -30,56 +30,58 @@ class TestRepCodes(unittest.TestCase):
         """
 
         test_string = [
-            '000000000 0000 0000',
-            '000010000 0000 0110',
-            '000010000 0110 0000',
-            '000000001 0000 0000',
-            '100000000 0000 0000',
+            "000000000 0000 0000",
+            "000010000 0000 0110",
+            "000010000 0110 0000",
+            "000000001 0000 0000",
+            "100000000 0000 0000",
         ]
 
         test_nodes = {}
-        test_nodes['x'] = [
+        test_nodes["x"] = [
             [],
-            [   {'time': 1, 'qubits': [0, 1, 3, 4], 'is_boundary': False, 'element': 1},
-                {'time': 1, 'qubits': [4, 5, 7, 8], 'is_boundary': False, 'element': 2}],
             [
-                {'time': 0, 'qubits': [0, 1, 3, 4], 'is_boundary': False, 'element': 1},
-                {'time': 0, 'qubits': [4, 5, 7, 8], 'is_boundary': False, 'element': 2}
-            ],
-            [   {'time': 0, 'qubits': [0, 3, 6], 'is_boundary': True, 'element': 1},
-                {'time': 1, 'qubits': [0, 1, 3, 4], 'is_boundary': False, 'element': 1}
+                {"time": 1, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
+                {"time": 1, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
             ],
             [
-                {'time': 0, 'qubits': [2, 5, 8], 'is_boundary': True, 'element': 0},
-                {'time': 1, 'qubits': [4, 5, 7, 8], 'is_boundary': False, 'element': 2}
-            ]
+                {"time": 0, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
+                {"time": 0, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+            ],
+            [
+                {"time": 0, "qubits": [0, 3, 6], "is_boundary": True, "element": 1},
+                {"time": 1, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
+            ],
+            [
+                {"time": 0, "qubits": [2, 5, 8], "is_boundary": True, "element": 0},
+                {"time": 1, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+            ],
         ]
-        test_nodes['z'] = [
+        test_nodes["z"] = [
             [],
             [
-                {'time': 0, 'qubits': [1, 4, 2, 5], 'is_boundary': False, 'element': 1},
-                {'time': 0, 'qubits': [3, 6, 4, 7], 'is_boundary': False, 'element': 2}
+                {"time": 0, "qubits": [1, 4, 2, 5], "is_boundary": False, "element": 1},
+                {"time": 0, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2},
             ],
             [
-                {'time': 1, 'qubits': [1, 4, 2, 5], 'is_boundary': False, 'element': 1},
-                {'time': 1, 'qubits': [3, 6, 4, 7], 'is_boundary': False, 'element': 2}
+                {"time": 1, "qubits": [1, 4, 2, 5], "is_boundary": False, "element": 1},
+                {"time": 1, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2},
             ],
             [
-                {'time': 0, 'qubits': [0, 1, 2], 'is_boundary': True, 'element': 1},
-                {'time': 1, 'qubits': [0, 3], 'is_boundary': False, 'element': 0}
+                {"time": 0, "qubits": [0, 1, 2], "is_boundary": True, "element": 1},
+                {"time": 1, "qubits": [0, 3], "is_boundary": False, "element": 0},
             ],
             [
-                {'time': 0, 'qubits': [8, 7, 6], 'is_boundary': True, 'element': 0},
-                {'time': 1, 'qubits': [5, 8], 'is_boundary': False, 'element': 3}
-            ]
+                {"time": 0, "qubits": [8, 7, 6], "is_boundary": True, "element": 0},
+                {"time": 1, "qubits": [5, 8], "is_boundary": False, "element": 3},
+            ],
         ]
 
-        for basis in ['x', 'z']:
-            code = SurfaceCodeCircuit(3,1,basis=basis)
+        for basis in ["x", "z"]:
+            code = SurfaceCodeCircuit(3, 1, basis=basis)
             for t, string in enumerate(test_string):
                 nodes = test_nodes[basis][t]
                 self.assertTrue(
                     code.string2nodes(string) == nodes,
-                    "Incorrect nodes for basis = " + basis
-                    + "for string = " + string + "."
+                    "Incorrect nodes for basis = " + basis + "for string = " + string + ".",
                 )

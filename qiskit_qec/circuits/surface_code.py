@@ -15,15 +15,9 @@
 # pylint: disable=invalid-name
 
 """Generates circuits based on repetition codes."""
-from typing import List, Optional, Tuple
 
-import numpy as np
-import rustworkx as rx
 
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
-from qiskit.circuit.library import XGate, RZGate
-from qiskit.transpiler import PassManager, InstructionDurations
-from qiskit.transpiler.passes import DynamicalDecoupling
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 
 class SurfaceCodeCircuit:
@@ -65,15 +59,15 @@ class SurfaceCodeCircuit:
         self._logicals["x"].append([j * self.d for j in range(self.d)])
         self._logicals["x"].append([(j + 1) * self.d - 1 for j in range(self.d)])
         # Z logicals for top and bottom rows
-        self._logicals["z"].append([j for j in range(self.d)])
+        self._logicals["z"].append(list(range(self.d)))
         self._logicals["z"].append([self.d**2 - 1 - j for j in range(self.d)])
 
         # set info needed for css codes
-        self.css_x_gauge_ops = [[q for q in plaq if q != None] for plaq in self.xplaqs]
+        self.css_x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
         self.css_x_stabilizer_ops = self.css_x_gauge_ops
         self.css_x_logical = self._logicals["x"][0]
         self.css_x_boundary = self._logicals["x"][0] + self._logicals["x"][1]
-        self.css_z_gauge_ops = [[q for q in plaq if q != None] for plaq in self.zplaqs]
+        self.css_z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
         self.css_z_stabilizer_ops = self.css_z_gauge_ops
         self.css_z_logical = self._logicals["z"][0]
         self.css_z_boundary = self._logicals["z"][0] + self._logicals["z"][1]
@@ -152,8 +146,8 @@ class SurfaceCodeCircuit:
         if self.basis == "z":
             self.x(["1"])
         else:
-            for log in self.circuit:
-                self.circuit[log].h(self.code_qubit)
+            for qc in self.circuit.values():
+                qc.h(self.code_qubit)
             self.z(["1"])
 
     def get_circuit_list(self):
@@ -207,8 +201,6 @@ class SurfaceCodeCircuit:
 
         """
 
-        num_bits = int((self.d**2 - 1) / 2)
-
         zplaqs, xplaqs = self.zplaqs, self.xplaqs
 
         # classical registers for this round
@@ -229,11 +221,11 @@ class SurfaceCodeCircuit:
             for j in range(4):
                 for p, plaq in enumerate(zplaqs):
                     c = plaq[j]
-                    if c != None:
+                    if c is not None:
                         self.circuit[log].cx(self.code_qubit[c], self.zplaq_qubit[p])
                 for p, plaq in enumerate(xplaqs):
                     c = plaq[j]
-                    if c != None:
+                    if c is not None:
                         self.circuit[log].cx(self.xplaq_qubit[p], self.code_qubit[c])
 
             self.circuit[log].h(self.xplaq_qubit)
@@ -276,7 +268,7 @@ class SurfaceCodeCircuit:
         for plaq in plaqs:
             parity = 0
             for q in plaq:
-                if q != None:
+                if q is not None:
                     parity += int(final_readout[q])
             full_syndrome = str(parity % 2) + full_syndrome
 
