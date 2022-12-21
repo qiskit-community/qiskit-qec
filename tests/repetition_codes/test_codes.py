@@ -269,6 +269,14 @@ class TestARCCodes(unittest.TestCase):
                 code = ArcCircuit(
                     links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
                 )
+                self.assertTrue(
+                    code.resets == resets,
+                    "Code has resets="
+                    + str(code.resets)
+                    + " when it should be "
+                    + str(resets)
+                    + ".",
+                )
                 self.single_error_test(code)
 
     def test_202s(self):
