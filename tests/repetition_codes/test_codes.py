@@ -265,8 +265,11 @@ class TestARCCodes(unittest.TestCase):
         tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
         for links in [triangle, tadpole, t_pose]:
-            code = ArcCircuit(links, T=2, barriers=True, delay=1, basis="xy", run_202=False)
-            self.single_error_test(code)
+            for resets in [True, False]:
+                code = ArcCircuit(
+                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
+                )
+                self.single_error_test(code)
 
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
