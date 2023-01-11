@@ -37,7 +37,7 @@
 
 We encourage your feedback! You can share your thoughts with us by:
 - [Opening an issue](https://github.com/Qiskit/qiskit-qec/issues) in the repository
-
+ 
 
 ----------------------------------------------------------------------------------------------------
 
