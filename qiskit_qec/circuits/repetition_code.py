@@ -621,11 +621,13 @@ class ArcCircuit:
         """
 
         # get a list of all code qubits (qubits[0]) and link qubits (qubits[1])
-        qubits = [set(), set()]
+        qubits = [[], []]
         for link in self.links:
-            qubits[0] = qubits[0].union({link[0], link[2]})
-            qubits[1].add(link[1])
-        self.qubits = [list(qubits[j]) for j in range(2)]
+            for code_qubit in [link[0], link[2]]:
+                if code_qubit not in qubits[0]:
+                    qubits[0].append(code_qubit)
+            qubits[1].append(link[1])
+        self.qubits = [qubits[j] for j in range(2)]
         self.num_qubits = [len(qubits[j]) for j in range(2)]
 
         # define the quantum egisters
