@@ -401,6 +401,7 @@ class ArcCircuit:
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
+        conditional_reset: bool = False
     ):
         """
         Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
@@ -423,6 +424,8 @@ class ArcCircuit:
             applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least 5xlen(links)).
+            conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
+            previous measurement), rather than a reset gate.
         """
 
         self.links = links
@@ -431,6 +434,7 @@ class ArcCircuit:
         self._barriers = barriers
         self._max_dist = max_dist
         self.delay = delay or 0
+        self.conditional_reset = conditional_reset
 
         # calculate coloring and schedule, etc
         if color is None:
@@ -742,9 +746,10 @@ class ArcCircuit:
             # resets
             if self._resets and not final:
                 for q_l in links_to_reset:
-                    qc.reset(self.link_qubit[q_l])
-                    # might at some point add an option for reset via
-                    # qc.x(self.link_qubit[q_l]).c_if(self.link_bits[self.T][q_l], 1)
+                    if self.conditional_reset:
+                        qc.x(self.link_qubit[q_l]).c_if(self.link_bits[self.T][q_l], 1)
+                    else:
+                        qc.reset(self.link_qubit[q_l])
 
             # correct
             if self._ff:
