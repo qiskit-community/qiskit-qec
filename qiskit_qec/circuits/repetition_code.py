@@ -401,7 +401,7 @@ class ArcCircuit:
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
-        conditional_reset: bool = False
+        conditional_reset: bool = False,
     ):
         """
         Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
