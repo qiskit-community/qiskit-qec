@@ -459,6 +459,8 @@ class ArcCircuit:
                 self.rounds_per_link = np.floor(T / num_links)
                 self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
                 self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
+                if self.roundbuffer > 0:
+                    self.roundbuffer -= 1
                 self.run_202 = self.rounds_per_link >= 5
             else:
                 self.run_202 = False
