@@ -553,7 +553,7 @@ class ArcCircuit:
                     self.links_202.append(link)
             num_links = len(self.links_202)
             if num_links > 0:
-                self.rounds_per_link = np.floor(T / num_links)
+                self.rounds_per_link = int(np.floor(T / num_links))
                 self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
                 self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
                 if self.roundbuffer > 0:
@@ -564,6 +564,8 @@ class ArcCircuit:
         else:
             self.run_202 = False
         self.resets = resets or self.run_202
+        if not self.run_202:
+            self.rounds_per_link = np.inf
 
         # create the circuit
         self.base = basis
@@ -944,15 +946,13 @@ class ArcCircuit:
                 # the first results are themselves the changes
                 if t == 0:
                     change = syndrome_list[-1][j] != "0"
+                # if the link was involved in a just finished 202, skip back 5
+                elif just_finished:
+                    dt = 5
                 # otherwise, the first of each set of 5 depends
-                # on what happened in the previous set of 5
-                elif (t % 5) == 0:
-                    # if the link was involved in a just finished 202, skip back 5
-                    if qubit_l in last_neighbors and just_finished:
-                        dt = 5
-                    # otherwise, compare with last (as normal)
-                    else:
-                        dt = 1
+                # compares with the last result (as normal)
+                elif (t % self.rounds_per_link) == 0:
+                    dt = 1
                 # all others depend on the placement of the link
                 # in the current 202
                 else:
