@@ -499,6 +499,7 @@ class ArcCircuit:
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
+        conditional_reset: bool = False,
     ):
         """
         Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
@@ -521,6 +522,8 @@ class ArcCircuit:
             applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least 5xlen(links)).
+            conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
+            previous measurement), rather than a reset gate.
         """
 
         self.links = links
@@ -528,8 +531,9 @@ class ArcCircuit:
         self._barriers = barriers
         self._max_dist = max_dist
         self.delay = delay or 0
+        self.conditional_reset = conditional_reset
 
-        # calculate coloring and schedule (if required)
+        # calculate coloring and schedule, etc
         if color is None:
             self._coloring()
         else:
@@ -538,20 +542,31 @@ class ArcCircuit:
             self._scheduling()
         else:
             self.schedule = schedule
+        self._preparation()
 
         # determine the placement of [2,0,2] rounds
-        num_links = len(self.links)
-        self.rounds_per_link = np.floor(T / num_links)
-        self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
-        self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
-        # run 202s only if there is enough rounds
-        self.run_202 = run_202 and self.rounds_per_link >= 5
-        # use resets if requested or 202s are run
+        if run_202:
+            self.links_202 = []
+            for link in self.links:
+                logical_overlap = {link[0], link[2]}.intersection(set(self.z_logicals))
+                if not logical_overlap:
+                    self.links_202.append(link)
+            num_links = len(self.links_202)
+            if num_links > 0:
+                self.rounds_per_link = np.floor(T / num_links)
+                self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
+                self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
+                if self.roundbuffer > 0:
+                    self.roundbuffer -= 1
+                self.run_202 = self.rounds_per_link >= 5
+            else:
+                self.run_202 = False
+        else:
+            self.run_202 = False
         self.resets = resets or self.run_202
 
         # create the circuit
         self.base = basis
-        self._preparation()
         self.T = 0
         for _ in range(T - 1):
             self._syndrome_measurement()
@@ -705,11 +720,13 @@ class ArcCircuit:
         """
 
         # get a list of all code qubits (qubits[0]) and link qubits (qubits[1])
-        qubits = [set(), set()]
+        qubits = [[], []]
         for link in self.links:
-            qubits[0] = qubits[0].union({link[0], link[2]})
-            qubits[1].add(link[1])
-        self.qubits = [list(qubits[j]) for j in range(2)]
+            for code_qubit in [link[0], link[2]]:
+                if code_qubit not in qubits[0]:
+                    qubits[0].append(code_qubit)
+            qubits[1].append(link[1])
+        self.qubits = [qubits[j] for j in range(2)]
         self.num_qubits = [len(qubits[j]) for j in range(2)]
         self.d = self.num_qubits[0]
 
@@ -753,30 +770,27 @@ class ArcCircuit:
         """
         # null values in case no 202 done during this round
         tau, qubit_l_202, qubit_l_nghbrs = None, None, [[], []]
-        if self.run_202 and int(t / self.rounds_per_link) < len(self.links):
+        if self.run_202 and int(t / self.rounds_per_link) < len(self.links_202):
             # determine the link qubit for which the 202 sequence is run
-            link = self.links[int(t / self.rounds_per_link)]
-            # see if the planned link has overlap with the logicals
-            logical_overlap = {link[0], link[2]}.intersection(set(self.z_logicals))
-            if not logical_overlap:
-                # set the 202 link
-                qubit_l_202 = link[1]
-                #  determine where we are in the sequence
-                tau = int((t - self.metabuffer) % self.rounds_per_link - self.roundbuffer)
-                if t < self.metabuffer or tau not in range(5):
-                    tau = False
-                # determine the neighbouring link qubits that are suppressed
-                graph = self._get_link_graph(0)
-                nodes = graph.nodes()
-                edges = graph.edge_list()
-                ns = [nodes.index(link[j]) for j in [0, 2]]
-                qubit_l_nghbrs = []
-                for n in ns:
-                    neighbors = list(graph.incident_edges(n))
-                    neighbors.remove(list(edges).index(tuple(ns)))
-                    qubit_l_nghbrs.append(
-                        [graph.get_edge_data_by_index(ngbhr)["link qubit"] for ngbhr in neighbors]
-                    )
+            link = self.links_202[int(t / self.rounds_per_link)]
+            # set the 202 link
+            qubit_l_202 = link[1]
+            #  determine where we are in the sequence
+            tau = int(t % self.rounds_per_link - self.roundbuffer)
+            if t < 0 or tau not in range(5):
+                tau = False
+            # determine the neighbouring link qubits that are suppressed
+            graph = self._get_link_graph(0)
+            nodes = graph.nodes()
+            edges = graph.edge_list()
+            ns = [nodes.index(link[j]) for j in [0, 2]]
+            qubit_l_nghbrs = []
+            for n in ns:
+                neighbors = list(graph.incident_edges(n))
+                neighbors.remove(list(edges).index(tuple(ns)))
+                qubit_l_nghbrs.append(
+                    [graph.get_edge_data_by_index(ngbhr)["link qubit"] for ngbhr in neighbors]
+                )
         return tau, qubit_l_202, qubit_l_nghbrs
 
     def _syndrome_measurement(self, final: bool = False):
@@ -809,7 +823,7 @@ class ArcCircuit:
                         qc.cx(self.code_qubit[q_c], self.link_qubit[q_l])
                         self._rotate(basis, c, self.code_qubit[q_c], False)
                         links_to_measure.add(q_l)
-                        if not (tau == 0 and neighbor):
+                        if not (not isinstance(tau, bool) and tau == 0 and neighbor):
                             links_to_reset.add(q_l)
 
         # measurement and resets
@@ -828,7 +842,10 @@ class ArcCircuit:
             # resets
             if self.resets and not final:
                 for q_l in links_to_reset:
-                    qc.reset(self.link_qubit[q_l])
+                    if self.conditional_reset:
+                        qc.x(self.link_qubit[q_l]).c_if(self.link_bits[self.T][q_l], 1)
+                    else:
+                        qc.reset(self.link_qubit[q_l])
 
             # correct
             if self.run_202:
@@ -916,21 +933,22 @@ class ArcCircuit:
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
         last_neighbors = []
+        just_finished = False
         for t in range(self.T + 1):
             tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
+            all_neighbors = qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
             for j in range(self.num_qubits[1]):
                 dt = None
                 q_l = self.num_qubits[1] - 1 - j
                 qubit_l = self.links[q_l][1]
-                all_neighbors = qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
                 # the first results are themselves the changes
                 if t == 0:
                     change = syndrome_list[-1][j] != "0"
                 # otherwise, the first of each set of 5 depends
                 # on what happened in the previous set of 5
                 elif (t % 5) == 0:
-                    # if the link was involved in the 202, skip back 5
-                    if qubit_l in last_neighbors:
+                    # if the link was involved in a just finished 202, skip back 5
+                    if qubit_l in last_neighbors and just_finished:
                         dt = 5
                     # otherwise, compare with last (as normal)
                     else:
@@ -956,6 +974,7 @@ class ArcCircuit:
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
             last_neighbors = all_neighbors.copy()
+            just_finished = tau == 4
 
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end

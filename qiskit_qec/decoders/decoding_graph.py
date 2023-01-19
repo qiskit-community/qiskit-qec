@@ -200,7 +200,7 @@ class DecodingGraph:
             logical (string): Logical value whose results are used.
         Returns:
             dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
-            events. Time refers to measurement rounds Values are a dictionary whose keys are
+            events. Time refers to measurement rounds. Values are a dictionary whose keys are
             the edges that detected the event, and whose keys are the calculated probabilities.
         Additional information:
             Uses `results` to estimate the probability of the errors that

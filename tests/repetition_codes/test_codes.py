@@ -266,23 +266,34 @@ class TestARCCodes(unittest.TestCase):
         t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
         for links in [triangle, tadpole, t_pose]:
             for resets in [True, False]:
-                code = ArcCircuit(
-                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
-                )
-                self.assertTrue(
-                    code.resets == resets,
-                    "Code has resets="
-                    + str(code.resets)
-                    + " when it should be "
-                    + str(resets)
-                    + ".",
-                )
-                self.single_error_test(code)
+                conditional_resets = [False]
+                if resets:
+                    conditional_resets.append(True)
+                for conditional_reset in conditional_resets:
+                    code = ArcCircuit(
+                        links,
+                        T=2,
+                        barriers=True,
+                        delay=1,
+                        basis="xy",
+                        run_202=False,
+                        resets=resets,
+                        conditional_reset=conditional_reset,
+                    )
+                    self.assertTrue(
+                        code.resets == resets,
+                        "Code has resets="
+                        + str(code.resets)
+                        + " when it should be "
+                        + str(resets)
+                        + ".",
+                    )
+                    self.single_error_test(code)
 
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        T = 5 * len(links)
+        T = 11
         # first, do they appear when needed
         for run_202 in [True, False]:
             code = ArcCircuit(links, T=T, run_202=run_202)
@@ -348,10 +359,12 @@ class TestARCCodes(unittest.TestCase):
     def test_feedforward(self):
         """Test that the correct behaviour is seen with feedforward for [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
-        T = 5 * len(links)
-        # try codes with feedforward correction
-        code = ArcCircuit(links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1})
-        correct = True
+        T = 10
+        # try codes with and without feedforward correction
+        code = ArcCircuit(
+            links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}
+        )
+        correct = code._ff == ff
         # insert an initial bitflip on qubit 2
         test_qcs = []
         for basis in [code.basis, code.basis[::-1]]:
@@ -371,9 +384,13 @@ class TestARCCodes(unittest.TestCase):
         for j in range(2):
             counts = result.get_counts(j)
             for string in counts:
-                string = string.split(" ")[::-1]
-                # post 202 result should be same as initial
-                correct = correct and string[10] == string[0]
+                if ff:
+                    # final result should be same as initial
+                    correct = correct and string[0:4] == "0100"
+                else:
+                    # final 202 result should be same as those that follow
+                    string = string.split(" ")[::-1]
+                    correct = correct and string[8] == string[9]
         self.assertTrue(correct, "Result string not as required")
 
     def test_bases(self):
