@@ -935,6 +935,7 @@ class ArcCircuit:
         syndrome_list = full_syndrome.split(" ")
         syndrome_changes = ""
         last_neighbors = []
+        last_202 = None
         just_finished = False
         for t in range(self.T + 1):
             tau, qubit_l_202, qubit_l_nghbrs = self._get_202(t)
@@ -946,15 +947,20 @@ class ArcCircuit:
                 # the first results are themselves the changes
                 if t == 0:
                     change = syndrome_list[-1][j] != "0"
-                # if the link was involved in a just finished 202, skip back 5
+                # if the link was involved in a just finished 202...
                 elif just_finished:
-                    dt = 5
-                # otherwise, the first of each set of 5 depends
-                # compares with the last result (as normal)
-                elif (t % self.rounds_per_link) == 0:
+                    # skip back 5 for a neighbouring link
+                    if qubit_l in last_neighbors:
+                        dt = 5
+                    # and just 1 for all others (as normal)
+                    else:
+                        dt = 1
+                # otherwise, everything not during a 202 just compares
+                # results with the previous round (as normal)
+                elif tau not in range(1,5):
                     dt = 1
-                # all others depend on the placement of the link
-                # in the current 202
+                # and all others depend on the placement of the link
+                # within the current 202
                 else:
                     # if this link is the 202 link
                     if qubit_l == qubit_l_202:
@@ -974,6 +980,7 @@ class ArcCircuit:
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
             last_neighbors = all_neighbors.copy()
+            last_202 = qubit_l_202
             just_finished = tau == 4
 
         # the space separated string of syndrome changes then gets a
