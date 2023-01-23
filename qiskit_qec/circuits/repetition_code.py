@@ -1022,7 +1022,7 @@ class ArcCircuit:
                             link_qubit = link[1]
                         tau, _, _ = self._get_202(syn_round)
                         node = {"time": syn_round}
-                        if tau == 2:
+                        if tau == 3:
                             node["conjugate"] = True
                         node["qubits"] = code_qubits
                         node["link qubit"] = link_qubit
