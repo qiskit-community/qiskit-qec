@@ -177,25 +177,29 @@ class TestRepCodes(unittest.TestCase):
 
     def test_weight(self):
         """Error weighting code test."""
-        error = (
-            "Error: Calculated error probability not correct for "
-            + "test result '0 0  11 00' in d=3, T=1 repetition code."
-        )
         code = RepetitionCode(3, 1)
         dec = DecodingGraph(code)
         test_results = {"000 00": 1024, "010 11": 512}
-        p = dec.get_error_probs(test_results)
-        n0 = dec.graph.nodes().index(
-            {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
-        )
-        n1 = dec.graph.nodes().index(
-            {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
-        )
-        # edges in graph aren't directed and could be in any order
-        if (n0, n1) in p:
-            self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
-        else:
-            self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
+        for method in ["spitz", "naive"]:
+            error = (
+                "Error: Calculated error probability not correct for "
+                + "test result '0 0  11 00' in d=3, T=1 repetition code"
+                + " using calculation method '"
+                + method
+                + "'."
+            )
+            p = dec.get_error_probs(test_results, method=method)
+            n0 = dec.graph.nodes().index(
+                {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
+            )
+            n1 = dec.graph.nodes().index(
+                {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
+            )
+            # edges in graph aren't directed and could be in any order
+            if (n0, n1) in p:
+                self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+            else:
+                self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
 
 
 class TestARCCodes(unittest.TestCase):

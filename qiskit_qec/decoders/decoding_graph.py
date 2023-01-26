@@ -24,6 +24,7 @@ from typing import List, Tuple
 import numpy as np
 import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class DecodingGraph:
@@ -33,6 +34,10 @@ class DecodingGraph:
     Class to construct the graph corresponding to the possible syndromes
     of a quantum error correction code, and then run suitable decoders.
     """
+
+    METHOD_SPITZ: str = "spitz"
+    METHOD_NAIVE: str = "naive"
+    AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
 
     def __init__(self, code, brute=False):
         """
@@ -53,7 +58,7 @@ class DecodingGraph:
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
-            S = rx.PyGraph(multigraph=False)
+            graph = rx.PyGraph(multigraph=False)
             self.hyperedges = []
 
             if self.code is not None:
@@ -76,14 +81,14 @@ class DecodingGraph:
                     string = "".join([str(c) for c in output[::-1]])
                     nodes = self.code.string2nodes(string)
                     for node in nodes:
-                        if node not in S.nodes():
-                            S.add_node(node)
+                        if node not in graph.nodes():
+                            graph.add_node(node)
                     hyperedge = {}
                     for source in nodes:
                         for target in nodes:
                             if target != source:
-                                n0 = S.nodes().index(source)
-                                n1 = S.nodes().index(target)
+                                n0 = graph.nodes().index(source)
+                                n1 = graph.nodes().index(target)
                                 qubits = []
                                 if not (source["is_boundary"] and target["is_boundary"]):
                                     qubits = list(
@@ -92,21 +97,23 @@ class DecodingGraph:
                                 if source["time"] != target["time"] and len(qubits) > 1:
                                     qubits = []
                                 edge = {"qubits": qubits, "weight": 1}
-                                S.add_edge(n0, n1, edge)
+                                graph.add_edge(n0, n1, edge)
                                 if (n1, n0) not in hyperedge:
                                     hyperedge[n0, n1] = edge
                     if hyperedge and hyperedge not in self.hyperedges:
                         self.hyperedges.append(hyperedge)
 
-            self.graph = S
+            self.graph = graph
 
-    def get_error_probs(self, results, logical="0"):
+    def get_error_probs(self, results, logical: str = "0", method: str = METHOD_SPITZ):
         """
         Generate probabilities of single error events from result counts.
 
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
+            method (string): Method to used for calculation. Supported
+            methods are 'spitz' (default) and 'naive'.
         Returns:
             dict: Keys are the edges for specific error
             events, and values are the calculated probabilities.
@@ -119,97 +126,139 @@ class DecodingGraph:
 
         shots = sum(results.values())
 
-        neighbours = {}
-        av_v = {}
-        for n in self.graph.node_indexes():
-            av_v[n] = 0
-            neighbours[n] = []
+        if method not in self.AVAILABLE_METHODS:
+            raise QiskitQECError("fmethod {method} is not supported.")
 
-        av_vv = {}
-        av_xor = {}
-        for n0, n1 in self.graph.edge_list():
-            av_vv[n0, n1] = 0
-            av_xor[n0, n1] = 0
-            neighbours[n0].append(n1)
-            neighbours[n1].append(n0)
+        # method for edges
+        if method == self.METHOD_SPITZ:
 
-        for string in results:
+            neighbours = {}
+            av_v = {}
+            for n in self.graph.node_indexes():
+                av_v[n] = 0
+                neighbours[n] = []
 
-            # list of i for which v_i=1
-            error_nodes = self.code.string2nodes(string, logical=logical)
+            av_vv = {}
+            av_xor = {}
+            for n0, n1 in self.graph.edge_list():
+                av_vv[n0, n1] = 0
+                av_xor[n0, n1] = 0
+                neighbours[n0].append(n1)
+                neighbours[n1].append(n0)
 
-            for node0 in error_nodes:
-                n0 = self.graph.nodes().index(node0)
-                av_v[n0] += results[string]
-                for n1 in neighbours[n0]:
-                    node1 = self.graph[n1]
-                    if node1 in error_nodes and (n0, n1) in av_vv:
-                        av_vv[n0, n1] += results[string]
-                    if node1 not in error_nodes:
-                        if (n0, n1) in av_xor:
-                            av_xor[n0, n1] += results[string]
+            for string in results:
+
+                # list of i for which v_i=1
+                error_nodes = self.code.string2nodes(string, logical=logical)
+
+                for node0 in error_nodes:
+                    n0 = self.graph.nodes().index(node0)
+                    av_v[n0] += results[string]
+                    for n1 in neighbours[n0]:
+                        node1 = self.graph[n1]
+                        if node1 in error_nodes and (n0, n1) in av_vv:
+                            av_vv[n0, n1] += results[string]
+                        if node1 not in error_nodes:
+                            if (n0, n1) in av_xor:
+                                av_xor[n0, n1] += results[string]
+                            else:
+                                av_xor[n1, n0] += results[string]
+
+            for n in self.graph.node_indexes():
+                av_v[n] /= shots
+            for n0, n1 in self.graph.edge_list():
+                av_vv[n0, n1] /= shots
+                av_xor[n0, n1] /= shots
+
+            boundary = []
+            error_probs = {}
+            for n0, n1 in self.graph.edge_list():
+
+                if self.graph[n0]["is_boundary"]:
+                    boundary.append(n1)
+                elif self.graph[n1]["is_boundary"]:
+                    boundary.append(n0)
+                else:
+                    if (1 - 2 * av_xor[n0, n1]) != 0:
+                        x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
+                        if x < 0.25:
+                            error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
                         else:
-                            av_xor[n1, n0] += results[string]
-
-        for n in self.graph.node_indexes():
-            av_v[n] /= shots
-        for n0, n1 in self.graph.edge_list():
-            av_vv[n0, n1] /= shots
-            av_xor[n0, n1] /= shots
-
-        boundary = []
-        error_probs = {}
-        for n0, n1 in self.graph.edge_list():
-
-            if self.graph[n0]["is_boundary"]:
-                boundary.append(n1)
-            elif self.graph[n1]["is_boundary"]:
-                boundary.append(n0)
-            else:
-                if (1 - 2 * av_xor[n0, n1]) != 0:
-                    x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
-                    if x < 0.25:
-                        error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                            error_probs[n0, n1] = np.nan
                     else:
                         error_probs[n0, n1] = np.nan
+
+            prod = {}
+            for n0 in boundary:
+                for n1 in self.graph.node_indexes():
+                    if n0 != n1:
+                        if n0 not in prod:
+                            prod[n0] = 1
+                        if (n0, n1) in error_probs:
+                            prod[n0] *= 1 - 2 * error_probs[n0, n1]
+                        elif (n1, n0) in error_probs:
+                            prod[n0] *= 1 - 2 * error_probs[n1, n0]
+
+            for n0 in boundary:
+                error_probs[n0, n0] = 0.5 + (av_v[n0] - 0.5) / prod[n0]
+
+        # generally applicable but approximate method
+        elif method == self.METHOD_NAIVE:
+
+            # for every edge in the graph, we'll determine the histogram
+            # of whether their nodes are in the error nodes
+            count = {
+                edge: {element: 0 for element in ["00", "01", "10", "11"]}
+                for edge in self.graph.edge_list()
+            }
+            for string in results:
+                error_nodes = self.code.string2nodes(string, logical=logical)
+                for edge in self.graph.edge_list():
+                    element = ""
+                    for j in range(2):
+                        if self.graph[edge[j]] in error_nodes:
+                            element += "1"
+                        else:
+                            element += "0"
+                    count[edge][element] += results[string]
+
+            # ratio of error on both to error on neither is, to first order,
+            # p/(1-p) where p is the prob to be determined.
+            error_probs = {}
+            for n0, n1 in self.graph.edge_list():
+                if count[n0, n1]["00"] > 0:
+                    ratio = count[n0, n1]["11"] / count[n0, n1]["00"]
                 else:
-                    error_probs[n0, n1] = np.nan
-
-        prod = {}
-        for n0 in boundary:
-            for n1 in self.graph.node_indexes():
-                if n0 != n1:
-                    if n0 not in prod:
-                        prod[n0] = 1
-                    if (n0, n1) in error_probs:
-                        prod[n0] *= 1 - 2 * error_probs[n0, n1]
-                    elif (n1, n0) in error_probs:
-                        prod[n0] *= 1 - 2 * error_probs[n1, n0]
-
-        for n0 in boundary:
-            error_probs[n0, n0] = 0.5 + (av_v[n0] - 0.5) / prod[n0]
+                    ratio  = np.nan
+                p = ratio / (1 + ratio)
+                if self.graph[n0]["is_boundary"] and not self.graph[n1]["is_boundary"]:
+                    edge = (n1, n1)
+                elif not self.graph[n0]["is_boundary"] and self.graph[n1]["is_boundary"]:
+                    edge = (n0, n0)
+                else:
+                    edge = (n0, n1)
+                error_probs[edge] = p
 
         return error_probs
 
-    def get_error_coords(self, results, logical="0"):
+    def get_error_coords(self, results, logical: str = "0", method: str = METHOD_SPITZ):
         """
         Generate probabilities of single error events from result counts.
 
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
+            method (string): Method to used for calculation. Supported
+            methods are 'spitz' (default) and 'naive'.
         Returns:
             dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
             events. Time refers to measurement rounds. Values are a dictionary whose keys are
             the edges that detected the event, and whose keys are the calculated probabilities.
         Additional information:
-            Uses `results` to estimate the probability of the errors that
-            create the pairs of nodes specified by the edge.
-            Default calculation method is that of Spitz, et al.
-            https://doi.org/10.1002/qute.201800012
+            See `get_error_probs` for more information.
         """
 
-        error_probs = self.get_error_probs(results, logical=logical)
+        error_probs = self.get_error_probs(results, logical=logical, method=method)
         nodes = self.graph.nodes()
 
         if hasattr(self.code, "z_logicals"):
@@ -296,7 +345,7 @@ class DecodingGraph:
 
         Additional information:
             Uses `results` to estimate the probability of the errors that
-            create the pairs of nodes in S. The edge weights are then
+            create the pairs of nodes in graph. The edge weights are then
             replaced with the corresponding -log(p/(1-p).
         """
 
@@ -319,7 +368,7 @@ class DecodingGraph:
             string (str): A string describing the output from the code.
 
         Returns:
-            The subgraph of S which corresponds to the non-trivial
+            The subgraph of graph which corresponds to the non-trivial
             syndrome elements in the given string.
         """
 
@@ -516,10 +565,10 @@ class CSSDecodingGraph:
                 logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
 
             # Add (space)time-like edges from t to t-1
-            # By construction, the qubit sets of pairs of vertices at S and T
+            # By construction, the qubit sets of pairs of vertices at graph and T
             # at times t-1 and t respectively
-            # either (a) contain each other (S subset T or T subset S) and
-            # |S|,|T|>1,
+            # either (a) contain each other (graph subset T or T subset graph) and
+            # |graph|,|T|>1,
             # (b) intersect on one or more qubits, or (c) are disjoint.
             # In case (a), we add an edge that corresponds to a syndrome bit
             # error at time t-1.
