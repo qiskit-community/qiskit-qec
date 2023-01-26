@@ -747,7 +747,7 @@ class ArcCircuit:
 
         # create the circuits and initialize the code qubits
         self.circuit = {}
-        for basis in [self.basis, self.basis[::-1]]:
+        for basis in {self.basis, self.basis[::-1]}:
             self.circuit[basis] = QuantumCircuit(self.link_qubit, self.code_qubit, name=basis)
             self._basis_change(basis)
 
@@ -1188,7 +1188,8 @@ class ArcCircuit:
             with dynamical decoupling added.
         """
 
-        circuits = [self.circuit[basis] for basis in [self.basis, self.basis[::-1]]]
+        bases = list(self.circuit.keys())
+        circuits = [self.circuit[basis] for basis in bases]
 
         initial_layout = []
         for qreg in circuits[0].qregs:
@@ -1239,6 +1240,8 @@ class ArcCircuit:
                         ]
                     )
                     circuits = pm.run(circuits)
+            if not isinstance(circuits, list):
+                circuits = [circuits]
 
             # make sure delays are a multiple of 16 samples, while keeping the barriers
             # as aligned as possible
@@ -1256,7 +1259,7 @@ class ArcCircuit:
             # transpile to backend and schedule again
             circuits = transpile(circuits, backend, scheduling_method="alap")
 
-        return {basis: circuits[j] for j, basis in enumerate([self.basis, self.basis[::-1]])}
+        return {basis: circuits[j] for j, basis in enumerate(bases)}
 
     def _make_syndrome_graph(self):
 

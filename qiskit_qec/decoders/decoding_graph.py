@@ -229,7 +229,7 @@ class DecodingGraph:
                 if count[n0, n1]["00"] > 0:
                     ratio = count[n0, n1]["11"] / count[n0, n1]["00"]
                 else:
-                    ratio  = np.nan
+                    ratio = np.nan
                 p = ratio / (1 + ratio)
                 if self.graph[n0]["is_boundary"] and not self.graph[n1]["is_boundary"]:
                     edge = (n1, n1)
