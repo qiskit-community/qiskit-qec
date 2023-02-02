@@ -20,12 +20,12 @@ import unittest
 import itertools
 from random import choices
 
-from qiskit import Aer, QuantumCircuit, execute
+from qiskit import Aer, QuantumCircuit, ClassicalRegister, execute
 from qiskit.providers.fake_provider import FakeJakarta
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
-from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.circuits.repetition_code import ArcCircuit
+from qiskit_qec.circuits import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.circuits import ArcCircuit, GenericCodeCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.hdrg_decoders import ClusteringDecoder
@@ -517,6 +517,80 @@ class TestDecoding(unittest.TestCase):
                 min_error_num > d / 3,
                 str(min_error_num) + "errors cause logical error despite d=" + str(code.d),
             )
+
+
+class TestGenericCodes(unittest.TestCase):
+    """Test the generic code circuits."""
+
+    def test_202(self):
+        """Test GenericCodeCircuit on a [[20,0,2]] example."""
+
+        # create circuits with initial Bell state prep followed by time-ordered 202s
+        T = 5
+        circuits = []
+        for j in range(2):
+            qc = QuantumCircuit(3)
+            s = ClassicalRegister(2 * T)
+            f = ClassicalRegister(2)
+            qc.add_register(s)
+            qc.add_register(f)
+            if j == 1:
+                qc.x(1)
+            qc.h(0)
+            qc.cx(0, 1)
+            for t in range(T):
+                # zz measurement
+                qc.cx(0, 2)
+                qc.cx(1, 2)
+                qc.measure(2, s[2 * t])
+                qc.reset(2)
+                # xx measurement
+                qc.h(2)
+                qc.cx(2, 0)
+                qc.cx(2, 1)
+                qc.h(2)
+                qc.measure(2, s[2 * t + 1])
+                qc.reset(2)
+            qc.measure([0, 1], f)
+            circuits.append(qc)
+
+        # first syndrome measurements of both types have definite value
+        ese_list = [(0,), (1,)]
+        # pairs of subsequent syndrome measurements of same type have definite value
+        ese_list += [(t, t + 2) for t in range(2 * T - 2)]
+        # final ZZ should be the same as final parity
+        ese_list += [(T - 2, 2 * T + 1, 2 * T + 1)]
+
+        gcc = GenericCodeCircuit(circuits, ese_list)
+
+        dg = DecodingGraph(gcc)
+        self.assertTrue(
+            len(dg.graph.nodes()) == len(ese_list),
+            "Decoding graph for `GenericCodeCircuit` has" + " incorrect number of nodes.",
+        )
+
+        sim = Aer.get_backend("qasm_simulator")
+        for j in range(2):
+            counts = sim.run(circuits[j]).result().get_counts()
+            for k in range(j, 2):
+                for string in counts:
+                    nodes = gcc.string2nodes(string, index=k)
+                    if j == k:
+                        self.assertTrue(
+                            len(nodes) == 0,
+                            "`string2nodes` for `GenericCodeCircuit` returns nodes"
+                            + " when none should be present.",
+                        )
+                    else:
+                        self.assertTrue(
+                            len(nodes) > 0,
+                            "`string2nodes` for `GenericCodeCircuit` returns no nodes"
+                            + " when none should be present.",
+                        )
+                        self.assertTrue(
+                            False not in [node["element"] == 0 for node in nodes],
+                            "`string2nodes` for `GenericCodeCircuit` returns incorrect nodes.",
+                        )
 
 
 if __name__ == "__main__":
