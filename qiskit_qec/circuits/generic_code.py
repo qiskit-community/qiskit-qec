@@ -18,7 +18,8 @@
 from qiskit import Aer
 
 
-class GenericCodeCircuit():
+class GenericCodeCircuit:
+    """GenericCodeCircuit Class"""
 
     def __init__(self, circuits, ese_list, ese_info=None):
         """
@@ -35,7 +36,7 @@ class GenericCodeCircuit():
             for j, circuit in enumerate(circuits):
                 self.circuit[j] = circuit
         else:
-            self.circuit = {0:circuits}
+            self.circuit = {0: circuits}
         # choose the first to be the base circuit
         self.base = 0
 
@@ -44,40 +45,58 @@ class GenericCodeCircuit():
         self._get_parities()
 
     def _get_ese_string(self, string, ese):
-        '''
+        """
         For the given string, determine the parities of all error sensitive events.
-        '''
-        ese_string = ''
+        """
+        ese_string = ""
         for index in ese:
-            ese_string += string[-1-index]
+            ese_string += string[-1 - index]
         return ese_string
 
     def _get_parities(self):
-        '''
+        """
         Simulates circuit to determine what values the parities should ideally be
         for each circuit.
-        '''
-        qasm_sim = Aer.get_backend('qasm_simulator')
+        """
+        qasm_sim = Aer.get_backend("qasm_simulator")
         parities = {}
         for basis, qc in self.circuit.items():
             parities[basis] = []
-            counts = qasm_sim.run(self.circuit[basis]).result().get_counts()
+            counts = qasm_sim.run(qc).result().get_counts()
             string = list(counts.keys())[0]
-            for e, ese in enumerate(self.ese_list):
+            for ese in self.ese_list:
                 ese_string = self._get_ese_string(string, ese)
-                parity = ese_string.count('1')%2
+                parity = ese_string.count("1") % 2
                 parities[basis].append(parity)
         self.parities = parities
 
-    def string2nodes(self, string, basis=None, logical=None):
-        if basis is None:
-            basis = self.base
+    def string2nodes(self, string, **kwargs):
+        """
+        Args:
+            string (string): Results string to convert.
+            kwargs (dict): Additional keyword arguments.
+                index (int): Index of circuit for which nodes are
+                calculated.
+        Returns:
+            dict: List of nodes corresponding to to the non-trivial
+            elements in the string.
+        """
+        index = kwargs.get("index")
+        if index is None:
+            index = self.base
         nodes = []
         for e, ese in enumerate(self.ese_list):
             ese_string = self._get_ese_string(string, ese)
-            if ese_string.count('1')%2 != self.parities[basis][e]:
+            if ese_string.count("1") % 2 != self.parities[index][e]:
                 if self.ese_info:
-                    nodes.append({'element':e, 'is_boundary':self.ese_info['is_boundary'], 'qubits':self.ese_info['qubits'], 'time':self.ese_info['time']})
+                    nodes.append(
+                        {
+                            "element": e,
+                            "is_boundary": self.ese_info["is_boundary"],
+                            "qubits": self.ese_info["qubits"],
+                            "time": self.ese_info["time"],
+                        }
+                    )
                 else:
-                    nodes.append({'element':e, 'is_boundary':False, 'qubits':[], 'time':0})
+                    nodes.append({"element": e, "is_boundary": False, "qubits": [], "time": 0})
         return nodes

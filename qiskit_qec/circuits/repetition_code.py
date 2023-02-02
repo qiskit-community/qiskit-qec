@@ -747,7 +747,7 @@ class ArcCircuit:
 
         # create the circuits and initialize the code qubits
         self.circuit = {}
-        for basis in {self.basis, self.basis[::-1]}:
+        for basis in list({self.basis, self.basis[::-1]}):
             self.circuit[basis] = QuantumCircuit(self.link_qubit, self.code_qubit, name=basis)
             self._basis_change(basis)
 
