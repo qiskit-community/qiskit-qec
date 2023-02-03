@@ -291,6 +291,7 @@ def get_xp_pauli_encodings() -> List[str]:
 # Encoding Methods and Conversions
 # -------------------------------------------------------------------------------
 
+
 def split_xp_pauli_enc(encoding: str) -> Tuple[str, str]:
     """Splits the XPPauli encoding into the phase and tensor encodings
 
@@ -524,8 +525,8 @@ def exp2expstr(
     different encodings have a specific syntaxs.
 
     Args:
-        phase_exp: Phase encosings to convert to string representations
-        input_encoding: Encoding of the input phase exponents. Defaults to 
+        phase_exp: Phase encodings to convert to string representations
+        input_encoding: Encoding of the input phase exponents. Defaults to
         DEFAULT_EXTERNAL_XP_PAULI_ENCODING.
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
@@ -761,7 +762,7 @@ def _str2symplectic(
 def xp_symplectic2str(
     matrix: np.ndarray,
     phase_exp: Any = None,
-    precision:int = None,
+    precision: int = None,
     input_encoding: str = INTERNAL_XP_PAULI_ENCODING,
     output_phase_encoding: str = None,
     no_phase=False,
@@ -812,8 +813,8 @@ def xp_symplectic2str(
     """
     matrix = np.atleast_2d(matrix)
     num_qubits = matrix.shape[1] >> 1
-    matrix[:,0:num_qubits] = np.mod(matrix[:,0:num_qubits], 2)
-    matrix[:,num_qubits:] = np.mod(matrix[:,num_qubits:], precision)
+    matrix[:, 0:num_qubits] = np.mod(matrix[:, 0:num_qubits], 2)
+    matrix[:, num_qubits:] = np.mod(matrix[:, num_qubits:], precision)
     if no_phase:
         phase_str = np.full((matrix.shape[0],), "")
     else:
@@ -821,7 +822,7 @@ def xp_symplectic2str(
             phase_exp = np.zeros(shape=(matrix.shape[0],), dtype=np.int64)
         else:
             phase_exp = np.atleast_1d(phase_exp)
-            phase_exp = np.mod(phase_exp, 2*precision)
+            phase_exp = np.mod(phase_exp, 2 * precision)
 
         # If multiple phase/tensor encodings are implemented, the conversion
         # needs to go here.
@@ -832,7 +833,8 @@ def xp_symplectic2str(
 
     tensor_str = []
 
-    _XPENC = ["(I)", "(X)", "(P{zexp})", "(XP{zexp})"]
+    _XPENC = ["(I)", "(X)", "(P,{zexp})", "(X(P,{zexp}))"]
+    _XP_LATEX_ENC = ["(I)", "(X)", "(P{zexp})", "(XP{zexp})"]
     _ENC = {"XP": _XPENC}
 
     if syntax == PRODUCT_SYNTAX:
@@ -841,12 +843,16 @@ def xp_symplectic2str(
             for index in range(num_qubits):
                 tmp_enc = ""
                 rep = ""
-                if xppauli[index+num_qubits] > 1:
-                    rep = str(xppauli[index+num_qubits])
-                if xppauli[index+num_qubits] == 0:
-                   tmp_enc = _ENC[output_tensor_encoding][xppauli[index]]
+                if xppauli[index + num_qubits] > 1:
+                    rep = str(xppauli[index + num_qubits])
+                if xppauli[index + num_qubits] == 0:
+                    tmp_enc = _ENC[output_tensor_encoding][xppauli[index]]
                 else:
-                   tmp_enc = _ENC[output_tensor_encoding][2+xppauli[index]].replace("{zexp}", rep)
+                    tmp_enc = _ENC[output_tensor_encoding][2 + xppauli[index]].replace(
+                        "{zexp}", rep
+                    )
+                tmp_enc = tmp_enc.replace("X(P,)", "XP")
+                tmp_enc = tmp_enc.replace("(P,)", "(P)")
                 if tmp_enc:
                     if qubit_order == "left-to-right":
                         tmp_tensor_str += tmp_enc
@@ -856,17 +862,27 @@ def xp_symplectic2str(
             tensor_str.append(tmp_tensor_str)
     elif syntax == XP_SYMPLECTIC_SYNTAX:
         for i, xppauli in enumerate(matrix):
-            tmp_tensor_str = "XP"+str(precision)
-            tmp_tensor_str += "("+str(phase_exp[i])+"|"+str(xppauli[:num_qubits])[1:-1]+"|"+str(xppauli[num_qubits:])[1:-1]+")"
+            tmp_tensor_str = "XP" + str(precision)
+            tmp_tensor_str += (
+                "("
+                + str(phase_exp[i])
+                + "|"
+                + str(xppauli[:num_qubits])[1:-1]
+                + "|"
+                + str(xppauli[num_qubits:])[1:-1]
+                + ")"
+            )
 
             tensor_str.append(tmp_tensor_str)
     elif syntax in (INDEX_SYNTAX, LATEX_SYNTAX):
         if syntax == LATEX_SYNTAX:
             ind_str_repr = _ind_to_latex_repr
             sup_str_repr = _sup_to_latex_repr
+            _TMP_ENC = {"XP": _XP_LATEX_ENC}
         else:
             ind_str_repr = str
             sup_str_repr = str
+            _TMP_ENC = _ENC
 
         for xppauli in matrix:
             tmp_tensor_str = ""
@@ -874,18 +890,29 @@ def xp_symplectic2str(
                 if output_tensor_encoding == "XP":
                     tmp_enc = ""
                     rep = ""
-                    if xppauli[index+num_qubits] > 1:
-                        rep = sup_str_repr(xppauli[index+num_qubits])
-                    if xppauli[index] == 1 and xppauli[index+num_qubits] == 0:
-                        tmp_enc = _ENC[output_tensor_encoding][1]
-                    elif xppauli[index+num_qubits] > 0:
-                        tmp_enc = _ENC[output_tensor_encoding][2+xppauli[index]].replace("{zexp}", rep)
-                    
+                    if xppauli[index + num_qubits] > 1:
+                        rep = sup_str_repr(xppauli[index + num_qubits])
+                    if xppauli[index] == 1 and xppauli[index + num_qubits] == 0:
+                        tmp_enc = _TMP_ENC[output_tensor_encoding][1]
+                    elif xppauli[index + num_qubits] > 0:
+                        tmp_enc = _TMP_ENC[output_tensor_encoding][2 + xppauli[index]].replace(
+                            "{zexp}", rep
+                        )
+
+                    tmp_enc = tmp_enc.replace("X(P,)", "XP")
+                    tmp_enc = tmp_enc.replace("(P,)", "(P)")
                     if tmp_enc:
                         if qubit_order == "left-to-right":
-                            tmp_tensor_str += (tmp_enc + index_str + ind_str_repr(index + index_start))
+                            tmp_tensor_str += (
+                                tmp_enc + index_str + ind_str_repr(index + index_start)
+                            )
                         else:
-                            tmp_tensor_str = (tmp_enc + index_str + ind_str_repr(index + index_start) + tmp_tensor_str)
+                            tmp_tensor_str = (
+                                tmp_enc
+                                + index_str
+                                + ind_str_repr(index + index_start)
+                                + tmp_tensor_str
+                            )
 
             tensor_str.append(tmp_tensor_str)
 
@@ -894,9 +921,15 @@ def xp_symplectic2str(
 
     if syntax != XP_SYMPLECTIC_SYNTAX:
         if syntax in (PRODUCT_SYNTAX, INDEX_SYNTAX):
-            result = ["XP"+str(precision)+"("+ p_str + t_str+")" for p_str, t_str in zip(phase_str, tensor_str)]
+            result = [
+                "XP" + str(precision) + "(" + p_str + t_str + ")"
+                for p_str, t_str in zip(phase_str, tensor_str)
+            ]
         else:
-            result = ["XP"+_ind_to_latex_repr(precision)+"("+ p_str + t_str+")" for p_str, t_str in zip(phase_str, tensor_str)]
+            result = [
+                "XP" + _ind_to_latex_repr(precision) + "(" + p_str + t_str + ")"
+                for p_str, t_str in zip(phase_str, tensor_str)
+            ]
     else:
         result = tensor_str
     if matrix.shape[0] == 1 and same_type:

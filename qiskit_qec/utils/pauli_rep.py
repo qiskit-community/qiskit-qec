@@ -1238,7 +1238,7 @@ def exp2expstr(
     different encodings have a specific syntaxs.
 
     Args:
-        phase_exp: Phase encosings to convert to string representations
+        phase_exp: Phase encodings to convert to string representations
         input_encoding: Encoding of the input phase exponents
         same_type (optional): Scalar/Vector return flag. Defaults to True.
 
