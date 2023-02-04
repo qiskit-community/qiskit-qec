@@ -239,7 +239,7 @@ def _is_pattern(string, pattern):
 
 
 def get_phase_encodings() -> List[str]:
-    """Returns the availble phase encodings
+    """Returns the available phase encodings
 
     Returns:
         encoding: List of available phase encodings
@@ -304,7 +304,7 @@ def split_xp_pauli_enc(encoding: str) -> Tuple[str, str]:
     Returns:
         phase_enc, tensor_enc: phase encoding and tensor encoding
 
-    Exampes:
+    Examples:
         >>> encoding = "wXP"
         >>> split_xp_pauli_encoding(encoding)
         ('w', 'XP')
@@ -334,6 +334,11 @@ def get_phase_enc(encoding: str) -> str:
 
     Returns:
         phase_enc: phase encoding
+
+    Examples:
+        >>> encoding = "wXP"
+        >>> get_phase_enc(encoding)
+        'w'
     """
     phase_part, _ = split_xp_pauli_enc(encoding)
     return phase_part
@@ -346,7 +351,12 @@ def get_tensor_enc(encoding: str) -> str:
         encoding: XPPauli encoding string
 
     Returns:
-        phase_enc: tensor encoding
+        tensor_enc: tensor encoding
+
+    Examples:
+        >>> encoding = "wXP"
+        >>> get_tensor_enc(encoding)
+        'XP'
     """
     _, tensor_part = split_xp_pauli_enc(encoding)
     return tensor_part
@@ -765,12 +775,12 @@ def xp_symplectic2str(
     precision: int = None,
     input_encoding: str = INTERNAL_XP_PAULI_ENCODING,
     output_phase_encoding: str = None,
-    no_phase=False,
+    no_phase: bool = False,
     output_tensor_encoding: str = DEFAULT_EXTERNAL_TENSOR_ENCODING,
     syntax: str = INDEX_SYNTAX,
     qubit_order: str = "right-to-left",
     index_start: int = 0,
-    same_type=True,
+    same_type: bool = True,
     index_str="",
 ) -> Union[np.ndarray, str]:
     """Converts a symplectic matrix and phase to string representations
@@ -786,9 +796,7 @@ def xp_symplectic2str(
             A value of None will result in complex phases notation. Defaults
             to None.
         no_phase (optional): When set to True, no phase will appear no matter
-            what encoding is selected. So the symplectic matrix [1, 1] will produce
-            the operator Y in 'XZY' encoding but also (XZ) in the 'XZ' encoding which
-            are different operators if phases are considered.
+            what encoding is selected.
         output_tensor_encoding (optional): Encoding of XPPauli tensor
             (without phase). Defaults to DEFAULT_EXTERNAL_TENSOR_ENCODING.
         syntax (optional): Syntax of pauli tensor. Values are
@@ -809,7 +817,35 @@ def xp_symplectic2str(
         xp_pauli_str: XPPauli strings
 
     Examples:
-        TODO
+        >>> precision = 8
+        >>> matrix1 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64)
+        >>> phase_exp1 = 12
+        >>> matrix2 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0], dtype=np.int64)
+        >>> phase_exp2 = 2
+        >>> matrix = np.array([matrix1, matrix2])
+        >>> phase_exp = np.array([phase_exp1, phase_exp2])
+        >>> xp_symplectic2str(matrix, phase_exp, precision)
+        np.array(["XP8((w,12)(X(P,4))2(X)1(X)0)", "XP8((w,2)(P,3)3(X(P,2))2(X)1(X)0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, qubit_order="left-to-right")
+        np.array(["XP8((w,12)(X)0(X)1(X(P,4))2)", "XP8((w,2)(X)0(X)1(X(P,2))2(P,3)3)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=XP_SYMPLECTIC_SYNTAX)
+        np.array(["XP8(12|1 1 1 0 0 0 0|0 0 4 0 0 0 0)", "XP8(2|1 1 1 0 0 0 0|0 0 2 3 0 0 0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, no_phase=True)
+        np.array(["XP8((X(P,4))2(X)1(X)0)", "XP8((P,3)3(X(P,2))2(X)1(X)0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=PRODUCT_SYNTAX)
+        np.array(["XP8((w,12)(I)(I)(I)(I)(X(P,4))(X)(X))", "XP8((w,2)(I)(I)(I)(P,3)(X(P,2))(X)(X))"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=LATEX_SYNTAX)
+        np.array(
+            [
+                "XP_{8}((w,12)(XP^{4})_{2}(X)_{1}(X)_{0})",
+                "XP_{8}((w,2)(P^{3})_{3}(XP^{2})_{2}(X)_{1}(X)_{0})",
+            ]
+        )
     """
     matrix = np.atleast_2d(matrix)
     num_qubits = matrix.shape[1] >> 1

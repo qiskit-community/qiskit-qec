@@ -256,7 +256,7 @@ def _is_pattern(string, pattern):
 
 
 def get_phase_encodings() -> List[str]:
-    """Returns the availble phase encodings
+    """Returns the available phase encodings
 
     Returns:
         encoding: List of available phase encodings
@@ -336,7 +336,7 @@ def split_pauli_enc(encoding: str) -> Tuple[str, str]:
     Returns:
         phase_enc, tensor_enc: phase encoding and tensor encoding
 
-    Exampes:
+    Examples:
         >>> encoding = "iXZ'
         >>> split_pauli_encoding(encoding)
         ('i', 'XZ')
