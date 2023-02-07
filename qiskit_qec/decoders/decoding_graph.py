@@ -86,7 +86,7 @@ class DecodingGraph:
                     hyperedge = {}
                     for source in nodes:
                         for target in nodes:
-                            if target != source:
+                            if target != source or (len(nodes) == 1):
                                 n0 = graph.nodes().index(source)
                                 n1 = graph.nodes().index(target)
                                 qubits = []
