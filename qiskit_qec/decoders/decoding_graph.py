@@ -63,10 +63,10 @@ class DecodingGraph:
             if hyperedges:
                 self.hyperedges = hyperedges
             else:
-                hyperedges = []
+                self.hyperedges = []
                 edges = graph.edges()
                 for j, edge in enumerate(graph.edge_list()):
-                    hyperedges.append({edge: edges[j]})
+                    self.hyperedges.append({edge: edges[j]})
         elif not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
