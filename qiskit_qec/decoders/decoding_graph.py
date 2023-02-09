@@ -39,23 +39,35 @@ class DecodingGraph:
     METHOD_NAIVE: str = "naive"
     AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
 
-    def __init__(self, code, brute=False):
+    def __init__(self, code, brute=False, graph=None, hyperedges=None):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
-                graph will be created. If None, graph will initialized as empty.
+            graph will be created. If None, graph will initialized as empty.
             brute (bool): Whether to create the graph by analysing the circuits,
             or to use a helper method from the code class (if available).
+            graph (PyGraph): Pre-made graph, to use instead of creating one.
+            hyperedges (list): Pre-made list of hyperedges, used when a pre-made
+            graph is given, but not required.
         """
 
         self.code = code
         self.brute = brute
 
-        self._make_syndrome_graph()
+        self._make_syndrome_graph(graph, hyperedges)
 
-    def _make_syndrome_graph(self):
+    def _make_syndrome_graph(self, graph, hyperedges):
 
-        if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
+        if graph:
+            self.graph = graph
+            if hyperedges:
+                self.hyperedges = hyperedges
+            else:
+                hyperedges = []
+                edges = graph.edges()
+                for j, edge in enumerate(graph.edge_list()):
+                    hyperedges.append({edge: edges[j]})
+        elif not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
             graph = rx.PyGraph(multigraph=False)
