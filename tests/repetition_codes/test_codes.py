@@ -297,7 +297,7 @@ class TestARCCodes(unittest.TestCase):
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        T = 11
+        T = 15
         # first, do they appear when needed
         for run_202 in [True, False]:
             code = ArcCircuit(links, T=T, run_202=run_202)
@@ -324,7 +324,7 @@ class TestARCCodes(unittest.TestCase):
     def test_single_error_202s(self):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
-        for T in [15, 20]:
+        for T in [21, 25]:
             code = ArcCircuit(links, T, run_202=True, barriers=True)
             assert code.run_202
             # insert errors on a selection of qubits during a selection of rounds
