@@ -19,6 +19,28 @@ from qiskit_qec.circuits import SurfaceCodeCircuit
 
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
+@dataclass
+class SpanningForest:
+    vertices: Dict[int, List[int]]
+    edges: List[int]
+
+@dataclass
+class BoundaryEdge:
+    cluster_vertex: int
+    neighbour_vertex: int
+    data: Dict[str, object]
+
+@dataclass
+class UnionFindDecoderCluster:
+    boundary: List[BoundaryEdge]
+    is_odd: bool
+    size: int 
+
+@dataclass
+class FusionEntry:
+    u: int
+    v: int
+    connecting_edge: BoundaryEdge
 
 class UnionFindDecoder:
     """
@@ -31,11 +53,11 @@ class UnionFindDecoder:
 
     def __init__(
         self,
-        code_circuit: SurfaceCodeCircuit
+        code_circuit: SurfaceCodeCircuit,
     ) -> None:
         self.code_circuit = code_circuit
         self.decoding_graph = DecodingGraph(
-            code_circuit
+            code_circuit,
         )
 
     def process(self, string: str):
@@ -48,19 +70,34 @@ class UnionFindDecoder:
             node) for node in highlighted_nodes]
         for index, _ in enumerate(self.graph.nodes()):
             self.graph[index]["syndrome"] = index in highlighted_nodes_indices
+            self.graph[index]["root"] = index
 
         for edge in self.graph.edges():
             edge["growth"] = 0
+            edge["fully_grown"] = False
 
-        self.odd_clusters: Set[UnionFindDecoderCluster] = set(
-            [UnionFindDecoderCluster(self.graph, self.graph[index])
-             for index in highlighted_nodes_indices]
-        )
-        self.clusters: Set[UnionFindDecoderCluster] = set()
-        while self.odd_clusters:
-            self._grow_clusters()
-            self._merge_clusters()
-            self._update_clusters()
+        self.clusters: Dict[int, UnionFindDecoderCluster] = {}
+        self.odd_cluster_roots = highlighted_nodes_indices
+        for index in self.graph.node_indices():
+            boundary_edges = []
+            for _, (_, neighbour, data) in dict(self.graph.incident_edge_index_map(index)).items():
+                boundary_edges.append(
+                    BoundaryEdge(
+                        index,
+                        neighbour,
+                        data
+                    )
+                )
+            self.clusters[index] = UnionFindDecoderCluster(
+                boundary=boundary_edges,
+                is_odd=index in highlighted_nodes,
+                size=1
+            )
+        
+        while self.odd_cluster_roots:
+            fusion_edge_list = self._grow_clusters()
+            self._merge_clusters(fusion_edge_list)
+            #self._update_clusters()
         
         erasure_vertices = set()
         for i, edge in enumerate(self.graph.edges()):
@@ -77,44 +114,67 @@ class UnionFindDecoder:
 
         return output
 
-    def _grow_clusters(self) -> None:
-        for cluster in self.odd_clusters:
-            outer_edges = copy(cluster.outer_edges)
-            for index in outer_edges:
-                edge = self.graph.edges()[index]
-                edge["growth"] += 0.5
-                self.graph.update_edge_by_index(index, edge)
-                if edge["growth"] >= edge["weight"]:
-                    nodes = list(self.graph.get_edge_endpoints_by_index(index))
-                    cluster.add_nodes(nodes)
-                    cluster.remove_outer_edge(index)
+    def find(self, u: int) -> int:
+        if self.graph[u]["root"] == u:
+            return self.graph[u]["root"]
+        
+        self.graph[u]["root"] = self.find(self.graph[u]["root"])
+        return self.graph[u]["root"]
+    
+    def _grow_clusters(self) -> List[FusionEntry]:
+        fusion_edge_list: List[FusionEntry] = []
+        for root in self.odd_cluster_roots:
+            cluster = self.clusters[root]
+            for edge in cluster.boundary:
+                edge.data["growth"] += 0.5
+                if edge.data["growth"] >= edge.data["weight"] and not edge.data["fully_grown"]:
+                    edge.data["fully_grown"] = True
+                    fusion_entry = FusionEntry(u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge)
+                    fusion_edge_list.append(fusion_entry)
+        return fusion_edge_list
 
-    def _merge_clusters(self) -> None:
-        odd_clusters = copy(self.odd_clusters)
-        for cluster_x in odd_clusters:
-            for cluster_y in odd_clusters:
-                if cluster_x == cluster_y:
-                    continue
-                if not cluster_x in self.odd_clusters or not cluster_y in self.odd_clusters:
-                    continue
-                if not (cluster_x.nodes & cluster_y.nodes):
-                    continue  # They have no overlap, ignore them
 
-                cluster_x.merge(cluster_y)
-                self.odd_clusters.remove(cluster_y)
+    def _merge_clusters(self, fusion_edge_list: List[FusionEntry]) -> None:
+        for entry in fusion_edge_list:
+            root_u, root_v = self.find(entry.u), self.find(entry.v)
+            if root_u == root_v:
+                continue
+            new_root = root_v if self.clusters[root_v].size > self.clusters[root_u].size else root_u
+            root_to_update = root_v if new_root == root_u else root_u
+
+            cluster = self.clusters[new_root]
+            # Merge boundaries
+            cluster.boundary += self.clusters[root_to_update].boundary
+            reverse_edge = BoundaryEdge(
+                cluster_vertex=entry.connecting_edge.neighbour_vertex,
+                neighbour_vertex=entry.connecting_edge.cluster_vertex,
+                data=entry.connecting_edge.data
+            )
+            cluster.boundary.remove(entry.connecting_edge)
+            cluster.boundary.remove(reverse_edge)
+            
+            # update size
+            cluster.size += self.clusters[root_to_update].size
+            # update parity
+            cluster.is_odd ^= self.clusters[root_to_update].is_odd
+            # update root
+            self.graph[root_to_update]["root"] = new_root
+            
+            if root_to_update in self.odd_cluster_roots:
+                self.odd_cluster_roots.remove(root_to_update)
+            if not cluster.is_odd and new_root in self.odd_cluster_roots:
+                self.odd_cluster_roots.remove(new_root)    
 
     def _update_clusters(self) -> None:
         odd_clusters = copy(self.odd_clusters)
-        for cluster in odd_clusters:
-            if not cluster.is_odd():
-                self.clusters.add(cluster)
-                self.odd_clusters.remove(cluster)
+        for root, cluster in odd_clusters.items():
+            if not cluster.is_odd:
+                self.clusters[root] = self.odd_clusters.pop(root, None)
 
     def peeling(self, erasure: PyGraph) -> List[int]:
         """"
         Peeling decoder based on arXiv:1703.01517.
         """
-
         tree = SpanningForest(vertices={}, edges=[])
 
         ## Construct spanning forest
@@ -150,38 +210,3 @@ class UnionFindDecoder:
                 erasure[pendant_vertex]["syndrome"] = False
             
         return [erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]]
-
-
-@dataclass
-class SpanningForest:
-    vertices: Dict[int, List[int]]
-    edges: List[int]
-
-
-class UnionFindDecoderCluster:
-    def __init__(self, graph: PyGraph, initial_node=None) -> None:
-        self.graph = graph
-        initial_node_index = self.graph.nodes().index(initial_node)
-        self.nodes = set([initial_node_index])
-        self.outer_edges = set(
-            [edge_index for edge_index in self.graph.incident_edges(initial_node_index)])
-    
-    def add_nodes(self, nodes_indices: List[int]) -> None:
-        for node_index in nodes_indices:
-            self.nodes.add(node_index)
-            for edge_index in self.graph.incident_edges(node_index):
-                self.outer_edges.add(edge_index)
-
-    def remove_outer_edge(self, edge_index):
-        self.outer_edges.remove(edge_index)
-
-    def is_odd(self):
-        atypical_node_count = 0
-        for index in self.nodes:
-            if self.graph[index]["syndrome"]:
-                atypical_node_count += 1
-        return atypical_node_count % 2 == 1
-    
-    def merge(self, rhs):
-        self.nodes |= rhs.nodes
-        self.outer_edges |= rhs.outer_edges

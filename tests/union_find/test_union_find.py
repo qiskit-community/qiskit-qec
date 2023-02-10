@@ -47,7 +47,7 @@ class UnionFindDecoderTest(TestCase):
             code = SurfaceCodeCircuit(d=3, T=3)
             decoder = UnionFindDecoder(code)
             fault_enumerator = FaultEnumerator(code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model)
-            for i, fault in enumerate(fault_enumerator.generate()):
+            for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
                 corrected_outcome = decoder.process(outcome)
                 syndromes = temp_syndrome(corrected_outcome, code.css_z_gauge_ops)
