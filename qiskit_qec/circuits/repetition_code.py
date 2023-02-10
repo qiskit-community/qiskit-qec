@@ -278,14 +278,16 @@ class RepetitionCodeCircuit:
 
         return new_string
 
-    def string2nodes(self, string, logical="0", all_logicals=False):
+    def string2nodes(self, string, **kwargs):
         """
         Convert output string from circuits into a set of nodes.
         Args:
             string (string): Results string to convert.
-            logical (string): Logical value whose results are used.
-            all_logicals (bool): Whether to include logical nodes
-            irrespective of value.
+            kwargs (dict): Additional keyword arguments.
+                logical (str): Logical value whose results are used ('0' as default).
+                all_logicals (bool): Whether to include logical nodes
+                irrespective of value. (False as default).
+
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
@@ -295,6 +297,12 @@ class RepetitionCodeCircuit:
         are read left to right. So, we have some ugly indexing
         code whenever we're dealing with both strings and lists.
         """
+
+        # set kwargs
+        all_logicals = kwargs.get("all_logicals")
+        logical = kwargs.get("logical")
+        if logical is None:
+            logical = "0"
 
         string = self._process_string(string)
         separated_string = self._separate_string(string)  # [ <boundary>, <syn>, <syn>,...]
@@ -996,18 +1004,20 @@ class ArcCircuit:
 
         return new_string
 
-    def string2nodes(self, string, all_logicals=False):
+    def string2nodes(self, string, **kwargs):
         """
         Convert output string from circuits into a set of nodes.
         Args:
             string (string): Results string to convert.
-            all_logicals (bool): Whether to include logical nodes
-            irrespective of value.
+            kwargs (dict): Additional keyword arguments.
+                all_logicals (bool): Whether to include logical nodes
+                irrespective of value. (False as default).
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
         """
 
+        all_logicals = kwargs.get("all_logicals")
         string = self._process_string(string)
         separated_string = self._separate_string(string)
         nodes = []
