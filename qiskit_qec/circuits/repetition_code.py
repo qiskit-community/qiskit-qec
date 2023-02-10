@@ -492,6 +492,7 @@ class ArcCircuit:
         links: list,
         T: int,
         basis: str = "xy",
+        logical: str = "0",
         resets: bool = True,
         delay: Optional[int] = None,
         barriers: bool = False,
@@ -508,8 +509,9 @@ class ArcCircuit:
             links (list): List of tuples (c0, a, c1), where c0 and c1 are the two code qubits in each
             syndrome measurement, and a is the auxiliary qubit used.
             T (int): Number of rounds of syndrome measurement.
-            basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
+            basis (string): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
             used.
+            logical (string): Logical value to store (`'0'` or `'1'`).
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             ff (bool): Whether to correct the effects of [[2,0,2]] sequences via feed forward.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
@@ -528,6 +530,7 @@ class ArcCircuit:
 
         self.links = links
         self.basis = basis
+        self.logical = logical
         self._barriers = barriers
         self._max_dist = max_dist
         self.delay = delay or 0
@@ -747,8 +750,10 @@ class ArcCircuit:
 
         # create the circuits and initialize the code qubits
         self.circuit = {}
-        for basis in {self.basis, self.basis[::-1]}:
+        for basis in list({self.basis, self.basis[::-1]}):
             self.circuit[basis] = QuantumCircuit(self.link_qubit, self.code_qubit, name=basis)
+            if self.logical == "1":
+                self.circuit[basis].x(self.code_qubit)
             self._basis_change(basis)
 
         # use degree 1 code qubits for logical z readouts
@@ -987,12 +992,11 @@ class ArcCircuit:
 
         return new_string
 
-    def string2nodes(self, string, logical="0", all_logicals=False):
+    def string2nodes(self, string, all_logicals=False):
         """
         Convert output string from circuits into a set of nodes.
         Args:
             string (string): Results string to convert.
-            logical (string): Logical value whose results are used.
             all_logicals (bool): Whether to include logical nodes
             irrespective of value.
         Returns:
@@ -1007,7 +1011,7 @@ class ArcCircuit:
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and (all_logicals or element != logical)) or (
+                    if (syn_type == 0 and (all_logicals or element != self.logical)) or (
                         syn_type != 0 and element == "1"
                     ):
                         is_boundary = syn_type == 0

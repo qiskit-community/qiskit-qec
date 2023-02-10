@@ -389,7 +389,8 @@ class TestARCCodes(unittest.TestCase):
             counts = result.get_counts(j)
             for string in counts:
                 # final result should be same as initial
-                correct = correct and string[0:4] == "0100"
+                correct_final = code.logical + str((int(code.logical) + 1) % 2) + code.logical * 2
+                correct = correct and string[0:4] == correct_final
         self.assertTrue(correct, "Result string not as required")
 
     def test_bases(self):
@@ -430,7 +431,7 @@ class TestARCCodes(unittest.TestCase):
         backend = FakeJakarta()
         links = [(0, 1, 3), (3, 5, 6)]
         schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
-        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000)
+        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, logical="0")
         circuit = code.transpile(backend)
         self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
         circuit = code.transpile(backend, echo_num=(0, 2))
