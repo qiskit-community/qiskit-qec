@@ -492,6 +492,7 @@ class ArcCircuit:
         links: list,
         T: int,
         basis: str = "xy",
+        logical: str = "0",
         resets: bool = True,
         delay: Optional[int] = None,
         barriers: bool = False,
@@ -499,6 +500,7 @@ class ArcCircuit:
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
+        rounds_per_202: int = 7,
         conditional_reset: bool = False,
     ):
         """
@@ -508,8 +510,9 @@ class ArcCircuit:
             links (list): List of tuples (c0, a, c1), where c0 and c1 are the two code qubits in each
             syndrome measurement, and a is the auxiliary qubit used.
             T (int): Number of rounds of syndrome measurement.
-            basis (list): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
+            basis (string): Pair of `'x'`, `'y'` and `'z'`, specifying the pair of local bases to be
             used.
+            logical (string): Logical value to store (`'0'` or `'1'`).
             resets (bool): Whether to include a reset gate after mid-circuit measurements.
             ff (bool): Whether to correct the effects of [[2,0,2]] sequences via feed forward.
             delay (float): Time (in dt) to delay after mid-circuit measurements (and delay).
@@ -521,13 +524,16 @@ class ArcCircuit:
             measurement round. Each element is a list of lists [c, a] for entangling gates to be
             applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
-            enough (at least 5xlen(links)).
+            enough (at least rounds_per_202xlen(links)).
+            rounds_per_202 (int): Number of rounds that are part of the 202, including the typical link
+            measurements at the beginning and edge. At least 5 are required to detect conjugate errors.
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
         """
 
         self.links = links
         self.basis = basis
+        self.logical = logical
         self._barriers = barriers
         self._max_dist = max_dist
         self.delay = delay or 0
@@ -545,6 +551,7 @@ class ArcCircuit:
         self._preparation()
 
         # determine the placement of [2,0,2] rounds
+        self.rounds_per_202 = rounds_per_202
         if run_202:
             self.links_202 = []
             for link in self.links:
@@ -555,10 +562,10 @@ class ArcCircuit:
             if num_links > 0:
                 self.rounds_per_link = int(np.floor(T / num_links))
                 self.metabuffer = np.ceil((T - num_links * self.rounds_per_link) / 2)
-                self.roundbuffer = np.ceil((self.rounds_per_link - 5) / 2)
+                self.roundbuffer = np.ceil((self.rounds_per_link - self.rounds_per_202) / 2)
                 if self.roundbuffer > 0:
                     self.roundbuffer -= 1
-                self.run_202 = self.rounds_per_link >= 5
+                self.run_202 = self.rounds_per_link >= self.rounds_per_202
             else:
                 self.run_202 = False
         else:
@@ -749,6 +756,8 @@ class ArcCircuit:
         self.circuit = {}
         for basis in list({self.basis, self.basis[::-1]}):
             self.circuit[basis] = QuantumCircuit(self.link_qubit, self.code_qubit, name=basis)
+            if self.logical == "1":
+                self.circuit[basis].x(self.code_qubit)
             self._basis_change(basis)
 
         # use degree 1 code qubits for logical z readouts
@@ -766,8 +775,8 @@ class ArcCircuit:
         """
         Returns the position within a 202 sequence for the current measurement round:
         * `False` means not part of a 202 sequence;
-        * 0, 2 and 4 use the standard coloring;
-        * 1 and 3 use the flipped coloring.
+        * Even taus use the standard coloring;
+        * Odd taus use the flipped coloring.
         Also returns the link qubits for the link for which the 202 sequence is run and its neigbours.
         """
         # null values in case no 202 done during this round
@@ -779,7 +788,7 @@ class ArcCircuit:
             qubit_l_202 = link[1]
             #  determine where we are in the sequence
             tau = int(t % self.rounds_per_link - self.roundbuffer)
-            if t < 0 or tau not in range(5):
+            if t < 0 or tau not in range(self.rounds_per_202):
                 tau = False
             # determine the neighbouring link qubits that are suppressed
             graph = self._get_link_graph(0)
@@ -817,7 +826,7 @@ class ArcCircuit:
                     q_c = self.code_index[qubit_c]
                     q_l = self.link_index[qubit_l]
                     neighbor = qubit_l in qubit_l_nghbrs[0] + qubit_l_nghbrs[1]
-                    if not (tau in [1, 2, 3] and neighbor):
+                    if not (tau in range(1, self.rounds_per_202 - 1) and neighbor):
                         c = self.color[qubit_c]
                         if qubit_l == qubit_l_202:
                             c = (c + tau) % 2
@@ -851,7 +860,7 @@ class ArcCircuit:
 
             # correct
             if self.run_202:
-                if tau == 4:
+                if tau == (self.rounds_per_202 - 1):
                     target_link = self.links[self.link_index[qubit_l_202]]
                     # for neighbouring links on both sides of the 202 link
                     for j in range(2):
@@ -948,15 +957,15 @@ class ArcCircuit:
                     change = syndrome_list[-1][j] != "0"
                 # if the link was involved in a just finished 202...
                 elif just_finished:
-                    # skip back 5 for a neighbouring link
+                    # skip back self.rounds_per_202 for a neighbouring link
                     if qubit_l in last_neighbors:
-                        dt = 5
+                        dt = self.rounds_per_202
                     # and just 1 for all others (as normal)
                     else:
                         dt = 1
                 # otherwise, everything not during a 202 just compares
                 # results with the previous round (as normal)
-                elif tau not in range(1, 5):
+                elif tau not in range(1, self.rounds_per_202):
                     dt = 1
                 # and all others depend on the placement of the link
                 # within the current 202
@@ -979,7 +988,7 @@ class ArcCircuit:
                 syndrome_changes += "0" * (not change) + "1" * change
             syndrome_changes += " "
             last_neighbors = all_neighbors.copy()
-            just_finished = tau == 4
+            just_finished = tau == (self.rounds_per_202 - 1)
 
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end
@@ -987,12 +996,11 @@ class ArcCircuit:
 
         return new_string
 
-    def string2nodes(self, string, logical="0", all_logicals=False):
+    def string2nodes(self, string, all_logicals=False):
         """
         Convert output string from circuits into a set of nodes.
         Args:
             string (string): Results string to convert.
-            logical (string): Logical value whose results are used.
             all_logicals (bool): Whether to include logical nodes
             irrespective of value.
         Returns:
@@ -1007,7 +1015,7 @@ class ArcCircuit:
             for syn_round in range(len(separated_string[syn_type])):
                 elements = separated_string[syn_type][syn_round]
                 for elem_num, element in enumerate(elements):
-                    if (syn_type == 0 and (all_logicals or element != logical)) or (
+                    if (syn_type == 0 and (all_logicals or element != self.logical)) or (
                         syn_type != 0 and element == "1"
                     ):
                         is_boundary = syn_type == 0
@@ -1022,8 +1030,9 @@ class ArcCircuit:
                             link_qubit = link[1]
                         tau, _, _ = self._get_202(syn_round)
                         node = {"time": syn_round}
-                        if tau == 3:
-                            node["conjugate"] = True
+                        if tau:
+                            if ((tau % 2) == 1) and tau > 1:
+                                node["conjugate"] = True
                         node["qubits"] = code_qubits
                         node["link qubit"] = link_qubit
                         node["is_boundary"] = is_boundary
