@@ -1,6 +1,6 @@
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2021.
+# (C) Copyright IBM 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -15,7 +15,7 @@
 from unittest import TestCase
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import UnionFindDecoder
-from qiskit_qec.circuits import SurfaceCodeCircuit
+from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
@@ -42,7 +42,7 @@ class UnionFindDecoderTest(TestCase):
 
         return super().setUp()
 
-    def test_d3(self):
+    def test_surface_code_d3(self):
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
             decoder = UnionFindDecoder(code, logical)
@@ -54,4 +54,18 @@ class UnionFindDecoderTest(TestCase):
                 for syndrome in stabilizers:
                     self.assertEqual(syndrome, 0)
                 logical_measurement = temp_syndrome(corrected_outcome, [code.css_z_logical])[0]
+                self.assertEqual(str(logical_measurement), logical)
+
+    def test_repetition_code_d5(self):
+        for logical in ["0", "1"]:
+            code = RepetitionCodeCircuit(d=3, T=3)
+            decoder = UnionFindDecoder(code, logical)
+            fault_enumerator = FaultEnumerator(code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model)
+            for fault in fault_enumerator.generate():
+                outcome = "".join([str(x) for x in fault[3]])
+                corrected_outcome = decoder.process(outcome)
+                stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
+                for syndrome in stabilizers:
+                    self.assertEqual(syndrome, 0)
+                logical_measurement = temp_syndrome(corrected_outcome, code.css_z_logical)[0]
                 self.assertEqual(str(logical_measurement), logical)

@@ -11,13 +11,10 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import Dict, List, Set, Tuple
-from rustworkx import PyGraph, visualization
+from typing import Dict, List
+from rustworkx import PyGraph
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.circuits import SurfaceCodeCircuit
-
-from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 @dataclass
 class SpanningForest:
@@ -53,7 +50,7 @@ class UnionFindDecoder:
 
     def __init__(
         self,
-        code_circuit: SurfaceCodeCircuit,
+        code_circuit,
         logical: str
     ) -> None:
         self.code_circuit = code_circuit
