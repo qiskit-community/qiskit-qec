@@ -58,7 +58,7 @@ class UnionFindDecoderTest(TestCase):
 
     def test_repetition_code_d5(self):
         for logical in ["0", "1"]:
-            code = RepetitionCodeCircuit(d=3, T=3)
+            code = RepetitionCodeCircuit(d=5, T=5)
             decoder = UnionFindDecoder(code, logical)
             fault_enumerator = FaultEnumerator(code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model)
             for fault in fault_enumerator.generate():

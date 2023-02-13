@@ -160,8 +160,12 @@ class UnionFindDecoder:
             
             if root_to_update in self.odd_cluster_roots:
                 self.odd_cluster_roots.remove(root_to_update)
+
+            # update odd_cluster_roots
             if not cluster.is_odd and new_root in self.odd_cluster_roots:
                 self.odd_cluster_roots.remove(new_root)    
+            if cluster.is_odd and not new_root in self.odd_cluster_roots:
+                self.odd_cluster_roots.append(new_root)
 
     def _update_clusters(self) -> None:
         odd_clusters = copy(self.odd_clusters)
