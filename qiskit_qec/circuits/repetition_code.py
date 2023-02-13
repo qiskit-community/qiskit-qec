@@ -121,6 +121,7 @@ class RepetitionCodeCircuit:
 
         self.resets = resets
         self.delay = delay
+        self.base = "0"
 
     def get_circuit_list(self) -> List[QuantumCircuit]:
         """Returns circuit list.
