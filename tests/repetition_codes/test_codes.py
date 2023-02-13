@@ -156,7 +156,7 @@ class TestRepCodes(unittest.TestCase):
         """Check that single errors create a pair of nodes for all types of code."""
         codes = {}
         for d in [2, 3]:
-            for T in [1, 2]:
+            for T in [1, 2, 3]:
                 for xbasis in [False, True]:
                     for resets in [False, True]:
                         for delay in [0, 16]:
