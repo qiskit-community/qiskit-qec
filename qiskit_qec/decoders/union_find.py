@@ -54,17 +54,19 @@ class UnionFindDecoder:
     def __init__(
         self,
         code_circuit: SurfaceCodeCircuit,
+        logical: str
     ) -> None:
         self.code_circuit = code_circuit
         self.decoding_graph = DecodingGraph(
             code_circuit,
         )
+        self.logical = logical
 
     def process(self, string: str):
         self.graph = deepcopy(self.decoding_graph.graph)
         string = "".join([str(c) for c in string[::-1]])
         output = [int(bit) for bit in list(string.split(" ")[0])][::-1]
-        highlighted_nodes = self.code_circuit.string2nodes(string)
+        highlighted_nodes = self.code_circuit.string2nodes(string, logical=self.logical)
         if not highlighted_nodes: return output # There's nothing for us to do here
         highlighted_nodes_indices = [self.graph.nodes().index(
             node) for node in highlighted_nodes]
@@ -97,7 +99,6 @@ class UnionFindDecoder:
         while self.odd_cluster_roots:
             fusion_edge_list = self._grow_clusters()
             self._merge_clusters(fusion_edge_list)
-            #self._update_clusters()
         
         erasure_vertices = set()
         for i, edge in enumerate(self.graph.edges()):

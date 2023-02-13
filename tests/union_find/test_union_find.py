@@ -45,11 +45,13 @@ class UnionFindDecoderTest(TestCase):
     def test_d3(self):
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
-            decoder = UnionFindDecoder(code)
+            decoder = UnionFindDecoder(code, logical)
             fault_enumerator = FaultEnumerator(code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model)
             for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
                 corrected_outcome = decoder.process(outcome)
-                syndromes = temp_syndrome(corrected_outcome, code.css_z_gauge_ops)
-                for syndrome in syndromes:
+                stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
+                for syndrome in stabilizers:
                     self.assertEqual(syndrome, 0)
+                logical_measurement = temp_syndrome(corrected_outcome, [code.css_z_logical])[0]
+                self.assertEqual(str(logical_measurement), logical)
