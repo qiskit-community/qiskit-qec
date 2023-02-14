@@ -105,12 +105,12 @@ class DecodingGraph:
 
             self.graph = graph
 
-    def get_error_probs(self, results, logical: str = "0", method: str = METHOD_SPITZ):
+    def get_error_probs(self, counts, logical: str = "0", method: str = METHOD_SPITZ):
         """
         Generate probabilities of single error events from result counts.
 
         Args:
-            results (dict): A results dictionary.
+            counts (dict): Counts dictionary of the results to be analyzed.
             logical (string): Logical value whose results are used.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
@@ -118,13 +118,13 @@ class DecodingGraph:
             dict: Keys are the edges for specific error
             events, and values are the calculated probabilities.
         Additional information:
-            Uses `results` to estimate the probability of the errors that
+            Uses `counts` to estimate the probability of the errors that
             create the pairs of nodes specified by the edge.
             Default calculation method is that of Spitz, et al.
             https://doi.org/10.1002/qute.201800012
         """
 
-        shots = sum(results.values())
+        shots = sum(counts.values())
 
         if method not in self.AVAILABLE_METHODS:
             raise QiskitQECError("fmethod {method} is not supported.")
@@ -146,23 +146,23 @@ class DecodingGraph:
                 neighbours[n0].append(n1)
                 neighbours[n1].append(n0)
 
-            for string in results:
+            for string in counts:
 
                 # list of i for which v_i=1
                 error_nodes = self.code.string2nodes(string, logical=logical)
 
                 for node0 in error_nodes:
                     n0 = self.graph.nodes().index(node0)
-                    av_v[n0] += results[string]
+                    av_v[n0] += counts[string]
                     for n1 in neighbours[n0]:
                         node1 = self.graph[n1]
                         if node1 in error_nodes and (n0, n1) in av_vv:
-                            av_vv[n0, n1] += results[string]
+                            av_vv[n0, n1] += counts[string]
                         if node1 not in error_nodes:
                             if (n0, n1) in av_xor:
-                                av_xor[n0, n1] += results[string]
+                                av_xor[n0, n1] += counts[string]
                             else:
-                                av_xor[n1, n0] += results[string]
+                                av_xor[n1, n0] += counts[string]
 
             for n in self.graph.node_indexes():
                 av_v[n] /= shots
@@ -211,7 +211,7 @@ class DecodingGraph:
                 edge: {element: 0 for element in ["00", "01", "10", "11"]}
                 for edge in self.graph.edge_list()
             }
-            for string in results:
+            for string in counts:
                 error_nodes = self.code.string2nodes(string, logical=logical)
                 for edge in self.graph.edge_list():
                     element = ""
@@ -220,7 +220,7 @@ class DecodingGraph:
                             element += "1"
                         else:
                             element += "0"
-                    count[edge][element] += results[string]
+                    count[edge][element] += counts[string]
 
             # ratio of error on both to error on neither is, to first order,
             # p/(1-p) where p is the prob to be determined.
@@ -241,12 +241,12 @@ class DecodingGraph:
 
         return error_probs
 
-    def get_error_coords(self, results, logical: str = "0", method: str = METHOD_SPITZ):
+    def get_error_coords(self, counts, logical: str = "0", method: str = METHOD_SPITZ):
         """
         Generate probabilities of single error events from result counts.
 
         Args:
-            results (dict): A results dictionary.
+            counts (dict): Counts dictionary of the results to be analyzed.
             logical (string): Logical value whose results are used.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
@@ -258,7 +258,7 @@ class DecodingGraph:
             See `get_error_probs` for more information.
         """
 
-        error_probs = self.get_error_probs(results, logical=logical, method=method)
+        error_probs = self.get_error_probs(counts, logical=logical, method=method)
         nodes = self.graph.nodes()
 
         if hasattr(self.code, "z_logicals"):
@@ -336,29 +336,39 @@ class DecodingGraph:
 
         return error_coords
 
-    def weight_syndrome_graph(self, results):
+    def weight_syndrome_graph(self, counts, method: str = METHOD_SPITZ):
         """Generate weighted syndrome graph from result counts.
 
         Args:
-            results (dict): A results dictionary, as produced by the
-            `process_results` method of the code.
+            counts (dict): Counts dictionary of the results used to calculate
+            the weights.
+            method (string): Method to used for calculation. Supported
+            methods are 'spitz' (default) and 'naive'.
 
         Additional information:
-            Uses `results` to estimate the probability of the errors that
+            Uses `counts` to estimate the probability of the errors that
             create the pairs of nodes in graph. The edge weights are then
             replaced with the corresponding -log(p/(1-p).
         """
 
-        error_probs = self.get_error_probs(results)
+        error_probs = self.get_error_probs(counts, method=method)
 
         for edge in self.graph.edge_list():
-            p = error_probs[self.graph[edge[0]], self.graph[edge[1]]]
-            if p == 0:
-                w = np.inf
-            elif 1 - p == 1:
-                w = -np.inf
+            if edge not in error_probs:
+                # these are associated with the boundary, and appear as loops in error_probs
+                # they need to be converted to this standard form
+                bulk_n = list(set(edge).difference(set(boundary_nodes)))[0]
+                p = error_probs[bulk_n, bulk_n]
             else:
+                p = error_probs[edge]
+            if 0 < p < 1:
                 w = -np.log(p / (1 - p))
+            elif p <= 0:  # negative values are assumed 0
+                w = np.inf
+            elif p == 1:
+                w = -np.inf
+            else:  # nan values are assumed maximally random
+                w = 0
             self.graph.update_edge(edge[0], edge[1], w)
 
     def make_error_graph(self, string: str):
