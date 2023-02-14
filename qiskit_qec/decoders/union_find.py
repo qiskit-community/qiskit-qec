@@ -30,7 +30,7 @@ class BoundaryEdge:
 @dataclass
 class UnionFindDecoderCluster:
     boundary: List[BoundaryEdge]
-    is_odd: bool
+    atypical_nodes: List[int]
     size: int 
 
 @dataclass
@@ -76,7 +76,7 @@ class UnionFindDecoder:
             edge["fully_grown"] = False
 
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        self.odd_cluster_roots = highlighted_nodes_indices
+        self.odd_cluster_roots = set(highlighted_nodes_indices)
         for index in self.graph.node_indices():
             boundary_edges = []
             for _, (_, neighbour, data) in dict(self.graph.incident_edge_index_map(index)).items():
@@ -89,7 +89,7 @@ class UnionFindDecoder:
                 )
             self.clusters[index] = UnionFindDecoderCluster(
                 boundary=boundary_edges,
-                is_odd=index in highlighted_nodes,
+                atypical_nodes=[index] if index in self.odd_cluster_roots else [],
                 size=1
             )
         
@@ -151,21 +151,20 @@ class UnionFindDecoder:
             cluster.boundary.remove(entry.connecting_edge)
             cluster.boundary.remove(reverse_edge)
             
+            cluster.atypical_nodes += self.clusters[root_to_update].atypical_nodes
+
             # update size
             cluster.size += self.clusters[root_to_update].size
             # update parity
-            cluster.is_odd ^= self.clusters[root_to_update].is_odd
-            # update root
-            self.graph[root_to_update]["root"] = new_root
-            
-            if root_to_update in self.odd_cluster_roots:
-                self.odd_cluster_roots.remove(root_to_update)
+            is_odd = bool(len(cluster.atypical_nodes)%2)
 
             # update odd_cluster_roots
-            if not cluster.is_odd and new_root in self.odd_cluster_roots:
-                self.odd_cluster_roots.remove(new_root)    
-            if cluster.is_odd and not new_root in self.odd_cluster_roots:
-                self.odd_cluster_roots.append(new_root)
+            if is_odd:
+                self.odd_cluster_roots.add(new_root)
+            else:
+                self.odd_cluster_roots.discard(new_root)
+            self.odd_cluster_roots.discard(root_to_update)
+            self.graph[root_to_update]["root"] = new_root
 
     def _update_clusters(self) -> None:
         odd_clusters = copy(self.odd_clusters)
