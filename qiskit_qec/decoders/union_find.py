@@ -13,6 +13,7 @@ from copy import copy, deepcopy
 from dataclasses import dataclass
 from typing import Dict, List
 from rustworkx import PyGraph
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
@@ -104,9 +105,16 @@ class UnionFindDecoder:
                 for endpoint in endpoints: erasure_vertices.add(endpoint)
         
         erasure = self.graph.subgraph(list(erasure_vertices))
+
+        if isinstance(self.code_circuit, ArcCircuit):
+            # NOTE: it just corrects for final logical readout
+            for node in erasure.nodes():
+                if node["is_boundary"]:
+                    qubit_to_be_corrected = node["qubits"][0]
+                    output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
+            return output
         
         flipped_qubits = self.peeling(erasure)
-
         for qubit_to_be_corrected in flipped_qubits:
             output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
 
@@ -155,8 +163,13 @@ class UnionFindDecoder:
 
             # update size
             cluster.size += self.clusters[root_to_update].size
+            
             # update parity
-            is_odd = bool(len(cluster.atypical_nodes)%2)
+            if isinstance(self.code_circuit, ArcCircuit):
+                neutral, logicals, _ = self.code_circuit.check_nodes([self.graph[node] for node in cluster.atypical_nodes])
+                is_odd = not (neutral and not len(logicals))
+            else: 
+                is_odd = bool(len(cluster.atypical_nodes)%2)
 
             # update odd_cluster_roots
             if is_odd:
@@ -193,7 +206,7 @@ class UnionFindDecoder:
             for node in vertices.keys():
                 for edge in erasure.incident_edges(node):
                     neighbour = list(set(erasure.get_edge_endpoints_by_index(edge)) - set([node]))[0]
-                    if not neighbour in tree.vertices.keys():
+                    if not neighbour in tree.vertices.keys() and not erasure[neighbour]["is_boundary"]:
                         tree.edges.append(edge)
                         tree.vertices[neighbour] = []
                         tree.vertices[node].append(edge)
@@ -203,6 +216,8 @@ class UnionFindDecoder:
         for edge in tree.edges[::-1]:
             endpoints = erasure.get_edge_endpoints_by_index(edge)
             pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]] else endpoints[1]
+            if erasure[pendant_vertex]["is_boundary"]:
+                pendant_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree.vertices[tree_vertex].remove(edge)
             if erasure[pendant_vertex]["syndrome"] and not erasure[pendant_vertex]["is_boundary"]:

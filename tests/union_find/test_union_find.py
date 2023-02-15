@@ -15,7 +15,7 @@
 from unittest import TestCase
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import UnionFindDecoder
-from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit
+from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
@@ -69,3 +69,16 @@ class UnionFindDecoderTest(TestCase):
                     self.assertEqual(syndrome, 0)
                 logical_measurement = temp_syndrome(corrected_outcome, code.css_z_logical)[0]
                 self.assertEqual(str(logical_measurement), logical)
+
+    def test_arc_code(self):
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        T = len(links)
+        code = ArcCircuit(links=links, T=T, resets=False)
+        decoder = UnionFindDecoder(code, "0")
+        fault_enumerator = FaultEnumerator(code.circuit[code.base], method=self.fault_enumeration_method, model=self.noise_model)
+        for fault in fault_enumerator.generate():
+            outcome = "".join([str(x) for x in fault[3]])
+            corrected_outcome = decoder.process(outcome)
+            logical_measurement = temp_syndrome(corrected_outcome, [[int(q/2) for q in code.z_logicals]])[0] 
+            self.assertEqual(str(logical_measurement), "0")
+        
