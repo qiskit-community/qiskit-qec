@@ -498,3 +498,14 @@ class SurfaceCodeCircuit:
             flipped_logical_nodes.append(node)
 
         return neutral, flipped_logical_nodes, num_errors
+
+    def is_cluster_even(self, atypical_nodes):
+        """
+        Determines whether or not the cluster is even. Even means that one or more 
+        errors could have caused the set of atypical nodes (syndrome changes) passed 
+        to the method.
+        Args: 
+            atypical_nodes (dictionary in the form of the return value of string2nodes)
+        """
+        return not bool(len(atypical_nodes)%2)
+    

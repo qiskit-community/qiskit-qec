@@ -13,7 +13,8 @@ from copy import copy, deepcopy
 from dataclasses import dataclass
 from typing import Dict, List
 from rustworkx import PyGraph
-from qiskit_qec.circuits.repetition_code import ArcCircuit
+from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
+from qiskit_qec.circuits import SurfaceCodeCircuit
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
@@ -51,7 +52,7 @@ class UnionFindDecoder:
 
     def __init__(
         self,
-        code_circuit,
+        code_circuit: SurfaceCodeCircuit | RepetitionCodeCircuit | ArcCircuit,
         logical: str
     ) -> None:
         self.code_circuit = code_circuit
@@ -163,16 +164,9 @@ class UnionFindDecoder:
 
             # update size
             cluster.size += self.clusters[root_to_update].size
-            
-            # update parity
-            if isinstance(self.code_circuit, ArcCircuit):
-                neutral, logicals, _ = self.code_circuit.check_nodes([self.graph[node] for node in cluster.atypical_nodes])
-                is_odd = not (neutral and not len(logicals))
-            else: 
-                is_odd = bool(len(cluster.atypical_nodes)%2)
 
             # update odd_cluster_roots
-            if is_odd:
+            if not self.code_circuit.is_cluster_even([self.graph[node] for node in cluster.atypical_nodes]):
                 self.odd_cluster_roots.add(new_root)
             else:
                 self.odd_cluster_roots.discard(new_root)
