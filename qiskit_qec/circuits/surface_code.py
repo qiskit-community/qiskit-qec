@@ -52,7 +52,7 @@ class SurfaceCodeCircuit:
         self._resets = resets
 
         # get layout of plaquettes
-        self.zplaqs, self.xplaqs = self._get_plaquettes()
+        self.zplaqs, self.xplaqs, self._zplaq_coords, self._xplaq_coords = self._get_plaquettes()
 
         self._logicals = {"x": [], "z": []}
         # X logicals for left and right sides
@@ -92,6 +92,7 @@ class SurfaceCodeCircuit:
             self.circuit[log] = QuantumCircuit(
                 self.code_qubit, self.zplaq_qubit, self.xplaq_qubit, name=log
             )
+        self.base = "0"
 
         # apply initial logical paulis for encoded states
         self._preparation()
@@ -115,6 +116,8 @@ class SurfaceCodeCircuit:
 
         zplaqs = []
         xplaqs = []
+        zplaq_coords = []
+        xplaq_coords = []
         for y in range(-1, d):
             for x in range(-1, d):
 
@@ -133,10 +136,12 @@ class SurfaceCodeCircuit:
 
                     if (x + y) % 2 == 0:
                         xplaqs.append([plaq[0], plaq[1], plaq[2], plaq[3]])
+                        xplaq_coords.append((x, y))
                     else:
                         zplaqs.append([plaq[0], plaq[2], plaq[1], plaq[3]])
+                        zplaq_coords.append((x, y))
 
-        return zplaqs, xplaqs
+        return zplaqs, xplaqs, zplaq_coords, xplaq_coords
 
     def _preparation(self):
         """
@@ -389,7 +394,7 @@ class SurfaceCodeCircuit:
                 bnode = {"time": 0}
                 bnode["qubits"] = self._logicals[self.basis][-bqec_index - 1]
                 bnode["is_boundary"] = True
-                bnode["element"] = bqec_index
+                bnode["element"] = 1 - bqec_index
                 nodes.append(bnode)
 
         # bulk nodes
@@ -408,3 +413,88 @@ class SurfaceCodeCircuit:
                         node["element"] = qec_index
                         nodes.append(node)
         return nodes
+
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
+        """
+        Determines whether a given set of nodes are neutral. If so, also
+        determines any additional logical readout qubits that would be
+        flipped by the errors creating such a cluster and how many errors
+        would be required to make the cluster.
+        Args:
+            nodes (list): List of nodes, of the type produced by `string2nodes`.
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
+        Returns:
+            neutral (bool): Whether the nodes independently correspond to a valid
+            set of errors.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
+            num_errors (int): Minimum number of errors required to create nodes.
+        """
+
+        bulk_nodes = [node for node in nodes if not node["is_boundary"]]
+        boundary_nodes = [node for node in nodes if node["is_boundary"]]
+        given_logicals = set(node["element"] for node in boundary_nodes)
+
+        if self.basis == "z":
+            coords = self._zplaq_coords
+        else:
+            coords = self._xplaq_coords
+
+        if (len(bulk_nodes) % 2) == 0:
+            if (len(boundary_nodes) % 2) == 0 or ignore_extra_boundary:
+                neutral = True
+                flipped_logicals = set()
+                # estimate num_errors from size
+                if bulk_nodes:
+                    xs = []
+                    ys = []
+                    for node in bulk_nodes:
+                        x, y = coords[node["element"]]
+                        xs.append(x)
+                        ys.append(y)
+                    dx = max(xs) - min(xs)
+                    dy = max(ys) - min(ys)
+                    num_errors = dx + dy
+                    if dx > 0 and dy > 0:
+                        num_errors -= 1
+                else:
+                    num_errors = 0
+            else:
+                neutral = False
+                flipped_logicals = set()
+                num_errors = 0
+        else:
+            # find nearest boundary
+            num_errors = (self.d - 1) / 2
+            for node in nodes:
+                x, y = coords[node["element"]]
+                if self.basis == "z":
+                    p = y
+                else:
+                    p = x
+                num_errors = min(num_errors, min(p + 1, self.d - p))
+            flipped_logicals = {1 - int(p < (self.d - 1) / 2)}
+
+        # if unneeded logical zs are given, cluster is not neutral
+        # (unless this is ignored)
+        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+            neutral = False
+        # otherwise, report only needed logicals that aren't given
+        else:
+            neutral = True
+            flipped_logicals = flipped_logicals.difference(given_logicals)
+
+        # get the required boundary nodes
+        flipped_logical_nodes = []
+        for elem in flipped_logicals:
+            node = {
+                "time": 0,
+                "qubits": self._logicals[self.basis][elem],
+                "is_boundary": True,
+                "element": elem,
+            }
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
