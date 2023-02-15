@@ -170,7 +170,7 @@ class TestRepCodes(unittest.TestCase):
         valid = valid and code.check_nodes(nodes) == (
             False,
             [{"time": 0, "qubits": [0, 1, 2, 3, 4], "is_boundary": True, "element": 0}],
-            1,
+            2,
         )
         # extra boundary
         nodes = [

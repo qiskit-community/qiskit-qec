@@ -468,7 +468,7 @@ class SurfaceCodeCircuit:
         else:
             # find nearest boundary
             num_errors = (self.d - 1) / 2
-            for node in nodes:
+            for node in bulk_nodes:
                 x, y = coords[node["element"]]
                 if self.basis == "z":
                     p = y
