@@ -11,35 +11,50 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Set
 from rustworkx import PyGraph
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
 from qiskit_qec.circuits import SurfaceCodeCircuit
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
+
 @dataclass
 class SpanningForest:
     vertices: Dict[int, List[int]]
     edges: List[int]
 
+
 @dataclass
 class BoundaryEdge:
+    index: int
     cluster_vertex: int
     neighbour_vertex: int
     data: Dict[str, object]
 
+    def reverse(self):
+        return BoundaryEdge(
+            index=self.index,
+            cluster_vertex=self.neighbour_vertex,
+            neighbour_vertex=self.cluster_vertex,
+            data=self.data
+        )
+
+
 @dataclass
 class UnionFindDecoderCluster:
     boundary: List[BoundaryEdge]
-    atypical_nodes: List[int]
-    size: int 
+    atypical_nodes: Set[int]
+    fully_grown_edges: Set[int]
+    size: int
+
 
 @dataclass
 class FusionEntry:
     u: int
     v: int
     connecting_edge: BoundaryEdge
+
 
 class UnionFindDecoder:
     """
@@ -48,7 +63,7 @@ class UnionFindDecoder:
     by the peeling decoder in case of the surface code, or by checking for
     interference with the boundary in case of an abritrary ARC.
 
-    TODO: Add weights to edges of graph according to 
+    TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)
 
     See arXiv:1709.06218v3 for more details.
     """
@@ -79,61 +94,85 @@ class UnionFindDecoder:
         self.graph = deepcopy(self.decoding_graph.graph)
         string = "".join([str(c) for c in string[::-1]])
         output = [int(bit) for bit in list(string.split(" ")[0])][::-1]
-        highlighted_nodes = self.code_circuit.string2nodes(string, logical=self.logical)
-        if not highlighted_nodes: return output # There's nothing for us to do here
-        highlighted_nodes_indices = [self.graph.nodes().index(
-            node) for node in highlighted_nodes]
-        for index, _ in enumerate(self.graph.nodes()):
-            self.graph[index]["syndrome"] = index in highlighted_nodes_indices
-            self.graph[index]["root"] = index
+        highlighted_nodes = self.code_circuit.string2nodes(
+            string, logical=self.logical)
+        if not highlighted_nodes:
+            return output  # There's nothing for us to do here
+        clusters = self.cluster(highlighted_nodes)
+
+        for cluster in clusters:
+            erasure = self.graph.subgraph(cluster)
+            if isinstance(self.code_circuit, ArcCircuit):
+                # NOTE: it just corrects for final logical readout
+                for node in erasure.nodes():
+                    if node["is_boundary"]:
+                        qubit_to_be_corrected = node["qubits"][0]
+                        output[qubit_to_be_corrected] = (
+                            output[qubit_to_be_corrected]+1) % 2
+                continue
+
+            flipped_qubits = self.peeling(erasure)
+            for qubit_to_be_corrected in flipped_qubits:
+                output[qubit_to_be_corrected] = (
+                    output[qubit_to_be_corrected]+1) % 2
+
+        return output
+
+    def cluster(self, nodes):
+        """
+        Create clusters using the union-find algorithm.
+
+        Args:
+            nodes (List): List of non-typical nodes in the syndrome graph, 
+            of the type produced by `string2nodes`.
+
+        Returns:
+            FIXME: Make this more expressive.
+            clusters (List[List[int]]): List of Lists of indices of nodes in clusters
+        """
+        node_indices = [self.graph.nodes().index(node) for node in nodes]
+        for node_index, _ in enumerate(self.graph.nodes()):
+            self.graph[node_index]["syndrome"] = node_index in node_indices
+            self.graph[node_index]["root"] = node_index
 
         for edge in self.graph.edges():
             edge["growth"] = 0
             edge["fully_grown"] = False
 
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        self.odd_cluster_roots = set(highlighted_nodes_indices)
-        for index in self.graph.node_indices():
+        self.odd_cluster_roots = set(node_indices)
+        for node_index in self.graph.node_indices():
             boundary_edges = []
-            for _, (_, neighbour, data) in dict(self.graph.incident_edge_index_map(index)).items():
+            for edge_index, (_, neighbour, data) in dict(self.graph.incident_edge_index_map(node_index)).items():
                 boundary_edges.append(
                     BoundaryEdge(
-                        index,
+                        edge_index,
+                        node_index,
                         neighbour,
                         data
                     )
                 )
-            self.clusters[index] = UnionFindDecoderCluster(
+            self.clusters[node_index] = UnionFindDecoderCluster(
                 boundary=boundary_edges,
-                atypical_nodes=[index] if index in self.odd_cluster_roots else [],
+                fully_grown_edges=set(),
+                atypical_nodes=set(
+                    [node_index]) if node_index in self.odd_cluster_roots else set([]),
                 size=1
             )
-        
+
         while self.odd_cluster_roots:
             fusion_edge_list = self._grow_clusters()
             self._merge_clusters(fusion_edge_list)
-        
-        erasure_vertices = set()
-        for i, edge in enumerate(self.graph.edges()):
-            if edge["weight"] <= edge["growth"]:
-                endpoints = self.graph.get_edge_endpoints_by_index(i)
-                for endpoint in endpoints: erasure_vertices.add(endpoint)
-        
-        erasure = self.graph.subgraph(list(erasure_vertices))
 
-        if isinstance(self.code_circuit, ArcCircuit):
-            # NOTE: it just corrects for final logical readout
-            for node in erasure.nodes():
-                if node["is_boundary"]:
-                    qubit_to_be_corrected = node["qubits"][0]
-                    output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
-            return output
-        
-        flipped_qubits = self.peeling(erasure)
-        for qubit_to_be_corrected in flipped_qubits:
-            output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
-
-        return output
+        cluster_nodes = []
+        for _, cluster in self.clusters.items():
+            if not cluster.atypical_nodes:
+                continue
+            nodes = set()
+            for edge in cluster.fully_grown_edges:
+                nodes |= set(self.graph.get_edge_endpoints_by_index(edge))
+            cluster_nodes.append(list(nodes))
+        return cluster_nodes
 
     def find(self, u: int) -> int:
         """
@@ -142,16 +181,16 @@ class UnionFindDecoder:
 
         Args:
             u (int): The index of the node in the decoding graph.
-        
+
         Returns:
             root (int): The root of the cluster of node u.
         """
         if self.graph[u]["root"] == u:
             return self.graph[u]["root"]
-        
+
         self.graph[u]["root"] = self.find(self.graph[u]["root"])
         return self.graph[u]["root"]
-    
+
     def _grow_clusters(self) -> List[FusionEntry]:
         """
         Grow every "odd" cluster by half an edge.
@@ -167,10 +206,11 @@ class UnionFindDecoder:
                 edge.data["growth"] += 0.5
                 if edge.data["growth"] >= edge.data["weight"] and not edge.data["fully_grown"]:
                     edge.data["fully_grown"] = True
-                    fusion_entry = FusionEntry(u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge)
+                    cluster.fully_grown_edges.add(edge.index)
+                    fusion_entry = FusionEntry(
+                        u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge)
                     fusion_edge_list.append(fusion_entry)
         return fusion_edge_list
-
 
     def _merge_clusters(self, fusion_edge_list: List[FusionEntry]) -> None:
         """
@@ -189,20 +229,16 @@ class UnionFindDecoder:
             root_to_update = root_v if new_root == root_u else root_u
 
             cluster = self.clusters[new_root]
-            # Merge boundaries
-            cluster.boundary += self.clusters[root_to_update].boundary
-            reverse_edge = BoundaryEdge(
-                cluster_vertex=entry.connecting_edge.neighbour_vertex,
-                neighbour_vertex=entry.connecting_edge.cluster_vertex,
-                data=entry.connecting_edge.data
-            )
-            cluster.boundary.remove(entry.connecting_edge)
-            cluster.boundary.remove(reverse_edge)
-            
-            cluster.atypical_nodes += self.clusters[root_to_update].atypical_nodes
+            other_cluster = self.clusters.pop(root_to_update)
 
-            # update size
-            cluster.size += self.clusters[root_to_update].size
+            # Merge boundaries
+            cluster.boundary += other_cluster.boundary
+            cluster.boundary.remove(entry.connecting_edge)
+            cluster.boundary.remove(entry.connecting_edge.reverse())
+
+            cluster.atypical_nodes |= other_cluster.atypical_nodes
+            cluster.fully_grown_edges |= other_cluster.fully_grown_edges
+            cluster.size += other_cluster.size
 
             # update odd_cluster_roots
             if not self.code_circuit.is_cluster_even([self.graph[node] for node in cluster.atypical_nodes]):
@@ -225,13 +261,13 @@ class UnionFindDecoder:
 
         Args:
             erasure (PyGraph): subgraph of the syndrome graph that represents the erasure.
-        
+
         Returns:
             errors (List[int]): List of qubit indices on which Pauli errors occurred. 
         """
         tree = SpanningForest(vertices={}, edges=[])
 
-        ## Construct spanning forest
+        # Construct spanning forest
         # Pick starting vertex
         for vertex in erasure.node_indices():
             if erasure[vertex]["is_boundary"]:
@@ -245,17 +281,19 @@ class UnionFindDecoder:
             vertices = copy(tree.vertices)
             for node in vertices.keys():
                 for edge in erasure.incident_edges(node):
-                    neighbour = list(set(erasure.get_edge_endpoints_by_index(edge)) - set([node]))[0]
+                    neighbour = list(
+                        set(erasure.get_edge_endpoints_by_index(edge)) - set([node]))[0]
                     if not neighbour in tree.vertices.keys() and not erasure[neighbour]["is_boundary"]:
                         tree.edges.append(edge)
                         tree.vertices[neighbour] = []
                         tree.vertices[node].append(edge)
                         break
-        
+
         edges = set()
         for edge in tree.edges[::-1]:
             endpoints = erasure.get_edge_endpoints_by_index(edge)
-            pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]] else endpoints[1]
+            pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]
+                                                               ] else endpoints[1]
             if erasure[pendant_vertex]["is_boundary"]:
                 pendant_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
@@ -264,5 +302,5 @@ class UnionFindDecoder:
                 edges.add(edge)
                 erasure[tree_vertex]["syndrome"] = not erasure[tree_vertex]["syndrome"]
                 erasure[pendant_vertex]["syndrome"] = False
-            
+
         return [erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]]
