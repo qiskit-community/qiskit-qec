@@ -499,15 +499,15 @@ class TestDecoding(unittest.TestCase):
             min_error_num = code.d
             for sample in range(N):
                 # generate random string
-                string = "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)])
+                string = "".join([choices(["1", "0"], [1 - p, p])[0] for _ in range(d)])
                 for _ in range(code.T):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
                 for j, z_logical in enumerate(decoder.z_logicals):
-                    error = corrected_z_logicals[j] != 0
+                    error = corrected_z_logicals[j] != 1
                     if error:
-                        min_error_num = min(min_error_num, string.count("1"))
+                        min_error_num = min(min_error_num, string.count("0"))
                     errors[z_logical] += error
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
