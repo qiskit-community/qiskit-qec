@@ -274,25 +274,27 @@ class TestARCCodes(unittest.TestCase):
                 if resets:
                     conditional_resets.append(True)
                 for conditional_reset in conditional_resets:
-                    code = ArcCircuit(
-                        links,
-                        T=2,
-                        barriers=True,
-                        delay=1,
-                        basis="xy",
-                        run_202=False,
-                        resets=resets,
-                        conditional_reset=conditional_reset,
-                    )
-                    self.assertTrue(
-                        code.resets == resets,
-                        "Code has resets="
-                        + str(code.resets)
-                        + " when it should be "
-                        + str(resets)
-                        + ".",
-                    )
-                    self.single_error_test(code)
+                    for logical in ["0", "1"]:
+                        code = ArcCircuit(
+                            links,
+                            T=2,
+                            barriers=True,
+                            delay=1,
+                            basis="xy",
+                            run_202=False,
+                            resets=resets,
+                            conditional_reset=conditional_reset,
+                            logical=logical,
+                        )
+                        self.assertTrue(
+                            code.resets == resets,
+                            "Code has resets="
+                            + str(code.resets)
+                            + " when it should be "
+                            + str(resets)
+                            + ".",
+                        )
+                        self.single_error_test(code)
 
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
@@ -312,7 +314,7 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        code = ArcCircuit(links, T=T, run_202=True)
+        code = ArcCircuit(links, T=T, run_202=True, logical="1")
         backend = Aer.get_backend("aer_simulator")
         counts = backend.run(code.circuit[code.basis]).result().get_counts()
         self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
@@ -325,7 +327,7 @@ class TestARCCodes(unittest.TestCase):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         for T in [21, 25]:
-            code = ArcCircuit(links, T, run_202=True, barriers=True)
+            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1")
             assert code.run_202
             # insert errors on a selection of qubits during a selection of rounds
             qc = code.circuit[code.base]
@@ -367,7 +369,7 @@ class TestARCCodes(unittest.TestCase):
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
         T = 10
         # try codes with and without feedforward correction
-        code = ArcCircuit(links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1})
+        code = ArcCircuit(links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, logical="1")
         correct = True
         # insert an initial bitflip on qubit 2
         test_qcs = []
