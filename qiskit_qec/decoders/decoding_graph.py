@@ -353,6 +353,11 @@ class DecodingGraph:
 
         error_probs = self.get_error_probs(counts, method=method)
 
+        boundary_nodes = []
+        for n, node in enumerate(self.graph.nodes()):
+            if node["is_boundary"]:
+                boundary_nodes.append(n)
+
         for edge in self.graph.edge_list():
             if edge not in error_probs:
                 # these are associated with the boundary, and appear as loops in error_probs
