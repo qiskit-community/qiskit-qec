@@ -241,7 +241,7 @@ class UnionFindDecoder:
             cluster.size += other_cluster.size
 
             # update odd_cluster_roots
-            if not self.code_circuit.is_cluster_even([self.graph[node] for node in cluster.atypical_nodes]):
+            if not self.code_circuit.is_cluster_neutral([self.graph[node] for node in cluster.atypical_nodes]):
                 self.odd_cluster_roots.add(new_root)
             else:
                 self.odd_cluster_roots.discard(new_root)
