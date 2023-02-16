@@ -43,6 +43,12 @@ class UnionFindDecoderTest(TestCase):
         return super().setUp()
 
     def test_surface_code_d3(self):
+        """
+        Test the union find decoder on a surface code with d=3 and T=3
+        with faults inserted by FaultEnumerator by checking if the syndromes
+        have even parity (if it's a valid code state) and if the logical value measured
+        is the one encoded by the circuit.
+        """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
             decoder = UnionFindDecoder(code, logical)
@@ -57,6 +63,12 @@ class UnionFindDecoderTest(TestCase):
                 self.assertEqual(str(logical_measurement), logical)
 
     def test_repetition_code_d5(self):
+        """
+        Test the union find decoder on a repetition code with d=3 and T=3
+        with faults inserted by FaultEnumerator by checking if the syndromes
+        have even parity (if it's a valid code state) and if the logical value measured
+        is the one encoded by the circuit.
+        """
         for logical in ["0", "1"]:
             code = RepetitionCodeCircuit(d=5, T=5)
             decoder = UnionFindDecoder(code, logical)
@@ -70,7 +82,14 @@ class UnionFindDecoderTest(TestCase):
                 logical_measurement = temp_syndrome(corrected_outcome, code.css_z_logical)[0]
                 self.assertEqual(str(logical_measurement), logical)
 
-    def test_arc_code(self):
+    def test_circular_arc_code(self):
+        """
+        Test the union find decoder on a circular ARC code with faults inserted 
+        by FaultEnumerator by checking if the syndromes have even parity 
+        (if it's a valid code state) and if the logical value measured
+        is the one encoded by the circuit (only logical 0 for the ARC circuit, 
+        see issue #309).
+        """
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
         T = len(links)
         code = ArcCircuit(links=links, T=T, resets=False)

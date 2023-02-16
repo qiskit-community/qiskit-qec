@@ -44,8 +44,11 @@ class FusionEntry:
 class UnionFindDecoder:
     """
     Decoder based on growing clusters around syndrome errors to 
-    "convert" them into erasure errors, which can be corrected easily, by using a weighted growth version of 
-    the original algorithm to achieve almost-linear time decoding.
+    "convert" them into erasure errors, which can be corrected easily,
+    by the peeling decoder in case of the surface code, or by checking for
+    interference with the boundary in case of an abritrary ARC.
+
+    TODO: Add weights to edges of graph according to 
 
     See arXiv:1709.06218v3 for more details.
     """
@@ -62,6 +65,17 @@ class UnionFindDecoder:
         self.logical = logical
 
     def process(self, string: str):
+        """
+        Process an output string and return corrected final outcomes.
+
+        Args:
+            string (str): Output string of the code.
+        Returns:
+            corrected_z_logicals (list): A list of integers that are 0 or 1.
+        These are the corrected values of the final transversal
+        measurement, corresponding to the logical operators of
+        self.z_logicals.
+        """
         self.graph = deepcopy(self.decoding_graph.graph)
         string = "".join([str(c) for c in string[::-1]])
         output = [int(bit) for bit in list(string.split(" ")[0])][::-1]
@@ -122,6 +136,16 @@ class UnionFindDecoder:
         return output
 
     def find(self, u: int) -> int:
+        """
+        Find() function as described in the paper that returns the root 
+        of the cluster of a node, including path compression.
+
+        Args:
+            u (int): The index of the node in the decoding graph.
+        
+        Returns:
+            root (int): The root of the cluster of node u.
+        """
         if self.graph[u]["root"] == u:
             return self.graph[u]["root"]
         
@@ -129,6 +153,13 @@ class UnionFindDecoder:
         return self.graph[u]["root"]
     
     def _grow_clusters(self) -> List[FusionEntry]:
+        """
+        Grow every "odd" cluster by half an edge.
+
+        Returns:
+            fusion_edge_list (List[FusionEntry]): List of edges that connect two 
+            clusters that will be merged in the next step.
+        """
         fusion_edge_list: List[FusionEntry] = []
         for root in self.odd_cluster_roots:
             cluster = self.clusters[root]
@@ -142,6 +173,14 @@ class UnionFindDecoder:
 
 
     def _merge_clusters(self, fusion_edge_list: List[FusionEntry]) -> None:
+        """
+        Merges the clusters based on the fusion_edge_list computed in _grow_clusters().
+        Updates the odd_clusters list by recomputing the neutrality of the newly merged clusters.
+
+        Args:
+            fusion_edge_list (List[FusionEntry]): List of edges that connect two 
+            clusters that was computed in _grow_clusters().
+        """
         for entry in fusion_edge_list:
             root_u, root_v = self.find(entry.u), self.find(entry.v)
             if root_u == root_v:
@@ -173,15 +212,22 @@ class UnionFindDecoder:
             self.odd_cluster_roots.discard(root_to_update)
             self.graph[root_to_update]["root"] = new_root
 
-    def _update_clusters(self) -> None:
-        odd_clusters = copy(self.odd_clusters)
-        for root, cluster in odd_clusters.items():
-            if not cluster.is_odd:
-                self.clusters[root] = self.odd_clusters.pop(root, None)
-
     def peeling(self, erasure: PyGraph) -> List[int]:
         """"
-        Peeling decoder based on arXiv:1703.01517.
+        Runs the peeling decoder on the erasure provided.
+        Assumes that the erasure is one connected component, if not it will run in an 
+        infinite loop in the tree construction.
+        It works by first producing a spanning forest of the erasure and then 
+        going backwards through the edges of the tree computing the error based on the syndrome.
+        Based on arXiv:1703.01517.
+
+        TODO: Extract to a separate decoder.
+
+        Args:
+            erasure (PyGraph): subgraph of the syndrome graph that represents the erasure.
+        
+        Returns:
+            errors (List[int]): List of qubit indices on which Pauli errors occurred. 
         """
         tree = SpanningForest(vertices={}, edges=[])
 
