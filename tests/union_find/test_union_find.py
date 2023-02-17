@@ -12,7 +12,11 @@
 
 """Tests for template."""
 
+import logging
+from random import choices
+import unittest
 from unittest import TestCase
+from random import random
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import UnionFindDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
@@ -100,4 +104,83 @@ class UnionFindDecoderTest(TestCase):
             corrected_outcome = decoder.process(outcome)
             logical_measurement = temp_syndrome(corrected_outcome, [[int(q/2) for q in code.z_logicals]])[0] 
             self.assertEqual(str(logical_measurement), "0")
-        
+    
+    def test_error_rates(self):
+        """
+        Test the error rates using some ARCs.
+        """
+        d = 8
+        p = 0.1
+        N = 1000
+
+        testcases = []
+        for _ in range(N):
+            testcase = ""
+            for _ in range(d):
+                if random() < p and testcase.count("1") < 2:
+                    testcase += "1"
+                else:
+                    testcase += "0"
+            testcases.append(testcase)
+
+        testcases = ["".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(N)]
+        codes = self.construct_codes(d)
+
+        # now run them all and check it works
+        for code in codes:
+            decoder = UnionFindDecoder(code, logical="0")
+            if isinstance(code, ArcCircuit):
+                z_logicals = code.z_logicals
+            else:
+                z_logicals = code.css_z_logical[0]
+
+            logical_errors = 0
+            min_flips_to_cause_logical_error = code.d
+            for sample in range(N):
+                # generate random string
+                string = ""
+                for _ in range(code.T):
+                    string += "0" * (d-1) + " "
+                string += testcases[sample]
+                # get and check corrected_z_logicals
+                outcome = decoder.process(string)
+                logical_outcome = sum([outcome[int(z_logical/2)] for z_logical in z_logicals]) % 2
+                if not logical_outcome == 0:
+                    logical_errors += 1
+                    min_flips_to_cause_logical_error = min(min_flips_to_cause_logical_error, string.count('1'))
+
+            # check that error rates are at least <p^/2
+            # and that min num errors to cause logical errors >d/3
+            logging.debug("Logical error rate on ", "a repetition code" if isinstance(code, RepetitionCodeCircuit) else "an ARC"," with p=0.01 and using the union find decoder: ", str(logical_errors / N))
+            logging.debug("Amount of flips needed to cause logical error: ", min_flips_to_cause_logical_error)
+    
+    def construct_codes(self, d):
+        # parameters for test
+        codes = []
+        # first make a bunch of ARCs
+        # crossed line
+        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
+        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
+        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+        # ladder (works for even d)
+        half_d = int(d / 2)
+        links_ladder = []
+        for row in [0, 1]:
+            for j in range(half_d - 1):
+                delta = row * (2 * half_d - 1)
+                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
+        q = links_ladder[-1][2] + 1
+        for j in range(half_d):
+            delta = 2 * half_d - 1
+            links_ladder.append((2 * j, q, delta + 2 * j))
+            q += 1
+        # line
+        links_line = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
+        # add them to the code list
+        for links in [links_ladder, links_line, links_cross]:
+             codes.append(ArcCircuit(links, 0))
+        codes.append(RepetitionCodeCircuit(d=d, T=1))
+        return codes
+
+if __name__ == "__main__":
+    unittest.main()

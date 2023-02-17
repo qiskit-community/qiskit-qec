@@ -286,6 +286,7 @@ class UnionFindDecoder(ClusteringDecoder):
     ) -> None:
         super().__init__(code, decoding_graph)
         self.logical = logical
+        self.invalid = []
 
     def process(self, string: str):
         """
@@ -314,9 +315,10 @@ class UnionFindDecoder(ClusteringDecoder):
                 # NOTE: it just corrects for final logical readout
                 for node in erasure.nodes():
                     if node["is_boundary"]:
-                        qubit_to_be_corrected = node["qubits"][0]
-                        output[qubit_to_be_corrected] = (
-                            output[qubit_to_be_corrected]+1) % 2
+                        # FIXME: Find a general way to go from physical qubit
+                        # index to code qubit index
+                        qubit_to_be_corrected = int(node["qubits"][0]/2)
+                        output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
                 continue
 
             flipped_qubits = self.peeling(erasure)
@@ -488,10 +490,9 @@ class UnionFindDecoder(ClusteringDecoder):
         while len(tree.edges) < len(erasure.nodes()) - 1:
             vertices = copy(tree.vertices)
             for node in vertices.keys():
-                for edge in erasure.incident_edges(node):
-                    neighbour = list(
-                        set(erasure.get_edge_endpoints_by_index(edge)) - set([node]))[0]
-                    if not neighbour in tree.vertices.keys() and not erasure[neighbour]["is_boundary"]:
+                if len(tree.edges) >= len(erasure.nodes()) - 1: break
+                for edge, (_, neighbour, _) in dict(erasure.incident_edge_index_map(node)).items():
+                    if not neighbour in tree.vertices.keys():
                         tree.edges.append(edge)
                         tree.vertices[neighbour] = []
                         tree.vertices[node].append(edge)
@@ -502,8 +503,6 @@ class UnionFindDecoder(ClusteringDecoder):
             endpoints = erasure.get_edge_endpoints_by_index(edge)
             pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]
                                                                ] else endpoints[1]
-            if erasure[pendant_vertex]["is_boundary"]:
-                pendant_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree.vertices[tree_vertex].remove(edge)
             if erasure[pendant_vertex]["syndrome"] and not erasure[pendant_vertex]["is_boundary"]:
