@@ -1135,13 +1135,14 @@ class ArcCircuit:
             # once full neutrality us found, go for it!
             for c in min_cs:
 
+                this_neutral = neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
 
                 # if unneeded logical zs are given, cluster is not neutral
                 # (unless this is ignored)
                 if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-                    neutral = False
+                    this_neutral = False
                 # otherwise, report only needed logicals that aren't given
                 else:
                     flipped_logicals = flipped_logicals.difference(given_logicals)
@@ -1157,7 +1158,8 @@ class ArcCircuit:
                     }
                     flipped_logical_nodes.append(node)
 
-                if neutral and flipped_logical_nodes == []:
+                if this_neutral and flipped_logical_nodes == []:
+                    neutral = this_neutral
                     break
 
         else:
