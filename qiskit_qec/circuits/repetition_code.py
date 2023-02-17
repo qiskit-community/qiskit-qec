@@ -410,34 +410,44 @@ class RepetitionCodeCircuit:
         colors = colors[::-1]
 
         # determine which were in the minority
-        error_c = str(int(colors.count("1") < self.d / 2))
-        num_errors = colors.count(error_c)
+        error_c_min = str(int(colors.count("1") < self.d / 2))
+        # and majority
+        error_c_max = str((int(error_c_min) + 1) % 2)
 
-        # determine the corresponding flipped logicals
-        flipped_logicals = []
-        for j in [0, self.d - 1]:
-            if colors[-1 - j] == error_c:
-                flipped_logicals.append(j)
-        flipped_logicals = set(flipped_logicals)
+        # calculate all required info for the max to see if that is fully neutral
+        # if not, calculate and output for the min case
+        for error_c in [error_c_max, error_c_min]:
 
-        # if unneeded logical zs are given, cluster is not neutral
-        # (unless this is ignored)
-        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-            neutral = False
-        # otherwise, report only needed logicals that aren't given
-        else:
-            neutral = True
-            flipped_logicals = flipped_logicals.difference(given_logicals)
+            num_errors = colors.count(error_c)
 
-        flipped_logical_nodes = []
-        for flipped_logical in flipped_logicals:
-            qubits = [flipped_logical]
-            if self.basis == "z":
-                elem = self.css_z_boundary.index(qubits)
+            # determine the corresponding flipped logicals
+            flipped_logicals = []
+            for j in [0, self.d - 1]:
+                if colors[-1 - j] == error_c:
+                    flipped_logicals.append(j)
+            flipped_logicals = set(flipped_logicals)
+
+            # if unneeded logical zs are given, cluster is not neutral
+            # (unless this is ignored)
+            if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+                neutral = False
+            # otherwise, report only needed logicals that aren't given
             else:
-                elem = self.css_x_boundary.index(qubits)
-            node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
-            flipped_logical_nodes.append(node)
+                neutral = True
+                flipped_logicals = flipped_logicals.difference(given_logicals)
+
+            flipped_logical_nodes = []
+            for flipped_logical in flipped_logicals:
+                qubits = [flipped_logical]
+                if self.basis == "z":
+                    elem = self.css_z_boundary.index(qubits)
+                else:
+                    elem = self.css_x_boundary.index(qubits)
+                node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
+                flipped_logical_nodes.append(node)
+
+            if neutral and flipped_logical_nodes == []:
+                break
 
         return neutral, flipped_logical_nodes, num_errors
 
@@ -1110,46 +1120,67 @@ class ArcCircuit:
                     node_color[nn] = c
                     ns_to_do.remove(nn)
 
-                # see which qubits for logical zs are needed
-                flipped_logicals = []
-                if neutral:
-                    inside_c = int(sum(node_color.values()) < len(node_color) / 2)
+            # see which qubits for logical zs are needed
+            flipped_logicals_all = [[], []]
+            if neutral:
+                for inside_c in range(2):
                     for n, c in node_color.items():
                         qubit = link_graph.nodes()[n]
                         if qubit in self.z_logicals and c == inside_c:
-                            flipped_logicals.append(qubit)
-                flipped_logicals = set(flipped_logicals)
+                            flipped_logicals_all[int(inside_c)].append(qubit)
+            for j in range(2):
+                flipped_logicals_all[j] = set(flipped_logicals_all[j])
 
-                # count the number of nodes of the smallest colour
-                num_nodes = [0, 0]
-                for n, c in node_color.items():
-                    num_nodes[c] += 1
-                num_errors = min(num_nodes)
+            # count the number of nodes for each colour
+            num_nodes = [0, 0]
+            for n, c in node_color.items():
+                num_nodes[c] += 1
+
+            if num_nodes[0] == num_nodes[1]:
+                min_cs = [0, 1]
+            else:
+                min_cs = [int(sum(node_color.values()) < len(node_color) / 2)]
+
+            # see what happens for both colours
+            # once full neutrality us found, go for it!
+            for c in min_cs:
+
+                num_errors = num_nodes[c]
+                flipped_logicals = flipped_logicals_all[c]
+
+                # if unneeded logical zs are given, cluster is not neutral
+                # (unless this is ignored)
+                if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+                    neutral = False
+                # otherwise, report only needed logicals that aren't given
+                else:
+                    flipped_logicals = flipped_logicals.difference(given_logicals)
+
+                flipped_logical_nodes = []
+                for flipped_logical in flipped_logicals:
+                    node = {
+                        "time": 0,
+                        "qubits": [flipped_logical],
+                        "link qubit": None,
+                        "is_boundary": True,
+                        "element": self.z_logicals.index(flipped_logical),
+                    }
+                    flipped_logical_nodes.append(node)
+
+                if neutral and flipped_logical_nodes == []:
+                    break
+
         else:
             # without bulk nodes, neutral only if no boundary nodes are given
             neutral = not bool(given_logicals)
             # and no flipped logicals
-            flipped_logicals = set()
+            flipped_logical_nodes = []
             num_errors = None
 
-        # if unneeded logical zs are given, cluster is not neutral
-        # (unless this is ignored)
-        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-            neutral = False
-        # otherwise, report only needed logicals that aren't given
-        else:
-            flipped_logicals = flipped_logicals.difference(given_logicals)
-
-        flipped_logical_nodes = []
-        for flipped_logical in flipped_logicals:
-            node = {
-                "time": 0,
-                "qubits": [flipped_logical],
-                "link qubit": None,
-                "is_boundary": True,
-                "element": self.z_logicals.index(flipped_logical),
-            }
-            flipped_logical_nodes.append(node)
+            # if unneeded logical zs are given, cluster is not neutral
+            # (unless this is ignored)
+            if (not ignore_extra_boundary) and given_logicals:
+                neutral = False
 
         return neutral, flipped_logical_nodes, num_errors
 
