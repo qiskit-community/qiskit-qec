@@ -93,7 +93,7 @@ class TestHHCDecoder(unittest.TestCase):
         counts = result.get_counts(circ)
         dec.update_edge_weights(model)
         failures = 0
-        for (outcome, _) in counts.items():
+        for outcome, _ in counts.items():
             reversed_outcome = list(map(int, outcome[::-1]))
             corrected_outcomes = dec.process(reversed_outcome)
             if xbasis:

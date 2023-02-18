@@ -2,3 +2,8 @@ include LICENSE.txt
 
 # Include the tests files.
 recursive-include test *.py
+
+graft extern/pybind11/include
+graft extern/pybind11/tools 
+graft src
+global-include CMakeLists.txt *.cmake

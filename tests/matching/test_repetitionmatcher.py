@@ -63,7 +63,7 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
             counts = result.get_counts(qc)
             dec.update_edge_weights(self.pnm)
             failures = 0
-            for (outcome, _) in counts.items():
+            for outcome, _ in counts.items():
                 reversed_outcome = list(map(gint, outcome[::-1]))
                 corrected_outcomes = dec.process(reversed_outcome)
                 fail = temp_syndrome(corrected_outcomes, self.z_logical)

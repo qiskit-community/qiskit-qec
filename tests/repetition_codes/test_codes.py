@@ -222,7 +222,6 @@ class TestARCCodes(unittest.TestCase):
 
         minimal = True
         for basis in [code.basis, code.basis[::-1]]:
-
             # use the fault enumerator to test possible faults
             qc = code.circuit[basis]
             fe = FaultEnumerator(qc, method="stabilizer")
