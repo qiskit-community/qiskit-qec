@@ -178,7 +178,7 @@ setup(
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
     ext_modules=[CMakeExtension("qiskit_qec.analysis._c_analysis")],
-    packages=find_packages("src"),
+    packages=find_packages("src", exclude=["test*"]),
     package_dir={"": "src"},
     cmdclass={"build_ext": CMakeBuild},
     package_data={"qiskit_qec": ["*.ini", "codes/codebase/data/**"]},
