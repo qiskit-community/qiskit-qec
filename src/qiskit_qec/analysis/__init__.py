@@ -17,7 +17,7 @@ Analysis (:mod:`qiskit_qec.analysis`)
 
 .. currentmodule:: qiskit_qec.analysis
 
-This module contains an :class:`ErrorPropagator` a circuit error 
+This module contains an :class:`ErrorPropagator` a circuit error
 propagator interface.
 
 Analysis module classes and functions

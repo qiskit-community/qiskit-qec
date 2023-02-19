@@ -1,6 +1,6 @@
 """Test the compiled error propagator directly."""
 import unittest
-from qiskit_qec.extensions import compiledextension
+from qiskit_qec.analysis.extensions import _CErrorPropagator
 
 
 class Testcompilederrorpropagator(unittest.TestCase):
@@ -9,7 +9,7 @@ class Testcompilederrorpropagator(unittest.TestCase):
     def test_errorpropagator_interact(self):
         """Test interaction with error propagator."""
         # pylint: disable=c-extension-no-member
-        ep = compiledextension.ErrorPropagator(3, 3)
+        ep = _CErrorPropagator(3, 3)
         ep.apply_error([0, 2], "xy")
         self.assertEqual(ep.get_qubits(), "xiy")
         self.assertEqual(ep.get_qubit_array(), [1, 0, 1, 0, 0, 1])
@@ -23,7 +23,7 @@ class Testcompilederrorpropagator(unittest.TestCase):
     def test_errorpropagator_propagate(self):
         """Test loading circuit and propagating."""
         # pylint: disable=c-extension-no-member
-        ep = compiledextension.ErrorPropagator(3, 4)
+        ep = _CErrorPropagator(3, 4)
         # H 0, CX 0 1, CX 1 2, M 0 0, M 1 1, M 2 2
         circ = [[0, 0], [5, 0, 1], [5, 1, 2], [8, 0, 0], [8, 1, 1], [8, 2, 2]]
         ep.load_circuit(3, 4, circ)

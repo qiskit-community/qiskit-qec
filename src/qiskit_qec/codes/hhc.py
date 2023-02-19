@@ -48,7 +48,8 @@ class HHC:
         val += f"\nz_boundary = {self.z_boundary}"
         return val
 
-    def to_index(self, row: int, col: int, d: int) -> int:
+    @staticmethod
+    def to_index(row: int, col: int, d: int) -> int:
         """Map a coordinate (row, col) to a qubit index.
 
         Qubits are indexed from left to right across each row,
@@ -143,15 +144,18 @@ class HHC:
             z_stabilizers.append(new_stabilizer)
         return z_stabilizers
 
-    def _logical_z(self, n: int) -> List[List[int]]:
+    @staticmethod
+    def _logical_z(n: int) -> List[List[int]]:
         """Return the support of the logical Z operators."""
         return [list(range(n))]
 
-    def _logical_x(self, n: int) -> List[List[int]]:
+    @staticmethod
+    def _logical_x(n: int) -> List[List[int]]:
         """Return the support of the logical X operators."""
         return [list(range(n))]
 
-    def _z_boundary_qubits(self, d: int) -> List[List[int]]:
+    @staticmethod
+    def _z_boundary_qubits(d: int) -> List[List[int]]:
         """Return a list of singletons each containing a Z boundary qubit.
 
         A boundary qubit is a qubit adjacent to the Z-type boundary on which
@@ -164,7 +168,8 @@ class HHC:
             z_boundary.append([d * i + d - 1])
         return z_boundary
 
-    def _x_boundary_qubits(self, d: int) -> List[List[int]]:
+    @staticmethod
+    def _x_boundary_qubits(d: int) -> List[List[int]]:
         """Return a list of singletons each containing an X boundary qubit.
 
         A boundary qubit is a qubit adjacent to the X-type boundary on which

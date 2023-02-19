@@ -34,7 +34,8 @@ class ShapeObject:  # pylint: disable=function-redefined)
         """
         self.parents.append(parent)
 
-    def create_id(self) -> int:
+    @staticmethod
+    def create_id() -> int:
         """Creates int as unique ID for ShapeObject instance.
         ShapeObject class tracks which IDs have previously been used and are thus not available.
 

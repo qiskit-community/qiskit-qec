@@ -9,6 +9,50 @@ from qiskit.circuit import Gate
 from qiskit_qec.codes.hhc import HHC
 
 
+def _hex_ancillas(code: HHC) -> Tuple[int, List[List[int]], List[List[int]]]:
+    """Assign ancilla indices for X and Z gauge measurements.
+    code = HHC object
+    Return:
+        total_ancillas is number of total ancillas.
+        x_ancilla_indices list whose jth entry is the list of
+        indices for the ancillas of the jth x gauge operator.
+        z_ancilla_indices list defined likewise.
+        The ancilla indices are absolute indices into self.qreg.
+    """
+    total_ancilla = 0
+    # Append ancillas for X gauge operators
+    x_ancilla_indices = []
+    for j in range(len(code.x_gauges)):
+        x_ancilla_indices.append([code.n + j])
+    total_ancilla += len(code.x_gauges)
+    # Append additional ancillas for Z gauge operators
+    z_ancilla_indices = []
+    for j, zg in enumerate(code.z_gauges):
+        if len(zg) == 2:  # boundary Z gauge
+            # Hex layout has 3 extra ancillas per boundary Z gauge
+            start = total_ancilla
+            z_ancilla_indices.append([code.n + start, code.n + start + 1, code.n + start + 2])
+            total_ancilla += 3
+        else:  # bulk Z gauge
+            # These borrow ancillas from adjacent X gauges
+            # and use one additional ancilla in the center of the face
+            for k, xg in enumerate(code.x_gauges):
+                # qubits at indices 0 and 2 are shared
+                # with adjacent X gauge on left
+                if zg[0] in xg and zg[2] in xg:
+                    left = code.n + k
+                # qubits at indices 1 and 3 are shared
+                # with adjacent X gauge on right
+                if zg[1] in xg and zg[3] in xg:
+                    right = code.n + k
+            z_ancilla_indices.append([left, code.n + total_ancilla, right])
+            total_ancilla += 1
+    logging.info("total_ancilla = %s", total_ancilla)
+    logging.info("x_ancilla_indices = %s", x_ancilla_indices)
+    logging.info("z_ancilla_indices = %s", z_ancilla_indices)
+    return total_ancilla, x_ancilla_indices, z_ancilla_indices
+
+
 class HHCCircuit:
     """Create quantum circuits for syndrome measurements.
 
@@ -49,7 +93,7 @@ class HHCCircuit:
             num_initialize,
             idle_before_measure,
         )
-        self.total_ancilla, self.x_ancilla_indices, self.z_ancilla_indices = self._hex_ancillas(hhc)
+        self.total_ancilla, self.x_ancilla_indices, self.z_ancilla_indices = _hex_ancillas(hhc)
         self.total_qubits = hhc.n + self.total_ancilla
         self.qreg = QuantumRegister(self.total_qubits)
         self.imlabel = "idm"  # label for idle during measurement
@@ -103,51 +147,6 @@ class HHCCircuit:
             if self.num_initialize < 0:
                 raise Exception("expected zero or positive integer number of initialization")
         self.idle_before_measurement = idle_before_measurement
-
-    def _hex_ancillas(self, code: HHC) -> Tuple[int, List[List[int]], List[List[int]]]:
-        """Assign ancilla indices for X and Z gauge measurements.
-
-        code = HHC object
-
-        Return:
-            total_ancillas is number of total ancillas.
-            x_ancilla_indices list whose jth entry is the list of
-            indices for the ancillas of the jth x gauge operator.
-            z_ancilla_indices list defined likewise.
-            The ancilla indices are absolute indices into self.qreg.
-        """
-        total_ancilla = 0
-        # Append ancillas for X gauge operators
-        x_ancilla_indices = []
-        for j in range(len(code.x_gauges)):
-            x_ancilla_indices.append([code.n + j])
-        total_ancilla += len(code.x_gauges)
-        # Append additional ancillas for Z gauge operators
-        z_ancilla_indices = []
-        for j, zg in enumerate(code.z_gauges):
-            if len(zg) == 2:  # boundary Z gauge
-                # Hex layout has 3 extra ancillas per boundary Z gauge
-                start = total_ancilla
-                z_ancilla_indices.append([code.n + start, code.n + start + 1, code.n + start + 2])
-                total_ancilla += 3
-            else:  # bulk Z gauge
-                # These borrow ancillas from adjacent X gauges
-                # and use one additional ancilla in the center of the face
-                for k, xg in enumerate(code.x_gauges):
-                    # qubits at indices 0 and 2 are shared
-                    # with adjacent X gauge on left
-                    if zg[0] in xg and zg[2] in xg:
-                        left = code.n + k
-                    # qubits at indices 1 and 3 are shared
-                    # with adjacent X gauge on right
-                    if zg[1] in xg and zg[3] in xg:
-                        right = code.n + k
-                z_ancilla_indices.append([left, code.n + total_ancilla, right])
-                total_ancilla += 1
-        logging.info("total_ancilla = %s", total_ancilla)
-        logging.info("x_ancilla_indices = %s", x_ancilla_indices)
-        logging.info("z_ancilla_indices = %s", z_ancilla_indices)
-        return total_ancilla, x_ancilla_indices, z_ancilla_indices
 
     def _x_gauge_one_round_hex(
         self, circ, creg, cbits, basis=None, finalRound=False, logical_pauli=None

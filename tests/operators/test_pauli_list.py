@@ -13,12 +13,13 @@
 """Tests for PauliList class."""
 
 import unittest
+from functools import lru_cache
+import itertools as it
 
-
-import itertools
 import numpy as np
-from ddt import ddt
 from scipy.sparse import csr_matrix
+from ddt import ddt
+
 
 from qiskit import QiskitError
 from qiskit.circuit.library import (
@@ -50,7 +51,14 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 from tests import combine
 
-from .test_pauli import pauli_group_labels
+
+@lru_cache(maxsize=8)
+def pauli_group_labels(nq, full_group=True):  # pylint: disable=invalid-name
+    """Generate list of the N-qubit pauli group string labels"""
+    labels = ["".join(i) for i in it.product(("I", "X", "Y", "Z"), repeat=nq)]
+    if full_group:
+        labels = ["".join(i) for i in it.product(("", "-i", "-", "i"), labels)]
+    return labels
 
 
 def pauli_mat(label):
@@ -2027,7 +2035,8 @@ class TestPauliListMethods(QiskitTestCase):
         ]
         self.assertListEqual(value, target)
 
-    def test_group_qubit_wise_commuting(self):
+    @staticmethod
+    def test_group_qubit_wise_commuting():
         """Test grouping qubit-wise commuting operators"""
 
         def qubitwise_commutes(left: Pauli, right: Pauli) -> bool:
@@ -2045,15 +2054,14 @@ class TestPauliListMethods(QiskitTestCase):
         # Within each group, every operator qubit-wise commutes with every other operator.
         for group in groups:
             assert all(
-                qubitwise_commutes(pauli1, pauli2)
-                for pauli1, pauli2 in itertools.combinations(group, 2)
+                qubitwise_commutes(pauli1, pauli2) for pauli1, pauli2 in it.combinations(group, 2)
             )
         # For every pair of groups, at least one element from one does not qubit-wise commute with
         # at least one element of the other.
-        for group1, group2 in itertools.combinations(groups, 2):
+        for group1, group2 in it.combinations(groups, 2):
             assert not all(
                 qubitwise_commutes(group1_pauli, group2_pauli)
-                for group1_pauli, group2_pauli in itertools.product(group1, group2)
+                for group1_pauli, group2_pauli in it.product(group1, group2)
             )
 
 

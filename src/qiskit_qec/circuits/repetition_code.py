@@ -26,6 +26,13 @@ from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit.transpiler.passes import DynamicalDecoupling
 
 
+def _separate_string(string):
+    separated_string = []
+    for syndrome_type_string in string.split("  "):
+        separated_string.append(syndrome_type_string.split(" "))
+    return separated_string
+
+
 class RepetitionCodeCircuit:
     """RepetitionCodeCircuit class."""
 
@@ -226,12 +233,6 @@ class RepetitionCodeCircuit:
             self.circuit[log].add_register(self.code_bit)
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
-    def _separate_string(self, string):
-        separated_string = []
-        for syndrome_type_string in string.split("  "):
-            separated_string.append(syndrome_type_string.split(" "))
-        return separated_string
-
     def _process_string(self, string):
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
@@ -294,7 +295,7 @@ class RepetitionCodeCircuit:
         """
 
         string = self._process_string(string)
-        separated_string = self._separate_string(string)  # [ <boundary>, <syn>, <syn>,...]
+        separated_string = _separate_string(string)  # [ <boundary>, <syn>, <syn>,...]
         nodes = []
 
         # boundary nodes
@@ -337,9 +338,10 @@ class RepetitionCodeCircuit:
         Returns:
             list: Raw values for logical operators that correspond to nodes.
         """
-        return self._separate_string(self._process_string(string))[0]
+        return _separate_string(self._process_string(string))[0]
 
-    def flatten_nodes(self, nodes):
+    @staticmethod
+    def flatten_nodes(nodes):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
@@ -867,12 +869,6 @@ class ArcCircuit:
             qc.add_register(self.code_bit)
             qc.measure(self.code_qubit, self.code_bit)
 
-    def _separate_string(self, string):
-        separated_string = []
-        for syndrome_type_string in string.split("  "):
-            separated_string.append(syndrome_type_string.split(" "))
-        return separated_string
-
     def _process_string(self, string):
         # logical readout taken from assigned qubits
         measured_log = ""
@@ -980,7 +976,7 @@ class ArcCircuit:
         """
 
         string = self._process_string(string)
-        separated_string = self._separate_string(string)
+        separated_string = _separate_string(string)
         nodes = []
         for syn_type, _ in enumerate(separated_string):
             for syn_round in range(len(separated_string[syn_type])):
@@ -1007,7 +1003,8 @@ class ArcCircuit:
                         nodes.append(node)
         return nodes
 
-    def flatten_nodes(self, nodes):
+    @staticmethod
+    def flatten_nodes(nodes):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.

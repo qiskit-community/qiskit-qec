@@ -9,14 +9,16 @@ from qiskit.converters import circuit_to_dag
 from qiskit.circuit.library import IGate, XGate, YGate, ZGate
 from qiskit import execute, Aer
 
-from qiskit_qec.analysis.extensions import C_FAULT_ENUMERATOR
+from qiskit_qec.utils.dag import node_name_label
+
+from qiskit_qec.analysis.extensions import C_FAULT_SAMPLER
 
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.exceptions import QiskitQECError
 
-if C_FAULT_ENUMERATOR:
-    from qiskit_qec.analysis.extensions import _CFaultEnumerator
+if C_FAULT_SAMPLER:
+    from qiskit_qec.analysis.extensions import _CFaultSampler
 
 
 class FaultSampler:
@@ -54,7 +56,7 @@ class FaultSampler:
         self._process_circuit(circ)
         self.faulty_nodes = list(filter(lambda x: x[1], self.tagged_nodes))
         self.faulty_ops_indices = [x[2] for x in self.faulty_nodes]
-        self.faulty_ops_labels = [self._node_name_label(x[0]) for x in self.faulty_nodes]
+        self.faulty_ops_labels = [node_name_label(x[0]) for x in self.faulty_nodes]
         self.label_to_pauli_weight = {
             label: {
                 pauli: self.model.get_pauli_weight(label, pauli)
@@ -75,8 +77,9 @@ class FaultSampler:
             self.propagator = ErrorPropagator()  # pylint: disable=abstract-class-instantiated
             self.propagator.load_circuit(circ)
             self.reg_sizes = [len(reg) for reg in circ.cregs]
-            if C_FAULT_ENUMERATOR:
-                self.faultsamp = _CFaultEnumerator(
+            if C_FAULT_SAMPLER:
+                self.use_compiled = True
+                self.faultsamp = _CFaultSampler(
                     len(self.propagator.get_error()),
                     len(self.propagator.get_bit_array()),
                     self.propagator.encoded_circ,  # pylint: disable=no-member
@@ -87,18 +90,6 @@ class FaultSampler:
                     self.sim_seed,
                 )
 
-    def _node_name_label(self, node: DAGNode) -> str:
-        """Form an identifier string for a node's operation.
-
-        Use node.op._label if it exists. Otherwise use node.name.
-        Return a string.
-        """
-        if "_label" in node.op.__dict__ and node.op._label is not None:
-            name_label = node.op._label
-        else:
-            name_label = node.name
-        return name_label
-
     def _process_circuit(self, circ: QuantumCircuit):
         """Precompute some data about a circuit."""
         self.dag = circuit_to_dag(circ)
@@ -107,7 +98,7 @@ class FaultSampler:
         self.tagged_nodes = []
         index = 0
         for node in self.dag.topological_op_nodes():
-            if self._node_name_label(node) in self.location_types:
+            if node_name_label(node) in self.location_types:
                 self.tagged_nodes.append((node, True, index))
             else:
                 self.tagged_nodes.append((node, False, index))
@@ -185,7 +176,7 @@ class FaultSampler:
         indices = []
         uniform_samples = np.random.uniform(low=0.0, high=1.0, size=len(self.faulty_nodes))
         for i, node_dat in enumerate(self.faulty_nodes):
-            label = self._node_name_label(node_dat[0])
+            label = node_name_label(node_dat[0])
             if uniform_samples[i] < self.label_to_error_probability[label]:
                 failed_nodes.append(node_dat[0])
                 indices.append(node_dat[2])
@@ -195,7 +186,7 @@ class FaultSampler:
                     paulis.append(pauli)
                     probs.append(prob)
                 errors.append("".join(np.random.choice(paulis, 1, p=probs)))
-        labels = [self._node_name_label(x) for x in failed_nodes]
+        labels = [node_name_label(x) for x in failed_nodes]
         if self.method == "stabilizer":
             fcirc = self._faulty_circuit(failed_nodes, errors)
             outcome = self._stabilizer_simulation(fcirc)

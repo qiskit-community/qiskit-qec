@@ -226,6 +226,7 @@ def minimum_distance(
     stabilizer_or_gauge: np.ndarray,
     max_weight: int = 10,
     method: str = "enumerate",
+    try_compiled: bool = True,
 ) -> int:
     """Minimum distance of (subsystem) stabilizer code.
 
@@ -240,7 +241,7 @@ def minimum_distance(
     method_partition: str = "partition"
     available_methods = {method_enumerate, method_partition}
     if method not in available_methods:
-        raise QiskitQECError("fmethod {method} is not supported.")
+        raise QiskitQECError(f"method {method} is not supported.")
     if symplectic.is_stabilizer_group(stabilizer_or_gauge):
         stabilizer = stabilizer_or_gauge
         gauge = stabilizer_or_gauge
@@ -248,14 +249,15 @@ def minimum_distance(
         stabilizer = symplectic.center(stabilizer_or_gauge)
         gauge = stabilizer_or_gauge
 
-    if C_MIN_DISTANCE:
+    if C_MIN_DISTANCE and try_compiled is True:
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
         if method == method_enumerate:
-            distance = minimum_distance(inputform1, inputform2, max_weight)
+            distance = _c_minimum_distance(inputform1, inputform2, max_weight)
         elif method == method_partition:
             distance = _minimum_distance_2_compiled(stabilizer, gauge, max_weight)
     else:
+        logger.exception("from compiled extension was not loaded: switching to no compiled")
         if method == method_enumerate:
             distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
         elif method == method_partition:

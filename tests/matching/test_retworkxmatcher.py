@@ -9,7 +9,8 @@ from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 class TestRustworkxMatcher(unittest.TestCase):
     """Tests for the rustworkx matcher subroutines."""
 
-    def make_test_graph(self) -> Tuple[rx.PyGraph, Dict[Tuple[int, Tuple[int]], int]]:
+    @staticmethod
+    def make_test_graph() -> Tuple[rx.PyGraph, Dict[Tuple[int, Tuple[int]], int]]:
         """Make a basic decoding graph.
 
         4 -- 0 -- 1 -- 2 -- 3 -- (4)

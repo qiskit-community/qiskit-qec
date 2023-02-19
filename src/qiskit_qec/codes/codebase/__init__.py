@@ -132,7 +132,8 @@ class CodeLibrary:
                                 for index, data in json.load(codes_json_file).items()
                             }
 
-    def data2code(self, **record) -> Code:
+    @staticmethod
+    def data2code(**record) -> Code:
         """_summary_
 
         Returns:

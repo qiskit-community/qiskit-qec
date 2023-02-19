@@ -95,8 +95,9 @@ class RustworkxMatcher(BaseMatcher):
         matching = rx.max_weight_matching(gm, max_cardinality=True, weight_fn=weight_fn)
         return matching
 
+    @staticmethod
     def _error_chain_from_vertex_path(
-        self, graph: rx.PyGraph, vertex_path: List[int]
+        graph: rx.PyGraph, vertex_path: List[int]
     ) -> Tuple[Set[int], Set[Tuple[int, Tuple[int]]]]:
         """Return a chain of qubit and measurement errors from a vertex path.
 
@@ -160,7 +161,8 @@ class RustworkxMatcher(BaseMatcher):
             self.annotated_graph = self._make_annotated_graph(graph, used_paths)
         return qubit_errors, measurement_errors
 
-    def _make_annotated_graph(self, gin: rx.PyGraph, paths: List[List[int]]) -> rx.PyGraph:
+    @staticmethod
+    def _make_annotated_graph(gin: rx.PyGraph, paths: List[List[int]]) -> rx.PyGraph:
         """Highlight the vertex paths and return annotated graph.
 
         gin : decoding graph

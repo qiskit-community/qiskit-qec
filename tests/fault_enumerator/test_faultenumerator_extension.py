@@ -1,6 +1,6 @@
 """Test the compiled fault enumerator."""
 import unittest
-from qiskit_qec.extensions import compiledextension
+from qiskit_qec.analysis.extensions import _CFaultEnumerator
 
 
 class TestFaultEnumeratorExtension(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestFaultEnumeratorExtension(unittest.TestCase):
             ["x"],
         ]
         # pylint: disable=c-extension-no-member
-        fe = compiledextension.FaultEnumerator(
+        fe = _CFaultEnumerator(
             1,
             3,
             3,

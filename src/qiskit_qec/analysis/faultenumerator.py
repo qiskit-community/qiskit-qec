@@ -1,4 +1,17 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2017, 2020
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
+
 """Quantum circuit fault path enumerator."""
+
 from itertools import combinations, product
 from typing import Tuple
 
@@ -9,6 +22,8 @@ from qiskit import execute, Aer
 
 from qiskit_qec.analysis.extensions import C_FAULT_ENUMERATOR
 
+
+from qiskit_qec.utils.dag import node_name_label
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.exceptions import QiskitQECError
@@ -86,16 +101,18 @@ class FaultEnumerator:
         self.sim_seed = sim_seed
         self._process_circuit(circ)
         self.propagator = None
+        self.use_compiled = False
         self.faultenum = None
         if method == "propagator":
             self.propagator = ErrorPropagator()  # pylint: disable=abstract-class-instantiated
             self.propagator.load_circuit(circ)
             self.reg_sizes = [len(reg) for reg in circ.cregs]
             if C_FAULT_ENUMERATOR:
+                self.use_compiled = True
                 faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
                 faulty_ops_indices = [x[2] for x in faulty_nodes]
                 faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
-                faulty_ops_labels = [self._node_name_label(x[0]) for x in faulty_nodes]
+                faulty_ops_labels = [node_name_label(x[0]) for x in faulty_nodes]
                 faulty_ops_pauli_errors = [self.pauli_error_types[x] for x in faulty_ops_labels]
 
                 self.faultenum = _CFaultEnumerator(
@@ -108,18 +125,6 @@ class FaultEnumerator:
                     faulty_ops_pauli_errors,
                 )
 
-    def _node_name_label(self, node):
-        """Form an identifier string for a node's operation.
-
-        Use node.op._label if it exists. Otherwise use node.name.
-        Return a string.
-        """
-        if "_label" in node.op.__dict__ and node.op._label is not None:
-            name_label = node.op._label
-        else:
-            name_label = node.name
-        return name_label
-
     def _process_circuit(self, circ):
         """Precompute some data about a circuit."""
         self.dag = circuit_to_dag(circ)
@@ -128,7 +133,7 @@ class FaultEnumerator:
         self.tagged_nodes = []
         index = 0
         for node in self.dag.topological_op_nodes():
-            if self._node_name_label(node) in self.location_types:
+            if node_name_label(node) in self.location_types:
                 self.tagged_nodes.append((node, True, index))
             else:
                 self.tagged_nodes.append((node, False, index))
@@ -205,7 +210,7 @@ class FaultEnumerator:
             faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
             for comb in combinations(faulty_nodes, self.order):
                 nodes = [x[0] for x in comb]
-                labels = [self._node_name_label(x) for x in nodes]
+                labels = [node_name_label(x) for x in nodes]
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
                     fcirc = self._faulty_circuit(nodes, error)
@@ -216,7 +221,7 @@ class FaultEnumerator:
             faulty_nodes = filter(lambda x: x[1], self.tagged_nodes)
             for comb in combinations(faulty_nodes, self.order):
                 nodes = [x[0] for x in comb]
-                labels = [self._node_name_label(x) for x in nodes]
+                labels = [node_name_label(x) for x in nodes]
                 indices = [x[2] for x in comb]
                 iterable = [self.pauli_error_types[x] for x in labels]
                 for error in product(*iterable):
@@ -246,7 +251,7 @@ class FaultEnumerator:
         blocksize elements. May be slightly more per call, or less on the
         final call.
         """
-        if C_FAULT_ENUMERATOR:
+        if self.use_compiled:
             while not self.faultenum.done():
                 block = self.faultenum.enumerate(blocksize)
                 yield block

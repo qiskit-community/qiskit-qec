@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from qiskit_qec.linear.symplectic import normalizer
-from qiskit_qec.extensions import compiledextension
+from qiskit_qec.analysis.extensions import _c_minimum_distance
 
 
 def strarray(label: str) -> np.ndarray:
@@ -27,7 +27,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         paulis = ["iiixxxx", "ixxiixx", "xixixix", "iiizzzz", "izziizz", "ziziziz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
         inputform = stabilizer.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform, inputform)
+        d = _c_minimum_distance(inputform, inputform)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_2(self):
@@ -35,7 +35,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         paulis = ["xxxx", "zzzz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
         inputform = stabilizer.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform, inputform)
+        d = _c_minimum_distance(inputform, inputform)
         self.assertEqual(d, 2)
 
     def test_minimum_distance_3(self):
@@ -43,7 +43,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         paulis = ["xzzxi", "ixzzx", "xixzz", "zxixz"]
         stabilizer = np.asarray(list(map(strarray, paulis)))
         inputform = stabilizer.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform, inputform)
+        d = _c_minimum_distance(inputform, inputform)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_4(self):
@@ -60,7 +60,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
         inputform = stabilizer.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform, inputform)
+        d = _c_minimum_distance(inputform, inputform)
         self.assertEqual(d, 4)
 
     def test_minimum_distance_4_overcomplete(self):
@@ -79,7 +79,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         ]
         stabilizer = np.asarray(list(map(strarray, paulis)))
         inputform = stabilizer.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform, inputform)
+        d = _c_minimum_distance(inputform, inputform)
         self.assertEqual(d, 4)
 
     def test_minimum_distance_subsystem(self):
@@ -103,7 +103,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         stabilizer, _, _ = normalizer(gauge)
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform1, inputform2)
+        d = _c_minimum_distance(inputform1, inputform2)
         self.assertEqual(d, 3)
 
     def test_minimum_distance_subsystem_2(self):
@@ -128,7 +128,7 @@ class TestMinimumDistanceCompiled(unittest.TestCase):
         stabilizer, _, _ = normalizer(gauge)
         inputform1 = stabilizer.astype(np.int32).tolist()
         inputform2 = gauge.astype(np.int32).tolist()
-        d = compiledextension.minimum_distance(inputform1, inputform2)
+        d = _c_minimum_distance(inputform1, inputform2)
         self.assertEqual(d, 2)
 
 

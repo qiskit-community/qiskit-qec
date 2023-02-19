@@ -14,7 +14,6 @@ N-qubit Pauli Representation Encodings and Conversion Module
 """
 
 # pylint: disable=invalid-name,anomalous-backslash-in-string
-# pylint: disable=bad-docstring-quotes  # for deprecate_function decorator
 
 import numbers
 import re

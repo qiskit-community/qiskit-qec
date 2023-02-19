@@ -62,9 +62,8 @@ except ImportError as import_error:
     C_MIN_DISTANCE = False
 
 try:
-    from qiskit_qec.analysis._c_analysis import (
-        _c_minimum_distance_by_tests,
-    )  # pylint: disable=unused-import
+    # pylint: disable=unused-import
+    from qiskit_qec.analysis._c_analysis import _c_minimum_distance_by_tests
 
     C_MIN_DISTANCE_BY_TESTS = True
 except ImportError as import_error:

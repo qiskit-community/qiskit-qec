@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from qiskit_qec.analysis.properties import minimum_distance
+from qiskit_qec.analysis import minimum_distance
 
 
 def strarray(label: str) -> np.ndarray:

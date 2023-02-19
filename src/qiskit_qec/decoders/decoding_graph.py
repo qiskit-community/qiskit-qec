@@ -378,7 +378,8 @@ class CSSDecodingGraph:
 
         self._decoding_graph()
 
-    def _layer_types(self, blocks: int, round_schedule: str, basis: str) -> List[str]:
+    @staticmethod
+    def _layer_types(blocks: int, round_schedule: str, basis: str) -> List[str]:
         """Return a list of decoding graph layer types.
 
         The entries are 'g' for gauge and 's' for stabilizer.

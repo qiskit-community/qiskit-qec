@@ -2,6 +2,7 @@
 
 from typing import List, Tuple
 from qiskit.converters import circuit_to_dag
+from qiskit_qec.utils.dag import node_name_label
 
 from qiskit_qec.analysis.baseerrorpropagator import BaseErrorPropagator
 
@@ -70,18 +71,6 @@ class PyErrorPropagator(BaseErrorPropagator):
             if err_str[i] == "z" or err_str[i] == "y":
                 self.qubit_array[q + self.qreg_size] ^= 1
 
-    def _node_name_label(self, node):
-        """Form an identifier string for a node's operation.
-
-        Use node.op._label if it exists. Otherwise use node.name.
-        Return a string.
-        """
-        if "_label" in node.op.__dict__ and node.op._label is not None:
-            name_label = node.op._label
-        else:
-            name_label = node.name
-        return name_label
-
     def load_circuit(self, circ):
         """Express (stabilizer) circuit operations as a list of opcodes.
 
@@ -97,7 +86,7 @@ class PyErrorPropagator(BaseErrorPropagator):
         clbit_indices = {bit: index for index, bit in enumerate(circ.clbits)}
         for node in dag.topological_op_nodes():
             name = node.name
-            label = self._node_name_label(node)
+            label = node_name_label(node)
             if name not in self.stabilizer_op_names:
                 raise Exception(f'op "{name}" not recognized')
             opcode = self.name_to_code[name]

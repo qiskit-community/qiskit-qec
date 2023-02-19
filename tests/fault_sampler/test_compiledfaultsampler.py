@@ -1,6 +1,6 @@
 """Test the compiled fault sampler."""
 import unittest
-from qiskit_qec.extensions import compiledextension
+from qiskit_qec.analysis.extensions import _CFaultSampler
 
 
 class TestCompiledFaultSampler(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestCompiledFaultSampler(unittest.TestCase):
         }
         label_to_error_probability = {"h": 0.1, "cx": 0.1, "id": 0.1, "cx2": 0.1}
         # pylint: disable=c-extension-no-member
-        fe = compiledextension.FaultSampler(
+        fe = _CFaultSampler(
             3,
             3,
             circ,
@@ -73,7 +73,7 @@ class TestCompiledFaultSampler(unittest.TestCase):
         label_to_pauli_weight = {"h": [("x", 1), ("y", 1), ("z", 1)]}
         label_to_error_probability = {"h": 0.2}
         # pylint: disable=c-extension-no-member
-        fe = compiledextension.FaultSampler(
+        fe = _CFaultSampler(
             1,
             1,
             circ,

@@ -162,8 +162,9 @@ class CircuitModelMatchingDecoder(ABC):
                 self.idxmap, self.graph, self.edge_weight_polynomials
             )
 
+    @staticmethod
     def _process_graph(
-        self, graph: DecodingGraph, blocks: int, round_schedule: str, basis: str
+        graph: DecodingGraph, blocks: int, round_schedule: str, basis: str
     ) -> Tuple[Dict[Tuple[int, List[int]], int], List[List[int]], DecodingGraph, List[str]]:
         """Process a decoding graph to add required attributes."""
 
@@ -275,8 +276,8 @@ class CircuitModelMatchingDecoder(ABC):
 
         return idxmap, node_layers, graph, layer_types
 
+    @staticmethod
     def _revise_decoding_graph(
-        self,
         idxmap: Dict[Tuple[int, List[int]], int],
         graph: rx.PyGraph,
         edge_weight_polynomials: Dict[Tuple[int, Tuple[int]], Dict[Tuple[int, Tuple[int]], Poly]],
@@ -565,8 +566,8 @@ class CircuitModelMatchingDecoder(ABC):
             raise QiskitQECError("decoder failure: syndrome should be trivial!")
         return corrected_outcomes
 
+    @staticmethod
     def _highlighted_vertices(
-        self,
         css_x_gauge_ops: List[Tuple[int]],
         css_x_stabilizer_ops: List[Tuple[int]],
         css_x_boundary: List[int],

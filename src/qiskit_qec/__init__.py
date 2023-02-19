@@ -22,7 +22,6 @@ from . import (
     geometry,
     info,
     linear,
-    models,
     operators,
     structures,
     utils,

@@ -1872,7 +1872,6 @@ def _remove_hyper_elements_from_hyper_form(
     return new_center, new_x, new_z
 
 
-# pylint: disable=missing-param-doc
 def min_generating(
     matrix: Optional[np.ndarray] = None,
     x: Optional[np.ndarray] = None,

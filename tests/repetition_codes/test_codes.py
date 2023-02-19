@@ -404,7 +404,8 @@ class TestARCCodes(unittest.TestCase):
 class TestDecoding(unittest.TestCase):
     """Test decoders for repetition codes"""
 
-    def test_empty_decoding_graph(self):
+    @staticmethod
+    def test_empty_decoding_graph():
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
 

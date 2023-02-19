@@ -24,7 +24,8 @@ class Plane(TwoManifold):
     def __init__(self):
         super().__init__()
 
-    def ison(self, point):
+    @staticmethod
+    def ison(point):
         """Check that point is on the plane"""
         # Qick check that point is on the
         return point.shape == (2,) and len(point) == 2

@@ -70,7 +70,8 @@ class Shape:
             bounds = GeometryBounds.combine(bounds, bounds2)
         return bounds
 
-    def create_lines(self, points: List):
+    @staticmethod
+    def create_lines(points: List):
         """Creates Lines from a set of points"""
         num_points = len(points)
         lines = [[index, (index + 1) % num_points] for index in range(num_points)]

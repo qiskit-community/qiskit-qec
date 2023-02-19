@@ -20,7 +20,7 @@ from qiskit_qec.analysis.baseerrorpropagator import BaseErrorPropagator
 from qiskit_qec.analysis.extensions import C_ERROR_PROPAGATOR
 
 if C_ERROR_PROPAGATOR:
-    from qiskit_qec.analysis.extensions import _CErrorPropagator
+    from qiskit_qec.analysis.cerrorpropagator import CErrorPropagator
 
 
 class ErrorPropagator(BaseErrorPropagator):
@@ -34,7 +34,7 @@ class ErrorPropagator(BaseErrorPropagator):
 
     """
 
-    def __new__(cls, qreg_size: int = 1, creg_size: int = 1, eptype: str = "auto"):
+    def __new__(cls, eptype: str = "auto", qreg_size: int = 1, creg_size: int = 1):
         """_summary_
 
         Args:
@@ -51,11 +51,11 @@ class ErrorPropagator(BaseErrorPropagator):
         """
         if eptype == "auto":
             if C_ERROR_PROPAGATOR is True:
-                return _CErrorPropagator(qreg_size, creg_size)
+                return CErrorPropagator(qreg_size, creg_size)
             return PyErrorPropagator(qreg_size, creg_size)
         if eptype == "c":
             if C_ERROR_PROPAGATOR:
-                return _CErrorPropagator(qreg_size, creg_size)
+                return CErrorPropagator(qreg_size, creg_size)
             raise ImportError("C/C++ ErrorPropagator extension not loaded.")
         if eptype == "py":
             return PyErrorPropagator(qreg_size, creg_size)
