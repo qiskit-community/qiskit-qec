@@ -1,12 +1,8 @@
 include LICENSE.txt
 
 # Include the tests files.
-recursive-include tests *.py
+#recursive-include test *.py
 
-recursive-include intern CMakeLists.txt
-recursive-include extern CMakeLists.txt
-
-graft extern
-graft extern
+graft test
 graft src
 global-include CMakeLists.txt *.cmake

@@ -40,8 +40,6 @@ message(STATUS "Set any copile flags")
 # ------------------------------------------------------------------------------
 # Add code subdirectories to make libraries
 
-add_subdirectory(intern)
-add_subdirectory(extern)
 add_subdirectory(src)
 
 # Make Pybind python bindings
