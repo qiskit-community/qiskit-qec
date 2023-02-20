@@ -1,7 +1,7 @@
 include LICENSE.txt
 
 # Include the tests files.
-recursive-include test *.py
+recursive-include tests *.py
 
 graft extern/pybind11/include
 graft extern/pybind11/tools 
