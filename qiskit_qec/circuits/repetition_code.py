@@ -496,6 +496,10 @@ def add_edge(graph, pair, edge=None):
 class ArcCircuit:
     """Anisotropic repetition code class."""
 
+    METHOD_SPITZ: str = "spitz"
+    METHOD_NAIVE: str = "naive"
+    AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
+
     def __init__(
         self,
         links: list,
@@ -1333,3 +1337,101 @@ class ArcCircuit:
             hyperedges.append({(n0, n1): edge})
 
         return S, hyperedges
+
+    def get_error_coords(self, counts, decoding_graph, method=METHOD_SPITZ):
+        """
+        Uses the `get_error_probs` method of the given decoding graph to generate probabilities
+        of single error events from given counts. The location and time of each error is
+        also calculated.
+
+        Args:
+            counts (dict): Counts dictionary of the results to be analyzed.
+            decoding_graph (DecodingGraph): Decoding graph object constructed
+            from this code.
+            method (string): Method to used for calculation. Supported
+            methods are 'spitz' (default) and 'naive'.
+        Returns:
+            dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
+            events. Time refers to measurement rounds. Values are a dictionary whose keys are
+            the edges that detected the event, and whose keys are the calculated probabilities.
+        Additional information:
+            Uses the `get_error_probs` method of the decoding graph.
+        """
+
+        error_probs = decoding_graph.get_error_probs(counts, method=method)
+        nodes = decoding_graph.graph.nodes()
+
+        if hasattr(self, "z_logicals"):
+            z_logicals = set(self.z_logicals)
+        elif hasattr(self, "z_logical"):
+            z_logicals = {self.z_logical}
+        else:
+            print("No qubits for z logicals found. Proceeding without.")
+            z_logicals = set()
+
+        round_length = len(self.schedule) + 1
+
+        error_coords = {}
+        for (n0, n1), prob in error_probs.items():
+            node0 = nodes[n0]
+            node1 = nodes[n1]
+            if n0 != n1:
+                qubits = decoding_graph.graph.get_edge_data(n0, n1)["qubits"]
+                if qubits:
+                    # error on a code qubit between rounds, or during a round
+                    assert (
+                        node0["time"] == node1["time"] and node0["qubits"] != node1["qubits"]
+                    ) or (node0["time"] != node1["time"] and node0["qubits"] != node1["qubits"])
+                    qubit = qubits[0]
+                    # error between rounds
+                    if node0["time"] == node1["time"]:
+                        dts = []
+                        for node in [node0, node1]:
+                            pair = [qubit, node["link qubit"]]
+                            for dt, pairs in enumerate(self.schedule):
+                                if pair in pairs:
+                                    dts.append(dt)
+                        time = [max(0, node0["time"] - 1 + (max(dts) + 1) / round_length)]
+                        time.append(node0["time"] + min(dts) / round_length)
+                    # error during a round
+                    else:
+                        # put nodes in descending time order
+                        if node0["time"] < node1["time"]:
+                            node_pair = [node1, node0]
+                        else:
+                            node_pair = [node0, node1]
+                        # see when in the schedule each node measures the qubit
+                        dts = []
+                        for node in node_pair:
+                            pair = [qubit, node["link qubit"]]
+                            for dt, pairs in enumerate(self.schedule):
+                                if pair in pairs:
+                                    dts.append(dt)
+                        # use to define fractional time
+                        if dts[0] < dts[1]:
+                            time = [node_pair[1]["time"] + (dts[0] + 1) / round_length]
+                            time.append(node_pair[1]["time"] + dts[1] / round_length)
+                        else:
+                            # impossible cases get no valid time
+                            time = []
+                else:
+                    # measurement error
+                    assert node0["time"] != node1["time"] and node0["qubits"] == node1["qubits"]
+                    qubit = node0["link qubit"]
+                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
+                    time.sort()
+            else:
+                # detected only by one stabilizer
+                qubit = list(set(node0["qubits"]).intersection(z_logicals))[0]
+                pair = [qubit, node0["link qubit"]]
+                for dt, pairs in enumerate(self.schedule):
+                    if pair in pairs:
+                        time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
+                        time.append(node0["time"] + dt / round_length)
+
+            if time != []:  # only record if not nan
+                if (qubit, time[0], time[1]) not in error_coords:
+                    error_coords[qubit, time[0], time[1]] = {}
+                error_coords[qubit, time[0], time[1]][n0, n1] = prob
+
+        return error_coords
