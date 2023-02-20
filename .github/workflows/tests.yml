@@ -16,7 +16,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.9]
+        python-version: [3.7, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,8 +33,7 @@ jobs:
         echo TOX_ENV=$tox_env >> $GITHUB_ENV
     - name: Test using tox envs
       run: |
-        tox -vv --develop ${{ env.TOX_ENV }}
-
+        tox ${{ env.TOX_ENV }}
   lint:
     runs-on: ubuntu-latest
     steps:
