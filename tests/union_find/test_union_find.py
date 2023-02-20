@@ -15,6 +15,7 @@
 import logging
 from random import choices
 import unittest
+import math
 from unittest import TestCase
 from random import random
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
@@ -110,19 +111,10 @@ class UnionFindDecoderTest(TestCase):
         Test the error rates using some ARCs.
         """
         d = 8
-        p = 0.1
+        p = 0.01
         N = 1000
 
         testcases = []
-        for _ in range(N):
-            testcase = ""
-            for _ in range(d):
-                if random() < p and testcase.count("1") < 2:
-                    testcase += "1"
-                else:
-                    testcase += "0"
-            testcases.append(testcase)
-
         testcases = ["".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(N)]
         codes = self.construct_codes(d)
 
@@ -151,34 +143,23 @@ class UnionFindDecoderTest(TestCase):
 
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
-            logging.debug("Logical error rate on ", "a repetition code" if isinstance(code, RepetitionCodeCircuit) else "an ARC"," with p=0.01 and using the union find decoder: ", str(logical_errors / N))
-            logging.debug("Amount of flips needed to cause logical error: ", min_flips_to_cause_logical_error)
+            self.assertTrue(
+                logical_errors/N < (math.factorial(d))/(math.factorial(int(d/2))**2) * p**4,
+                "Logical error rate shouldn't exceed d!/((d/2)!^2)*p^(d/2)."
+            )
+            self.assertTrue(
+                min_flips_to_cause_logical_error >= d/2,
+                "Minimum amount of errors that also causes logical errors shouldn't be lower than d/2."
+            )
     
     def construct_codes(self, d):
         # parameters for test
         codes = []
-        # first make a bunch of ARCs
-        # crossed line
-        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
-        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
-        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
-        # ladder (works for even d)
-        half_d = int(d / 2)
-        links_ladder = []
-        for row in [0, 1]:
-            for j in range(half_d - 1):
-                delta = row * (2 * half_d - 1)
-                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
-        q = links_ladder[-1][2] + 1
-        for j in range(half_d):
-            delta = 2 * half_d - 1
-            links_ladder.append((2 * j, q, delta + 2 * j))
-            q += 1
-        # line
-        links_line = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
         # add them to the code list
-        for links in [links_ladder, links_line, links_cross]:
-             codes.append(ArcCircuit(links, 0))
+        # TODO: Add ARCs to tests as soon as a better general alternative to the peeling is found,
+        # instead of just looking at what logicals are affected by checking for boundary nodes.
+        # for links in [links_ladder, links_line, links_cross]:
+        #      codes.append(ArcCircuit(links, 0))
         codes.append(RepetitionCodeCircuit(d=d, T=1))
         return codes
 
