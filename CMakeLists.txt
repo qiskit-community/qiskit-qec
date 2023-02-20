@@ -41,7 +41,7 @@ message(STATUS "Set any copile flags")
 # Add code subdirectories to make libraries
 
 # Source CMakeLists
-add_subdirectory(src/qiskit_qec)
+add_subdirectory(src)
 
 # Make Pybind python bindings
 
