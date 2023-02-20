@@ -36,7 +36,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ------------------------------------------------------------------------------
 # Set compile flags
-message(STATUS "Set any copile flags")
+
+if (NOT(MSVC))
+    set(ARCH_OPT "-O3" "-mno-avx2")
+else ()
+    set(ARCH_OPT "-O2")
+    # https://stackoverflow.com/a/8591946 (RTC1 incompatible with O2 flag)
+    STRING (REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif ()
+
+
 # ------------------------------------------------------------------------------
 # Add code subdirectories to make libraries
 

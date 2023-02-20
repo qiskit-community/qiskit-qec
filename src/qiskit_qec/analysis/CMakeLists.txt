@@ -30,5 +30,11 @@ target_include_directories(libanalysis
     "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+if (NOT (MSVC))
+    target_compile_options(libanalysis PRIVATE -fno-strict-aliasing -fPIC ${ARCH_OPT})
+else ()
+    target_compile_options(libanalysis PRIVATE -fPIC ${ARCH_OPT})
+endif ()
+
 # Set prefix to "" since lib is already in project name
 set_target_properties(libanalysis PROPERTIES PREFIX "")
