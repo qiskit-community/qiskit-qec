@@ -2,12 +2,6 @@
 requires = ["setuptools", "wheel", "pybind11~=2.6.1"]
 build-backend = "setuptools.build_meta"
 
-[tool.qiskit_qec]
-packages = [
-    { include = "qiskit_qec", from = "src" }
-]
-
-
 [tool.black]
 line-length = 100
 target-version = ['py36', 'py37', 'py38', 'py39']
