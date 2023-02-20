@@ -40,7 +40,10 @@ message(STATUS "Set any copile flags")
 # ------------------------------------------------------------------------------
 # Add code subdirectories to make libraries
 
-add_subdirectory(src)
+# Source CMakeLists
+add_subdirectory(src/intern)
+add_subdirectory(src/extern)
+add_subdirectory(src/qiskit_qec)
 
 # Make Pybind python bindings
 
