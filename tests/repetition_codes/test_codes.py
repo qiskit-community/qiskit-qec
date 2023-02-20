@@ -182,9 +182,8 @@ class TestRepCodes(unittest.TestCase):
         test_results = {"000 00": 1024, "010 11": 512}
         for method in ["spitz", "naive"]:
             error = (
-                "Error: Calculated error probability not correct for "
-                + "test result '0 0  11 00' in d=3, T=1 repetition code"
-                + " using calculation method '"
+                "Error: Calculated error probability not correct in"
+                + " d=3, T=1 repetition code using calculation method '"
                 + method
                 + "'."
             )
@@ -369,7 +368,9 @@ class TestARCCodes(unittest.TestCase):
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
         T = 10
         # try codes with and without feedforward correction
-        code = ArcCircuit(links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, logical="1")
+        code = ArcCircuit(
+            links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, logical="1"
+        )
         correct = True
         # insert an initial bitflip on qubit 2
         test_qcs = []
@@ -448,6 +449,42 @@ class TestARCCodes(unittest.TestCase):
             circuit[code.base].count_ops()["cx"] == 8,
             "Error: Wrong number of cx gates after transpilation.",
         )
+
+    def test_weight(self):
+        """Error weighting code test."""
+        code = ArcCircuit(
+            [
+                [0, 1, 2],
+                [2, 3, 4],
+            ],
+            1,
+            schedule=[[[0, 1]], [[2, 3]], [[2, 1]], [[4, 3]]],
+        )
+        dec = DecodingGraph(code)
+        test_results = {"000 00": 1024, "010 11": 512}
+        for method in ["spitz", "naive"]:
+            error = (
+                "Error: Calculated error probability not correct for in"
+                + " d=3, T=1 repetition code using calculation method '"
+                + method
+                + "'."
+            )
+            p = dec.get_error_probs(test_results, method=method)
+            n0 = dec.graph.nodes().index(
+                {"time": 0, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 1}
+            )
+            n1 = dec.graph.nodes().index(
+                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 0}
+            )
+            # edges in graph aren't directed and could be in any order
+            if (n0, n1) in p:
+                self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+                ns = (n0, n1)
+            else:
+                self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
+                ns = (n1, n0)
+            pc = code.get_error_coords(test_results, dec)
+            self.assertTrue(round(pc[2, 0, 0.2][ns], 2) == 0.33, error)
 
 
 class TestDecoding(unittest.TestCase):
