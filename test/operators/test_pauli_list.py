@@ -52,8 +52,6 @@ from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
 
 
-
-
 @lru_cache(maxsize=8)
 def pauli_group_labels(nq, full_group=True):  # pylint: disable=invalid-name
     """Generate list of the N-qubit pauli group string labels"""
