@@ -9,6 +9,13 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+
+# Part of the QEC framework
+#
+# This code is based on the paper: "The XP Stabiliser Formalism: a
+# Generalisation of the Pauli Stabiliser Formalism with Arbitrary Phases", Mark
+# A. Webster, Benjamin J. Brown, and Stephen D. Bartlett. Quantum 6, 815
+# (2022).
 """
 N-qubit XPPauli Representation Encodings and Conversion Module
 """
@@ -23,6 +30,7 @@ from typing import Any, Iterable, List, Optional, Tuple, Union
 import numpy as np
 from qiskit.circuit import Gate
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
+from qiskit.exceptions import QiskitError
 from scipy.sparse import csr_matrix
 
 
@@ -36,12 +44,12 @@ from scipy.sparse import csr_matrix
 # the XPPauli methods. See [ref] for details on the different encodings
 # TODO: Include ref for above.
 
-INTERNAL_TENSOR_ENCODING = "ZX"
-INTERNAL_PHASE_ENCODING = "-i"
+INTERNAL_TENSOR_ENCODING = "XP"
+INTERNAL_PHASE_ENCODING = "w"
 INTERNAL_XP_PAULI_ENCODING = INTERNAL_PHASE_ENCODING + INTERNAL_TENSOR_ENCODING
 
-DEFAULT_EXTERNAL_TENSOR_ENCODING = "YZX"
-DEFAULT_EXTERNAL_PHASE_ENCODING = "-i"
+DEFAULT_EXTERNAL_TENSOR_ENCODING = "XP"
+DEFAULT_EXTERNAL_PHASE_ENCODING = "w"
 DEFAULT_EXTERNAL_XP_PAULI_ENCODING = (
     DEFAULT_EXTERNAL_PHASE_ENCODING + DEFAULT_EXTERNAL_TENSOR_ENCODING
 )
@@ -54,47 +62,21 @@ DEFAULT_EXTERNAL_XP_PAULI_ENCODING = (
 # Phase encodings are: 'i', '-i', 'is', '-is'
 # See [ref] for details on the different encodings
 # TODO: Include ref for above.
+# TODO update this comment after formats have been finalized.
 
-PHASE_ENCODINGS = ["i", "-i", "is", "-is"]
-PHASE_ENCODINGS_IMI = ["i", "-i"]
-PHASE_ENCODINGS_ISMIS = ["is", "-is"]
-TENSOR_ENCODINGS = ["XZ", "XZY", "ZX", "YZX"]
-Y_TENSOR_ENCODINGS = ["XZY", "YZX"]
+# w is exp(pi*i/N), as defined in XP Formalism paper. If the phase exponent is
+# p, then the operator's phase is w**p, where p is an integer between and
+# including 0 and 2N-1. P is diag(1,w**2).
+PHASE_ENCODINGS = ["w"]
+PHASE_ENCODINGS_IMI = []
+PHASE_ENCODINGS_ISMIS = []
+TENSOR_ENCODINGS = ["XP"]
+Y_TENSOR_ENCODINGS = []
 XP_PAULI_ENCODINGS = [
-    "iXZ",
-    "iXZY",
-    "iZX",
-    "iYZX",
-    "-iXZ",
-    "-iXZY",
-    "-iZX",
-    "-iYZX",
-    "isXZ",
-    "isXZY",
-    "isZX",
-    "isYZX",
-    "-isXZ",
-    "-isXZY",
-    "-isZX",
-    "-isYZX",
+    "wXP",
 ]
 XP_PAULI_ENCODINGS_SPLIT = {
-    "iXZ": ("i", "XZ"),
-    "iXZY": ("i", "XZY"),
-    "iZX": ("i", "ZX"),
-    "iYZX": ("i", "YZX"),
-    "-iXZ": ("-i", "XZ"),
-    "-iXZY": ("-i", "XZY"),
-    "-iZX": ("-i", "ZX"),
-    "-iYZX": ("-i", "YZX"),
-    "isXZ": ("is", "XZ"),
-    "isXZY": ("is", "XZY"),
-    "isZX": ("is", "ZX"),
-    "isYZX": ("is", "YZX"),
-    "-isXZ": ("-is", "XZ"),
-    "-isXZY": ("-is", "XZY"),
-    "-isZX": ("-is", "ZX"),
-    "-isYZX": ("-is", "YZX"),
+    "wXP": ("w", "XP"),
 }
 
 # Different string syntax formats are available. The they are "product" syntax and
@@ -111,6 +93,7 @@ XP_PAULI_ENCODINGS_SPLIT = {
 #
 # -iX \otimes Y \otimes Z -> -iZ0Y1X2
 # X \otimes Y \otimes Z \otimes I \otimes I \otimes I  -> Z3Y4X5
+# TODO update this comment/following REGEX after formats have been finalized.
 
 # -i, -1j, +1, ...
 COMPLEX_REGEX = r"[\-+]?1?[ij]?"
@@ -237,8 +220,9 @@ TENSOR_PRODUCT_PATTERN = {
 PRODUCT_SYNTAX = 0
 INDEX_SYNTAX = 1
 LATEX_SYNTAX = 2
+XP_SYMPLECTIC_SYNTAX = 3
 DEFAULT_SYNTAX = 0
-SYNTAX_TO_TEXT = ["product", "index"]
+SYNTAX_TO_TEXT = ["product", "index", "latex", "XP symplectic"]
 
 DEFAULT_QUBIT_ORDER = "right-to-left"
 QUBIT_ORDERS = ["right-to-left", "left-to-right"]
@@ -255,55 +239,138 @@ def _is_pattern(string, pattern):
 
 
 def get_phase_encodings() -> List[str]:
-    """_summary_"""
-    pass
+    """Returns the available phase encodings
+
+    Returns:
+        encoding: List of available phase encodings
+
+    Examples:
+        >>> get_phase_encodings()
+        ['w']
+
+    See Also
+        get_tensor_encodings, get_pauli_encodings
+    """
+    return PHASE_ENCODINGS
 
 
 def get_tensor_encodings() -> List[str]:
-    """_summary_"""
-    pass
+    """Returns the available tensor encodings
+
+    Returns:
+        encoding: List of available tensor encodings
+
+    Examples:
+        >>> get_tensor_encodings()
+        ['XP']
+
+    See Also:
+        get_phase_encodings, get_pauli_encodings
+    """
+    return TENSOR_ENCODINGS
 
 
-def get_pauli_encodings() -> List[str]:
-    """_summary_"""
-    pass
+def get_xp_pauli_encodings() -> List[str]:
+    """Returns the available XPPauli encodings
+
+    Returns:
+        encodings : List of available XPPauli encodings
+
+    Example:
+        >>> get_xp_pauli_encodings()
+        ['wXP']
+
+    See Also:
+        get_phase_encodings, get_tensor_encodings
+
+    """
+    return XP_PAULI_ENCODINGS
 
 
 # -------------------------------------------------------------------------------
 # Encoding Methods and Conversions
 # -------------------------------------------------------------------------------
 
-# pylint: disable=unused-argument
-def split_pauli_enc(encoding: str) -> Tuple[str, str]:
-    """_summary_"""
-    pass
+
+def split_xp_pauli_enc(encoding: str) -> Tuple[str, str]:
+    """Splits the XPPauli encoding into the phase and tensor encodings
+
+    Args:
+        encoding: XPPauli encoding
+
+    Raises:
+        QiskitError: Encoding not valid
+
+    Returns:
+        phase_enc, tensor_enc: phase encoding and tensor encoding
+
+    Examples:
+        >>> encoding = "wXP"
+        >>> split_xp_pauli_encoding(encoding)
+        ('w', 'XP')
+
+    See Also:
+        _split_xp_pauli_encoding
+    """
+    if encoding not in XP_PAULI_ENCODINGS:
+        raise QiskitError(f"Encoding not valid: {encoding}")
+    return _split_xp_pauli_enc(encoding)
 
 
-# pylint: disable=unused-argument
-def _split_pauli_enc(encoding: str) -> Tuple[str, str]:
-    """_summary_"""
-    pass
+def _split_xp_pauli_enc(encoding: str) -> Tuple[str, str]:
+    """Splits the XPPauli encoding into the phase and tensor encodings
+
+    Args:
+        encoding: XPPauli encoding string
+    """
+    return XP_PAULI_ENCODINGS_SPLIT[encoding]
 
 
-# pylint: disable=unused-argument
 def get_phase_enc(encoding: str) -> str:
-    """_summary_"""
-    pass
+    """Returns the phase encoding part of the XPPauli encoding string
+
+    Args:
+        encoding: XPPauli encoding string
+
+    Returns:
+        phase_enc: phase encoding
+
+    Examples:
+        >>> encoding = "wXP"
+        >>> get_phase_enc(encoding)
+        'w'
+    """
+    phase_part, _ = split_xp_pauli_enc(encoding)
+    return phase_part
 
 
-# pylint: disable=unused-argument
 def get_tensor_enc(encoding: str) -> str:
-    """_summary_"""
-    pass
+    """Returns the tensor encoding part of the XPPauli encoding string
+
+    Args:
+        encoding: XPPauli encoding string
+
+    Returns:
+        tensor_enc: tensor encoding
+
+    Examples:
+        >>> encoding = "wXP"
+        >>> get_tensor_enc(encoding)
+        'XP'
+    """
+    _, tensor_part = split_xp_pauli_enc(encoding)
+    return tensor_part
 
 
+# TODO depending on what encoding formats are decided, these need to be
+# implemented or removed.
 # pylint: disable=unused-argument
-def change_pauli_encoding(
+def change_xp_pauli_encoding(
     phase_exp: Any,
     y_count: Union[np.array, int] = 0,
     *,
-    input_pauli_encoding: str = INTERNAL_XP_PAULI_ENCODING,
-    output_pauli_encoding: str = DEFAULT_EXTERNAL_XP_PAULI_ENCODING,
+    input_xp_pauli_encoding: str = INTERNAL_XP_PAULI_ENCODING,
+    output_xp_pauli_encoding: str = DEFAULT_EXTERNAL_XP_PAULI_ENCODING,
     same_type=True,
 ) -> Any:
     """_summary_"""
@@ -311,16 +378,18 @@ def change_pauli_encoding(
 
 
 # pylint: disable=unused-argument
-def _change_pauli_encoding(
+def _change_xp_pauli_encoding(
     phase_exponent: np.ndarray,
     y_count: np.ndarray,
-    input_pauli_encoding: str,
-    output_pauli_encoding: str,
+    input_xp_pauli_encoding: str,
+    output_xp_pauli_encoding: str,
 ) -> Any:
     """_summary_"""
     pass
 
 
+# TODO depending on what encoding formats are decided, these need to be
+# implemented or removed.
 # pylint: disable=unused-argument
 def stand_phase_str(
     phase_str: str, same_type: bool = True, imaginary: str = "i"
@@ -457,17 +526,66 @@ def _expstr2exp(exp_string, encoding: str) -> np.ndarray:
 # pylint: disable=unused-argument
 def exp2expstr(
     phase_exp: Any,
-    input_encoding: str,
+    input_encoding: str = DEFAULT_EXTERNAL_XP_PAULI_ENCODING,
     same_type: bool = True,
 ) -> Union[np.ndarray, str]:
-    """_summary_"""
-    pass
+    """Converts encoded phases (exponents) to their string representations
+
+    Note: This method does more than apply str method as the string representations of the
+    different encodings have a specific syntaxs.
+
+    Args:
+        phase_exp: Phase encodings to convert to string representations
+        input_encoding: Encoding of the input phase exponents. Defaults to
+        DEFAULT_EXTERNAL_XP_PAULI_ENCODING.
+        same_type (optional): Scalar/Vector return flag. Defaults to True.
+
+    Raises:
+        QiskitError: Invalid phase exponent encoding
+
+    Returns:
+        exp_str: string representations of given phase exponents
+
+    Examples:
+        TODO
+
+    See Also:
+        _exp2expstr
+    """
+    if input_encoding not in PHASE_ENCODINGS:
+        raise QiskitError(f"Invalid phase exponent encoding: {input_encoding}")
+
+    phase_exp = np.atleast_1d(phase_exp)
+
+    return _exp2expstr(phase_exp, input_encoding)
 
 
-# pylint: disable=unused-argument
 def _exp2expstr(phase_exp: np.ndarray, encoding: str) -> np.ndarray:
-    """_summary_"""
-    pass
+    """Converts encoded phases (exponents) to their string representations
+
+    Note: This method does more than apply str as the string representations of the
+    different encodings have a specific syntax.
+
+    Args:
+        phase_exp: Phase encosings to convert to string representations
+        encoding: Encoding of the input phase exponents
+
+    Raises:
+        QiskitError: Invalid phase exponent encoding
+
+    Returns:
+        exp_str: The encoding is not supported
+
+    Examples:
+        TODO
+
+    See Also:
+        exp2expstr
+    """
+    if encoding == "w":
+        return np.array(["(w," + str(item) + ")" for item in phase_exp])
+    else:
+        raise QiskitError(f"The encoding {encoding} is not supported.")
 
 
 # ----------------------------------------------------------------------
@@ -651,22 +769,209 @@ def _str2symplectic(
 
 
 # ----------------------------------------------------------------------
-# pylint: disable=unused-argument
-def symplectic2str(
+def xp_symplectic2str(
     matrix: np.ndarray,
     phase_exp: Any = None,
+    precision: int = None,
     input_encoding: str = INTERNAL_XP_PAULI_ENCODING,
     output_phase_encoding: str = None,
-    no_phase=False,
+    no_phase: bool = False,
     output_tensor_encoding: str = DEFAULT_EXTERNAL_TENSOR_ENCODING,
     syntax: str = INDEX_SYNTAX,
     qubit_order: str = "right-to-left",
     index_start: int = 0,
-    same_type=True,
+    same_type: bool = True,
     index_str="",
 ) -> Union[np.ndarray, str]:
-    """_summary_"""
-    pass
+    """Converts a symplectic matrix and phase to string representations
+
+    Args:
+        matrix: Generalized symplectic matrix for XP operator
+        phase_exp (optional): Phase exponent(s) for matrix. A value of
+            None will lead to unity phases. Defaults to None.
+        precision: Precision of XP operator.
+        input_encoding (optional): XPPauli encoding of phase relative to
+            matrix. Defaults to INTERNAL_XP_PAULI_ENCODING.
+        output_phase_encoding (optional): Encoding used to represent phases.
+            A value of None will result in complex phases notation. Defaults
+            to None.
+        no_phase (optional): When set to True, no phase will appear no matter
+            what encoding is selected.
+        output_tensor_encoding (optional): Encoding of XPPauli tensor
+            (without phase). Defaults to DEFAULT_EXTERNAL_TENSOR_ENCODING.
+        syntax (optional): Syntax of pauli tensor. Values are
+            PRODUCT_SYNTAX = 0, INDEX_SYNTAX=1, LATEX_SYNTAX=2 and XP_SYMPLECTIC_SYNTAX=3.
+            Defaults to INDEX_SYNTAX.
+        qubit_order (optional): Order in which qubits are read. options are
+            "right-to-left" and "left-to-right". Defaults to "right-to-left".
+        index_start (optional): Lowest value for index in index syntax tensors.
+            Defaults to 0
+        same_type (optional): Scalar/Vector return flag. Defaults to True.
+        index_str (optional): String that get inserted between operator and numbers in
+            index format. Default is "".
+
+    Raises:
+        QiskitError: Unsupport syntax
+
+    Returns:
+        xp_pauli_str: XPPauli strings
+
+    Examples:
+        >>> precision = 8
+        >>> matrix1 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0], dtype=np.int64)
+        >>> phase_exp1 = 12
+        >>> matrix2 = np.array([1, 1, 1, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0], dtype=np.int64)
+        >>> phase_exp2 = 2
+        >>> matrix = np.array([matrix1, matrix2])
+        >>> phase_exp = np.array([phase_exp1, phase_exp2])
+        >>> xp_symplectic2str(matrix, phase_exp, precision)
+        np.array(["XP8((w,12)(X(P,4))2(X)1(X)0)", "XP8((w,2)(P,3)3(X(P,2))2(X)1(X)0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, qubit_order="left-to-right")
+        np.array(["XP8((w,12)(X)0(X)1(X(P,4))2)", "XP8((w,2)(X)0(X)1(X(P,2))2(P,3)3)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=XP_SYMPLECTIC_SYNTAX)
+        np.array(["XP8(12|1 1 1 0 0 0 0|0 0 4 0 0 0 0)", "XP8(2|1 1 1 0 0 0 0|0 0 2 3 0 0 0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, no_phase=True)
+        np.array(["XP8((X(P,4))2(X)1(X)0)", "XP8((P,3)3(X(P,2))2(X)1(X)0)"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=PRODUCT_SYNTAX)
+        np.array(["XP8((w,12)(I)(I)(I)(I)(X(P,4))(X)(X))", "XP8((w,2)(I)(I)(I)(P,3)(X(P,2))(X)(X))"])
+
+        >>> xp_symplectic2str(matrix, phase_exp, precision, syntax=LATEX_SYNTAX)
+        np.array(
+            [
+                "XP_{8}((w,12)(XP^{4})_{2}(X)_{1}(X)_{0})",
+                "XP_{8}((w,2)(P^{3})_{3}(XP^{2})_{2}(X)_{1}(X)_{0})",
+            ]
+        )
+    """
+    matrix = np.atleast_2d(matrix)
+    num_qubits = matrix.shape[1] >> 1
+    matrix[:, 0:num_qubits] = np.mod(matrix[:, 0:num_qubits], 2)
+    matrix[:, num_qubits:] = np.mod(matrix[:, num_qubits:], precision)
+    if no_phase:
+        phase_str = np.full((matrix.shape[0],), "")
+    else:
+        if phase_exp is None:
+            phase_exp = np.zeros(shape=(matrix.shape[0],), dtype=np.int64)
+        else:
+            phase_exp = np.atleast_1d(phase_exp)
+            phase_exp = np.mod(phase_exp, 2 * precision)
+
+        # If multiple phase/tensor encodings are implemented, the conversion
+        # needs to go here.
+
+        if output_phase_encoding is None:
+            if syntax != XP_SYMPLECTIC_SYNTAX:
+                phase_str = exp2expstr(phase_exp, "w")
+
+    tensor_str = []
+
+    _XPENC = ["(I)", "(X)", "(P,{zexp})", "(X(P,{zexp}))"]
+    _XP_LATEX_ENC = ["(I)", "(X)", "(P{zexp})", "(XP{zexp})"]
+    _ENC = {"XP": _XPENC}
+
+    if syntax == PRODUCT_SYNTAX:
+        for xppauli in matrix:
+            tmp_tensor_str = ""
+            for index in range(num_qubits):
+                tmp_enc = ""
+                rep = ""
+                if xppauli[index + num_qubits] > 1:
+                    rep = str(xppauli[index + num_qubits])
+                if xppauli[index + num_qubits] == 0:
+                    tmp_enc = _ENC[output_tensor_encoding][xppauli[index]]
+                else:
+                    tmp_enc = _ENC[output_tensor_encoding][2 + xppauli[index]].replace(
+                        "{zexp}", rep
+                    )
+                tmp_enc = tmp_enc.replace("X(P,)", "XP")
+                tmp_enc = tmp_enc.replace("(P,)", "(P)")
+                if tmp_enc:
+                    if qubit_order == "left-to-right":
+                        tmp_tensor_str += tmp_enc
+                    else:
+                        tmp_tensor_str = tmp_enc + tmp_tensor_str
+
+            tensor_str.append(tmp_tensor_str)
+    elif syntax == XP_SYMPLECTIC_SYNTAX:
+        for i, xppauli in enumerate(matrix):
+            tmp_tensor_str = "XP" + str(precision)
+            tmp_tensor_str += (
+                "("
+                + str(phase_exp[i])
+                + "|"
+                + str(xppauli[:num_qubits])[1:-1]
+                + "|"
+                + str(xppauli[num_qubits:])[1:-1]
+                + ")"
+            )
+
+            tensor_str.append(tmp_tensor_str)
+    elif syntax in (INDEX_SYNTAX, LATEX_SYNTAX):
+        if syntax == LATEX_SYNTAX:
+            ind_str_repr = _ind_to_latex_repr
+            sup_str_repr = _sup_to_latex_repr
+            _TMP_ENC = {"XP": _XP_LATEX_ENC}
+        else:
+            ind_str_repr = str
+            sup_str_repr = str
+            _TMP_ENC = _ENC
+
+        for xppauli in matrix:
+            tmp_tensor_str = ""
+            for index in range(num_qubits):
+                if output_tensor_encoding == "XP":
+                    tmp_enc = ""
+                    rep = ""
+                    if xppauli[index + num_qubits] > 1:
+                        rep = sup_str_repr(xppauli[index + num_qubits])
+                    if xppauli[index] == 1 and xppauli[index + num_qubits] == 0:
+                        tmp_enc = _TMP_ENC[output_tensor_encoding][1]
+                    elif xppauli[index + num_qubits] > 0:
+                        tmp_enc = _TMP_ENC[output_tensor_encoding][2 + xppauli[index]].replace(
+                            "{zexp}", rep
+                        )
+
+                    tmp_enc = tmp_enc.replace("X(P,)", "XP")
+                    tmp_enc = tmp_enc.replace("(P,)", "(P)")
+                    if tmp_enc:
+                        if qubit_order == "left-to-right":
+                            tmp_tensor_str += (
+                                tmp_enc + index_str + ind_str_repr(index + index_start)
+                            )
+                        else:
+                            tmp_tensor_str = (
+                                tmp_enc
+                                + index_str
+                                + ind_str_repr(index + index_start)
+                                + tmp_tensor_str
+                            )
+
+            tensor_str.append(tmp_tensor_str)
+
+    else:
+        raise QiskitError(f"Unsupported syntax: {syntax}")
+
+    if syntax != XP_SYMPLECTIC_SYNTAX:
+        if syntax in (PRODUCT_SYNTAX, INDEX_SYNTAX):
+            result = [
+                "XP" + str(precision) + "(" + p_str + t_str + ")"
+                for p_str, t_str in zip(phase_str, tensor_str)
+            ]
+        else:
+            result = [
+                "XP" + _ind_to_latex_repr(precision) + "(" + p_str + t_str + ")"
+                for p_str, t_str in zip(phase_str, tensor_str)
+            ]
+    else:
+        result = tensor_str
+    if matrix.shape[0] == 1 and same_type:
+        return result[0]
+    else:
+        return np.array(result)
 
 
 # ----------------------------------------------------------------------
@@ -769,10 +1074,29 @@ def indices_to_boolean(indices: Iterable[int], dim: int) -> np.ndarray:
 
 
 # ----------------------------------------------------------------------
-# pylint: disable=unused-argument
 def _ind_to_latex_repr(index: int) -> str:
-    """_summary_"""
-    pass
+    """Adds curly braces and an underscore to an index.
+
+    Args:
+        index: An integer
+
+    Returns:
+        str: string in LaTeX syntax
+    """
+    return f"_{{{index}}}"
+
+
+# ----------------------------------------------------------------------
+def _sup_to_latex_repr(superscript: int) -> str:
+    """Adds curly braces and a caret to a superscript.
+
+    Args:
+        superscript: An integer
+
+    Returns:
+        str: string in LaTeX syntax
+    """
+    return f"^{{{superscript}}}"
 
 
 # pylint: disable=unused-argument
