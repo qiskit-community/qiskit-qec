@@ -451,6 +451,16 @@ class RepetitionCodeCircuit:
 
         return neutral, flipped_logical_nodes, num_errors
 
+    def is_cluster_neutral(self, atypical_nodes):
+        """
+        Determines whether or not the cluster is even. Even means that one or more 
+        errors could have caused the set of atypical nodes (syndrome changes) passed 
+        to the method.
+        Args: 
+            atypical_nodes (dictionary in the form of the return value of string2nodes)
+        """
+        return not bool(len(atypical_nodes)%2)
+
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
@@ -1175,6 +1185,17 @@ class ArcCircuit:
                 neutral = False
 
         return neutral, flipped_logical_nodes, num_errors
+
+    def is_cluster_neutral(self, atypical_nodes):
+        """
+        Determines whether or not the cluster is even. Even means that one or more 
+        errors could have caused the set of atypical nodes (syndrome changes) passed 
+        to the method.
+        Args: 
+            atypical_nodes (dictionary in the form of the return value of string2nodes)
+        """
+        neutral, logicals, _ = self.check_nodes(atypical_nodes)
+        return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """

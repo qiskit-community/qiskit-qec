@@ -28,7 +28,7 @@ from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as Repetit
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.hdrg_decoders import ClusteringDecoder
+from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -446,7 +446,7 @@ class TestDecoding(unittest.TestCase):
         for code in codes:
             code = ArcCircuit(links, 0)
             decoding_graph = DecodingGraph(code)
-            decoder = ClusteringDecoder(code, decoding_graph=decoding_graph)
+            decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
             errors = {z_logical: 0 for z_logical in decoder.z_logicals}
             min_error_num = code.d
             for sample in range(N):
