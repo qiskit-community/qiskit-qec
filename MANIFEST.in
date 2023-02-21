@@ -5,4 +5,6 @@ include LICENSE.txt
 
 graft test
 graft src
+graft extern
+graft intern
 global-include CMakeLists.txt *.cmake
