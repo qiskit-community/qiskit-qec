@@ -1355,7 +1355,9 @@ class ArcCircuit:
             events. Time refers to measurement rounds. Values are a dictionary whose keys are
             the edges that detected the event, and whose keys are the calculated probabilities.
         Additional information:
-            Uses the `get_error_probs` method of the decoding graph.
+            Time calculation does not take into account get lengths. It assumes that the
+            subrounds within the schedule and the measurement all take the same time. Time
+            is in units of rounds.
         """
 
         error_probs = decoding_graph.get_error_probs(counts, method=method)
