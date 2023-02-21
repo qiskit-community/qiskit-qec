@@ -33,8 +33,7 @@ jobs:
         echo TOX_ENV=$tox_env >> $GITHUB_ENV
     - name: Test using tox envs
       run: |
-        tox ${{ env.TOX_ENV }}
-
+        tox -vv ${{ env.TOX_ENV }}
   lint:
     runs-on: ubuntu-latest
     steps:
