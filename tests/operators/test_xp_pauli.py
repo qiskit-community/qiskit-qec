@@ -109,10 +109,28 @@ class TestXPPauli(QiskitTestCase):
         phase_exp = 0
         precision = 8
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
-        value = xppauli.antisymmetric_op()
+        dinput = np.array(xppauli.z)
+        value = xppauli.antisymmetric_op(dinput)
 
         target_matrix = np.array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
         target_phase_exp = 15
+        target_precision = 8
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
+
+    def test_inverse(self):
+        """Test inverse method."""
+
+        matrix = np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64)
+        phase_exp = 1
+        precision = 8
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.inverse()
+
+        target_matrix = np.array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
+        target_phase_exp = 5
         target_precision = 8
         target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
         np.testing.assert_equal(target.matrix, value.matrix)
@@ -124,7 +142,7 @@ class TestXPPauli(QiskitTestCase):
         matrix = np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64)
         phase_exp = 12
         precision = 8
-        n = 5
+        n = np.array([5])
         xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
         value = xppauli.power(n=n)
 
@@ -137,7 +155,7 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target.precision, value.precision)
 
     def test_multiplication(self):
-        """Test multiplication method."""
+        """Test compose method."""
         # Test case taken from Mark's code.
         a_matrix = np.array([0, 1, 0, 0, 2, 0], dtype=np.int64)
         a_phase_exp = 6
@@ -147,7 +165,7 @@ class TestXPPauli(QiskitTestCase):
         b_phase_exp = 2
         b_precision = 4
         b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
-        value = XPPauli.compose(a, b)
+        value = a.compose(b)
 
         target_matrix = np.array([1, 0, 1, 3, 3, 0], dtype=np.int64)
         target_phase_exp = 6
@@ -156,6 +174,78 @@ class TestXPPauli(QiskitTestCase):
         np.testing.assert_equal(target.matrix, value.matrix)
         np.testing.assert_equal(target._phase_exp, value._phase_exp)
         np.testing.assert_equal(target.precision, value.precision)
+
+    def test_conjugate(self):
+        """Test conjugate method."""
+        a_matrix = np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
+        a_phase_exp = 4
+        a_precision = 6
+        a = XPPauli(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
+        b_matrix = np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64)
+        b_phase_exp = 11
+        b_precision = 6
+        b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
+        value_front = a.conjugate(b, front=True)
+        value_back = a.conjugate(b, front=False)
+
+        target_matrix_front = np.array([1, 0, 0, 1, 0, 1, 0, 1], dtype=np.int64)
+        target_phase_exp_front = 3
+        target_precision_front = 6
+        target_front = XPPauli(
+            data=target_matrix_front,
+            phase_exp=target_phase_exp_front,
+            precision=target_precision_front,
+        )
+        target_matrix_back = np.array([1, 0, 1, 1, 3, 3, 5, 4], dtype=np.int64)
+        target_phase_exp_back = 0
+        target_precision_back = 6
+        target_back = XPPauli(
+            data=target_matrix_back,
+            phase_exp=target_phase_exp_back,
+            precision=target_precision_back,
+        )
+        np.testing.assert_equal(target_front.matrix, value_front.matrix)
+        np.testing.assert_equal(target_front._phase_exp, value_front._phase_exp)
+        np.testing.assert_equal(target_front.precision, value_front.precision)
+        np.testing.assert_equal(target_back.matrix, value_back.matrix)
+        np.testing.assert_equal(target_back._phase_exp, value_back._phase_exp)
+        np.testing.assert_equal(target_back.precision, value_back.precision)
+
+    def test_commutator(self):
+        """Test commutator method."""
+        a_matrix = np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
+        a_phase_exp = 4
+        a_precision = 6
+        a = XPPauli(data=a_matrix, phase_exp=a_phase_exp, precision=a_precision)
+        b_matrix = np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64)
+        b_phase_exp = 11
+        b_precision = 6
+        b = XPPauli(data=b_matrix, phase_exp=b_phase_exp, precision=b_precision)
+        value_front = a.commutator(b, front=True)
+        value_back = a.commutator(b, front=False)
+
+        target_matrix_front = np.array([0, 0, 0, 0, 4, 0, 0, 0], dtype=np.int64)
+        target_phase_exp_front = 8
+        target_precision_front = 6
+        target_front = XPPauli(
+            data=target_matrix_front,
+            phase_exp=target_phase_exp_front,
+            precision=target_precision_front,
+        )
+        target_matrix_back = np.array([0, 0, 0, 0, 2, 0, 0, 0], dtype=np.int64)
+        target_phase_exp_back = 4
+        target_precision_back = 6
+        target_back = XPPauli(
+            data=target_matrix_back,
+            phase_exp=target_phase_exp_back,
+            precision=target_precision_back,
+        )
+        np.testing.assert_equal(target_front.matrix, value_front.matrix)
+        np.testing.assert_equal(target_front._phase_exp, value_front._phase_exp)
+        np.testing.assert_equal(target_front.precision, value_front.precision)
+        np.testing.assert_equal(target_back.matrix, value_back.matrix)
+        np.testing.assert_equal(target_back._phase_exp, value_back._phase_exp)
+        np.testing.assert_equal(target_back.precision, value_back.precision)
 
     def test_degree(self):
         """Test degree method."""
@@ -167,6 +257,33 @@ class TestXPPauli(QiskitTestCase):
 
         target = 4
         self.assertEqual(target, value)
+
+    def test_fundamental_phase(self):
+        """Test fundamental_phase method."""
+        matrix = np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
+        phase_exp = 4
+        precision = 6
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.fundamental_phase()
+
+        target = np.array([0])
+        self.assertEqual(target, value)
+
+    def test_reset_eigenvalue(self):
+        """Test reset_eigenvalue method."""
+        matrix = np.array([1, 1, 0, 1, 0, 1, 0, 4], dtype=np.int64)
+        phase_exp = 4
+        precision = 6
+        xppauli = XPPauli(data=matrix, phase_exp=phase_exp, precision=precision)
+        value = xppauli.reset_eigenvalue()
+
+        target_matrix = np.array([1, 1, 0, 1, 0, 1, 0, 4], dtype=np.int64)
+        target_phase_exp = 1
+        target_precision = 6
+        target = XPPauli(data=target_matrix, phase_exp=target_phase_exp, precision=target_precision)
+        np.testing.assert_equal(target.matrix, value.matrix)
+        np.testing.assert_equal(target._phase_exp, value._phase_exp)
+        np.testing.assert_equal(target.precision, value.precision)
 
 
 if __name__ == "__main__":

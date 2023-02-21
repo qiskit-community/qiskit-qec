@@ -55,6 +55,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         Raises:
             QiskitError: Something went wrong.
+
+        See also:
+            BaseXPPauli, XPPauli
         """
         if data is None:
             matrix = np.empty(shape=(0, 0), dtype=np.bool_)
@@ -245,7 +248,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     def compose(
         self,
-        other: "BaseXPPauli",
+        other: "XPPauliList",
         qargs: Optional[list] = None,
         front: bool = False,
         inplace: bool = False,
@@ -282,9 +285,9 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> b = XPPauliList(
             ... data=np.array([[1, 1, 1, 3, 3, 0], [1, 1, 1, 3, 3, 0]], dtype=np.int64),
             ... phase_exp=np.array([2, 2]), precision=4)
-            >>> value = XPPauliList.compose(a, b)
+            >>> value = a.compose(b)
             >>> value.matrix
-            array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=int64)
+            array([[1, 0, 1, 3, 3, 0], [1, 0, 1, 3, 3, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([6, 6])
 
@@ -307,7 +310,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         return XPPauliList(super().compose(other, qargs=qargs, front=front, inplace=inplace))
 
-    def rescale_precision(self, new_precision: int) -> "XPPauliList":
+    def rescale_precision(self, new_precision: int, inplace: bool = False) -> "XPPauliList":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -320,6 +323,8 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
         Args:
             new_precision: The target precision in which XPPauli is to be expressed
+            inplace: If True, rescale XPPauliList in place, else return a new
+            XPPauliList. Defaults to False
 
         Returns:
             XPPauliList: Resultant of rescaling the precision of XPPauliList
@@ -347,11 +352,11 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         See also:
             _rescale_precision
         """
-        return XPPauliList(super().rescale_precision(new_precision))
+        return XPPauliList(super().rescale_precision(new_precision, inplace))
 
-    def antisymmetric_op(self) -> "XPPauliList":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0.
+    def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauliList":
+        """Return the antisymmetric operators corresponding to the list of
+        integer vectors, with precision specified by BaseXPPauli.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -360,8 +365,11 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec (np.ndarray): Array containing integer vectors
+
         Returns:
-            XPPauliList: Antisymmetric operator corresponding to XPPauliList, if x is 0
+            XPPauliList: The antisymmetric operators corresponding to the input vectors
 
         Examples:
             >>> matrix = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3],
@@ -369,7 +377,7 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             >>> phase_exp = np.array([0, 0])
             >>> precision = 8
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
-            >>> value = xppauli_list.antisymmetric_op()
+            >>> value = xppauli_list.antisymmetric_op(xppauli_list.z)
             >>> value.matrix
             array([[0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3],
                 [0, 0, 0, 0, 0, 0, 0, -3, -1, -2, -3, -7, -6, -3]], dtype=np.int64)
@@ -379,10 +387,41 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
         See also:
             _antisymmetric_op
         """
-        return XPPauliList(super().antisymmetric_op())
+        return XPPauliList(super().antisymmetric_op(int_vec))
 
-    def power(self, n: int) -> "XPPauliList":
-        """Return the XP operator of specified precision raised to the power n.
+    def inverse(self) -> "XPPauli":
+        """Return the inverse of the list of XP operators.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauliList: Inverse of XPPauliList
+
+        Examples:
+            >>> matrix = np.array([[1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 6, 1],
+            ... [0, 1, 0, 0, 1, 0, 1, 7, 7, 3, 4, 6, 2, 7]], dtype=np.int64)
+            >>> phase_exp = np.array([1, 0])
+            >>> precision = 8
+            >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
+            >>> value = xppauli_list.inverse()
+            >>> value.matrix
+            array([[1, 1, 0, 1, 1, 0, 1, 2, 4, 4, 3, 1, 2, 1],
+                [0, 1, 0, 0, 1, 0, 1, 1, 7, 5, 4, 6, 6, 7]], dtype=np.int64)
+            >>> value._phase_exp
+            np.array([9, 8])
+
+        See also:
+            _inverse
+        """
+        return XPPauliList(super().inverse())
+
+    def power(self, n: Union[int, list, np.ndarray]) -> "XPPauliList":
+        """Return the XP operators of specified precision raised to the power n.
 
         Note:
             This method is adapted from method XPPower from XPFpackage:
@@ -398,28 +437,198 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
             XPPauliList: XPPauliList raised to the power n
 
         Examples:
-            >>> matrix = np.array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1],
-            ... [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1]], dtype=np.int64)
-            >>> phase_exp = np.array([12, 12])
-            >>> precision = 8
-            >>> n = 5
+            >>> matrix = np.array([[1, 0, 1, 1, 5, 3, 5, 4],
+            ... [1, 0, 1, 1, 5, 4, 1, 5]], dtype=np.int64)
+            >>> phase_exp = np.array([4, 3])
+            >>> precision = 6
+            >>> n = np.array([5, 3])
             >>> xppauli_list = XPPauliList(data=matrix, phase_exp=phase_exp, precision=precision)
             >>> value = xppauli_list.power(n=n)
             >>> value.matrix
-            array([[1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5],
-                [1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5]] ,dtype=np.int64)
+            array([[1, 0, 1, 1, 5, 3, 5, 4],
+                [1, 0, 1, 1, 5, 0, 1, 5]], dtype=np.int64)
             >>> value._phase_exp
-            np.array([8, 8])
+            np.array([4, 7])
 
         See also:
             _power
         """
         return XPPauliList(super().power(n))
 
-    # def conjugate(self):
-    #     """Return the conjugate of each XPPauli in the list."""
-    #     # TODO
-    #     pass
+    def conjugate(
+        self, other: "XPPauliList", front: bool = True, inplace: bool = False
+    ) -> "XPPauliList":
+        """Return the conjugation of two XP operators.
+
+        For single XP operators, this means
+
+        A.conjugate(B, front=True) = A . B . A^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise,
+
+        A.conjugate(B, front=False) = B . A . B^{-1}.
+
+        For a list of XP operators, conjugation is performed element-wise:
+
+        [A_1, ..., A_k].conjugate([B_1, ..., B_k]) = [A_1.conjugate(B_1), ..., A_k.conjugate(B_k)].
+
+        TODO: This method currently only supports conjugation of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPConjugate from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: List of XP operators to be conjugated with self
+            front (bool, optional): Whether to conjugate in front (True) or
+            behind (False), defaults to True
+            inplace (bool, optional): Whether to perform the conjugation in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauliList: List of conjugated XP operators
+
+        Raises:
+            QiskitError: Other list must have either 1 or the same number of
+            XPPaulis
+
+        Examples:
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4],
+            ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
+            ... phase_exp=np.array([4, 7]), precision=6)
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1],
+            ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
+            ... phase_exp=np.array([11, 2]), precision=6)
+            >>> value = a.conjugate(b)
+            >>> value.matrix
+            array([[1, 0, 0, 1, 0, 1, 0, 1],
+            [0, 1, 1, 0, 5, 5, 4, 5]], dtype=np.int64)
+            >>> value._phase_exp
+            array([3, 10])
+
+        See also:
+            _conjugate
+        """
+        if not isinstance(other, XPPauliList):
+            other = XPPauliList(other)
+        if len(other) not in [1, len(self)]:
+            raise QiskitError(
+                "Incompatible XPPauliLists. Other list must "
+                "have either 1 or the same number of XPPaulis."
+            )
+
+        return XPPauliList(super().conjugate(other, front=front, inplace=inplace))
+
+    def commutator(
+        self, other: "XPPauliList", front: bool = True, inplace: bool = False
+    ) -> "XPPauliList":
+        """Return the commutator of two XP operators.
+
+        For single XP operators, this means
+
+        A.commutator(B, front=True) = [A, B] = A . B . A^{-1} . B^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise,
+
+        A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
+
+        For a list of XP operators, commutator is computed element-wise:
+
+        [A_1, ..., A_k].commutator([B_1, ..., B_k]) = [A_1.commutator(B_1), ..., A_k.commutator(B_k)].
+
+        TODO: This method currently only supports commutator of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: List of XP operators to be in the commutator with self
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauliList: List of commutators of XP operators
+
+        Raises:
+            QiskitError: Other list must have either 1 or the same number of
+            XPPaulis
+
+        Examples:
+            >>> a = XPPauliList(data=np.array([[1, 0, 1, 1, 5, 3, 5, 4],
+            ... [1, 0, 1, 0, 1, 5, 2, 0]], dtype=np.int64),
+            ... phase_exp=np.array([4, 7]), precision=6)
+            >>> b = XPPauliList(data=np.array([[1, 0, 0, 1, 4, 1, 0, 1],
+            ... [0, 1, 1, 0, 1, 3, 0, 5]], dtype=np.int64),
+            ... phase_exp=np.array([11, 2]), precision=6)
+            >>> value = a.commutator(b)
+            >>> value.matrix
+            array([[0, 0, 0, 0, 4, 0, 0, 0],
+            [0, 0, 0, 0, 4, 4, 2, 0]], dtype=np.int64)
+            >>> value._phase_exp
+            array([8, 8])
+
+        See also:
+            _commutator
+        """
+        if not isinstance(other, XPPauliList):
+            other = XPPauliList(other)
+        if len(other) not in [1, len(self)]:
+            raise QiskitError(
+                "Incompatible XPPauliLists. Other list must "
+                "have either 1 or the same number of XPPaulis."
+            )
+
+        return XPPauliList(super().commutator(other, front=front, inplace=inplace))
+
+    def reset_eigenvalue(self, inplace: bool = False) -> "XPPauliList":
+        """Returns the list of adjusted XP operators such that +1 is an eigenvalue of them.
+
+        Note:
+            This method is adapted from method XPSetEval from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            inplace: If True, adjust XPPauliList in place, else return a new
+            XPPauliList. Defaults to False
+
+        Returns:
+            XPPauliList: XP operators with +1 as an eigenvalue
+
+        Examples:
+        >>> a = XPPauliList(data=np.array([[0, 0, 1, 1, 1, 0, 4, 2],
+        ... [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64),
+        ... phase_exp=np.array([7, 4]), precision=6)
+        >>> value = a.reset_eigenvalue()
+        >>> value.matrix
+        array([[0, 0, 1, 1, 1, 0, 4, 2],
+        [1, 1, 0, 1, 0, 1, 0, 4]], dtype=np.int64)
+        >>> value._phase_exp
+        array([6, 1])
+
+        See also:
+            _reset_eigenvalue
+        """
+        return XPPauliList(super().reset_eigenvalue(inplace))
 
     # def transpose(self):
     #     """Return the transpose of each XPPauli in the list."""
@@ -428,11 +637,6 @@ class XPPauliList(BaseXPPauli, LinearMixin, GroupMixin):
 
     # def adjoint(self):
     #     """Return the adjoint of each XPPauli in the list."""
-    #     # TODO
-    #     pass
-
-    # def inverse(self):
-    #     """Return the inverse of each XPPauli in the list."""
     #     # TODO
     #     pass
 

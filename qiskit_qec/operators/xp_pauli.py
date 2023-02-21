@@ -49,6 +49,9 @@ class XPPauli(BaseXPPauli):
 
         Raises:
             QiskitError: Something went wrong.
+
+        See also:
+            BaseXPPauli, XPPauliList
         """
         if isinstance(data, np.ndarray):
             matrix = np.atleast_2d(data)
@@ -177,9 +180,9 @@ class XPPauli(BaseXPPauli):
         Examples:
             >>> a = XPPauli(data=np.array([0, 1, 0, 0, 2, 0], dtype=np.int64), phase_exp=6, precision=4)
             >>> b = XPPauli(data=np.array([1, 1, 1, 3, 3, 0], dtype=np.int64), phase_exp=2, precision=4)
-            >>> value = XPPauli.compose(a, b)
+            >>> value = a.compose(b)
             >>> value.matrix
-            array([[1, 0, 1, 3, 3, 0]], dtype=int64)
+            array([[1, 0, 1, 3, 3, 0]], dtype=np.int64)
             >>> value._phase_exp
             array([6])
 
@@ -217,16 +220,16 @@ class XPPauli(BaseXPPauli):
             ... phase_exp=11, precision=4)
             >>> a = a.unique_vector_rep()
             >>> a.matrix
-            np.array([[0, 1, 1, 2, 0, 3]], dtype=int64)
+            np.array([[0, 1, 1, 2, 0, 3]], dtype=np.int64)
             >>> a._phase_exp
-            array([3], dtype=int32)
+            array([3])
 
         See also:
             _unique_vector_rep
         """
         return XPPauli(super().unique_vector_rep())
 
-    def rescale_precision(self, new_precision: int) -> "XPPauli":
+    def rescale_precision(self, new_precision: int, inplace: bool = False) -> "XPPauli":
         """Rescale the generalized symplectic vector components
         of XPPauli operator to the new precision. Returns the rescaled XPPauli object.
 
@@ -239,6 +242,8 @@ class XPPauli(BaseXPPauli):
 
         Args:
             new_precision: The target precision in which XPPauli is to be expressed
+            inplace: If True, rescale XPPauli in place, else return a new XPPauli.
+            Defaults to False
 
         Returns:
             XPPauli: Resultant of rescaling the precision of XPPauli
@@ -252,18 +257,18 @@ class XPPauli(BaseXPPauli):
             ... phase_exp=12, precision=8)
             >>> a = a.rescale_precision(new_precision=2)
             >>> a.matrix
-            array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=int64)
+            array([[1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]], dtype=np.int64)
             >>> a._phase_exp
-            array([3, dtype=int32])
+            array([3])
 
         See also:
             _rescale_precision
         """
-        return XPPauli(super().rescale_precision(new_precision))
+        return XPPauli(super().rescale_precision(new_precision, inplace))
 
-    def antisymmetric_op(self) -> "XPPauli":
-        """Return the antisymmetric operator corresponding to the
-        z component of XP operator, only if x component is 0.
+    def antisymmetric_op(self, int_vec: np.ndarray) -> "XPPauli":
+        """Return the antisymmetric operator corresponding to an integer vector,
+        with precision specified by the XP operator.
 
         Note:
             This method is adapted from method XPD from XPFpackage:
@@ -272,25 +277,56 @@ class XPPauli(BaseXPPauli):
             Public License v3.0 and Mark Webster has given permission to use
             the code under the Apache License v2.0.
 
+        Args:
+            int_vec: An integer vector
+
         Returns:
-            XPPauli: Antisymmetric operator corresponding to XPPauli, if x is 0
+            XPPauli: The antisymmetric operator
 
         Examples:
             >>> a = XPPauli(
             ... data=np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 3, 3, 3], dtype=np.int64),
             ... phase_exp=0, precision=8)
-            >>> value = a.antisymmetric_op()
+            >>> value = a.antisymmetric_op(data.z)
             >>> value.matrix
-            array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=int64)
+            array([0, 0, 0, 0, 0, 0, 0, 0, -1, -2, -3, -3, -3, -3], dtype=np.int64)
             >>> value._phase_exp
             array([15])
 
         See also:
             _antisymmetric_op
         """
-        return XPPauli(super().antisymmetric_op())
+        return XPPauli(super().antisymmetric_op(int_vec))
 
-    def power(self, n: int) -> "XPPauli":
+    def inverse(self) -> "XPPauli":
+        """Return the inverse of the XP operator.
+
+        Note:
+            This method is adapted from method XPInverse from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Returns:
+            XPPauli: Inverse of XPPauli
+
+        Examples:
+            >>> a = BaseXPPauli(
+            ... matrix=np.array([0, 0, 0, 1, 0, 1, 1, 5, 5, 6, 1, 1, 4, 0], dtype=np.int64),
+            ... phase_exp=1, precision=8)
+            >>> value = a.inverse()
+            >>> value.matrix
+            array([0, 0, 0, 1, 0, 1, 1, 3, 3, 2, 1, 7, 4, 0], dtype=np.int64)
+            >>> value._phase_exp
+            array([5])
+
+        See also:
+            _inverse
+        """
+        return XPPauli(super().inverse())
+
+    def power(self, n: Union[int, list, np.ndarray]) -> "XPPauli":
         """Return the XP operator of specified precision raised to the power n.
 
         Note:
@@ -308,18 +344,167 @@ class XPPauli(BaseXPPauli):
 
         Examples:
             >>> a = XPPauli(
-            ... data=np.array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 1], dtype=np.int64),
-            ... phase_exp=12, precision=8)
+            ... data=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
             >>> value = a.power(n=5)
             >>> value.matrix
-            array([1, 1, 1, 0, 0, 1, 0, 0, 3, 4, 0, 0, 0, 5], dtype=int64)
+            array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64)
             >>> value._phase_exp
-            array([8])
+            array([4])
 
         See also:
             _power
         """
         return XPPauli(super().power(n))
+
+    def conjugate(
+        self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False
+    ) -> "XPPauli":
+        """Return the conjugation of two XP operators.
+
+        For single XP operators, this means
+
+        A.conjugate(B, front=True) = A . B . A^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise,
+
+        A.conjugate(B, front=False) = B . A . B^{-1}.
+
+        For a list of XP operators, conjugation is performed element-wise:
+
+        [A_1, ..., A_k].conjugate([B_1, ..., B_k]) = [A_1.conjugate(B_1), ..., A_k.conjugate(B_k)].
+
+        TODO: This method currently only supports conjugation of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPConjugate from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: an XP operator
+            front (bool, optional): Whether to conjugate in front (True) or
+            behind (False), defaults to True
+            inplace (bool, optional): Whether to perform the conjugation in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauli: Conjugated XP operator
+
+        Examples:
+            >>> a = XPPauli(data=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> b = XPPauli(data=np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64),
+            ... phase_exp=11, precision=6)
+            >>> value = a.conjugate(b)
+            >>> value.matrix
+            array([[1, 0, 0, 1, 0, 1, 0, 1]], dtype=np.int64)
+            >>> value._phase_exp
+            array([3])
+
+        See also:
+            _conjugate
+        """
+        if not isinstance(other, XPPauli):
+            other = XPPauli(other)
+
+        return XPPauli(super().conjugate(other, front=front, inplace=inplace))
+
+    def commutator(
+        self, other: Union["XPPauli", BaseXPPauli], front: bool = True, inplace: bool = False
+    ) -> "XPPauli":
+        """Return the commutator of two XP operators.
+
+        For single XP operators, this means
+
+        A.commutator(B, front=True) = [A, B] = A . B . A^{-1} . B^{-1},
+
+        where . is the XP Pauli multiplication and A^{-1} is the inverse of A.
+
+        Likewise,
+
+        A.commutator(B, front=False) = [B, A] = B . A . B^{-1}. A^{-1}.
+
+        For a list of XP operators, commutator is computed element-wise:
+
+        [A_1, ..., A_k].commutator([B_1, ..., B_k]) = [A_1.commutator(B_1), ..., A_k.commutator(B_k)].
+
+        TODO: This method currently only supports commutator of two XP operator
+        lists of the same length.
+
+        Note:
+            This method is adapted from method XPCommutator from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            other: an XP operator
+            front (bool, optional): Whether self is the first element in the
+            commutator (True) or second (False), defaults to True
+            inplace (bool, optional): Whether to compute the commutator in
+            place (True) or to return a new BaseXPPauli (False), defaults to
+            False
+
+        Returns:
+            XPPauli: Commutator of XP operators
+
+        Examples:
+            >>> a = XPPauli(data=np.array([1, 0, 1, 1, 5, 3, 5, 4], dtype=np.int64),
+            ... phase_exp=4, precision=6)
+            >>> b = XPPauli(data=np.array([1, 0, 0, 1, 4, 1, 0, 1], dtype=np.int64),
+            ... phase_exp=11, precision=6)
+            >>> value = a.commutator(b)
+            >>> value.matrix
+            array([[0, 0, 0, 0, 4, 0, 0, 0]], dtype=np.int64)
+            >>> value._phase_exp
+            array([8])
+
+        See also:
+            _commutator
+        """
+        if not isinstance(other, XPPauli):
+            other = XPPauli(other)
+
+        return XPPauli(super().commutator(other, front=front, inplace=inplace))
+
+    def reset_eigenvalue(self, inplace: bool = False) -> "XPPauli":
+        """Returns the adjusted XP operator such that +1 is an eigenvalue of it.
+
+        Note:
+            This method is adapted from method XPSetEval from XPFpackage:
+            https://github.com/m-webster/XPFpackage, originally developed by
+            Mark Webster. The original code is licensed under the GNU General
+            Public License v3.0 and Mark Webster has given permission to use
+            the code under the Apache License v2.0.
+
+        Args:
+            inplace: If True, adjust XPPauli in place, else return a new XPPauli.
+            Defaults to False
+
+        Returns:
+            XPPauli: XP operator with +1 as an eigenvalue
+
+        Examples:
+        >>> a = XPPauli(data=np.array([1, 0, 1, 1, 0, 1, 0, 4], dtype=np.int64),
+        ... phase_exp=4, precision=6)
+        >>> value = a.reset_eigenvalue()
+        >>> value.matrix
+        array([[1, 0, 1, 1, 0, 1, 0, 4]], dtype=np.int64)
+        >>> value._phase_exp
+        array([1])
+
+        See also:
+            _reset_eigenvalue
+        """
+        return XPPauli(super().reset_eigenvalue(inplace))
 
 
 # Update docstrings for API docs
