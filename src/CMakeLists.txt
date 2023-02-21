@@ -1,0 +1,1 @@
+add_subdirectory(qiskit_qec)
