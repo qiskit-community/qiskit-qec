@@ -279,7 +279,9 @@ class DecodingGraph:
                 w = -np.inf
             else:  # nan values are assumed maximally random
                 w = 0
-            self.graph.update_edge(edge[0], edge[1], w)
+            edge_data = self.graph.get_edge_data(edge[0], edge[1])
+            edge_data["weight"] = w
+            self.graph.update_edge(edge[0], edge[1], edge_data)
 
     def make_error_graph(self, string: str):
         """Returns error graph.
