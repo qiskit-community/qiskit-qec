@@ -50,6 +50,8 @@ endif ()
 # Add code subdirectories to make libraries
 
 # Source CMakeLists
+add_subdirectory(intern)
+add_subdirectory(extern)
 add_subdirectory(src)
 
 # Make Pybind python bindings
