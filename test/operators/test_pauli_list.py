@@ -16,6 +16,8 @@ import unittest
 from functools import lru_cache
 import itertools as it
 
+from test import combine
+
 import numpy as np
 from scipy.sparse import csr_matrix
 from ddt import ddt
@@ -49,7 +51,7 @@ from qiskit.test import QiskitTestCase
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
 
-from test import combine
+
 
 
 @lru_cache(maxsize=8)
