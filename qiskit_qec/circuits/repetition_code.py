@@ -1338,7 +1338,7 @@ class ArcCircuit:
 
         return S, hyperedges
 
-    def get_error_coords(self, counts, decoding_graph, method=METHOD_SPITZ):
+    def get_error_coords(self, counts, decoding_graph, method="spitz"):
         """
         Uses the `get_error_probs` method of the given decoding graph to generate probabilities
         of single error events from given counts. The location and time of each error is
@@ -1391,7 +1391,7 @@ class ArcCircuit:
                         for node in [node0, node1]:
                             pair = [qubit, node["link qubit"]]
                             for dt, pairs in enumerate(self.schedule):
-                                if pair in pairs:
+                                if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         time = [max(0, node0["time"] - 1 + (max(dts) + 1) / round_length)]
                         time.append(node0["time"] + min(dts) / round_length)
@@ -1407,7 +1407,7 @@ class ArcCircuit:
                         for node in node_pair:
                             pair = [qubit, node["link qubit"]]
                             for dt, pairs in enumerate(self.schedule):
-                                if pair in pairs:
+                                if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         # use to define fractional time
                         if dts[0] < dts[1]:
@@ -1424,12 +1424,19 @@ class ArcCircuit:
                     time.sort()
             else:
                 # detected only by one stabilizer
-                qubit = list(set(node0["qubits"]).intersection(z_logicals))[0]
-                pair = [qubit, node0["link qubit"]]
-                for dt, pairs in enumerate(self.schedule):
-                    if pair in pairs:
-                        time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
-                        time.append(node0["time"] + dt / round_length)
+                boundary_qubits = list(set(node0["qubits"]).intersection(z_logicals))
+                # for the case of boundary stabilizers
+                if boundary_qubits:
+                    qubit = boundary_qubits[0]
+                    pair = [qubit, node0["link qubit"]]
+                    for dt, pairs in enumerate(self.schedule):
+                        if pair in pairs or tuple(pair) in pairs:
+                            time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
+                            time.append(node0["time"] + dt / round_length)
+
+                else:
+                    qubit = tuple(node0["qubits"] + [node0["link qubit"]])
+                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
 
             if time != []:  # only record if not nan
                 if (qubit, time[0], time[1]) not in error_coords:
