@@ -474,7 +474,10 @@ disable=raw-checker-failed,
         missing-return-type-doc,
         missing-return-doc,
         missing-raises-doc,
-        logging-too-many-args
+        logging-too-many-args,
+        spelling,       # way too noisy
+        no-self-use,        # disabled as it is too verbose
+        bad-continuation, bad-whitespace # differences of opinion with black
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
