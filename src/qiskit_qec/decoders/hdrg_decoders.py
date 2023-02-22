@@ -18,10 +18,9 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
+from typing import Dict, List, Set
 from rustworkx import connected_components, distance_matrix, PyGraph
-from typing import Dict, List, Set, Union
 
-from qiskit_qec.circuits import SurfaceCodeCircuit
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.exceptions import QiskitQECError
@@ -231,18 +230,29 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
 @dataclass
 class SpanningForest:
+    """
+    Spanning forest for the peeling decoder.
+    """
+
     vertices: Dict[int, List[int]]
     edges: List[int]
 
 
 @dataclass
 class BoundaryEdge:
+    """
+    Boundary edge for the boundary of a UnionFindDecoderCluster.
+    """
+
     index: int
     cluster_vertex: int
     neighbour_vertex: int
     data: Dict[str, object]
 
     def reverse(self):
+        """
+        Returns a reversed version of the boundary edge (cluster and neighbour vertex flipped)
+        """
         return BoundaryEdge(
             index=self.index,
             cluster_vertex=self.neighbour_vertex,
@@ -253,6 +263,10 @@ class BoundaryEdge:
 
 @dataclass
 class UnionFindDecoderCluster:
+    """
+    Cluster for the UnionFindDecoder
+    """
+
     boundary: List[BoundaryEdge]
     atypical_nodes: Set[int]
     fully_grown_edges: Set[int]
@@ -261,6 +275,10 @@ class UnionFindDecoderCluster:
 
 @dataclass
 class FusionEntry:
+    """
+    Entry for the fusion list between the growing and merging of the union find decoder.
+    """
+
     u: int
     v: int
     connecting_edge: BoundaryEdge
@@ -280,13 +298,15 @@ class UnionFindDecoder(ClusteringDecoder):
 
     def __init__(
         self,
-        code: Union[SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit],
+        code,
         logical: str,
         decoding_graph: DecodingGraph = None,
     ) -> None:
         super().__init__(code, decoding_graph)
         self.logical = logical
-        self.invalid = []
+        self.graph = deepcopy(self.decoding_graph.graph)
+        self.clusters: List[List[int]] = []
+        self.odd_cluster_roots: Set[int] = []
 
     def process(self, string: str):
         """
@@ -302,7 +322,7 @@ class UnionFindDecoder(ClusteringDecoder):
         """
         self.graph = deepcopy(self.decoding_graph.graph)
         string = "".join([str(c) for c in string[::-1]])
-        output = [int(bit) for bit in list(string.split(" ")[0])][::-1]
+        output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
         highlighted_nodes = self.code.string2nodes(string, logical=self.logical)
         if not highlighted_nodes:
             return output  # There's nothing for us to do here
@@ -326,7 +346,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
         return output
 
-    def cluster(self, nodes):
+    def cluster(self, nodes) -> List[List[int]]:
         """
         Create clusters using the union-find algorithm.
 
