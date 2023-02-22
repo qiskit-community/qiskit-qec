@@ -4,7 +4,7 @@
 #
 # (C) Copyright IBM 2019.
 #
-# This code is licensed under the Apache License, Version 2.0. You may
+# This code is licensed under the Apache License, Version 2.0. You may  ddddddd
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
@@ -354,7 +354,8 @@ class CSSDecodingGraph:
 
         self._decoding_graph()
 
-    def _layer_types(self, blocks: int, round_schedule: str, basis: str) -> List[str]:
+    @staticmethod
+    def _layer_types(blocks: int, round_schedule: str, basis: str) -> List[str]:
         """Return a list of decoding graph layer types.
 
         The entries are 'g' for gauge and 's' for stabilizer.
