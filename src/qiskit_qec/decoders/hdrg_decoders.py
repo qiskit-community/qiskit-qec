@@ -19,7 +19,7 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from rustworkx import connected_components, distance_matrix, PyGraph
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Union
 
 from qiskit_qec.circuits import SurfaceCodeCircuit
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
@@ -280,7 +280,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
     def __init__(
         self,
-        code: SurfaceCodeCircuit | RepetitionCodeCircuit | ArcCircuit,
+        code: Union[SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit],
         logical: str,
         decoding_graph: DecodingGraph = None,
     ) -> None:

@@ -12,16 +12,17 @@
 
 """Tests for template."""
 
+import logging
 from random import choices
 import unittest
 import math
 from unittest import TestCase
+from random import random
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import UnionFindDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
-
 
 
 class UnionFindDecoderTest(TestCase):
@@ -43,7 +44,6 @@ class UnionFindDecoderTest(TestCase):
         noise_model.set_error_probability("measure", p)
         self.noise_model = noise_model
 
-
         self.fault_enumeration_method = "stabilizer"
 
         return super().setUp()
@@ -59,9 +59,7 @@ class UnionFindDecoderTest(TestCase):
             code = SurfaceCodeCircuit(d=3, T=3)
             decoder = UnionFindDecoder(code, logical)
             fault_enumerator = FaultEnumerator(
-                
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
-            
             )
             for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
@@ -83,9 +81,7 @@ class UnionFindDecoderTest(TestCase):
             code = RepetitionCodeCircuit(d=5, T=5)
             decoder = UnionFindDecoder(code, logical)
             fault_enumerator = FaultEnumerator(
-                
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
-            
             )
             for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
@@ -100,10 +96,7 @@ class UnionFindDecoderTest(TestCase):
         """
         Test the union find decoder on a circular ARC code with faults inserted
         by FaultEnumerator by checking if the syndromes have even parity
-        Test the union find decoder on a circular ARC code with faults inserted
-        by FaultEnumerator by checking if the syndromes have even parity
         (if it's a valid code state) and if the logical value measured
-        is the one encoded by the circuit (only logical 0 for the ARC circuit,
         is the one encoded by the circuit (only logical 0 for the ARC circuit,
         see issue #309).
         """
@@ -112,9 +105,7 @@ class UnionFindDecoderTest(TestCase):
         code = ArcCircuit(links=links, T=T, resets=False)
         decoder = UnionFindDecoder(code, "0")
         fault_enumerator = FaultEnumerator(
-            
             code.circuit[code.base], method=self.fault_enumeration_method, model=self.noise_model
-        
         )
         for fault in fault_enumerator.generate():
             outcome = "".join([str(x) for x in fault[3]])
@@ -122,11 +113,7 @@ class UnionFindDecoderTest(TestCase):
             logical_measurement = temp_syndrome(
                 corrected_outcome, [[int(q / 2) for q in code.z_logicals]]
             )[0]
-            logical_measurement = temp_syndrome(
-                corrected_outcome, [[int(q / 2) for q in code.z_logicals]]
-            )[0]
             self.assertEqual(str(logical_measurement), "0")
-
 
     def test_error_rates(self):
         """
@@ -138,9 +125,7 @@ class UnionFindDecoderTest(TestCase):
 
         testcases = []
         testcases = [
-            
             "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(N)
-        
         ]
         codes = self.construct_codes(d)
 
@@ -153,17 +138,15 @@ class UnionFindDecoderTest(TestCase):
                 z_logicals = code.css_z_logical[0]
 
             logical_errors = 0
-            min_flips_for_logical = code.d
+            min_flips_to_cause_logical_error = code.d
             for sample in range(N):
                 # generate random string
                 string = ""
                 for _ in range(code.T):
                     string += "0" * (d - 1) + " "
-                    string += "0" * (d - 1) + " "
                 string += testcases[sample]
                 # get and check corrected_z_logicals
                 outcome = decoder.process(string)
-                logical_outcome = sum([outcome[int(z_logical / 2)] for z_logical in z_logicals]) % 2
                 logical_outcome = sum([outcome[int(z_logical / 2)] for z_logical in z_logicals]) % 2
                 if not logical_outcome == 0:
                     logical_errors += 1
@@ -177,15 +160,11 @@ class UnionFindDecoderTest(TestCase):
                 logical_errors / N
                 < (math.factorial(d)) / (math.factorial(int(d / 2)) ** 2) * p**4,
                 "Logical error rate shouldn't exceed d!/((d/2)!^2)*p^(d/2).",
-                logical_errors / N
-                < (math.factorial(d)) / (math.factorial(int(d / 2)) ** 2) * p**4,
-                "Logical error rate shouldn't exceed d!/((d/2)!^2)*p^(d/2).",
             )
             self.assertTrue(
                 min_flips_to_cause_logical_error >= d / 2,
                 "Minimum amount of errors that also causes logical errors shouldn't be lower than d/2.",
             )
-
 
     def construct_codes(self, d):
         # parameters for test
@@ -199,7 +178,5 @@ class UnionFindDecoderTest(TestCase):
         return codes
 
 
-
 if __name__ == "__main__":
     unittest.main()
-
