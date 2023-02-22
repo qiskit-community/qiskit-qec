@@ -4,7 +4,7 @@
 #
 # (C) Copyright IBM 2019.
 #
-# This code is licensed under the Apache License, Version 2.0. You may
+# This code is licensed under the Apache License, Version 2.0. You may  ddddddd
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
@@ -54,6 +54,7 @@ class DecodingGraph:
         self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
+
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
@@ -61,6 +62,7 @@ class DecodingGraph:
             self.hyperedges = []
 
             if self.code is not None:
+
                 # get the circuit used as the base case
                 if isinstance(self.code.circuit, dict):
                     if "base" not in dir(self.code):
@@ -122,7 +124,6 @@ class DecodingGraph:
             https://doi.org/10.1002/qute.201800012
         """
 
-<<<<<<< HEAD:qiskit_qec/decoders/decoding_graph.py
         shots = sum(counts.values())
 
         if method not in self.AVAILABLE_METHODS:
@@ -184,59 +185,6 @@ class DecodingGraph:
                             error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
                         else:
                             error_probs[n0, n1] = np.nan
-=======
-        shots = sum(results.values())
-
-        neighbours = {}
-        av_v = {}
-        for n in self.graph.node_indexes():
-            av_v[n] = 0
-            neighbours[n] = []
-
-        av_vv = {}
-        av_xor = {}
-        for n0, n1 in self.graph.edge_list():
-            av_vv[n0, n1] = 0
-            av_xor[n0, n1] = 0
-            neighbours[n0].append(n1)
-            neighbours[n1].append(n0)
-
-        for string in results:
-            # list of i for which v_i=1
-            error_nodes = self.code.string2nodes(string, logical=logical)
-
-            for node0 in error_nodes:
-                n0 = self.graph.nodes().index(node0)
-                av_v[n0] += results[string]
-                for n1 in neighbours[n0]:
-                    node1 = self.graph[n1]
-                    if node1 in error_nodes and (n0, n1) in av_vv:
-                        av_vv[n0, n1] += results[string]
-                    if node1 not in error_nodes:
-                        if (n0, n1) in av_xor:
-                            av_xor[n0, n1] += results[string]
-                        else:
-                            av_xor[n1, n0] += results[string]
-
-        for n in self.graph.node_indexes():
-            av_v[n] /= shots
-        for n0, n1 in self.graph.edge_list():
-            av_vv[n0, n1] /= shots
-            av_xor[n0, n1] /= shots
-
-        boundary = []
-        error_probs = {}
-        for n0, n1 in self.graph.edge_list():
-            if self.graph[n0]["is_boundary"]:
-                boundary.append(n1)
-            elif self.graph[n1]["is_boundary"]:
-                boundary.append(n0)
-            else:
-                if (1 - 2 * av_xor[n0, n1]) != 0:
-                    x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
-                    if x < 0.25:
-                        error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
->>>>>>> 306-nodes-for-202-pass-through:src/qiskit_qec/decoders/decoding_graph.py
                     else:
                         error_probs[n0, n1] = np.nan
 
@@ -293,107 +241,7 @@ class DecodingGraph:
 
         return error_probs
 
-<<<<<<< HEAD:qiskit_qec/decoders/decoding_graph.py
     def weight_syndrome_graph(self, counts, method: str = METHOD_SPITZ):
-=======
-    def get_error_coords(self, results, logical="0"):
-        """
-        Generate probabilities of single error events from result counts.
-
-        Args:
-            results (dict): A results dictionary.
-            logical (string): Logical value whose results are used.
-        Returns:
-            dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
-            events. Time refers to measurement rounds Values are a dictionary whose keys are
-            the edges that detected the event, and whose keys are the calculated probabilities.
-        Additional information:
-            Uses `results` to estimate the probability of the errors that
-            create the pairs of nodes specified by the edge.
-            Default calculation method is that of Spitz, et al.
-            https://doi.org/10.1002/qute.201800012
-        """
-
-        error_probs = self.get_error_probs(results, logical=logical)
-        nodes = self.graph.nodes()
-
-        if hasattr(self.code, "z_logicals"):
-            z_logicals = set(self.code.z_logicals)
-        elif hasattr(self.code, "z_logical"):
-            z_logicals = {self.code.z_logical}
-        else:
-            print("No qubits for z logicals found. Proceeding without.")
-            z_logicals = set()
-
-        round_length = len(self.code.schedule) + 1
-
-        error_coords = {}
-        for (n0, n1), prob in error_probs.items():
-            node0 = nodes[n0]
-            node1 = nodes[n1]
-            if n0 != n1:
-                qubits = self.graph.get_edge_data(n0, n1)["qubits"]
-                if qubits:
-                    # error on a code qubit between rounds, or during a round
-                    assert (
-                        node0["time"] == node1["time"] and node0["qubits"] != node1["qubits"]
-                    ) or (node0["time"] != node1["time"] and node0["qubits"] != node1["qubits"])
-                    qubit = qubits[0]
-                    # error between rounds
-                    if node0["time"] == node1["time"]:
-                        dts = []
-                        for node in [node0, node1]:
-                            pair = [qubit, node["link qubit"]]
-                            for dt, pairs in enumerate(self.code.schedule):
-                                if pair in pairs:
-                                    dts.append(dt)
-                        time = [max(0, node0["time"] - 1 + (max(dts) + 1) / round_length)]
-                        time.append(node0["time"] + min(dts) / round_length)
-                    # error during a round
-                    else:
-                        # put nodes in descending time order
-                        if node0["time"] < node1["time"]:
-                            node_pair = [node1, node0]
-                        else:
-                            node_pair = [node0, node1]
-                        # see when in the schedule each node measures the qubit
-                        dts = []
-                        for node in node_pair:
-                            pair = [qubit, node["link qubit"]]
-                            for dt, pairs in enumerate(self.code.schedule):
-                                if pair in pairs:
-                                    dts.append(dt)
-                        # use to define fractional time
-                        if dts[0] < dts[1]:
-                            time = [node_pair[1]["time"] + (dts[0] + 1) / round_length]
-                            time.append(node_pair[1]["time"] + dts[1] / round_length)
-                        else:
-                            # impossible cases get no valid time
-                            time = []
-                else:
-                    # measurement error
-                    assert node0["time"] != node1["time"] and node0["qubits"] == node1["qubits"]
-                    qubit = node0["link qubit"]
-                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
-                    time.sort()
-            else:
-                # detected only by one stabilizer
-                qubit = list(set(node0["qubits"]).intersection(z_logicals))[0]
-                pair = [qubit, node0["link qubit"]]
-                for dt, pairs in enumerate(self.code.schedule):
-                    if pair in pairs:
-                        time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
-                        time.append(node0["time"] + dt / round_length)
-
-            if time:  # time != []:  # only record if not nan
-                if (qubit, time[0], time[1]) not in error_coords:
-                    error_coords[qubit, time[0], time[1]] = {}
-                error_coords[qubit, time[0], time[1]][n0, n1] = prob
-
-        return error_coords
-
-    def weight_syndrome_graph(self, results):
->>>>>>> 306-nodes-for-202-pass-through:src/qiskit_qec/decoders/decoding_graph.py
         """Generate weighted syndrome graph from result counts.
 
         Args:
@@ -491,6 +339,7 @@ class CSSDecodingGraph:
         round_schedule: str,
         basis: str,
     ):
+
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
         self.css_x_boundary = css_x_boundary
