@@ -461,13 +461,13 @@ class RepetitionCodeCircuit:
 
     def is_cluster_neutral(self, atypical_nodes):
         """
-        Determines whether or not the cluster is even. Even means that one or more 
-        errors could have caused the set of atypical nodes (syndrome changes) passed 
+        Determines whether or not the cluster is even. Even means that one or more
+        errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
-        Args: 
+        Args:
             atypical_nodes (dictionary in the form of the return value of string2nodes)
         """
-        return not bool(len(atypical_nodes)%2)
+        return not bool(len(atypical_nodes) % 2)
 
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
@@ -1234,10 +1234,10 @@ class ArcCircuit:
 
     def is_cluster_neutral(self, atypical_nodes):
         """
-        Determines whether or not the cluster is even. Even means that one or more 
-        errors could have caused the set of atypical nodes (syndrome changes) passed 
+        Determines whether or not the cluster is even. Even means that one or more
+        errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
-        Args: 
+        Args:
             atypical_nodes (dictionary in the form of the return value of string2nodes)
         """
         neutral, logicals, _ = self.check_nodes(atypical_nodes)

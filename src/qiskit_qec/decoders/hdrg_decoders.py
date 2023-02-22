@@ -31,6 +31,7 @@ class ClusteringDecoder:
     """
     Generic base class for clustering decoders.
     """
+
     def __init__(
         self,
         code_circuit,
@@ -42,6 +43,7 @@ class ClusteringDecoder:
         else:
             self.decoding_graph = DecodingGraph(self.code)
 
+
 class BravyiHaahDecoder(ClusteringDecoder):
     """Decoder based on finding connected components within the decoding graph."""
 
@@ -52,7 +54,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
     ):
         if not isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
             raise QiskitQECError("Error: code_circuit not supported.")
-        
+
         super().__init__(code_circuit, decoding_graph)
 
         if isinstance(self.code, ArcCircuit):
@@ -245,7 +247,7 @@ class BoundaryEdge:
             index=self.index,
             cluster_vertex=self.neighbour_vertex,
             neighbour_vertex=self.cluster_vertex,
-            data=self.data
+            data=self.data,
         )
 
 
@@ -266,7 +268,7 @@ class FusionEntry:
 
 class UnionFindDecoder(ClusteringDecoder):
     """
-    Decoder based on growing clusters around syndrome errors to 
+    Decoder based on growing clusters around syndrome errors to
     "convert" them into erasure errors, which can be corrected easily,
     by the peeling decoder in case of the surface code, or by checking for
     interference with the boundary in case of an abritrary ARC.
@@ -280,7 +282,7 @@ class UnionFindDecoder(ClusteringDecoder):
         self,
         code: SurfaceCodeCircuit | RepetitionCodeCircuit | ArcCircuit,
         logical: str,
-        decoding_graph: DecodingGraph = None
+        decoding_graph: DecodingGraph = None,
     ) -> None:
         super().__init__(code, decoding_graph)
         self.logical = logical
@@ -301,8 +303,7 @@ class UnionFindDecoder(ClusteringDecoder):
         self.graph = deepcopy(self.decoding_graph.graph)
         string = "".join([str(c) for c in string[::-1]])
         output = [int(bit) for bit in list(string.split(" ")[0])][::-1]
-        highlighted_nodes = self.code.string2nodes(
-            string, logical=self.logical)
+        highlighted_nodes = self.code.string2nodes(string, logical=self.logical)
         if not highlighted_nodes:
             return output  # There's nothing for us to do here
         clusters = self.cluster(highlighted_nodes)
@@ -315,14 +316,13 @@ class UnionFindDecoder(ClusteringDecoder):
                     if node["is_boundary"]:
                         # FIXME: Find a general way to go from physical qubit
                         # index to code qubit index
-                        qubit_to_be_corrected = int(node["qubits"][0]/2)
-                        output[qubit_to_be_corrected] = (output[qubit_to_be_corrected]+1) % 2
+                        qubit_to_be_corrected = int(node["qubits"][0] / 2)
+                        output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
                 continue
 
             flipped_qubits = self.peeling(erasure)
             for qubit_to_be_corrected in flipped_qubits:
-                output[qubit_to_be_corrected] = (
-                    output[qubit_to_be_corrected]+1) % 2
+                output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
 
         return output
 
@@ -331,7 +331,7 @@ class UnionFindDecoder(ClusteringDecoder):
         Create clusters using the union-find algorithm.
 
         Args:
-            nodes (List): List of non-typical nodes in the syndrome graph, 
+            nodes (List): List of non-typical nodes in the syndrome graph,
             of the type produced by `string2nodes`.
 
         Returns:
@@ -351,21 +351,17 @@ class UnionFindDecoder(ClusteringDecoder):
         self.odd_cluster_roots = set(node_indices)
         for node_index in self.graph.node_indices():
             boundary_edges = []
-            for edge_index, (_, neighbour, data) in dict(self.graph.incident_edge_index_map(node_index)).items():
-                boundary_edges.append(
-                    BoundaryEdge(
-                        edge_index,
-                        node_index,
-                        neighbour,
-                        data
-                    )
-                )
+            for edge_index, (_, neighbour, data) in dict(
+                self.graph.incident_edge_index_map(node_index)
+            ).items():
+                boundary_edges.append(BoundaryEdge(edge_index, node_index, neighbour, data))
             self.clusters[node_index] = UnionFindDecoderCluster(
                 boundary=boundary_edges,
                 fully_grown_edges=set(),
-                atypical_nodes=set(
-                    [node_index]) if node_index in self.odd_cluster_roots else set([]),
-                size=1
+                atypical_nodes=set([node_index])
+                if node_index in self.odd_cluster_roots
+                else set([]),
+                size=1,
             )
 
         while self.odd_cluster_roots:
@@ -384,7 +380,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
     def find(self, u: int) -> int:
         """
-        Find() function as described in the paper that returns the root 
+        Find() function as described in the paper that returns the root
         of the cluster of a node, including path compression.
 
         Args:
@@ -404,7 +400,7 @@ class UnionFindDecoder(ClusteringDecoder):
         Grow every "odd" cluster by half an edge.
 
         Returns:
-            fusion_edge_list (List[FusionEntry]): List of edges that connect two 
+            fusion_edge_list (List[FusionEntry]): List of edges that connect two
             clusters that will be merged in the next step.
         """
         fusion_edge_list: List[FusionEntry] = []
@@ -416,7 +412,8 @@ class UnionFindDecoder(ClusteringDecoder):
                     edge.data["fully_grown"] = True
                     cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(
-                        u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge)
+                        u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge
+                    )
                     fusion_edge_list.append(fusion_entry)
         return fusion_edge_list
 
@@ -426,7 +423,7 @@ class UnionFindDecoder(ClusteringDecoder):
         Updates the odd_clusters list by recomputing the neutrality of the newly merged clusters.
 
         Args:
-            fusion_edge_list (List[FusionEntry]): List of edges that connect two 
+            fusion_edge_list (List[FusionEntry]): List of edges that connect two
             clusters that was computed in _grow_clusters().
         """
         for entry in fusion_edge_list:
@@ -449,7 +446,9 @@ class UnionFindDecoder(ClusteringDecoder):
             cluster.size += other_cluster.size
 
             # update odd_cluster_roots
-            if not self.code.is_cluster_neutral([self.graph[node] for node in cluster.atypical_nodes]):
+            if not self.code.is_cluster_neutral(
+                [self.graph[node] for node in cluster.atypical_nodes]
+            ):
                 self.odd_cluster_roots.add(new_root)
             else:
                 self.odd_cluster_roots.discard(new_root)
@@ -457,11 +456,11 @@ class UnionFindDecoder(ClusteringDecoder):
             self.graph[root_to_update]["root"] = new_root
 
     def peeling(self, erasure: PyGraph) -> List[int]:
-        """"
+        """ "
         Runs the peeling decoder on the erasure provided.
-        Assumes that the erasure is one connected component, if not it will run in an 
+        Assumes that the erasure is one connected component, if not it will run in an
         infinite loop in the tree construction.
-        It works by first producing a spanning forest of the erasure and then 
+        It works by first producing a spanning forest of the erasure and then
         going backwards through the edges of the tree computing the error based on the syndrome.
         Based on arXiv:1703.01517.
 
@@ -471,7 +470,7 @@ class UnionFindDecoder(ClusteringDecoder):
             erasure (PyGraph): subgraph of the syndrome graph that represents the erasure.
 
         Returns:
-            errors (List[int]): List of qubit indices on which Pauli errors occurred. 
+            errors (List[int]): List of qubit indices on which Pauli errors occurred.
         """
         tree = SpanningForest(vertices={}, edges=[])
 
@@ -488,7 +487,8 @@ class UnionFindDecoder(ClusteringDecoder):
         while len(tree.edges) < len(erasure.nodes()) - 1:
             vertices = copy(tree.vertices)
             for node in vertices.keys():
-                if len(tree.edges) >= len(erasure.nodes()) - 1: break
+                if len(tree.edges) >= len(erasure.nodes()) - 1:
+                    break
                 for edge, (_, neighbour, _) in dict(erasure.incident_edge_index_map(node)).items():
                     if not neighbour in tree.vertices.keys():
                         tree.edges.append(edge)
@@ -499,8 +499,7 @@ class UnionFindDecoder(ClusteringDecoder):
         edges = set()
         for edge in tree.edges[::-1]:
             endpoints = erasure.get_edge_endpoints_by_index(edge)
-            pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]
-                                                               ] else endpoints[1]
+            pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree.vertices[tree_vertex].remove(edge)
             if erasure[pendant_vertex]["syndrome"] and not erasure[pendant_vertex]["is_boundary"]:
@@ -508,4 +507,6 @@ class UnionFindDecoder(ClusteringDecoder):
                 erasure[tree_vertex]["syndrome"] = not erasure[tree_vertex]["syndrome"]
                 erasure[pendant_vertex]["syndrome"] = False
 
-        return [erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]]
+        return [
+            erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]
+        ]

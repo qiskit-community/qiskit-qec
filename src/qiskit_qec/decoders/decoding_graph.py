@@ -94,8 +94,14 @@ class DecodingGraph:
                                     qubits = list(
                                         set(source["qubits"]).intersection(target["qubits"])
                                     )
-                                    if not qubits: continue
-                                if source["time"] != target["time"] and len(qubits) > 1 and not source["is_boundary"] and not target["is_boundary"]:
+                                    if not qubits:
+                                        continue
+                                if (
+                                    source["time"] != target["time"]
+                                    and len(qubits) > 1
+                                    and not source["is_boundary"]
+                                    and not target["is_boundary"]
+                                ):
                                     qubits = []
                                 edge = {"qubits": qubits, "weight": 1}
                                 graph.add_edge(n0, n1, edge)
