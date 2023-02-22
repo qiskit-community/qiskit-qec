@@ -99,8 +99,7 @@ class UnionFindDecoderTest(TestCase):
         see issue #309).
         """
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        T = len(links)
-        code = ArcCircuit(links=links, T=T, resets=False)
+        code = ArcCircuit(links=links, T=len(links), resets=False)
         decoder = UnionFindDecoder(code, "0")
         fault_enumerator = FaultEnumerator(
             code.circuit[code.base], method=self.fault_enumeration_method, model=self.noise_model
@@ -119,11 +118,11 @@ class UnionFindDecoderTest(TestCase):
         """
         d = 8
         p = 0.01
-        N = 1000
+        samples = 1000
 
         testcases = []
         testcases = [
-            "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(N)
+            "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(samples)
         ]
         codes = self.construct_codes(d)
 
@@ -137,7 +136,7 @@ class UnionFindDecoderTest(TestCase):
 
             logical_errors = 0
             min_flips_for_logical = code.d
-            for sample in range(N):
+            for sample in range(samples):
                 # generate random string
                 string = ""
                 for _ in range(code.T):
@@ -153,7 +152,7 @@ class UnionFindDecoderTest(TestCase):
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
             self.assertTrue(
-                logical_errors / N
+                logical_errors / samples
                 < (math.factorial(d)) / (math.factorial(int(d / 2)) ** 2) * p**4,
                 "Logical error rate shouldn't exceed d!/((d/2)!^2)*p^(d/2).",
             )
@@ -163,6 +162,9 @@ class UnionFindDecoderTest(TestCase):
             )
 
     def construct_codes(self, d):
+        """
+        Construct codes for the logical error rate test.
+        """
         # parameters for test
         codes = []
         # add them to the code list
