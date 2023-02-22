@@ -156,7 +156,7 @@ class TestRepCodes(unittest.TestCase):
         """Check that single errors create a pair of nodes for all types of code."""
         codes = {}
         for d in [2, 3]:
-            for T in [1, 2]:
+            for T in [1, 2, 3]:
                 for xbasis in [False, True]:
                     for resets in [False, True]:
                         for delay in [0, 16]:
@@ -177,25 +177,28 @@ class TestRepCodes(unittest.TestCase):
 
     def test_weight(self):
         """Error weighting code test."""
-        error = (
-            "Error: Calculated error probability not correct for "
-            + "test result '0 0  11 00' in d=3, T=1 repetition code."
-        )
         code = RepetitionCode(3, 1)
         dec = DecodingGraph(code)
         test_results = {"000 00": 1024, "010 11": 512}
-        p = dec.get_error_probs(test_results)
-        n0 = dec.graph.nodes().index(
-            {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
-        )
-        n1 = dec.graph.nodes().index(
-            {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
-        )
-        # edges in graph aren't directed and could be in any order
-        if (n0, n1) in p:
-            self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
-        else:
-            self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
+        for method in ["spitz", "naive"]:
+            error = (
+                "Error: Calculated error probability not correct in"
+                + " d=3, T=1 repetition code using calculation method '"
+                + method
+                + "'."
+            )
+            p = dec.get_error_probs(test_results, method=method)
+            n0 = dec.graph.nodes().index(
+                {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
+            )
+            n1 = dec.graph.nodes().index(
+                {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
+            )
+            # edges in graph aren't directed and could be in any order
+            if (n0, n1) in p:
+                self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+            else:
+                self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
 
 
 class TestARCCodes(unittest.TestCase):
@@ -261,19 +264,40 @@ class TestARCCodes(unittest.TestCase):
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
         triangle = [(0, 1, 2), (2, 3, 4), (4, 5, 0)]
-        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (4, 6, 7)]
+        tadpole = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         t_pose = [(0, 1, 2), (2, 3, 4), (2, 5, 6), (6, 7, 8)]
         for links in [triangle, tadpole, t_pose]:
             for resets in [True, False]:
-                code = ArcCircuit(
-                    links, T=2, barriers=True, delay=1, basis="xy", run_202=False, resets=resets
-                )
-                self.single_error_test(code)
+                conditional_resets = [False]
+                if resets:
+                    conditional_resets.append(True)
+                for conditional_reset in conditional_resets:
+                    for logical in ["0", "1"]:
+                        code = ArcCircuit(
+                            links,
+                            T=2,
+                            barriers=True,
+                            delay=1,
+                            basis="xy",
+                            run_202=False,
+                            resets=resets,
+                            conditional_reset=conditional_reset,
+                            logical=logical,
+                        )
+                        self.assertTrue(
+                            code.resets == resets,
+                            "Code has resets="
+                            + str(code.resets)
+                            + " when it should be "
+                            + str(resets)
+                            + ".",
+                        )
+                        self.single_error_test(code)
 
     def test_202s(self):
         """Test that [[2,0,2]] codes appear when needed and act as required."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
-        T = 5 * len(links)
+        T = 15
         # first, do they appear when needed
         for run_202 in [True, False]:
             code = ArcCircuit(links, T=T, run_202=run_202)
@@ -288,63 +312,88 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        for ff in [True, False]:
-            for resets in [True, False]:
-                code = ArcCircuit(links, T=T, run_202=True, ff=ff, resets=resets)
-                backend = Aer.get_backend("aer_simulator")
-                counts = backend.run(code.circuit[code.basis]).result().get_counts()
-                self.assertTrue(
-                    len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits."
-                )
-                nodeless = True
-                for string in counts:
-                    nodeless = nodeless and code.string2nodes(string) == []
-                self.assertTrue(
-                    nodeless,
-                    "Non-trivial nodes found for noiseless [[2,0,2]] circuits with ff="
-                    + str(ff)
-                    + ", resets="
-                    + str(resets)
-                    + ".",
-                )
+        code = ArcCircuit(links, T=T, run_202=True, logical="1")
+        backend = Aer.get_backend("aer_simulator")
+        counts = backend.run(code.circuit[code.basis]).result().get_counts()
+        self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
+        nodeless = True
+        for string in counts:
+            nodeless = nodeless and code.string2nodes(string) == []
+        self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
+
+    def test_single_error_202s(self):
+        """Test a range of single errors for a code with [[2,0,2]] codes."""
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
+        for T in [21, 25]:
+            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1")
+            assert code.run_202
+            # insert errors on a selection of qubits during a selection of rounds
+            qc = code.circuit[code.base]
+            for q in [0, 2, 5, 6, 1, 7]:
+                for t in [2 + 5 * l for l in range(len(links))]:
+                    error_qc = QuantumCircuit()
+                    for qreg in qc.qregs:
+                        error_qc.add_register(qreg)
+                    for creg in qc.cregs:
+                        error_qc.add_register(creg)
+                    barrier_num = 0
+                    for gate in qc.data:
+                        if gate[0].name == "barrier":
+                            barrier_num += 1
+                            if barrier_num == 2 * t + 1:
+                                if q % 2 == 0:
+                                    error_qc.z(code.code_qubit[code.code_index[q]])
+                                else:
+                                    error_qc.x(code.link_qubit[code.link_index[q]])
+                        error_qc.append(gate)
+                    counts = Aer.get_backend("qasm_simulator").run(error_qc).result().get_counts()
+                    for string in counts:
+                        # look at only bulk non-conjugate nodes
+                        nodes = [
+                            node
+                            for node in code.string2nodes(string)
+                            if "conjugate" not in node and not node["is_boundary"]
+                        ]
+                        # require at most two (or three for the trivalent vertex or neighbouring aux)
+                        self.assertTrue(
+                            len(nodes) <= (2 + int(q in (2, 7))),
+                            "Too many nodes for a single error in a [[2,0,2]] code for T="
+                            + str(T)
+                            + ".",
+                        )
 
     def test_feedforward(self):
-        """Test that the correct behaviour is seen with and without feedforward for [[2,0,2]] codes."""
+        """Test that the correct behaviour is seen with feedforward for [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6)]
-        T = 5 * len(links)
+        T = 10
         # try codes with and without feedforward correction
-        for ff in [True, False]:
-            code = ArcCircuit(
-                links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, ff=ff
-            )
-            correct = code._ff == ff
-            # insert an initial bitflip on qubit 2
-            test_qcs = []
-            for basis in [code.basis, code.basis[::-1]]:
-                qc = code.circuit[basis]
+        code = ArcCircuit(
+            links, T, barriers=True, basis="xy", color={0: 0, 2: 1, 4: 0, 6: 1}, logical="1"
+        )
+        correct = True
+        # insert an initial bitflip on qubit 2
+        test_qcs = []
+        for basis in [code.basis, code.basis[::-1]]:
+            qc = code.circuit[basis]
 
-                test_qc = QuantumCircuit()
-                for qreg in qc.qregs:
-                    test_qc.add_register(qreg)
-                for creg in qc.cregs:
-                    test_qc.add_register(creg)
-                test_qc.x(code.code_qubit[2])
-                for gate in qc:
-                    test_qc.append(gate)
-                test_qcs.append(test_qc)
-            result = Aer.get_backend("qasm_simulator").run(test_qcs).result()
-            # check result strings are correct
-            for j in range(2):
-                counts = result.get_counts(j)
-                for string in counts:
-                    string = string.split(" ")[::-1]
-                    if ff:
-                        # post 202 result should be same as initial
-                        correct = correct and string[10] == string[0]
-                    else:
-                        # final 202 result should be same as those that follow
-                        correct = correct and string[9] == string[10]
-            self.assertTrue(correct, "Result string not as required for ff=" + str(ff))
+            test_qc = QuantumCircuit()
+            for qreg in qc.qregs:
+                test_qc.add_register(qreg)
+            for creg in qc.cregs:
+                test_qc.add_register(creg)
+            test_qc.x(code.code_qubit[2])
+            for gate in qc:
+                test_qc.append(gate)
+            test_qcs.append(test_qc)
+        result = Aer.get_backend("qasm_simulator").run(test_qcs).result()
+        # check result strings are correct
+        for j in range(2):
+            counts = result.get_counts(j)
+            for string in counts:
+                # final result should be same as initial
+                correct_final = code.logical + str((int(code.logical) + 1) % 2) + code.logical * 2
+                correct = correct and string[0:4] == correct_final
+        self.assertTrue(correct, "Result string not as required")
 
     def test_bases(self):
         """Test that correct rotations are used for basis changes."""
@@ -384,7 +433,7 @@ class TestARCCodes(unittest.TestCase):
         backend = FakeJakarta()
         links = [(0, 1, 3), (3, 5, 6)]
         schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
-        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, resets=True)
+        code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, logical="0")
         circuit = code.transpile(backend)
         self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
         circuit = code.transpile(backend, echo_num=(0, 2))
@@ -399,6 +448,42 @@ class TestARCCodes(unittest.TestCase):
             circuit[code.base].count_ops()["cx"] == 8,
             "Error: Wrong number of cx gates after transpilation.",
         )
+
+    def test_weight(self):
+        """Error weighting code test."""
+        code = ArcCircuit(
+            [
+                [0, 1, 2],
+                [2, 3, 4],
+            ],
+            1,
+            schedule=[[[0, 1]], [[2, 3]], [[2, 1]], [[4, 3]]],
+        )
+        dec = DecodingGraph(code)
+        test_results = {"000 00": 1024, "010 11": 512}
+        for method in ["spitz", "naive"]:
+            error = (
+                "Error: Calculated error probability not correct for in"
+                + " d=3, T=1 repetition code using calculation method '"
+                + method
+                + "'."
+            )
+            p = dec.get_error_probs(test_results, method=method)
+            n0 = dec.graph.nodes().index(
+                {"time": 0, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 1}
+            )
+            n1 = dec.graph.nodes().index(
+                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 0}
+            )
+            # edges in graph aren't directed and could be in any order
+            if (n0, n1) in p:
+                self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
+                ns = (n0, n1)
+            else:
+                self.assertTrue(round(p[n1, n0], 2) == 0.33, error)
+                ns = (n1, n0)
+            pc = code.get_error_coords(test_results, dec)
+            self.assertTrue(round(pc[2, 0, 0.2][ns], 2) == 0.33, error)
 
 
 class TestDecoding(unittest.TestCase):
@@ -451,15 +536,15 @@ class TestDecoding(unittest.TestCase):
             min_error_num = code.d
             for sample in range(N):
                 # generate random string
-                string = "".join([choices(["0", "1"], [1 - p, p])[0] for _ in range(d)])
+                string = "".join([choices(["1", "0"], [1 - p, p])[0] for _ in range(d)])
                 for _ in range(code.T):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
                 for j, z_logical in enumerate(decoder.z_logicals):
-                    error = corrected_z_logicals[j] != 0
+                    error = corrected_z_logicals[j] != 1
                     if error:
-                        min_error_num = min(min_error_num, string.count("1"))
+                        min_error_num = min(min_error_num, string.count("0"))
                     errors[z_logical] += error
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
