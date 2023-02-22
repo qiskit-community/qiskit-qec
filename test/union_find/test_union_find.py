@@ -12,10 +12,12 @@
 
 """Tests for template."""
 
+import logging
 from random import choices
 import unittest
 import math
 from unittest import TestCase
+from random import random
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import UnionFindDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
@@ -147,7 +149,9 @@ class UnionFindDecoderTest(TestCase):
                 logical_outcome = sum([outcome[int(z_logical / 2)] for z_logical in z_logicals]) % 2
                 if not logical_outcome == 0:
                     logical_errors += 1
-                    min_flips_for_logical = min(min_flips_for_logical, string.count("1"))
+                    min_flips_to_cause_logical_error = min(
+                        min_flips_to_cause_logical_error, string.count("1")
+                    )
 
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
@@ -157,7 +161,7 @@ class UnionFindDecoderTest(TestCase):
                 "Logical error rate shouldn't exceed d!/((d/2)!^2)*p^(d/2).",
             )
             self.assertTrue(
-                min_flips_for_logical >= d / 2,
+                min_flips_to_cause_logical_error >= d / 2,
                 "Minimum amount of errors that also causes logical errors shouldn't be lower than d/2.",
             )
 
