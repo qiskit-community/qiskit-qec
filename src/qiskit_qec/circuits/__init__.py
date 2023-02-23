@@ -27,5 +27,6 @@ Circuits module classes and functions
     CSSCircuit
 """
 
-from .repetition_code import RepetitionCodeCircuit
+from .repetition_code import RepetitionCodeCircuit, ArcCircuit
+from .surface_code import SurfaceCodeCircuit
 from .qec_circuit import CSSCircuit

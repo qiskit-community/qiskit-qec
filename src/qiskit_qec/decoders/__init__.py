@@ -27,9 +27,11 @@ Decoders module classes and functions
     CircuitModelMatchingDecoder
     RepetitionDecoder
     ThreeBitDecoder
+    UnionFindDecoder
 """
 
 from .decoding_graph import DecodingGraph
 from .circuit_matching_decoder import CircuitModelMatchingDecoder
 from .repetition_decoder import RepetitionDecoder
 from .three_bit_decoder import ThreeBitDecoder
+from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
