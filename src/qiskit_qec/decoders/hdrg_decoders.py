@@ -18,7 +18,7 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Tuple
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
@@ -530,3 +530,225 @@ class UnionFindDecoder(ClusteringDecoder):
         return [
             erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]
         ]
+
+@dataclass
+class Cluster:
+    """
+    Cluster class for the ClAYG decoder. 
+    FIXME: Remove, when ClAYG decoder uses Union Find infrastructure.
+    """
+    boundary: List[Tuple[int, int]] # List[(edge, neighbour)]
+    fully_grown_edges: List[int] # List[edge]
+    nodes: List[int] # List[node_index]
+    atypical_nodes: List[int] # List[node_index]
+
+class ClAYGDecoder(UnionFindDecoder):
+    """
+    Decoder that is very similar to the Union Find decoder, but instead of adding clusters all at once, 
+    adds them separated by syndrome round with a growth and merge phase in between.
+    Then it just proceeds like the Union Find decoder.
+
+    FIXME: Use the Union Find infrastructure and just change the self.cluster() method. Problem is that
+    the peeling decoder needs a modified version the graph with the syndrome nodes marked, which is done 
+    in the process method. For now it is mostly its separate thing, but merging them shouldn't be 
+    too big of a hassle.
+    Merge method should also be modified, as boundary clusters are not marked as odd clusters.
+    """
+    def __init__(self, code, logical: str, decoding_graph: DecodingGraph = None) -> None:
+        super().__init__(code, logical, decoding_graph)
+        self.graph = deepcopy(self.decoding_graph.graph)
+    
+    def process(self, string: str):
+        """
+        Process an output string and return corrected final outcomes.
+
+        Args:
+            string (str): Output string of the code.
+        Returns:
+            corrected_z_logicals (list): A list of integers that are 0 or 1.
+        These are the corrected values of the final transversal
+        measurement, corresponding to the logical operators of
+        self.z_logicals.
+        """
+        self.graph = deepcopy(self.decoding_graph.graph)
+        nodes_at_time_zero = []
+        for index, node in enumerate(self.graph.nodes()):
+            if node["time"] == 0:
+                nodes_at_time_zero.append(index)
+        self.graph = self.graph.subgraph(nodes_at_time_zero)
+
+        for edge in self.graph.edges():
+            edge["weight"] = 1
+            edge["growth"] = 0
+        
+        string = "".join([str(c) for c in string[::-1]])
+        output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
+        nodes = self.code.string2nodes(string, logical=self.logical)
+
+        clusters = self.cluster(nodes)
+
+        for cluster in clusters:
+            erasure_graph = deepcopy(self.graph)
+            for node in cluster.nodes:
+                erasure_graph[node]["syndrome"] = False
+            for node in cluster.atypical_nodes:
+                erasure_graph[node]["syndrome"] = True
+            erasure = erasure_graph.subgraph(cluster.nodes + cluster.atypical_nodes)
+            qubits_to_be_corrected = self.peeling(erasure)
+            for idx in qubits_to_be_corrected:
+                output[idx] = (output[idx] + 1) % 2
+        
+        return output
+        
+
+    def cluster(self, nodes) -> List[List[int]]:
+        """
+        Create clusters using the union-find algorithm.
+
+        Args:
+            nodes (List): List of non-typical nodes in the syndrome graph,
+            of the type produced by `string2nodes`.
+
+        Returns:
+            FIXME: Make this more expressive. Maybe return a list of separate PyGraphs? Would fix the infrastructure-sharing-issue mentioned above.
+            clusters (List[List[int]]): List of Lists of indices of nodes in clusters.
+        """
+        self.roots = {}
+        self.odd = {}
+        for i, node in enumerate(self.graph.nodes()):
+            self.roots[i] = i
+            self.odd[i] = False
+        
+        self.clusters: Dict[int, Cluster] = dict([(node_index, None) for node_index in self.graph.node_indices()])
+        self.odd_cluster_roots: List[int] = []
+        times = [[] for _ in range(self.code.T+1)]
+        boundaries = []
+        for node in deepcopy(nodes):
+            if nodes.count(node) > 1: continue
+            if node["is_boundary"]: 
+                boundaries.append(node)
+            else:
+                times[node["time"]].append(node)
+            node["time"] = 0
+        
+        neutral_clusters = []
+
+        for time in times:
+            if not time: continue
+            for node in time:
+                neutral_clusters += self.add_atypical_node_to_decoding_graph(node, True)
+            for root in self.odd_cluster_roots:
+                neutral_clusters += self.grow_cluster_and_merge(root)
+        
+        for node in boundaries:
+            neutral_clusters += self.add_atypical_node_to_decoding_graph(node, False)
+
+        while self.odd_cluster_roots:
+            for root in self.odd_cluster_roots:
+                neutral_clusters += self.grow_cluster_and_merge(root)
+        
+        return neutral_clusters
+
+    def add_atypical_node_to_decoding_graph(self, node, add_odd_cluster: bool) -> List[Cluster]:
+        """
+        Adds non-typical syndrome nodes to the graph and neutralize/create clusters around them if necessary
+
+        Args:
+            node: dictionary with node data in the form produced by string2nodes.
+            add_odd_cluster (bool): specifices whether the newly created cluster is going to be added to the 
+            odd_clusters_list.
+        """
+        node_index = self.graph.nodes().index(node)
+        current_cluster_root = self.find(node_index)
+        cluster = self.clusters[current_cluster_root]
+        current_cluster_odd = self.odd[current_cluster_root]
+        neutral_clusters = []
+        # If cluster that it's in is odd set it to even and add it to the error log
+        if current_cluster_odd:
+            self.odd[current_cluster_root] = False
+            self.odd_cluster_roots.remove(current_cluster_root)
+            cluster.atypical_nodes.append(node_index)
+            if not node_index == current_cluster_root:
+                # Simple measurement error, don't add it to the error log
+                # FIXME: Make peeling decoder prestage handle this
+                neutral_clusters.append(cluster)
+            for edge, _ in cluster.boundary:
+                self.graph.edges()[edge]["growth"] = 0
+            for node in cluster.nodes + cluster.atypical_nodes:
+                self.roots[node] = node
+            self.clusters[current_cluster_root] = None
+        # Else create a new cluster around it and set it to odd
+        else: 
+            self.roots[node_index] = node_index
+            self.odd[node_index] = True
+            if add_odd_cluster:
+                self.odd_cluster_roots.append(node_index)
+            boundary: List[Tuple[int, int]] = []
+            for edge, (_, neighbour, _) in dict(self.graph.incident_edge_index_map(node_index)).items():
+                boundary.append((edge, neighbour))
+            self.clusters[node_index] = Cluster(
+                boundary=boundary,
+                fully_grown_edges=[],
+                nodes=[],
+                atypical_nodes=[node_index]
+            )
+
+        return neutral_clusters
+    
+    def grow_cluster_and_merge(self, root: int):
+        """
+        Grows the cluster specified by root by half an edge and merges them if necessary.
+
+        Args:
+            root (int): index of the root node of the cluster.
+        """
+        cluster = self.clusters[root]
+        neutral_clusters = []
+        if not cluster: return
+        for edge, neighbour in copy(cluster.boundary):
+            self.graph.edges()[edge]["growth"] += 0.5
+            if self.graph.edges()[edge]["growth"] < self.graph.edges()[edge]["weight"]:
+                continue
+            cluster.boundary.remove((edge, neighbour))
+            cluster.fully_grown_edges.append(edge)
+            self.graph.edges()[edge]["growth"] = 0
+            neighbour_root = self.find(neighbour)
+            if neighbour_root == root: continue
+            neighbour_odd = self.odd[neighbour_root]
+            if neighbour_odd:
+                # It is odd, so there has to be a cluster
+                neighbour_cluster = self.clusters[neighbour_root]
+                cluster.boundary += neighbour_cluster.boundary
+                cluster.fully_grown_edges += neighbour_cluster.fully_grown_edges
+                cluster.nodes += neighbour_cluster.nodes
+                cluster.atypical_nodes += neighbour_cluster.atypical_nodes
+                neutral_clusters.append(cluster)
+                for edge, _ in cluster.boundary:
+                    self.graph.edges()[edge]["growth"] = 0
+                for node in cluster.nodes + cluster.atypical_nodes:
+                    self.roots[node] = node
+                for root in [root, neighbour_root]:
+                    if self.graph[root]["is_boundary"]: continue
+                    self.odd[root] = False
+                    self.clusters[root] = None
+                    self.odd_cluster_roots.remove(root)
+            else:
+                cluster.nodes += [neighbour]
+                self.roots[neighbour] = root
+                for edge, (_, neighbour_neighbour, _) in dict(self.graph.incident_edge_index_map(neighbour)).items():
+                    if neighbour_neighbour == neighbour: continue
+                    cluster.boundary.append((edge, neighbour_neighbour))
+        return neutral_clusters
+
+    def find(self, node_index):
+        """
+        Returns the root of the cluster the node belongs to.
+
+        Args:
+            node_index (int): index of the node in self.graph
+        """
+        if self.roots[node_index] == node_index:
+            return node_index
+        self.roots[node_index] = self.find(self.roots[node_index])
+        return self.roots[node_index]
+        
