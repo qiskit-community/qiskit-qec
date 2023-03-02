@@ -25,6 +25,10 @@ from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit.transpiler.passes import DynamicalDecoupling
 
+from qiskit_qec.circuits.code_circuit import CodeCircuit
+
+from qiskit_qec.circuits.code_circuit import CodeCircuit
+
 from qiskit_qec.decoders.decoding_graph import Node, Edge
 
 def _separate_string(string):
@@ -34,7 +38,7 @@ def _separate_string(string):
     return separated_string
 
 
-class RepetitionCodeCircuit:
+class RepetitionCodeCircuit(CodeCircuit):
     """RepetitionCodeCircuit class."""
 
     def __init__(
@@ -68,6 +72,8 @@ class RepetitionCodeCircuit:
             qubits (corresponding to a logical measurement and final
             syndrome measurement round).
         """
+
+        super().__init__()
 
         self.n = d
         self.d = d
@@ -469,7 +475,7 @@ class RepetitionCodeCircuit:
 
     def is_cluster_neutral(self, atypical_nodes):
         """
-        Determines whether or not the cluster is even. Even means that one or more
+        Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
         Args:
@@ -520,7 +526,7 @@ def add_edge(graph, pair, edge=None):
     return ns
 
 
-class ArcCircuit:
+class ArcCircuit(CodeCircuit):
     """Anisotropic repetition code class."""
 
     METHOD_SPITZ: str = "spitz"
@@ -570,6 +576,8 @@ class ArcCircuit:
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
         """
+
+        super().__init__()
 
         self.links = links
         self.basis = basis
@@ -1238,7 +1246,7 @@ class ArcCircuit:
 
     def is_cluster_neutral(self, atypical_nodes):
         """
-        Determines whether or not the cluster is even. Even means that one or more
+        Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
         Args:
