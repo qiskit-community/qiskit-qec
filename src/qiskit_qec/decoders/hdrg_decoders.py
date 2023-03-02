@@ -703,7 +703,6 @@ class ClAYGDecoder(UnionFindDecoder):
             root (int): index of the root node of the cluster.
         """
         cluster = self.clusters[root]
-        neutral_clusters = []
         if not cluster: return
         for edge, neighbour in copy(cluster.boundary):
             self.graph.edges()[edge]["growth"] += 0.5
@@ -722,7 +721,6 @@ class ClAYGDecoder(UnionFindDecoder):
                 cluster.fully_grown_edges += neighbour_cluster.fully_grown_edges
                 cluster.nodes += neighbour_cluster.nodes
                 cluster.atypical_nodes += neighbour_cluster.atypical_nodes
-                neutral_clusters.append(cluster)
                 for edge, _ in cluster.boundary:
                     self.graph.edges()[edge]["growth"] = 0
                 for node in cluster.nodes + cluster.atypical_nodes:
@@ -732,13 +730,14 @@ class ClAYGDecoder(UnionFindDecoder):
                     self.odd[root] = False
                     self.clusters[root] = None
                     self.odd_cluster_roots.remove(root)
+                return [cluster]
             else:
                 cluster.nodes += [neighbour]
                 self.roots[neighbour] = root
                 for edge, (_, neighbour_neighbour, _) in dict(self.graph.incident_edge_index_map(neighbour)).items():
                     if neighbour_neighbour == neighbour: continue
                     cluster.boundary.append((edge, neighbour_neighbour))
-        return neutral_clusters
+        return []
 
     def find(self, node_index):
         """
