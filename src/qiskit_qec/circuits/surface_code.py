@@ -16,12 +16,16 @@
 
 """Generates circuits based on repetition codes."""
 
-
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+
+from qiskit_qec.circuits.code_circuit import CodeCircuit
+
+from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 from qiskit_qec.decoders.decoding_graph import Node, Edge
 
-class SurfaceCodeCircuit:
+class SurfaceCodeCircuit(CodeCircuit):
+
     """
     Implementation of a distance d rotated surface code, implemented over
     T syndrome measurement rounds.
@@ -45,6 +49,7 @@ class SurfaceCodeCircuit:
             qubits (corresponding to a logical measurement and final
             syndrome measurement round).
         """
+        super().__init__()
 
         self.d = d
         self.T = 0
@@ -365,14 +370,15 @@ class SurfaceCodeCircuit:
             separated_string.append(syndrome_type_string.split(" "))
         return separated_string
 
-    def string2nodes(self, string, logical="0", all_logicals=False):
+    def string2nodes(self, string, **kwargs):
         """
         Convert output string from circuits into a set of nodes.
         Args:
             string (string): Results string to convert.
-            logical (string): Logical value whose results are used.
-            all_logicals (bool): Whether to include logical nodes
-            irrespective of value.
+            kwargs (dict): Additional keyword arguments.
+                logical (str): Logical value whose results are used ('0' as default).
+                all_logicals (bool): Whether to include logical nodes
+                irrespective of value. (False as default).
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
@@ -382,6 +388,11 @@ class SurfaceCodeCircuit:
         are read left to right. So, we have some ugly indexing
         code whenever we're dealing with both strings and lists.
         """
+
+        all_logicals = kwargs.get("all_logicals")
+        logical = kwargs.get("logical")
+        if logical is None:
+            logical = "0"
 
         string = self._process_string(string)
         separated_string = self._separate_string(string)
@@ -502,7 +513,7 @@ class SurfaceCodeCircuit:
 
     def is_cluster_neutral(self, atypical_nodes):
         """
-        Determines whether or not the cluster is even. Even means that one or more
+        Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
         Args:
