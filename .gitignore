@@ -139,3 +139,6 @@ docs/_build/
 docs/stubs/*
 
 .DS_Store
+
+# Cached decoding graphs
+graph*.json

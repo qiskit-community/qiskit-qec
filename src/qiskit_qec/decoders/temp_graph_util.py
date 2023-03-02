@@ -2,6 +2,7 @@
 import json
 import networkx as nx
 import rustworkx as rx
+import os
 
 
 def ret2net(graph: rx.PyGraph):
@@ -25,3 +26,21 @@ def write_graph_to_json(graph: rx.PyGraph, filename: str):
         from_ret = ret2net(graph)
         json.dump(nx.node_link_data(from_ret), fp, indent=4, default=str)
     fp.close()
+
+def get_cached_graph(file):
+    if os.path.isfile(file) and not os.stat(file) == 0:
+        with open(file, "r+") as f:
+            json_data = json.loads(f.read())
+            net_graph = nx.node_link_graph(json_data)
+        ret_graph = rx.networkx_converter(
+            net_graph, keep_attributes=True)
+        for node in ret_graph.nodes():
+            del node["__networkx_node__"]
+        return ret_graph
+    return None
+
+def cache_graph(graph, file):
+    net_graph = ret2net(graph)
+    with open(file, "w+") as f:
+        json.dump(nx.node_link_data(net_graph), f)
+    

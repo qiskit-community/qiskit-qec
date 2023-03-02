@@ -39,7 +39,7 @@ class DecodingGraph:
     METHOD_NAIVE: str = "naive"
     AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
 
-    def __init__(self, code, brute=False):
+    def __init__(self, code, brute=False, graph=None):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
@@ -50,8 +50,10 @@ class DecodingGraph:
 
         self.code = code
         self.brute = brute
-
-        self._make_syndrome_graph()
+        if graph:
+            self.graph = graph
+        else:
+            self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
 
