@@ -81,7 +81,12 @@ class CodeCircuit(ABC):
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
+
+        Default version here assumes that it is as simple as an an even/odd assessment
+        (as for repetition codes, surface codes, etc). This should be overwritten for
+        more complex codes. It also should be used with care, by only supplying sets
+        of nodes for which the even/odd assessment is valid.
         Args:
             atypical_nodes (dictionary in the form of the return value of string2nodes)
         """
-        pass
+        return not bool(len(atypical_nodes) % 2)
