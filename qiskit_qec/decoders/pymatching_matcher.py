@@ -3,7 +3,7 @@
 from typing import List, Tuple, Dict, Set
 import logging
 
-import retworkx as rx
+import rustworkx as rx
 from pymatching import Matching
 
 from qiskit_qec.exceptions import QiskitQECError
@@ -15,7 +15,7 @@ from qiskit_qec.decoders.temp_graph_util import ret2net
 class PyMatchingMatcher(BaseMatcher):
     """Matching subroutines using PyMatching.
 
-    The input retworkx graph is expected to have the following properties:
+    The input rustworkx graph is expected to have the following properties:
     edge["weight"] : real edge weight
     edge["qubits"] : list of qubit ids associated to edge
     vertex["is_boundary"] : bool, true if boundary node

@@ -16,7 +16,7 @@ from collections import defaultdict
 from typing import Iterable, List, Tuple, Union
 
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.custom_iterator import CustomIterator
 from qiskit.quantum_info.operators.mixins import GroupMixin, LinearMixin

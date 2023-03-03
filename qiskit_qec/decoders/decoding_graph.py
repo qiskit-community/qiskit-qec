@@ -22,7 +22,7 @@ import logging
 from typing import List, Tuple
 
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 
 
@@ -34,72 +34,82 @@ class DecodingGraph:
     of a quantum error correction code, and then run suitable decoders.
     """
 
-    def __init__(self, code):
+    def __init__(self, code, brute=False):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
                 graph will be created. If None, graph will initialized as empty.
+            brute (bool): Whether to create the graph by analysing the circuits,
+            or to use a helper method from the code class (if available).
         """
 
         self.code = code
+        self.brute = brute
 
         self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
 
-        S = rx.PyGraph(multigraph=False)
-        self.hyperedges = []
-
-        # get the circuit used as the base case
-        if isinstance(self.code.circuit, dict):
-            if "base" not in dir(self.code):
-                base = "0"
-            else:
-                base = self.code.base
-            qc = self.code.circuit[base]
+        if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
+            self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
-            qc = self.code.circuit
+            S = rx.PyGraph(multigraph=False)
+            self.hyperedges = []
 
-        if self.code is not None:
-            fe = FaultEnumerator(qc, method="stabilizer")
-            blocks = list(fe.generate_blocks())
-            fault_paths = list(itertools.chain(*blocks))
+            if self.code is not None:
 
-            for _, _, _, output in fault_paths:
-                string = "".join([str(c) for c in output[::-1]])
-                nodes = self.code.string2nodes(string)
-                for node in nodes:
-                    if node not in S.nodes():
-                        S.add_node(node)
-                hyperedge = {}
-                for source in nodes:
-                    for target in nodes:
-                        if target != source:
-                            n0 = S.nodes().index(source)
-                            n1 = S.nodes().index(target)
-                            qubits = []
-                            if not (source["is_boundary"] and target["is_boundary"]):
-                                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-                            if source["time"] != target["time"] and len(qubits) > 1:
+                # get the circuit used as the base case
+                if isinstance(self.code.circuit, dict):
+                    if "base" not in dir(self.code):
+                        base = "0"
+                    else:
+                        base = self.code.base
+                    qc = self.code.circuit[base]
+                else:
+                    qc = self.code.circuit
+
+                fe = FaultEnumerator(qc, method="stabilizer")
+                blocks = list(fe.generate_blocks())
+                fault_paths = list(itertools.chain(*blocks))
+
+                for _, _, _, output in fault_paths:
+                    string = "".join([str(c) for c in output[::-1]])
+                    nodes = self.code.string2nodes(string)
+                    for node in nodes:
+                        if node not in S.nodes():
+                            S.add_node(node)
+                    hyperedge = {}
+                    for source in nodes:
+                        for target in nodes:
+                            if target != source:
+                                n0 = S.nodes().index(source)
+                                n1 = S.nodes().index(target)
                                 qubits = []
-                            edge = {"qubits": qubits, "weight": 1}
-                            S.add_edge(n0, n1, edge)
-                            if (n1, n0) not in hyperedge:
-                                hyperedge[n0, n1] = edge
-                if hyperedge and hyperedge not in self.hyperedges:
-                    self.hyperedges.append(hyperedge)
+                                if not (source["is_boundary"] and target["is_boundary"]):
+                                    qubits = list(
+                                        set(source["qubits"]).intersection(target["qubits"])
+                                    )
+                                if source["time"] != target["time"] and len(qubits) > 1:
+                                    qubits = []
+                                edge = {"qubits": qubits, "weight": 1}
+                                S.add_edge(n0, n1, edge)
+                                if (n1, n0) not in hyperedge:
+                                    hyperedge[n0, n1] = edge
+                    if hyperedge and hyperedge not in self.hyperedges:
+                        self.hyperedges.append(hyperedge)
 
-        self.graph = S
+            self.graph = S
 
     def get_error_probs(self, results, logical="0"):
-        """Generate probabilities of single error events from result counts.
+        """
+        Generate probabilities of single error events from result counts.
 
         Args:
             results (dict): A results dictionary.
             logical (string): Logical value whose results are used.
         Returns:
             dict: Keys are the edges for specific error
-            events, and values are the calculated probabilities
+            events, and values are the calculated probabilities.
         Additional information:
             Uses `results` to estimate the probability of the errors that
             create the pairs of nodes specified by the edge.
@@ -158,7 +168,10 @@ class DecodingGraph:
             else:
                 if (1 - 2 * av_xor[n0, n1]) != 0:
                     x = (av_vv[n0, n1] - av_v[n0] * av_v[n1]) / (1 - 2 * av_xor[n0, n1])
-                    error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                    if x < 0.25:
+                        error_probs[n0, n1] = max(0, 0.5 - np.sqrt(0.25 - x))
+                    else:
+                        error_probs[n0, n1] = np.nan
                 else:
                     error_probs[n0, n1] = np.nan
 
@@ -177,6 +190,102 @@ class DecodingGraph:
             error_probs[n0, n0] = 0.5 + (av_v[n0] - 0.5) / prod[n0]
 
         return error_probs
+
+    def get_error_coords(self, results, logical="0"):
+        """
+        Generate probabilities of single error events from result counts.
+
+        Args:
+            results (dict): A results dictionary.
+            logical (string): Logical value whose results are used.
+        Returns:
+            dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
+            events. Time refers to measurement rounds Values are a dictionary whose keys are
+            the edges that detected the event, and whose keys are the calculated probabilities.
+        Additional information:
+            Uses `results` to estimate the probability of the errors that
+            create the pairs of nodes specified by the edge.
+            Default calculation method is that of Spitz, et al.
+            https://doi.org/10.1002/qute.201800012
+        """
+
+        error_probs = self.get_error_probs(results, logical=logical)
+        nodes = self.graph.nodes()
+
+        if hasattr(self.code, "z_logicals"):
+            z_logicals = set(self.code.z_logicals)
+        elif hasattr(self.code, "z_logical"):
+            z_logicals = {self.code.z_logical}
+        else:
+            print("No qubits for z logicals found. Proceeding without.")
+            z_logicals = set()
+
+        round_length = len(self.code.schedule) + 1
+
+        error_coords = {}
+        for (n0, n1), prob in error_probs.items():
+            node0 = nodes[n0]
+            node1 = nodes[n1]
+            if n0 != n1:
+                qubits = self.graph.get_edge_data(n0, n1)["qubits"]
+                if qubits:
+                    # error on a code qubit between rounds, or during a round
+                    assert (
+                        node0["time"] == node1["time"] and node0["qubits"] != node1["qubits"]
+                    ) or (node0["time"] != node1["time"] and node0["qubits"] != node1["qubits"])
+                    qubit = qubits[0]
+                    # error between rounds
+                    if node0["time"] == node1["time"]:
+                        dts = []
+                        for node in [node0, node1]:
+                            pair = [qubit, node["link qubit"]]
+                            for dt, pairs in enumerate(self.code.schedule):
+                                if pair in pairs:
+                                    dts.append(dt)
+                        time = [max(0, node0["time"] - 1 + (max(dts) + 1) / round_length)]
+                        time.append(node0["time"] + min(dts) / round_length)
+                    # error during a round
+                    else:
+                        # put nodes in descending time order
+                        if node0["time"] < node1["time"]:
+                            node_pair = [node1, node0]
+                        else:
+                            node_pair = [node0, node1]
+                        # see when in the schedule each node measures the qubit
+                        dts = []
+                        for node in node_pair:
+                            pair = [qubit, node["link qubit"]]
+                            for dt, pairs in enumerate(self.code.schedule):
+                                if pair in pairs:
+                                    dts.append(dt)
+                        # use to define fractional time
+                        if dts[0] < dts[1]:
+                            time = [node_pair[1]["time"] + (dts[0] + 1) / round_length]
+                            time.append(node_pair[1]["time"] + dts[1] / round_length)
+                        else:
+                            # impossible cases get no valid time
+                            time = []
+                else:
+                    # measurement error
+                    assert node0["time"] != node1["time"] and node0["qubits"] == node1["qubits"]
+                    qubit = node0["link qubit"]
+                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
+                    time.sort()
+            else:
+                # detected only by one stabilizer
+                qubit = list(set(node0["qubits"]).intersection(z_logicals))[0]
+                pair = [qubit, node0["link qubit"]]
+                for dt, pairs in enumerate(self.code.schedule):
+                    if pair in pairs:
+                        time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
+                        time.append(node0["time"] + dt / round_length)
+
+            if time != []:  # only record if not nan
+                if (qubit, time[0], time[1]) not in error_coords:
+                    error_coords[qubit, time[0], time[1]] = {}
+                error_coords[qubit, time[0], time[1]][n0, n1] = prob
+
+        return error_coords
 
     def weight_syndrome_graph(self, results):
         """Generate weighted syndrome graph from result counts.

@@ -18,7 +18,7 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-import retworkx as rx
+import rustworkx as rx
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
@@ -342,6 +342,105 @@ class RepetitionCodeCircuit:
         """
         return self._separate_string(self._process_string(string))[0]
 
+    def flatten_nodes(self, nodes):
+        """
+        Removes time information from a set of nodes, and consolidates those on
+        the same position at different times.
+        Args:
+            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
+        Returns:
+            flat_nodes (list): List of flattened nodes.
+        """
+        nodes_per_link = {}
+        for node in nodes:
+            link_qubit = node["link qubit"]
+            if link_qubit in nodes_per_link:
+                nodes_per_link[link_qubit] += 1
+            else:
+                nodes_per_link[link_qubit] = 1
+        flat_nodes = []
+        for node in nodes:
+            if nodes_per_link[node["link qubit"]] % 2:
+                flat_node = node.copy()
+                if "time" in flat_node:
+                    flat_node.pop("time")
+                flat_nodes.append(flat_node)
+        return flat_nodes
+
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
+        """
+        Determines whether a given set of nodes are neutral. If so, also
+        determines any additional logical readout qubits that would be
+        flipped by the errors creating such a cluster and how many errors
+        would be required to make the cluster.
+        Args:
+            nodes (list): List of nodes, of the type produced by `string2nodes`.
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
+        Returns:
+            neutral (bool): Whether the nodes independently correspond to a valid
+            set of errors.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
+            num_errors (int): Minimum number of errors required to create nodes.
+        """
+
+        # see which qubits for logical zs are given and collect bulk nodes
+        given_logicals = []
+        for node in nodes:
+            if node["is_boundary"]:
+                given_logicals += node["qubits"]
+        given_logicals = set(given_logicals)
+
+        # bicolour code qubits according to the domain walls
+        walls = []
+        for node in nodes:
+            if not node["is_boundary"]:
+                walls.append(node["qubits"][1])
+        walls.sort()
+        c = 0
+        colors = ""
+        for j in range(self.d):
+            if walls:
+                if walls[0] == j:
+                    c = (c + 1) % 2
+                    walls.remove(j)
+            colors += str(c)
+        colors = colors[::-1]
+
+        # determine which were in the minority
+        error_c = str(int(colors.count("1") < self.d / 2))
+        num_errors = colors.count(error_c)
+
+        # determine the corresponding flipped logicals
+        flipped_logicals = []
+        for j in [0, self.d - 1]:
+            if colors[-1 - j] == error_c:
+                flipped_logicals.append(j)
+        flipped_logicals = set(flipped_logicals)
+
+        # if unneeded logical zs are given, cluster is not neutral
+        # (unless this is ignored)
+        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+            neutral = False
+        # otherwise, report only needed logicals that aren't given
+        else:
+            neutral = True
+            flipped_logicals = flipped_logicals.difference(given_logicals)
+
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            qubits = [flipped_logical]
+            if self.basis == "z":
+                elem = self.css_z_boundary.index(qubits)
+            else:
+                elem = self.css_x_boundary.index(qubits)
+            node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
+
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
     ) -> Tuple[List[List[int]], List[List[int]], List[int]]:
@@ -612,6 +711,7 @@ class ArcCircuit:
             qubits[1].add(link[1])
         self.qubits = [list(qubits[j]) for j in range(2)]
         self.num_qubits = [len(qubits[j]) for j in range(2)]
+        self.d = self.num_qubits[0]
 
         # define the quantum egisters
         self.code_qubit = QuantumRegister(self.num_qubits[0], "code_qubit")
@@ -640,7 +740,7 @@ class ArcCircuit:
                 z_logicals.append(node)
         # if there are none, just use the first
         if z_logicals == []:
-            z_logicals = [0]
+            z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
 
     def _get_202(self, t):
@@ -898,7 +998,7 @@ class ArcCircuit:
                         if is_boundary:
                             elem_num = syn_round
                             syn_round = 0
-                            code_qubits = [self.z_logicals[-elem_num]]
+                            code_qubits = [self.z_logicals[elem_num]]
                             link_qubit = None
                         else:
                             link = self.links[-elem_num - 1]
@@ -917,9 +1017,9 @@ class ArcCircuit:
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
         Args:
-            nodes (dict): List of nodes, of the type produced by `string2nodes`, to be flattened.
+            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
         Returns:
-            flat_nodes (dict): List of flattened nodes.
+            flat_nodes (list): List of flattened nodes.
         """
         nodes_per_link = {}
         for node in nodes:
@@ -937,28 +1037,48 @@ class ArcCircuit:
                 flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes):
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
-        determines the logical readout qubits they contain.
+        determines any additional logical readout qubits that would be
+        flipped by the errors creating such a cluster and how many errors
+        would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
-            flipped_logicals (list): List of qubits within `z_logicals`
-            enclosed by the nodes.
+            flipped_logical_nodes (list): List of qubits nodes for logical
+            operators that are flipped by the errors, that were not included
+            in the original nodes.
+            num_errors (int): Minimum number of errors required to create nodes.
         """
-        nodes = self.flatten_nodes(nodes)
-        link_qubits = set(node["link qubit"] for node in nodes)
-        node_color = {0: 0}
-        neutral = True
-        link_graph = self._get_link_graph()
-        ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
-        n = 0
-        while ns_to_do and neutral:
-            for n in link_graph.neighbors(n):
-                if n in node_color:
+
+        # see which qubits for logical zs are given and collect bulk nodes
+        given_logicals = []
+        bulk_nodes = []
+        for node in nodes:
+            if node["is_boundary"]:
+                given_logicals += node["qubits"]
+            else:
+                bulk_nodes.append(node)
+        given_logicals = set(given_logicals)
+
+        # see whether the bulk nodes are neutral
+        if bulk_nodes:
+            nodes = self.flatten_nodes(nodes)
+            link_qubits = set(node["link qubit"] for node in nodes)
+            node_color = {0: 0}
+            neutral = True
+            link_graph = self._get_link_graph()
+            ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
+            while ns_to_do and neutral:
+                # go through all coloured nodes
+                newly_colored = {}
+                for n, c in node_color.items():
+                    # look at all the code qubits that are neighbours
                     incident_es = link_graph.incident_edges(n)
                     for e in incident_es:
                         edge = link_graph.edges()[e]
@@ -967,22 +1087,61 @@ class ArcCircuit:
                             nn = n1
                         else:
                             nn = n0
+                        # see if the edge corresponds to one of the given nodes
                         dc = edge["link qubit"] in link_qubits
+                        # if the neighbour is not yet coloured, colour it
+                        # different color if edge is given node, same otherwise
                         if nn not in node_color:
-                            node_color[nn] = (node_color[n] + dc) % 2
-                            ns_to_do.remove(nn)
+                            newly_colored[nn] = (c + dc) % 2
+                        # if it is coloured, check the colour is correct
                         else:
-                            neutral = neutral and (node_color[nn] == (node_color[n] + dc) % 2)
+                            neutral = neutral and (node_color[nn] == (c + dc) % 2)
+                for nn, c in newly_colored.items():
+                    node_color[nn] = c
+                    ns_to_do.remove(nn)
 
-        flipped_logicals = []
-        if neutral:
-            inside_c = int(sum(node_color.values()) < len(node_color) / 2)
-            for n, c in node_color.items():
-                node = link_graph.nodes()[n]
-                if node in self.z_logicals and c == inside_c:
-                    flipped_logicals.append(node)
+                # see which qubits for logical zs are needed
+                flipped_logicals = []
+                if neutral:
+                    inside_c = int(sum(node_color.values()) < len(node_color) / 2)
+                    for n, c in node_color.items():
+                        qubit = link_graph.nodes()[n]
+                        if qubit in self.z_logicals and c == inside_c:
+                            flipped_logicals.append(qubit)
+                flipped_logicals = set(flipped_logicals)
 
-        return neutral, flipped_logicals
+                # count the number of nodes of the smallest colour
+                num_nodes = [0, 0]
+                for n, c in node_color.items():
+                    num_nodes[c] += 1
+                num_errors = min(num_nodes)
+        else:
+            # without bulk nodes, neutral only if no boundary nodes are given
+            neutral = not bool(given_logicals)
+            # and no flipped logicals
+            flipped_logicals = set()
+            num_errors = None
+
+        # if unneeded logical zs are given, cluster is not neutral
+        # (unless this is ignored)
+        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+            neutral = False
+        # otherwise, report only needed logicals that aren't given
+        else:
+            flipped_logicals = flipped_logicals.difference(given_logicals)
+
+        flipped_logical_nodes = []
+        for flipped_logical in flipped_logicals:
+            node = {
+                "time": 0,
+                "qubits": [flipped_logical],
+                "link qubit": None,
+                "is_boundary": True,
+                "element": self.z_logicals.index(flipped_logical),
+            }
+            flipped_logical_nodes.append(node)
+
+        return neutral, flipped_logical_nodes, num_errors
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
@@ -1068,3 +1227,56 @@ class ArcCircuit:
             circuits = transpile(circuits, backend, scheduling_method="alap")
 
         return {basis: circuits[j] for j, basis in enumerate([self.basis, self.basis[::-1]])}
+
+    def _make_syndrome_graph(self):
+
+        # get the list of nodes
+        string = (
+            "1" * len(self.code_qubit)
+            + " "
+            + ("0" * len(self.links) + " ") * (self.T - 1)
+            + "1" * len(self.links)
+        )
+        nodes = []
+        for node in self.string2nodes(string):
+            if not node["is_boundary"]:
+                for t in range(self.T + 1):
+                    new_node = node.copy()
+                    new_node["time"] = t
+                    if new_node not in nodes:
+                        nodes.append(new_node)
+            else:
+                node["time"] = 0
+                nodes.append(node)
+
+        # find pairs that should be connected
+        edges = []
+        for n0, node0 in enumerate(nodes):
+            for n1, node1 in enumerate(nodes):
+                if n0 < n1:
+                    # just record all possible edges for now (should be improved later)
+                    dt = abs(node1["time"] - node0["time"])
+                    adj = set(node0["qubits"]).intersection(set(node1["qubits"]))
+                    if adj:
+                        if (node0["is_boundary"] ^ node1["is_boundary"]) or dt <= 1:
+                            edges.append((n0, n1))
+
+        # put it all in a graph
+        S = rx.PyGraph(multigraph=False)
+        hyperedges = []
+        for node in nodes:
+            S.add_node(node)
+        for n0, n1 in edges:
+            source = nodes[n0]
+            target = nodes[n1]
+            qubits = []
+            if not (source["is_boundary"] and target["is_boundary"]):
+                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
+            if source["time"] != target["time"] and len(qubits) > 1:
+                qubits = []
+            edge = {"qubits": qubits, "weight": 1}
+            S.add_edge(n0, n1, edge)
+            # just record edges as hyperedges for now (should be improved later)
+            hyperedges.append({(n0, n1): edge})
+
+        return S, hyperedges

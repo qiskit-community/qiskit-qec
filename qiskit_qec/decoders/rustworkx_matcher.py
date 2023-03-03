@@ -1,17 +1,17 @@
-"""RetworkX matching object."""
+"""rustworkx matching object."""
 
 import logging
 from copy import deepcopy
 from typing import Dict, List, Set, Tuple
 
-import retworkx as rx
+import rustworkx as rx
 from qiskit_qec.decoders.base_matcher import BaseMatcher
 
 
-class RetworkXMatcher(BaseMatcher):
-    """Matching subroutines using retworkx.
+class RustworkxMatcher(BaseMatcher):
+    """Matching subroutines using rustworkx.
 
-    The input retworkx graph is expected to have the following properties:
+    The input rustworkx graph is expected to have the following properties:
     edge["weight"] : real edge weight
     edge["measurement_error"] : bool, true if edge corresponds to measurement error
     edge["qubits"] : list of qubit ids associated to edge
@@ -98,7 +98,7 @@ class RetworkXMatcher(BaseMatcher):
 
         Examine the edges along the path to extract the error chain.
         Store error chains as sets and merge using symmetric difference.
-        The vertex_path is a list of retworkx node indices.
+        The vertex_path is a list of rustworkx node indices.
         """
         qubit_errors = set([])
         measurement_errors = set([])
