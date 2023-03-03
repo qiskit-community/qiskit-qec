@@ -33,9 +33,13 @@ class CodeCircuit(ABC):
         Initialization of classes that inherent from CodeCircuit can
         be done in various ways, depending on the code or code family
         to be initialized. In all cases, the initialization must define
-        attributes `circuit` and `base`. The former is a dictionary with
-        circuits as values, and labels as keys. The latter is the label
-        regarded as the base case, used in decoding graph generation.
+        the following attributes:
+            circuit (dict): A dictionary with circuits as values, and
+            labels (typically strings) as keys.
+            base (string) The label for the above regarded as the base case,
+            used in decoding graph generation.
+            d (int): Code distance.
+            T (int): number of syndrome measurement rounds.
         """
         pass
 
