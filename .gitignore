@@ -139,3 +139,4 @@ docs/_build/
 docs/stubs/*
 
 .DS_Store
+local/run-arc.ipynb
