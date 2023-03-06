@@ -27,8 +27,6 @@ from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit.transpiler.passes import DynamicalDecoupling
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-
-from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
