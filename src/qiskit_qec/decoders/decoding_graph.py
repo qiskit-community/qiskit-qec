@@ -17,15 +17,35 @@
 """
 Graph used as the basis of decoders.
 """
+from dataclasses import dataclass, field
 import itertools
 import logging
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 import numpy as np
 import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.exceptions import QiskitQECError
 
+
+class Node:
+    def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
+        if not is_boundary and not time:
+            raise QiskitQECError("DecodingGraph node must either have a time or be a boundary node.")
+
+        self.is_boundary: bool = is_boundary
+        self.time: Optional[int] = time if not is_boundary else None
+        self.qubits: List[int] = qubits
+        self.index: int = index
+        # TODO: Should code/decoder specific properties be accounted for when comparing nodes 
+        self.properties: Dict[str, Any] = {}
+    
+@dataclass
+class Edge:
+    qubits: List[int]
+    weight: float
+    # TODO: Should code/decoder specific properties be accounted for when comparing edges
+    properties: Dict[str, Any] = field(default_factory=dict) 
 
 class DecodingGraph:
     """
@@ -90,20 +110,20 @@ class DecodingGraph:
                                 n0 = graph.nodes().index(source)
                                 n1 = graph.nodes().index(target)
                                 qubits = []
-                                if not (source["is_boundary"] and target["is_boundary"]):
+                                if not (source.is_boundary and target.is_boundary):
                                     qubits = list(
-                                        set(source["qubits"]).intersection(target["qubits"])
+                                        set(source.qubits).intersection(target.qubits)
                                     )
                                     if not qubits:
                                         continue
                                 if (
-                                    source["time"] != target["time"]
+                                    source.time != target.time
                                     and len(qubits) > 1
-                                    and not source["is_boundary"]
-                                    and not target["is_boundary"]
+                                    and not source.is_boundary
+                                    and not target.is_boundary
                                 ):
                                     qubits = []
-                                edge = {"qubits": qubits, "weight": 1}
+                                edge = Edge(qubits, 1)
                                 graph.add_edge(n0, n1, edge)
                                 if (n1, n0) not in hyperedge:
                                     hyperedge[n0, n1] = edge
@@ -112,7 +132,7 @@ class DecodingGraph:
 
             self.graph = graph
 
-    def get_error_probs(self, counts, logical: str = "0", method: str = METHOD_SPITZ):
+    def get_error_probs(self, counts, logical: str = "0", method: str = METHOD_SPITZ) -> List[Tuple[Tuple[int, int], float]]:
         """
         Generate probabilities of single error events from result counts.
 
@@ -181,9 +201,9 @@ class DecodingGraph:
             error_probs = {}
             for n0, n1 in self.graph.edge_list():
 
-                if self.graph[n0]["is_boundary"]:
+                if self.graph[n0].is_boundary:
                     boundary.append(n1)
-                elif self.graph[n1]["is_boundary"]:
+                elif self.graph[n1].is_boundary:
                     boundary.append(n0)
                 else:
                     if (1 - 2 * av_xor[n0, n1]) != 0:
@@ -238,9 +258,9 @@ class DecodingGraph:
                 else:
                     ratio = np.nan
                 p = ratio / (1 + ratio)
-                if self.graph[n0]["is_boundary"] and not self.graph[n1]["is_boundary"]:
+                if self.graph[n0].is_boundary and not self.graph[n1].is_boundary:
                     edge = (n1, n1)
-                elif not self.graph[n0]["is_boundary"] and self.graph[n1]["is_boundary"]:
+                elif not self.graph[n0].is_boundary and self.graph[n1].is_boundary:
                     edge = (n0, n0)
                 else:
                     edge = (n0, n1)
@@ -267,7 +287,7 @@ class DecodingGraph:
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
-            if node["is_boundary"]:
+            if node.is_boundary:
                 boundary_nodes.append(n)
 
         for edge in self.graph.edge_list():
