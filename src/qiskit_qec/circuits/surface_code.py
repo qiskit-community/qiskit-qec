@@ -19,9 +19,9 @@
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
+from qiskit_qec.decoders.decoding_graph import Node, Edge
 
 class SurfaceCodeCircuit:
-
     """
     Implementation of a distance d rotated surface code, implemented over
     T syndrome measurement rounds.
@@ -391,11 +391,12 @@ class SurfaceCodeCircuit:
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
-                bnode = {"time": 0}
-                bnode["qubits"] = self._logicals[self.basis][-bqec_index - 1]
-                bnode["is_boundary"] = True
-                bnode["element"] = 1 - bqec_index
-                nodes.append(bnode)
+                node = Node(
+                    is_boundary=True,
+                    qubits = self._logicals[self.basis][-bqec_index - 1],
+                    index = 1 - bqec_index
+                )
+                nodes.append(node)
 
         # bulk nodes
         for syn_type in range(1, len(separated_string)):
@@ -403,14 +404,15 @@ class SurfaceCodeCircuit:
                 elements = separated_string[syn_type][syn_round]
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
-                        node = {"time": syn_round}
                         if self.basis == "x":
                             qubits = self.css_x_stabilizer_ops[qec_index]
                         else:
                             qubits = self.css_z_stabilizer_ops[qec_index]
-                        node["qubits"] = qubits
-                        node["is_boundary"] = False
-                        node["element"] = qec_index
+                        node = Node(
+                            time = syn_round,
+                            qubits=qubits,
+                            index = qec_index
+                        )
                         nodes.append(node)
         return nodes
 
@@ -433,9 +435,9 @@ class SurfaceCodeCircuit:
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
-        bulk_nodes = [node for node in nodes if not node["is_boundary"]]
-        boundary_nodes = [node for node in nodes if node["is_boundary"]]
-        given_logicals = set(node["element"] for node in boundary_nodes)
+        bulk_nodes = [node for node in nodes if not node.is_boundary]
+        boundary_nodes = [node for node in nodes if node.is_boundary]
+        given_logicals = set(node.index for node in boundary_nodes)
 
         if self.basis == "z":
             coords = self._zplaq_coords
@@ -451,7 +453,7 @@ class SurfaceCodeCircuit:
                     xs = []
                     ys = []
                     for node in bulk_nodes:
-                        x, y = coords[node["element"]]
+                        x, y = coords[node.index]
                         xs.append(x)
                         ys.append(y)
                     dx = max(xs) - min(xs)
@@ -469,7 +471,7 @@ class SurfaceCodeCircuit:
             # find nearest boundary
             num_errors = (self.d - 1) / 2
             for node in bulk_nodes:
-                x, y = coords[node["element"]]
+                x, y = coords[node.index]
                 if self.basis == "z":
                     p = y
                 else:
@@ -489,12 +491,11 @@ class SurfaceCodeCircuit:
         # get the required boundary nodes
         flipped_logical_nodes = []
         for elem in flipped_logicals:
-            node = {
-                "time": 0,
-                "qubits": self._logicals[self.basis][elem],
-                "is_boundary": True,
-                "element": elem,
-            }
+            node = Node(
+                is_boundary=True,
+                qubits=self._logicals[self.basis][elem],
+                index=elem
+            )
             flipped_logical_nodes.append(node)
 
         return neutral, flipped_logical_nodes, num_errors
