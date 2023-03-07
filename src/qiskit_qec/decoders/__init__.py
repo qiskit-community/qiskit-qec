@@ -30,7 +30,6 @@ Decoders module classes and functions
     UnionFindDecoder
 """
 
-from .decoding_graph import DecodingGraph, Node, Edge
 from .circuit_matching_decoder import CircuitModelMatchingDecoder
 from .repetition_decoder import RepetitionDecoder
 from .three_bit_decoder import ThreeBitDecoder

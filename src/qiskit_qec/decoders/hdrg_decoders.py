@@ -23,7 +23,7 @@ from typing import Dict, List, Set, Tuple, Tuple
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph, Node, Edge
+from qiskit_qec.analysis.decoding_graph import DecodingGraph, Node, Edge
 from qiskit_qec.exceptions import QiskitQECError
 
 
@@ -431,7 +431,7 @@ class UnionFindDecoder(ClusteringDecoder):
             cluster = self.clusters[root]
             for edge in cluster.boundary:
                 edge.data.properties["growth"] += 0.5
-                if edge.data.properties["growth"] >= edge.data.properties["weight"] and not edge.data.properties["fully_grown"]:
+                if edge.data.properties["growth"] >= edge.data.weight and not edge.data.properties["fully_grown"]:
                     edge.data.properties["fully_grown"] = True
                     cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(

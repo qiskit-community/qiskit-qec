@@ -21,7 +21,7 @@ from numpy.random import poisson
 from rustworkx.visualization import mpl_draw
 
 from qiskit_qec.utils.visualizations import QiskitGameEngine
-from qiskit_qec.decoders import DecodingGraph
+from qiskit_qec.analysis import DecodingGraph
 
 
 class Decodoku:

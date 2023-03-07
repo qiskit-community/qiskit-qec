@@ -30,7 +30,7 @@ from qiskit_qec.exceptions import QiskitQECError
 
 class Node:
     def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
-        if not is_boundary and not time:
+        if not is_boundary and time == None:
             raise QiskitQECError("DecodingGraph node must either have a time or be a boundary node.")
 
         self.is_boundary: bool = is_boundary
@@ -38,14 +38,43 @@ class Node:
         self.qubits: List[int] = qubits
         self.index: int = index
         # TODO: Should code/decoder specific properties be accounted for when comparing nodes 
-        self.properties: Dict[str, Any] = {}
+        self.properties: Dict[str, Any] = dict()
     
+    def __eq__(self, rhs): 
+        if not isinstance(rhs, Node):
+            return NotImplemented
+
+        result = self.index == rhs.index and set(self.qubits) == set(rhs.qubits) and self.is_boundary == rhs.is_boundary
+        if not self.is_boundary:
+            result = result and self.time == rhs.time
+        return result
+    
+    def __hash__(self) -> int:
+        return hash(repr(self))
+    
+    def __iter__(self):
+        for attr, value in self.__dict__.items():
+            yield attr, value
+
 @dataclass
 class Edge:
     qubits: List[int]
     weight: float
     # TODO: Should code/decoder specific properties be accounted for when comparing edges
     properties: Dict[str, Any] = field(default_factory=dict) 
+
+    def __eq__(self, rhs) -> bool:
+        if not isinstance(rhs, Node):
+            return NotImplemented
+        
+        return set(self.qubits) == set(rhs.qubits) and self.weight == rhs.weight
+
+    def __hash__(self) -> int:
+        return hash(repr(self))
+    
+    def __iter__(self):
+        for attr, value in self.__dict__.items():
+            yield attr, value
 
 class DecodingGraph:
     """
@@ -442,16 +471,26 @@ class CSSDecodingGraph:
                 all_z = gauges
             elif layer == "s":
                 all_z = stabilizers
-            for supp in all_z:
-                node = {"time": time, "qubits": supp, "highlighted": False}
+            for index, supp in enumerate(all_z):
+                node = Node(
+                    time=time,
+                    qubits=supp,
+                    index=index
+                )
+                node.properties["highlighted"] = True
                 graph.add_node(node)
                 logging.debug("node %d t=%d %s", idx, time, supp)
                 idxmap[(time, tuple(supp))] = idx
                 node_layer.append(idx)
                 idx += 1
-            for supp in boundary:
+            for index, supp in enumerate(boundary):
                 # Add optional is_boundary property for pymatching
-                node = {"time": time, "qubits": supp, "highlighted": False, "is_boundary": True}
+                node = Node(
+                    is_boundary=True,
+                    qubits=supp,
+                    index=index
+                )
+                node.properties["highlighted"] = False
                 graph.add_node(node)
                 logging.debug("boundary %d t=%d %s", idx, time, supp)
                 idxmap[(time, tuple(supp))] = idx
@@ -482,12 +521,12 @@ class CSSDecodingGraph:
                         # qubit_id is an integer or set of integers
                         # weight is a floating point number
                         # error_probability is a floating point number
-                        edge = {
-                            "qubits": [com[0]],
-                            "measurement_error": 0,
-                            "weight": 1,
-                            "highlighted": False,
-                        }
+                        edge = Edge(
+                            qubits=[com[0]],
+                            weight=1
+                        )
+                        edge.properties["highlighted"] = False
+                        edge.properties["measurement_error"] = 0
                         graph.add_edge(
                             idxmap[(time, tuple(op_g))], idxmap[(time, tuple(op_h))], edge
                         )
@@ -505,12 +544,12 @@ class CSSDecodingGraph:
                 # qubit_id is an integer or set of integers
                 # weight is a floating point number
                 # error_probability is a floating point number
-                edge = {
-                    "qubits": [],
-                    "measurement_error": 0,
-                    "weight": 0,
-                    "highlighted": False,
-                }
+                edge = Edge(
+                            qubits=[],
+                            weight=0
+                        )
+                edge.properties["highlighted"] = False
+                edge.properties["measurement_error"] = 0
                 graph.add_edge(idxmap[(time, tuple(bound_g))], idxmap[(time, tuple(bound_h))], edge)
                 logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
 
@@ -549,12 +588,12 @@ class CSSDecodingGraph:
                             # error_probability is a floating point number
                             # Case (a)
                             if set(com) == set(op_h) or set(com) == set(op_g):
-                                edge = {
-                                    "qubits": [],
-                                    "measurement_error": 1,
-                                    "weight": 1,
-                                    "highlighted": False,
-                                }
+                                edge = Edge(
+                                    qubits=[],
+                                    weight=1
+                                )
+                                edge.properties["highlighted"] = False
+                                edge.properties["measurement_error"] = 1
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
                                     idxmap[(time, tuple(op_g))],
@@ -562,12 +601,12 @@ class CSSDecodingGraph:
                                 )
                                 logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
                             else:  # Case (b)
-                                edge = {
-                                    "qubits": [com[0]],
-                                    "measurement_error": 1,
-                                    "weight": 1,
-                                    "highlighted": False,
-                                }
+                                edge = Edge(
+                                    qubits=[com[0]],
+                                    weight=1
+                                )
+                                edge.properties["highlighted"] = False
+                                edge.properties["measurement_error"] = 1
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
                                     idxmap[(time, tuple(op_g))],
@@ -577,12 +616,12 @@ class CSSDecodingGraph:
                                 logging.debug(" qubits %s", [com[0]])
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
-                edge = {
-                    "qubits": [],
-                    "measurement_error": 0,
-                    "weight": 0,
-                    "highlighted": False,
-                }
+                edge = Edge(
+                    qubits=[],
+                    weight=0
+                )
+                edge.properties["highlighted"] = False
+                edge.properties["measurement_error"] = 0
                 graph.add_edge(
                     idxmap[(time - 1, tuple(boundary[0]))], idxmap[(time, tuple(boundary[0]))], edge
                 )
