@@ -18,11 +18,8 @@
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
+from qiskit_qec.analysis.decoding_graph import Node, Edge
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-
-from qiskit_qec.circuits.code_circuit import CodeCircuit
-
-from qiskit_qec.decoders.decoding_graph import Node, Edge
 
 class SurfaceCodeCircuit(CodeCircuit):
 
@@ -421,7 +418,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                             qubits = self.css_z_stabilizer_ops[qec_index]
                         node = Node(
                             time = syn_round,
-                            qubits=qubits,
+                            qubits = qubits,
                             index = qec_index
                         )
                         nodes.append(node)

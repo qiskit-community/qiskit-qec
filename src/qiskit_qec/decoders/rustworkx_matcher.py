@@ -6,7 +6,7 @@ from typing import Dict, List, Set, Tuple
 
 import rustworkx as rx
 from qiskit_qec.decoders.base_matcher import BaseMatcher
-from qiskit_qec.decoders.decoding_graph import Node, Edge
+from qiskit_qec.analysis.decoding_graph import Node, Edge
 
 class RustworkxMatcher(BaseMatcher):
     """Matching subroutines using rustworkx.

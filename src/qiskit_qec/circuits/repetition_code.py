@@ -19,6 +19,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 import rustworkx as rx
+from copy import copy, deepcopy
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
@@ -28,8 +29,7 @@ from qiskit.transpiler.passes import DynamicalDecoupling
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-
-from qiskit_qec.decoders.decoding_graph import Node, Edge
+from qiskit_qec.analysis.decoding_graph import Node, Edge
 
 def _separate_string(string):
     separated_string = []
@@ -359,7 +359,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         return _separate_string(self._process_string(string))[0]
 
     @staticmethod
-    def flatten_nodes(nodes):
+    def flatten_nodes(nodes: List[Node]):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
@@ -368,20 +368,19 @@ class RepetitionCodeCircuit(CodeCircuit):
         Returns:
             flat_nodes (list): List of flattened nodes.
         """
-        raise NotImplementedError("Has not been updated to new decoding graph node type")
         nodes_per_link = {}
         for node in nodes:
-            link_qubit = node["link qubit"]
+            link_qubit = node.properties["link qubit"]
             if link_qubit in nodes_per_link:
                 nodes_per_link[link_qubit] += 1
             else:
                 nodes_per_link[link_qubit] = 1
         flat_nodes = []
         for node in nodes:
-            if nodes_per_link[node["link qubit"]] % 2:
-                flat_node = node.copy()
-                if "time" in flat_node:
-                    flat_node.pop("time")
+            if nodes_per_link[node.properties["link qubit"]] % 2:
+                flat_node = copy(node)
+                # FIXME: Seems unsafe.
+                flat_node.time = None
                 flat_nodes.append(flat_node)
         return flat_nodes
 
@@ -632,6 +631,7 @@ class ArcCircuit(CodeCircuit):
         self._readout()
 
     def _get_link_graph(self, max_dist=1):
+        # FIXME: Migrate link graph to new Edge type
         graph = rx.PyGraph()
         for link in self.links:
             add_edge(graph, (link[0], link[2]), {"distance": 1, "link qubit": link[1]})
@@ -712,7 +712,7 @@ class ArcCircuit(CodeCircuit):
 
             # find a min weight matching, and then another that exlcudes the pairs from the first
             matching = [rx.max_weight_matching(graph, max_cardinality=True, weight_fn=weight_fn)]
-            cut_graph = graph.copy()
+            cut_graph = deepcopy(graph)
             for n0, n1 in matching[0]:
                 cut_graph.remove_edge(n0, n1)
             matching.append(
@@ -1073,9 +1073,9 @@ class ArcCircuit(CodeCircuit):
                         tau, _, _ = self._get_202(syn_round)
                         if not tau:
                             tau = 0
-                        node = {"time": syn_round}
                         node = Node(
-                            time=syn_round,
+                            is_boundary=is_boundary,
+                            time=syn_round if not is_boundary else None,
                             qubits=code_qubits,
                             index=elem_num
                         )
@@ -1112,7 +1112,7 @@ class ArcCircuit(CodeCircuit):
         flat_nodes = []
         for node in nodes:
             if nodes_per_link[node.properties["link qubit"]] % 2:
-                flat_node = node.copy()
+                flat_node = deepcopy(node)
                 flat_node.time = None
                 flat_nodes.append(flat_node)
         return flat_nodes
@@ -1168,7 +1168,7 @@ class ArcCircuit(CodeCircuit):
                         else:
                             nn = n0
                         # see if the edge corresponds to one of the given nodes
-                        dc = edge.properties["link qubit"] in link_qubits
+                        dc = edge["link qubit"] in link_qubits
                         # if the neighbour is not yet coloured, colour it
                         # different color if edge is given node, same otherwise
                         if nn not in node_color:
@@ -1354,7 +1354,7 @@ class ArcCircuit(CodeCircuit):
         for node in self.string2nodes(string):
             if not node.is_boundary:
                 for t in range(self.T + 1):
-                    new_node = node.copy()
+                    new_node = deepcopy(node)
                     new_node.time = t
                     if new_node not in nodes:
                         nodes.append(new_node)

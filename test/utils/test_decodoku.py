@@ -18,7 +18,7 @@
 
 import unittest
 
-from qiskit_qec.utils import Decodoku
+from qiskit_qec.utils.decodoku import Decodoku
 
 
 class TestDecodoku(unittest.TestCase):

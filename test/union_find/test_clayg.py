@@ -19,7 +19,7 @@ import unittest
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import ClAYGDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.analysis.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.decoders.temp_graph_util import cache_graph, get_cached_graph
@@ -96,7 +96,7 @@ class ClAYGDecoderTest(unittest.TestCase):
             cached_graph_file = os.path.dirname(os.path.abspath(
                 __file__)) + "/graph_surface_code_d=" + str(code.d) + ".json"
             cached_graph = get_cached_graph(cached_graph_file)
-            if cached_graph:
+            if cached_graph and False:
                 dec_graph = DecodingGraph(code, graph=cached_graph)
                 decoder = ClAYGDecoder(code, logical, decoding_graph=dec_graph)
             else:

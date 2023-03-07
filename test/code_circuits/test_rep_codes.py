@@ -26,7 +26,7 @@ from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.analysis.decoding_graph import DecodingGraph, Node, Edge
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
 
@@ -135,8 +135,16 @@ class TestRepCodes(unittest.TestCase):
                 (5, 0),
                 "00001",
                 [
-                    {"time": 0, "qubits": [0], "is_boundary": True, "element": 0},
-                    {"time": 0, "qubits": [0, 1], "is_boundary": False, "element": 0},
+                    Node(
+                        is_boundary=True,
+                        qubits=[0],
+                        index=0,
+                    ),
+                    Node(
+                        time=0,
+                        qubits=[0,1],
+                        index=0,
+                    ),
                 ],
             ]
         ]
@@ -189,10 +197,18 @@ class TestRepCodes(unittest.TestCase):
             )
             p = dec.get_error_probs(test_results, method=method)
             n0 = dec.graph.nodes().index(
-                {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
+                Node(
+                    time=0,
+                    qubits=[0,1],
+                    index=0
+                )
             )
             n1 = dec.graph.nodes().index(
-                {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
+                Node(
+                    time=0,
+                    qubits=[1,2],
+                    index=1
+                )
             )
             # edges in graph aren't directed and could be in any order
             if (n0, n1) in p:
@@ -236,12 +252,12 @@ class TestARCCodes(unittest.TestCase):
                 string = "".join([str(c) for c in output[::-1]])
                 nodes = code.string2nodes(string)
                 # check that it doesn't extend over more than two rounds
-                ts = [node["time"] for node in nodes if not node["is_boundary"]]
+                ts = [node.time for node in nodes if not node.is_boundary]
                 if ts:
                     minimal = minimal and (max(ts) - min(ts)) <= 1
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
                 flat_nodes = code.flatten_nodes(nodes)
-                link_qubits = set(node["link qubit"] for node in flat_nodes)
+                link_qubits = set(node.properties["link qubit"] for node in flat_nodes)
                 minimal = minimal and link_qubits in incident_links.values()
                 self.assertTrue(
                     minimal,
@@ -254,10 +270,10 @@ class TestARCCodes(unittest.TestCase):
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
-                    if not node["is_boundary"]:
+                    if not node.is_boundary:
                         for logical in flipped_logicals:
                             self.assertTrue(
-                                logical in node["qubits"],
+                                logical in node.qubits,
                                 "Error: Single error appears to flip logical is not part of nodes.",
                             )
 
@@ -352,7 +368,7 @@ class TestARCCodes(unittest.TestCase):
                         nodes = [
                             node
                             for node in code.string2nodes(string)
-                            if "conjugate" not in node and not node["is_boundary"]
+                            if "conjugate" not in node.properties and not node.is_boundary
                         ]
                         # require at most two (or three for the trivalent vertex or neighbouring aux)
                         self.assertTrue(
@@ -469,12 +485,20 @@ class TestARCCodes(unittest.TestCase):
                 + "'."
             )
             p = dec.get_error_probs(test_results, method=method)
-            n0 = dec.graph.nodes().index(
-                {"time": 0, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 1}
+            node = Node(
+                    time=0,
+                    qubits=[0, 2],
+                    index=1
+                )
+            node.properties["link qubits"] = 1
+            n0 = dec.graph.nodes().index(node)
+            node = Node(
+                    time=0,
+                    qubits=[2,4],
+                    index=0
             )
-            n1 = dec.graph.nodes().index(
-                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 0}
-            )
+            node.properties["link qubits"] = 3
+            n1 = dec.graph.nodes().index(node)
             # edges in graph aren't directed and could be in any order
             if (n0, n1) in p:
                 self.assertTrue(round(p[n0, n1], 2) == 0.33, error)

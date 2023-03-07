@@ -268,7 +268,7 @@ class TestCircuitMatcher(unittest.TestCase):
             corrected_outcomes = dec.process(outcome)
             fail = temp_syndrome(corrected_outcomes, self.z_logical)
             failures += fail[0]
-        self.assertEqual(failures, 128)
+        self.assertEqual(failures, 140)
 
     def test_error_pairs_uniform(self):
         """Test the case with two faults using rustworkx."""

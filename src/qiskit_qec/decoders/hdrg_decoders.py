@@ -22,7 +22,7 @@ from typing import Dict, List, Set, Tuple, Tuple
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph, Node, Edge
+from qiskit_qec.analysis.decoding_graph import DecodingGraph, Node, Edge
 from qiskit_qec.exceptions import QiskitQECError
 
 
@@ -430,7 +430,7 @@ class UnionFindDecoder(ClusteringDecoder):
             cluster = self.clusters[root]
             for edge in cluster.boundary:
                 edge.data.properties["growth"] += 0.5
-                if edge.data.properties["growth"] >= edge.data.properties["weight"] and not edge.data.properties["fully_grown"]:
+                if edge.data.properties["growth"] >= edge.data.weight and not edge.data.properties["fully_grown"]:
                     edge.data.properties["fully_grown"] = True
                     cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(
@@ -575,13 +575,13 @@ class ClAYGDecoder(UnionFindDecoder):
         self.graph = deepcopy(self.decoding_graph.graph)
         nodes_at_time_zero = []
         for index, node in enumerate(self.graph.nodes()):
-            if node["time"] == 0:
+            if node.time == 0 or node.is_boundary:
                 nodes_at_time_zero.append(index)
         self.graph = self.graph.subgraph(nodes_at_time_zero)
 
         for edge in self.graph.edges():
-            edge["weight"] = 1
-            edge["growth"] = 0
+            edge.weight = 1
+            edge.properties["growth"] = 0
         
         string = "".join([str(c) for c in string[::-1]])
         output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
@@ -592,9 +592,9 @@ class ClAYGDecoder(UnionFindDecoder):
         for cluster in clusters:
             erasure_graph = deepcopy(self.graph)
             for node in cluster.nodes:
-                erasure_graph[node]["syndrome"] = False
+                erasure_graph[node].properties["syndrome"] = False
             for node in cluster.atypical_nodes:
-                erasure_graph[node]["syndrome"] = True
+                erasure_graph[node].properties["syndrome"] = True
             erasure = erasure_graph.subgraph(cluster.nodes + cluster.atypical_nodes)
             qubits_to_be_corrected = self.peeling(erasure)
             for idx in qubits_to_be_corrected:
@@ -627,11 +627,11 @@ class ClAYGDecoder(UnionFindDecoder):
         boundaries = []
         for node in deepcopy(nodes):
             if nodes.count(node) > 1: continue
-            if node["is_boundary"]: 
+            if node.is_boundary:
                 boundaries.append(node)
             else:
-                times[node["time"]].append(node)
-            node["time"] = 0
+                node.time = 0
+                times[node.time].append(node)
         
         neutral_clusters = []
 
@@ -675,7 +675,7 @@ class ClAYGDecoder(UnionFindDecoder):
                 # FIXME: Make peeling decoder prestage handle this
                 neutral_clusters.append(cluster)
             for edge, _ in cluster.boundary:
-                self.graph.edges()[edge]["growth"] = 0
+                self.graph.edges()[edge].properties["growth"] = 0
             for node in cluster.nodes + cluster.atypical_nodes:
                 self.roots[node] = node
             self.clusters[current_cluster_root] = None
@@ -707,12 +707,12 @@ class ClAYGDecoder(UnionFindDecoder):
         cluster = self.clusters[root]
         if not cluster: return
         for edge, neighbour in copy(cluster.boundary):
-            self.graph.edges()[edge]["growth"] += 0.5
-            if self.graph.edges()[edge]["growth"] < self.graph.edges()[edge]["weight"]:
+            self.graph.edges()[edge].properties["growth"] += 0.5
+            if self.graph.edges()[edge].properties["growth"] < self.graph.edges()[edge].weight:
                 continue
             cluster.boundary.remove((edge, neighbour))
             cluster.fully_grown_edges.append(edge)
-            self.graph.edges()[edge]["growth"] = 0
+            self.graph.edges()[edge].properties["growth"] = 0
             neighbour_root = self.find(neighbour)
             if neighbour_root == root: continue
             neighbour_odd = self.odd[neighbour_root]
@@ -724,11 +724,11 @@ class ClAYGDecoder(UnionFindDecoder):
                 cluster.nodes += neighbour_cluster.nodes
                 cluster.atypical_nodes += neighbour_cluster.atypical_nodes
                 for edge, _ in cluster.boundary:
-                    self.graph.edges()[edge]["growth"] = 0
+                    self.graph.edges()[edge].properties["growth"] = 0
                 for node in cluster.nodes + cluster.atypical_nodes:
                     self.roots[node] = node
                 for root in [root, neighbour_root]:
-                    if self.graph[root]["is_boundary"]: continue
+                    if self.graph[root].is_boundary: continue
                     self.odd[root] = False
                     self.clusters[root] = None
                     self.odd_cluster_roots.remove(root)

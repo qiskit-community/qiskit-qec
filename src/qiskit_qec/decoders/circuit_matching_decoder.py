@@ -10,7 +10,7 @@ from sympy import Poly, Symbol, symbols
 import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph, Node, Edge
+from qiskit_qec.analysis.decoding_graph import CSSDecodingGraph, DecodingGraph, Node, Edge
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
@@ -175,10 +175,10 @@ class CircuitModelMatchingDecoder(ABC):
             target = graph.nodes()[n1]
             if source.time != target.time:
                 if source.is_boundary == target.is_boundary == False:
-                    new_source = source.copy()
+                    new_source = copy(source)
                     new_source.time = target.time
                     nn0 = graph.nodes().index(new_source)
-                    new_target = target.copy()
+                    new_target = copy(target)
                     new_target.time = source.time
                     nn1 = graph.nodes().index(new_target)
                     graph.add_edge(nn0, nn1, edge)
@@ -192,12 +192,12 @@ class CircuitModelMatchingDecoder(ABC):
             # add the required attributes
             # highlighted', 'measurement_error','qubit_id' and 'error_probability'
             edge.properties["highlighted"] = False
-            edge.properties["measurement_error"] = int(source["time"] != target["time"])
+            edge.properties["measurement_error"] = int(source.time != target.time)
 
             # make it so times of boundary/boundary nodes agree
             if source.is_boundary and not target.is_boundary:
                 if source.time != target.time:
-                    new_source = source.copy()
+                    new_source = copy(source)
                     new_source.time = target.time
                     n = graph.add_node(new_source)
                     edge.properties["measurement_error"] = 0
@@ -217,7 +217,7 @@ class CircuitModelMatchingDecoder(ABC):
                             edge = Edge(
                                 weight= 0,
                                 qubits = list(
-                                    set(source["qubits"]).intersection((set(target["qubits"])))
+                                    set(source.qubits).intersection((set(target.qubits)))
                                 )
                             )
                             edge.properties["highlighted"] = False
@@ -226,7 +226,7 @@ class CircuitModelMatchingDecoder(ABC):
                                 graph.add_edge(n0, n1, edge)
 
                 # connect one of the boundaries at different times
-                if target.time == source.time + 1:
+                if target.time == source.time or 0 + 1:
                     if source.qubits == target.qubits == [0]:
                         edge = Edge(
                                 weight= 0,
@@ -249,7 +249,7 @@ class CircuitModelMatchingDecoder(ABC):
 
         node_layers = []
         for node in graph.nodes():
-            time = node.time
+            time = node.time or 0
             if len(node_layers) < time + 1:
                 node_layers += [[]] * (time + 1 - len(node_layers))
             node_layers[time].append(node.qubits)
@@ -301,8 +301,8 @@ class CircuitModelMatchingDecoder(ABC):
                 data.properties["weight_poly"] = wpoly
         remove_list = []
         for source, target in graph.edge_list():
-            edge_data = graph.get_edge_data(source, target).properties
-            if "weight_poly" not in edge_data and edge_data["weight"] != 0:
+            edge_data = graph.get_edge_data(source, target)
+            if "weight_poly" not in edge_data.properties and edge_data.weight != 0:
                 # Remove the edge
                 remove_list.append((source, target))
                 logging.info("remove edge (%d, %d)", source, target)
