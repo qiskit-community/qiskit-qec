@@ -532,7 +532,7 @@ class TestDecoding(unittest.TestCase):
             code = ArcCircuit(links, 0)
             decoding_graph = DecodingGraph(code)
             decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
-            errors = {z_logical: 0 for z_logical in decoder.z_logicals}
+            errors = {z_logical: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             for sample in range(N):
                 # generate random string
@@ -541,14 +541,14 @@ class TestDecoding(unittest.TestCase):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
-                for j, z_logical in enumerate(decoder.z_logicals):
+                for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
                         min_error_num = min(min_error_num, string.count("0"))
                     errors[z_logical] += error
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
-            for z_logical in decoder.z_logicals:
+            for z_logical in decoder.measured_logicals:
                 self.assertTrue(
                     errors[z_logical] / (sample + 1) < p**2,
                     "Logical error rate greater than p^2.",

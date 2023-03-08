@@ -21,9 +21,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Set
 from rustworkx import connected_components, distance_matrix, PyGraph
 
-from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.exceptions import QiskitQECError
 
 
 class ClusteringDecoder:
@@ -51,22 +50,20 @@ class BravyiHaahDecoder(ClusteringDecoder):
         code_circuit,
         decoding_graph: DecodingGraph = None,
     ):
-        if not isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
-            raise QiskitQECError("Error: code_circuit not supported.")
 
         super().__init__(code_circuit, decoding_graph)
 
-        if isinstance(self.code, ArcCircuit):
-            self.z_logicals = self.code.z_logicals
-        elif isinstance(self.code, RepetitionCodeCircuit):
+        if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
-                self.z_logicals = self.code.css_x_logical[0]
+                self.measured_logicals = self.code.css_x_logical[0]
             else:
-                self.z_logicals = self.code.css_z_logical[0]
-        if isinstance(self.code, ArcCircuit):
+                self.measured_logicals = self.code.css_z_logical[0]
+        else:
+            self.measured_logicals = self.code.css_z_logical[0]
+        if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
-        elif isinstance(self.code, RepetitionCodeCircuit):
-            self.code_index = {2 * j: j for j in range(self.code.d)}
+        else:
+            self.code_index = {j: j for j in range(self.code.d)}
 
     def _cluster(self, ns, dist_max):
         """
@@ -127,7 +124,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
     def _get_boundary_nodes(self):
         boundary_nodes = []
-        for element, z_logical in enumerate(self.z_logicals):
+        for element, z_logical in enumerate(self.measured_logicals):
             node = {"time": 0, "is_boundary": True}
             if isinstance(self.code, ArcCircuit):
                 node["link qubit"] = None
@@ -183,10 +180,10 @@ class BravyiHaahDecoder(ClusteringDecoder):
         Args:
             string (str): Output string of the code.
         Returns:
-            corrected_z_logicals (list): A list of integers that are 0 or 1.
+            corrected_logicals (list): A list of integers that are 0 or 1.
         These are the corrected values of the final transversal
         measurement, corresponding to the logical operators of
-        self.z_logicals.
+        self.measured_logicals.
         """
         code = self.code
         decoding_graph = self.decoding_graph
@@ -210,9 +207,9 @@ class BravyiHaahDecoder(ClusteringDecoder):
             cluster_logicals[c] = z_logicals
 
         # get the net effect on each logical
-        net_z_logicals = {z_logical: 0 for z_logical in self.z_logicals}
+        net_z_logicals = {z_logical: 0 for z_logical in self.measured_logicals}
         for c, z_logicals in cluster_logicals.items():
-            for z_logical in self.z_logicals:
+            for z_logical in self.measured_logicals:
                 if z_logical in z_logicals:
                     net_z_logicals[z_logical] += 1
         for z_logical, num in net_z_logicals.items():
@@ -220,7 +217,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
         corrected_z_logicals = []
         string = string.split(" ")[0]
-        for z_logical in self.z_logicals:
+        for z_logical in self.measured_logicals:
             raw_logical = int(string[-1 - self.code_index[z_logical]])
             corrected_logical = (raw_logical + net_z_logicals[z_logical]) % 2
             corrected_z_logicals.append(corrected_logical)
