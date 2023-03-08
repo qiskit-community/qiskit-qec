@@ -421,6 +421,7 @@ class CSSDecodingGraph:
                 all_z = stabilizers
             for index, supp in enumerate(all_z):
                 node = DecodingGraphNode(time=time, qubits=supp, index=index)
+                node = DecodingGraphNode(time=time, qubits=supp, index=index)
                 node.properties["highlighted"] = True
                 graph.add_node(node)
                 logging.debug("node %d t=%d %s", idx, time, supp)
@@ -429,6 +430,7 @@ class CSSDecodingGraph:
                 idx += 1
             for index, supp in enumerate(boundary):
                 # Add optional is_boundary property for pymatching
+                node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
                 node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
                 node.properties["highlighted"] = False
                 graph.add_node(node)
@@ -523,6 +525,7 @@ class CSSDecodingGraph:
                             # Case (a)
                             if set(com) == set(op_h) or set(com) == set(op_g):
                                 edge = DecodingGraphEdge(qubits=[], weight=1)
+                                edge = DecodingGraphEdge(qubits=[], weight=1)
                                 edge.properties["highlighted"] = False
                                 edge.properties["measurement_error"] = 1
                                 graph.add_edge(
@@ -532,6 +535,7 @@ class CSSDecodingGraph:
                                 )
                                 logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
                             else:  # Case (b)
+                                edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
                                 edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
                                 edge.properties["highlighted"] = False
                                 edge.properties["measurement_error"] = 1
@@ -544,6 +548,7 @@ class CSSDecodingGraph:
                                 logging.debug(" qubits %s", [com[0]])
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
+                edge = DecodingGraphEdge(qubits=[], weight=0)
                 edge = DecodingGraphEdge(qubits=[], weight=0)
                 edge.properties["highlighted"] = False
                 edge.properties["measurement_error"] = 0
