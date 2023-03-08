@@ -21,6 +21,8 @@ from dataclasses import dataclass, field
 import itertools
 from typing import Any, Dict, List, Tuple, Optional
 
+from qiskit_qec.exceptions import QiskitQECError
+
 
 class DecodingGraphNode:
     def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
