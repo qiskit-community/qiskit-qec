@@ -18,7 +18,7 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import Dict, List, Set, Tuple, Tuple
+from typing import Dict, List, Set, Tuple
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
@@ -566,6 +566,8 @@ class ClAYGDecoder(UnionFindDecoder):
     def __init__(self, code, logical: str, decoding_graph: DecodingGraph = None) -> None:
         super().__init__(code, logical, decoding_graph)
         self.graph = deepcopy(self.decoding_graph.graph)
+        self.roots = {}
+        self.odd = {}
 
     def process(self, string: str):
         """
@@ -618,7 +620,8 @@ class ClAYGDecoder(UnionFindDecoder):
             of the type produced by `string2nodes`.
 
         Returns:
-            FIXME: Make this more expressive. Maybe return a list of separate PyGraphs? Would fix the infrastructure-sharing-issue mentioned above.
+            FIXME: Make this more expressive. Maybe return a list of separate PyGraphs?
+            Would fix the infrastructure-sharing-issue mentioned above.
             clusters (List[List[int]]): List of Lists of indices of nodes in clusters.
         """
         self.roots = {}
@@ -627,9 +630,10 @@ class ClAYGDecoder(UnionFindDecoder):
             self.roots[i] = i
             self.odd[i] = False
 
-        self.clusters: Dict[int, Cluster] = dict(
-            [(node_index, None) for node_index in self.graph.node_indices()]
-        )
+        self.clusters: Dict[int, Cluster] = {
+            node_index: None for node_index in self.graph.node_indices()
+        }
+
         self.odd_cluster_roots: List[int] = []
         times = [[] for _ in range(self.code.T + 1)]
         boundaries = []
@@ -663,12 +667,13 @@ class ClAYGDecoder(UnionFindDecoder):
 
     def add_atypical_node_to_decoding_graph(self, node, add_odd_cluster: bool) -> List[Cluster]:
         """
-        Adds non-typical syndrome nodes to the graph and neutralize/create clusters around them if necessary
+        Adds non-typical syndrome nodes to the graph and
+        neutralize/create clusters around them if necessary
 
         Args:
             node: dictionary with node data in the form produced by string2nodes.
-            add_odd_cluster (bool): specifices whether the newly created cluster is going to be added to the
-            odd_clusters_list.
+            add_odd_cluster (bool): specifices whether the newly created cluster is
+            going to be added to the odd_clusters_list.
         """
         node_index = self.graph.nodes().index(node)
         current_cluster_root = self.find(node_index)
@@ -686,8 +691,8 @@ class ClAYGDecoder(UnionFindDecoder):
                 neutral_clusters.append(cluster)
             for edge, _ in cluster.boundary:
                 self.graph.edges()[edge].properties["growth"] = 0
-            for node in cluster.nodes + cluster.atypical_nodes:
-                self.roots[node] = node
+            for node_in_cluster in cluster.nodes + cluster.atypical_nodes:
+                self.roots[node_in_cluster] = node_in_cluster
             self.clusters[current_cluster_root] = None
         # Else create a new cluster around it and set it to odd
         else:
@@ -715,7 +720,7 @@ class ClAYGDecoder(UnionFindDecoder):
         """
         cluster = self.clusters[root]
         if not cluster:
-            return
+            return []
         for edge, neighbour in copy(cluster.boundary):
             self.graph.edges()[edge].properties["growth"] += 0.5
             if self.graph.edges()[edge].properties["growth"] < self.graph.edges()[edge].weight:
@@ -734,36 +739,36 @@ class ClAYGDecoder(UnionFindDecoder):
                 cluster.fully_grown_edges += neighbour_cluster.fully_grown_edges
                 cluster.nodes += neighbour_cluster.nodes
                 cluster.atypical_nodes += neighbour_cluster.atypical_nodes
-                for edge, _ in cluster.boundary:
-                    self.graph.edges()[edge].properties["growth"] = 0
+                for edge_to_be_reset, _ in cluster.boundary:
+                    self.graph.edges()[edge_to_be_reset].properties["growth"] = 0
                 for node in cluster.nodes + cluster.atypical_nodes:
                     self.roots[node] = node
-                for root in [root, neighbour_root]:
-                    if self.graph[root].is_boundary:
+                for root_to_be_reset in [root, neighbour_root]:
+                    if self.graph[root_to_be_reset].is_boundary:
                         continue
-                    self.odd[root] = False
-                    self.clusters[root] = None
-                    self.odd_cluster_roots.remove(root)
+                    self.odd[root_to_be_reset] = False
+                    self.clusters[root_to_be_reset] = None
+                    self.odd_cluster_roots.remove(root_to_be_reset)
                 return [cluster]
             else:
                 cluster.nodes += [neighbour]
                 self.roots[neighbour] = root
-                for edge, (_, neighbour_neighbour, _) in dict(
+                for neighbor_edge, (_, neighbour_neighbour, _) in dict(
                     self.graph.incident_edge_index_map(neighbour)
                 ).items():
                     if neighbour_neighbour == neighbour:
                         continue
-                    cluster.boundary.append((edge, neighbour_neighbour))
+                    cluster.boundary.append((neighbor_edge, neighbour_neighbour))
         return []
 
-    def find(self, node_index):
+    def find(self, u):
         """
         Returns the root of the cluster the node belongs to.
 
         Args:
             node_index (int): index of the node in self.graph
         """
-        if self.roots[node_index] == node_index:
-            return node_index
-        self.roots[node_index] = self.find(self.roots[node_index])
-        return self.roots[node_index]
+        if self.roots[u] == u:
+            return u
+        self.roots[u] = self.find(self.roots[u])
+        return self.roots[u]

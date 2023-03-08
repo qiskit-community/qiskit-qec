@@ -18,10 +18,8 @@
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-
 
 
 class SurfaceCodeCircuit(CodeCircuit):
@@ -397,10 +395,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
                 node = DecodingGraphNode(
-                node = DecodingGraphNode(
                     is_boundary=True,
-                    qubits=self._logicals[self.basis][-bqec_index - 1],
-                    index=1 - bqec_index,
                     qubits=self._logicals[self.basis][-bqec_index - 1],
                     index=1 - bqec_index,
                 )
@@ -416,7 +411,6 @@ class SurfaceCodeCircuit(CodeCircuit):
                             qubits = self.css_x_stabilizer_ops[qec_index]
                         else:
                             qubits = self.css_z_stabilizer_ops[qec_index]
-                        node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes

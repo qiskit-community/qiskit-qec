@@ -19,7 +19,7 @@
 import unittest
 
 from qiskit_qec.circuits.surface_code import SurfaceCodeCircuit
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphNode
 
 
 class TestSurfaceCodes(unittest.TestCase):

@@ -27,7 +27,7 @@ from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
 

@@ -11,7 +11,7 @@ import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphEdge
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
@@ -225,7 +225,7 @@ class CircuitModelMatchingDecoder(ABC):
                                 graph.add_edge(n0, n1, edge)
 
                 # connect one of the boundaries at different times
-                if target.time == source.time or 0 + 1:
+                if target.time == (source.time or 0) + 1:
                     if source.qubits == target.qubits == [0]:
                         edge = DecodingGraphEdge(weight=0, qubits=[])
                         edge.properties["highlighted"] = False

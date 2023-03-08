@@ -17,16 +17,14 @@
 """Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
+from copy import copy, deepcopy
 import numpy as np
 import rustworkx as rx
-from copy import copy, deepcopy
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit.transpiler.passes import DynamicalDecoupling
-
-from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge

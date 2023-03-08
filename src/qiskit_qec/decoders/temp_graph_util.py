@@ -1,8 +1,8 @@
 """Temporary module with methods for graphs."""
 import json
+import os
 import networkx as nx
 import rustworkx as rx
-import os
 
 
 def ret2net(graph: rx.PyGraph):
@@ -36,10 +36,13 @@ def write_graph_to_json(graph: rx.PyGraph, filename: str):
     fp.close()
 
 
-def get_cached_graph(file):
-    if os.path.isfile(file) and not os.stat(file) == 0:
-        with open(file, "r+") as f:
-            json_data = json.loads(f.read())
+def get_cached_graph(path):
+    """
+    Returns graph cached in file at path "file" using cache_graph method.
+    """
+    if os.path.isfile(path) and not os.stat(path) == 0:
+        with open(path, "r+", encoding="utf-8") as file:
+            json_data = json.loads(file.read())
             net_graph = nx.node_link_graph(json_data)
         ret_graph = rx.networkx_converter(net_graph, keep_attributes=True)
         for node in ret_graph.nodes():
@@ -48,7 +51,10 @@ def get_cached_graph(file):
     return None
 
 
-def cache_graph(graph, file):
+def cache_graph(graph, path):
+    """
+    Cache rustworkx PyGraph to file at path.
+    """
     net_graph = ret2net(graph)
-    with open(file, "w+") as f:
-        json.dump(nx.node_link_data(net_graph), f)
+    with open(path, "w+", encoding="utf-8") as file:
+        json.dump(nx.node_link_data(net_graph), file)

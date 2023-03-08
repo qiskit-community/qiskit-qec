@@ -13,28 +13,31 @@
 """Tests for template."""
 
 import math
-import os
 import random
 import unittest
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import ClAYGDecoder
-from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
-from qiskit_qec.decoders.temp_graph_util import cache_graph, get_cached_graph
 
 
 def flip_with_probability(p, val):
+    """
+    Flips parity of val with probability p.
+    """
     if random.random() <= p:
         val = (val + 1) % 2
     return val
 
 
-def generate_surface_code_phenomenological_noise_outcome(d, p):
+def noisy_surface_code_outcome(d, p):
+    """
+    Generates outcome for surface code with phenomenological noise built in.
+    """
     string = ""
     qubits = [0 for _ in range(d**2)]
-    for t in range(d):
+    for _ in range(d):
         for qubit in qubits:
             qubit = flip_with_probability(p, qubit)
         # Top ancillas
@@ -96,19 +99,7 @@ class ClAYGDecoderTest(unittest.TestCase):
         """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
-            cached_graph_file = (
-                os.path.dirname(os.path.abspath(__file__))
-                + "/graph_surface_code_d="
-                + str(code.d)
-                + ".json"
-            )
-            cached_graph = get_cached_graph(cached_graph_file)
-            if cached_graph and False:
-                dec_graph = DecodingGraph(code, graph=cached_graph)
-                decoder = ClAYGDecoder(code, logical, decoding_graph=dec_graph)
-            else:
-                decoder = ClAYGDecoder(code, logical)
-                cache_graph(decoder.decoding_graph.graph, cached_graph_file)
+            decoder = ClAYGDecoder(code, logical)
 
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model

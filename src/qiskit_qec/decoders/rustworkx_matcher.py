@@ -6,7 +6,7 @@ from typing import Dict, List, Set, Tuple
 
 import rustworkx as rx
 from qiskit_qec.decoders.base_matcher import BaseMatcher
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphEdge
 
 
 class RustworkxMatcher(BaseMatcher):
@@ -16,7 +16,8 @@ class RustworkxMatcher(BaseMatcher):
     and decoding_graph.Edge as the type of the edge payload.
 
     Additionally the edges are expected to have the following properties:
-        - edge.properties["measurement_error"] (bool): Whether or not the error corresponds to a measurement error.
+        - edge.properties["measurement_error"] (bool): Whether or not the error
+            corresponds to a measurement error.
 
     The annotated graph will also have "highlighted" properties on edges and vertices.
     """
