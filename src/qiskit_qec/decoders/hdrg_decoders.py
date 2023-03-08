@@ -55,15 +55,15 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
         if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
-                self.measured_logicals = self.code.css_x_logical[0]
+                self.measured_logicals = self.code.css_x_logical
             else:
-                self.measured_logicals = self.code.css_z_logical[0]
+                self.measured_logicals = self.code.css_z_logical
         else:
-            self.measured_logicals = self.code.css_z_logical[0]
+            self.measured_logicals = self.code.css_z_logical
         if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
         else:
-            self.code_index = {j: j for j in range(self.code.d)}
+            self.code_index = {j: j for j in range(self.code.n)}
 
     def _cluster(self, ns, dist_max):
         """
@@ -128,7 +128,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
             node = {"time": 0, "is_boundary": True}
             if isinstance(self.code, ArcCircuit):
                 node["link qubit"] = None
-            node["qubits"] = [z_logical]
+            node["qubits"] = z_logical
             node["element"] = element
             boundary_nodes.append(node)
         return boundary_nodes
@@ -207,19 +207,19 @@ class BravyiHaahDecoder(ClusteringDecoder):
             cluster_logicals[c] = z_logicals
 
         # get the net effect on each logical
-        net_z_logicals = {z_logical: 0 for z_logical in self.measured_logicals}
+        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
         for c, z_logicals in cluster_logicals.items():
             for z_logical in self.measured_logicals:
-                if z_logical in z_logicals:
-                    net_z_logicals[z_logical] += 1
+                if z_logical[0] in z_logicals:
+                    net_z_logicals[z_logical[0]] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
 
         corrected_z_logicals = []
         string = string.split(" ")[0]
         for z_logical in self.measured_logicals:
-            raw_logical = int(string[-1 - self.code_index[z_logical]])
-            corrected_logical = (raw_logical + net_z_logicals[z_logical]) % 2
+            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
+            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
             corrected_z_logicals.append(corrected_logical)
 
         return corrected_z_logicals
