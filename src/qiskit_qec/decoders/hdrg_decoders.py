@@ -23,7 +23,8 @@ from typing import Dict, List, Set, Tuple, Tuple
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
-from qiskit_qec.analysis.decoding_graph import DecodingGraph, Node, Edge
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 from qiskit_qec.exceptions import QiskitQECError
 
 
@@ -129,11 +130,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
     def _get_boundary_nodes(self):
         boundary_nodes = []
         for element, z_logical in enumerate(self.z_logicals):
-            node = Node(
-                is_boundary=True,
-                qubits=[z_logical],
-                index=element
-            )
+            node = DecodingGraphNode(is_boundary=True, qubits=[z_logical], index=element)
             if isinstance(self.code, ArcCircuit):
                 node.properties["link qubit"] = None
             boundary_nodes.append(node)
@@ -250,7 +247,7 @@ class BoundaryEdge:
     index: int
     cluster_vertex: int
     neighbour_vertex: int
-    data: Edge
+    data: DecodingGraphEdge
 
     def reverse(self):
         """
@@ -431,7 +428,10 @@ class UnionFindDecoder(ClusteringDecoder):
             cluster = self.clusters[root]
             for edge in cluster.boundary:
                 edge.data.properties["growth"] += 0.5
-                if edge.data.properties["growth"] >= edge.data.weight and not edge.data.properties["fully_grown"]:
+                if (
+                    edge.data.properties["growth"] >= edge.data.weight
+                    and not edge.data.properties["fully_grown"]
+                ):
                     edge.data.properties["fully_grown"] = True
                     cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(
@@ -525,9 +525,14 @@ class UnionFindDecoder(ClusteringDecoder):
             pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree.vertices[tree_vertex].remove(edge)
-            if erasure[pendant_vertex].properties["syndrome"] and not erasure[pendant_vertex].is_boundary:
+            if (
+                erasure[pendant_vertex].properties["syndrome"]
+                and not erasure[pendant_vertex].is_boundary
+            ):
                 edges.add(edge)
-                erasure[tree_vertex].properties["syndrome"] = not erasure[tree_vertex].properties["syndrome"]
+                erasure[tree_vertex].properties["syndrome"] = not erasure[tree_vertex].properties[
+                    "syndrome"
+                ]
                 erasure[pendant_vertex].properties["syndrome"] = False
 
         return [

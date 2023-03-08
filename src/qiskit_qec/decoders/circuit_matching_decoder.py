@@ -10,7 +10,8 @@ from sympy import Poly, Symbol, symbols
 import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.analysis.decoding_graph import CSSDecodingGraph, DecodingGraph, Node, Edge
+from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
@@ -214,11 +215,9 @@ class CircuitModelMatchingDecoder(ABC):
                 if source.time == target.time:
                     if source.is_boundary and target.is_boundary:
                         if source.qubits != target.qubits:
-                            edge = Edge(
-                                weight= 0,
-                                qubits = list(
-                                    set(source.qubits).intersection((set(target.qubits)))
-                                )
+                            edge = DecodingGraphEdge(
+                                weight=0,
+                                qubits=list(set(source.qubits).intersection((set(target.qubits)))),
                             )
                             edge.properties["highlighted"] = False
                             edge.properties["measurement_error"] = 0
@@ -228,10 +227,7 @@ class CircuitModelMatchingDecoder(ABC):
                 # connect one of the boundaries at different times
                 if target.time == source.time or 0 + 1:
                     if source.qubits == target.qubits == [0]:
-                        edge = Edge(
-                                weight= 0,
-                                qubits = []
-                            )
+                        edge = DecodingGraphEdge(weight=0, qubits=[])
                         edge.properties["highlighted"] = False
                         edge.properties["measurement_error"] = 0
                         if (n0, n1) not in graph.edge_list():

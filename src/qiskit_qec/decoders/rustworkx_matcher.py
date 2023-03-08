@@ -6,7 +6,8 @@ from typing import Dict, List, Set, Tuple
 
 import rustworkx as rx
 from qiskit_qec.decoders.base_matcher import BaseMatcher
-from qiskit_qec.analysis.decoding_graph import Node, Edge
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+
 
 class RustworkxMatcher(BaseMatcher):
     """Matching subroutines using rustworkx.
@@ -14,7 +15,7 @@ class RustworkxMatcher(BaseMatcher):
     The input rustworkx graph is expected to have decoding_graph.Node as the type of the node payload
     and decoding_graph.Edge as the type of the edge payload.
 
-    Additionally the edges are expected to have the following properties: 
+    Additionally the edges are expected to have the following properties:
         - edge.properties["measurement_error"] (bool): Whether or not the error corresponds to a measurement error.
 
     The annotated graph will also have "highlighted" properties on edges and vertices.
@@ -35,7 +36,7 @@ class RustworkxMatcher(BaseMatcher):
         """
 
         # edge_cost_fn = lambda edge: edge["weight"]
-        def edge_cost_fn(edge: Edge):
+        def edge_cost_fn(edge: DecodingGraphEdge):
             return edge.weight
 
         length = rx.all_pairs_dijkstra_path_lengths(graph, edge_cost_fn)
