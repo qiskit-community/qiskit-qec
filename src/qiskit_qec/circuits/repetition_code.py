@@ -31,7 +31,6 @@ from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
-
 def _separate_string(string):
     separated_string = []
     for syndrome_type_string in string.split("  "):
