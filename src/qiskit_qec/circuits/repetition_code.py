@@ -29,7 +29,8 @@ from qiskit.transpiler.passes import DynamicalDecoupling
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-from qiskit_qec.analysis.decoding_graph import Node, Edge
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+
 
 def _separate_string(string):
     separated_string = []
@@ -323,11 +324,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     bqubits = [self.css_x_logical[i]]
                 else:
                     bqubits = [self.css_z_logical[i]]
-                bnode = Node(
-                    is_boundary=True,
-                    qubits = bqubits,
-                    index = bqec_index
-                )
+                bnode = DecodingGraphNode(is_boundary=True, qubits=bqubits, index=bqec_index)
                 nodes.append(bnode)
 
         # bulk nodes
@@ -340,11 +337,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                             qubits = self.css_z_gauge_ops[qec_index]
                         else:
                             qubits = self.css_x_gauge_ops[qec_index]
-                        node = Node(
-                            time=syn_round,
-                            qubits=qubits,
-                            index=qec_index
-                        )
+                        node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes
 
@@ -359,7 +352,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         return _separate_string(self._process_string(string))[0]
 
     @staticmethod
-    def flatten_nodes(nodes: List[Node]):
+    def flatten_nodes(nodes: List[DecodingGraphNode]):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
@@ -434,7 +427,6 @@ class RepetitionCodeCircuit(CodeCircuit):
         # calculate all required info for the max to see if that is fully neutral
         # if not, calculate and output for the min case
         for error_c in [error_c_max, error_c_min]:
-
             num_errors = colors.count(error_c)
 
             # determine the corresponding flipped logicals
@@ -460,11 +452,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     elem = self.css_z_boundary.index(qubits)
                 else:
                     elem = self.css_x_boundary.index(qubits)
-                node = Node(
-                    is_boundary=True,
-                    qubits=qubits,
-                    index=elem
-                )
+                node = DecodingGraphNode(is_boundary=True, qubits=qubits, index=elem)
                 flipped_logical_nodes.append(node)
 
             if neutral and flipped_logical_nodes == []:
@@ -1036,7 +1024,7 @@ class ArcCircuit(CodeCircuit):
 
         return new_string
 
-    def string2nodes(self, string, **kwargs) -> List[Node]:
+    def string2nodes(self, string, **kwargs) -> List[DecodingGraphNode]:
         """
         Convert output string from circuits into a set of nodes.
         Args:
@@ -1073,11 +1061,11 @@ class ArcCircuit(CodeCircuit):
                         tau, _, _ = self._get_202(syn_round)
                         if not tau:
                             tau = 0
-                        node = Node(
+                        node = DecodingGraphNode(
                             is_boundary=is_boundary,
                             time=syn_round if not is_boundary else None,
                             qubits=code_qubits,
-                            index=elem_num
+                            index=elem_num,
                         )
                         node.properties["conjugate"] = ((tau % 2) == 1) and tau > 1
                         node.properties["link qubit"] = link_qubit
@@ -1085,7 +1073,7 @@ class ArcCircuit(CodeCircuit):
         return nodes
 
     @staticmethod
-    def flatten_nodes(nodes: List[Node]):
+    def flatten_nodes(nodes: List[DecodingGraphNode]):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times. Also removes nodes corresponding
@@ -1204,7 +1192,6 @@ class ArcCircuit(CodeCircuit):
             # see what happens for both colours
             # once full neutrality us found, go for it!
             for c in min_cs:
-
                 this_neutral = neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
@@ -1219,10 +1206,10 @@ class ArcCircuit(CodeCircuit):
 
                 flipped_logical_nodes = []
                 for flipped_logical in flipped_logicals:
-                    node = Node(
+                    node = DecodingGraphNode(
                         is_boundary=True,
                         qubits=[flipped_logical],
-                        index=self.z_logicals.index(flipped_logical)
+                        index=self.z_logicals.index(flipped_logical),
                     )
                     flipped_logical_nodes.append(node)
 
@@ -1350,7 +1337,7 @@ class ArcCircuit(CodeCircuit):
             + ("0" * len(self.links) + " ") * (self.T - 1)
             + "1" * len(self.links)
         )
-        nodes: List[Node] = []
+        nodes: List[DecodingGraphNode] = []
         for node in self.string2nodes(string):
             if not node.is_boundary:
                 for t in range(self.T + 1):
@@ -1387,10 +1374,7 @@ class ArcCircuit(CodeCircuit):
                 qubits = list(set(source.qubits).intersection(target.qubits))
             if source.time != target.time and len(qubits) > 1:
                 qubits = []
-            edge = Edge(
-                qubits=qubits,
-                weight=1
-            )
+            edge = DecodingGraphEdge(qubits=qubits, weight=1)
             S.add_edge(n0, n1, edge)
             # just record edges as hyperedges for now (should be improved later)
             hyperedges.append({(n0, n1): edge})
@@ -1440,9 +1424,9 @@ class ArcCircuit(CodeCircuit):
                 qubits = decoding_graph.graph.get_edge_data(n0, n1).qubits
                 if qubits:
                     # error on a code qubit between rounds, or during a round
-                    assert (
-                        node0.time == node1.time and node0.qubits != node1.qubits
-                    ) or (node0.time != node1.time and node0.qubits != node1.qubits)
+                    assert (node0.time == node1.time and node0.qubits != node1.qubits) or (
+                        node0.time != node1.time and node0.qubits != node1.qubits
+                    )
                     qubit = qubits[0]
                     # error between rounds
                     if node0.time == node1.time:

@@ -31,3 +31,4 @@ Utils module classes and functions
 """
 
 from . import indexer, pauli_rep, visualizations
+from .decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge

@@ -26,7 +26,8 @@ from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
-from qiskit_qec.analysis.decoding_graph import DecodingGraph, Node, Edge
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
 
@@ -135,14 +136,14 @@ class TestRepCodes(unittest.TestCase):
                 (5, 0),
                 "00001",
                 [
-                    Node(
+                    DecodingGraphNode(
                         is_boundary=True,
                         qubits=[0],
                         index=0,
                     ),
-                    Node(
+                    DecodingGraphNode(
                         time=0,
-                        qubits=[0,1],
+                        qubits=[0, 1],
                         index=0,
                     ),
                 ],
@@ -196,20 +197,8 @@ class TestRepCodes(unittest.TestCase):
                 + "'."
             )
             p = dec.get_error_probs(test_results, method=method)
-            n0 = dec.graph.nodes().index(
-                Node(
-                    time=0,
-                    qubits=[0,1],
-                    index=0
-                )
-            )
-            n1 = dec.graph.nodes().index(
-                Node(
-                    time=0,
-                    qubits=[1,2],
-                    index=1
-                )
-            )
+            n0 = dec.graph.nodes().index(DecodingGraphNode(time=0, qubits=[0, 1], index=0))
+            n1 = dec.graph.nodes().index(DecodingGraphNode(time=0, qubits=[1, 2], index=1))
             # edges in graph aren't directed and could be in any order
             if (n0, n1) in p:
                 self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
@@ -485,18 +474,10 @@ class TestARCCodes(unittest.TestCase):
                 + "'."
             )
             p = dec.get_error_probs(test_results, method=method)
-            node = Node(
-                    time=0,
-                    qubits=[0, 2],
-                    index=1
-                )
+            node = DecodingGraphNode(time=0, qubits=[0, 2], index=1)
             node.properties["link qubits"] = 1
             n0 = dec.graph.nodes().index(node)
-            node = Node(
-                    time=0,
-                    qubits=[2,4],
-                    index=0
-            )
+            node = DecodingGraphNode(time=0, qubits=[2, 4], index=0)
             node.properties["link qubits"] = 3
             n1 = dec.graph.nodes().index(node)
             # edges in graph aren't directed and could be in any order

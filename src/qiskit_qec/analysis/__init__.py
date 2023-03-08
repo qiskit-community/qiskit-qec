@@ -32,4 +32,3 @@ from .baseerrorpropagator import BaseErrorPropagator
 from .pyerrorpropagator import PyErrorPropagator
 from .faultenumerator import FaultEnumerator
 from .distance import minimum_distance
-from .decoding_graph import DecodingGraph
