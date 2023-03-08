@@ -18,12 +18,13 @@ class TestRustworkxMatcher(unittest.TestCase):
         """
         graph = rx.PyGraph(multigraph=False)
         idxmap = {}
-        for i, q in enumerate([[0, 1], [1, 2], [2, 3], [3, 4]]):
+        basic_config = [[0, 1], [1, 2], [2, 3], [3, 4]]
+        for i, q in enumerate(basic_config):
             node = DecodingGraphNode(time=0, qubits=q, index=i)
             node.properties["highlighted"] = False
             graph.add_node(node)
             idxmap[(0, tuple(q))] = i
-        node = DecodingGraphNode(time=0, qubits=[], index=i + 1)
+        node = DecodingGraphNode(time=0, qubits=[], index=len(basic_config) + 1)
         node.properties["highlighted"] = False
         graph.add_node(node)
         idxmap[(0, tuple([]))] = 4

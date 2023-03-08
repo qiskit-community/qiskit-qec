@@ -18,15 +18,30 @@
 Graph used as the basis of decoders.
 """
 from dataclasses import dataclass, field
-import itertools
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional
+
+from qiskit_qec.exceptions import QiskitQECError
 
 from qiskit_qec.exceptions import QiskitQECError
 
 
 class DecodingGraphNode:
+    """
+    Class to describe DecodingGraph nodes.
+
+    Attributes:
+     - is_boundary (bool): whether or not the node is a boundary node.
+     - time (int): what syndrome node the node corrsponds to. Doesn't
+        need to be set if it's a boundary node.
+     - qubits (List[int]): List of indices which are stabilized by
+        this ancilla.
+     - index (int): Unique index in measurement round.
+     - properties (Dict[str, Any]): Decoder/code specific attributes.
+        Are not considered when comparing nodes.
+    """
+
     def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
-        if not is_boundary and time == None:
+        if not is_boundary and time is None:
             raise QiskitQECError(
                 "DecodingGraph node must either have a time or be a boundary node."
             )
@@ -35,8 +50,7 @@ class DecodingGraphNode:
         self.time: Optional[int] = time if not is_boundary else None
         self.qubits: List[int] = qubits
         self.index: int = index
-        # TODO: Should code/decoder specific properties be accounted for when comparing nodes
-        self.properties: Dict[str, Any] = dict()
+        self.properties: Dict[str, Any] = {}
 
     def __eq__(self, rhs):
         if not isinstance(rhs, DecodingGraphNode):
@@ -61,6 +75,16 @@ class DecodingGraphNode:
 
 @dataclass
 class DecodingGraphEdge:
+    """
+    Class to describe DecodingGraph edges.
+
+    Attributes:
+     - qubits (List[int]): List of indices of code qubits that correspond to this edge.
+     - weight (float): Weight of the edge.
+     - properties (Dict[str, Any]): Decoder/code specific attributes.
+        Are not considered when comparing edges.
+    """
+
     qubits: List[int]
     weight: float
     # TODO: Should code/decoder specific properties be accounted for when comparing edges

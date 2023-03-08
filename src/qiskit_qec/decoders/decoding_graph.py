@@ -17,10 +17,9 @@
 """
 Graph used as the basis of decoders.
 """
-from dataclasses import dataclass, field
 import itertools
 import logging
-from typing import Any, Dict, List, Tuple, Optional
+from typing import List, Tuple
 
 import numpy as np
 import rustworkx as rx

@@ -17,9 +17,9 @@
 """Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
+from copy import copy, deepcopy
 import numpy as np
 import rustworkx as rx
-from copy import copy, deepcopy
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate

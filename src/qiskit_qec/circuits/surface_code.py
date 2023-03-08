@@ -18,7 +18,7 @@
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 
