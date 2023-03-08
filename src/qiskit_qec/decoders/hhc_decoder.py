@@ -5,7 +5,7 @@ import logging
 
 from qiskit import QuantumCircuit
 
-from qiskit_qec.analysis.decoding_graph import DecodingGraph
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.circuit_matching_decoder import CircuitModelMatchingDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.decoders.temp_code_util import temp_syndrome

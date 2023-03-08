@@ -21,7 +21,7 @@ from numpy.random import poisson
 from rustworkx.visualization import mpl_draw
 
 from qiskit_qec.utils.visualizations import QiskitGameEngine
-from qiskit_qec.analysis import DecodingGraph
+from qiskit_qec.decoders import DecodingGraph
 
 
 class Decodoku:
@@ -58,7 +58,6 @@ class Decodoku:
         self._generate_graph()
 
     def _generate_syndrome(self):
-
         syndrome = {}
         for x in range(self.size):
             for y in range(self.size):
@@ -69,7 +68,6 @@ class Decodoku:
         else:
             error_num = poisson(self.p * 2 * self.size**2)
             for _ in range(error_num):
-
                 x0 = choice(range(self.size))
                 y0 = choice(range(self.size))
 
@@ -317,7 +315,6 @@ class Decodoku:
         self.boundary_errors = parity
 
     def _generate_graph(self):
-
         dg = DecodingGraph(None)
 
         d = self.size - 1
@@ -373,7 +370,6 @@ class Decodoku:
         self._update_graph(original=False)
 
     def _update_graph(self, original=False):
-
         for node in self.decoding_graph.graph.nodes():
             node["highlighted"] = False
             if self.k != 2:
@@ -403,7 +399,6 @@ class Decodoku:
         self.node_color = highlighted_color
 
     def _start(self, engine):
-
         d = self.k
         syndrome = self.syndrome
 
@@ -439,7 +434,6 @@ class Decodoku:
 
     # this is the function that does everything
     def _next_frame(self, engine):
-
         d = self.k
         syndrome = self.syndrome
 

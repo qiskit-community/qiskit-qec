@@ -19,11 +19,10 @@ import unittest
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import ClAYGDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit, ArcCircuit
-from qiskit_qec.analysis.decoding_graph import DecodingGraph
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.temp_code_util import temp_syndrome
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 from qiskit_qec.decoders.temp_graph_util import cache_graph, get_cached_graph
-
 
 
 def flip_with_probability(p, val):
@@ -39,19 +38,23 @@ def generate_surface_code_phenomenological_noise_outcome(d, p):
         for qubit in qubits:
             qubit = flip_with_probability(p, qubit)
         # Top ancillas
-        for i in [2*i for i in range((d-1)//2)]:
-            ancilla = (qubits[i] + qubits[i+1]) % 2
+        for i in [2 * i for i in range((d - 1) // 2)]:
+            ancilla = (qubits[i] + qubits[i + 1]) % 2
             ancilla = flip_with_probability(p, ancilla)
             string += str(ancilla)
-        for row in range(d-1):
+        for row in range(d - 1):
             offset = (row + 1) % 2
-            for topleft in [offset+row*d+2*i for i in range((d-1)//2)]:
-                ancilla = (qubits[topleft] + qubits[topleft+1] +
-                           qubits[topleft+d] + qubits[topleft+d+1]) % 2
+            for topleft in [offset + row * d + 2 * i for i in range((d - 1) // 2)]:
+                ancilla = (
+                    qubits[topleft]
+                    + qubits[topleft + 1]
+                    + qubits[topleft + d]
+                    + qubits[topleft + d + 1]
+                ) % 2
                 ancilla = flip_with_probability(p, ancilla)
                 string += str(ancilla)
-        for i in [d*(d-1)+1+2*i for i in range((d-1)//2)]:
-            ancilla = (qubits[i] + qubits[i+1]) % 2
+        for i in [d * (d - 1) + 1 + 2 * i for i in range((d - 1) // 2)]:
+            ancilla = (qubits[i] + qubits[i + 1]) % 2
             ancilla = flip_with_probability(p, ancilla)
             string += str(ancilla)
         string += " "
@@ -93,8 +96,12 @@ class ClAYGDecoderTest(unittest.TestCase):
         """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
-            cached_graph_file = os.path.dirname(os.path.abspath(
-                __file__)) + "/graph_surface_code_d=" + str(code.d) + ".json"
+            cached_graph_file = (
+                os.path.dirname(os.path.abspath(__file__))
+                + "/graph_surface_code_d="
+                + str(code.d)
+                + ".json"
+            )
             cached_graph = get_cached_graph(cached_graph_file)
             if cached_graph and False:
                 dec_graph = DecodingGraph(code, graph=cached_graph)
@@ -102,7 +109,7 @@ class ClAYGDecoderTest(unittest.TestCase):
             else:
                 decoder = ClAYGDecoder(code, logical)
                 cache_graph(decoder.decoding_graph.graph, cached_graph_file)
-                
+
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
             )
@@ -147,7 +154,8 @@ class ClAYGDecoderTest(unittest.TestCase):
 
         testcases = []
         testcases = [
-            "".join([random.choices(["0", "1"], [1 - p, p])[0] for _ in range(d)]) for _ in range(samples)
+            "".join([random.choices(["0", "1"], [1 - p, p])[0] for _ in range(d)])
+            for _ in range(samples)
         ]
         codes = self.construct_codes(d)
 

@@ -2,9 +2,9 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2023.
 #
-# This code is licensed under the Apache License, Version 2.0. You may  ddddddd
+# This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
@@ -26,55 +26,8 @@ import numpy as np
 import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.exceptions import QiskitQECError
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
-
-class Node:
-    def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
-        if not is_boundary and time == None:
-            raise QiskitQECError("DecodingGraph node must either have a time or be a boundary node.")
-
-        self.is_boundary: bool = is_boundary
-        self.time: Optional[int] = time if not is_boundary else None
-        self.qubits: List[int] = qubits
-        self.index: int = index
-        # TODO: Should code/decoder specific properties be accounted for when comparing nodes 
-        self.properties: Dict[str, Any] = dict()
-    
-    def __eq__(self, rhs): 
-        if not isinstance(rhs, Node):
-            return NotImplemented
-
-        result = self.index == rhs.index and set(self.qubits) == set(rhs.qubits) and self.is_boundary == rhs.is_boundary
-        if not self.is_boundary:
-            result = result and self.time == rhs.time
-        return result
-    
-    def __hash__(self) -> int:
-        return hash(repr(self))
-    
-    def __iter__(self):
-        for attr, value in self.__dict__.items():
-            yield attr, value
-
-@dataclass
-class Edge:
-    qubits: List[int]
-    weight: float
-    # TODO: Should code/decoder specific properties be accounted for when comparing edges
-    properties: Dict[str, Any] = field(default_factory=dict) 
-
-    def __eq__(self, rhs) -> bool:
-        if not isinstance(rhs, Node):
-            return NotImplemented
-        
-        return set(self.qubits) == set(rhs.qubits) and self.weight == rhs.weight
-
-    def __hash__(self) -> int:
-        return hash(repr(self))
-    
-    def __iter__(self):
-        for attr, value in self.__dict__.items():
-            yield attr, value
 
 class DecodingGraph:
     """
@@ -105,7 +58,6 @@ class DecodingGraph:
             self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
-
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
@@ -113,7 +65,6 @@ class DecodingGraph:
             self.hyperedges = []
 
             if self.code is not None:
-
                 # get the circuit used as the base case
                 if isinstance(self.code.circuit, dict):
                     if "base" not in dir(self.code):
@@ -142,9 +93,7 @@ class DecodingGraph:
                                 n1 = graph.nodes().index(target)
                                 qubits = []
                                 if not (source.is_boundary and target.is_boundary):
-                                    qubits = list(
-                                        set(source.qubits).intersection(target.qubits)
-                                    )
+                                    qubits = list(set(source.qubits).intersection(target.qubits))
                                     if not qubits:
                                         continue
                                 if (
@@ -154,7 +103,7 @@ class DecodingGraph:
                                     and not target.is_boundary
                                 ):
                                     qubits = []
-                                edge = Edge(qubits, 1)
+                                edge = DecodingGraphEdge(qubits, 1)
                                 graph.add_edge(n0, n1, edge)
                                 if (n1, n0) not in hyperedge:
                                     hyperedge[n0, n1] = edge
@@ -163,7 +112,9 @@ class DecodingGraph:
 
             self.graph = graph
 
-    def get_error_probs(self, counts, logical: str = "0", method: str = METHOD_SPITZ) -> List[Tuple[Tuple[int, int], float]]:
+    def get_error_probs(
+        self, counts, logical: str = "0", method: str = METHOD_SPITZ
+    ) -> List[Tuple[Tuple[int, int], float]]:
         """
         Generate probabilities of single error events from result counts.
 
@@ -189,7 +140,6 @@ class DecodingGraph:
 
         # method for edges
         if method == self.METHOD_SPITZ:
-
             neighbours = {}
             av_v = {}
             for n in self.graph.node_indexes():
@@ -205,7 +155,6 @@ class DecodingGraph:
                 neighbours[n1].append(n0)
 
             for string in counts:
-
                 # list of i for which v_i=1
                 error_nodes = self.code.string2nodes(string, logical=logical)
 
@@ -231,7 +180,6 @@ class DecodingGraph:
             boundary = []
             error_probs = {}
             for n0, n1 in self.graph.edge_list():
-
                 if self.graph[n0].is_boundary:
                     boundary.append(n1)
                 elif self.graph[n1].is_boundary:
@@ -262,7 +210,6 @@ class DecodingGraph:
 
         # generally applicable but approximate method
         elif method == self.METHOD_NAIVE:
-
             # for every edge in the graph, we'll determine the histogram
             # of whether their nodes are in the error nodes
             count = {
@@ -397,7 +344,6 @@ class CSSDecodingGraph:
         round_schedule: str,
         basis: str,
     ):
-
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
         self.css_x_boundary = css_x_boundary
@@ -474,11 +420,7 @@ class CSSDecodingGraph:
             elif layer == "s":
                 all_z = stabilizers
             for index, supp in enumerate(all_z):
-                node = Node(
-                    time=time,
-                    qubits=supp,
-                    index=index
-                )
+                node = DecodingGraphNode(time=time, qubits=supp, index=index)
                 node.properties["highlighted"] = True
                 graph.add_node(node)
                 logging.debug("node %d t=%d %s", idx, time, supp)
@@ -487,11 +429,7 @@ class CSSDecodingGraph:
                 idx += 1
             for index, supp in enumerate(boundary):
                 # Add optional is_boundary property for pymatching
-                node = Node(
-                    is_boundary=True,
-                    qubits=supp,
-                    index=index
-                )
+                node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
                 node.properties["highlighted"] = False
                 graph.add_node(node)
                 logging.debug("boundary %d t=%d %s", idx, time, supp)
@@ -523,10 +461,7 @@ class CSSDecodingGraph:
                         # qubit_id is an integer or set of integers
                         # weight is a floating point number
                         # error_probability is a floating point number
-                        edge = Edge(
-                            qubits=[com[0]],
-                            weight=1
-                        )
+                        edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
                         edge.properties["highlighted"] = False
                         edge.properties["measurement_error"] = 0
                         graph.add_edge(
@@ -546,10 +481,7 @@ class CSSDecodingGraph:
                 # qubit_id is an integer or set of integers
                 # weight is a floating point number
                 # error_probability is a floating point number
-                edge = Edge(
-                            qubits=[],
-                            weight=0
-                        )
+                edge = DecodingGraphEdge(qubits=[], weight=0)
                 edge.properties["highlighted"] = False
                 edge.properties["measurement_error"] = 0
                 graph.add_edge(idxmap[(time, tuple(bound_g))], idxmap[(time, tuple(bound_h))], edge)
@@ -590,10 +522,7 @@ class CSSDecodingGraph:
                             # error_probability is a floating point number
                             # Case (a)
                             if set(com) == set(op_h) or set(com) == set(op_g):
-                                edge = Edge(
-                                    qubits=[],
-                                    weight=1
-                                )
+                                edge = DecodingGraphEdge(qubits=[], weight=1)
                                 edge.properties["highlighted"] = False
                                 edge.properties["measurement_error"] = 1
                                 graph.add_edge(
@@ -603,10 +532,7 @@ class CSSDecodingGraph:
                                 )
                                 logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
                             else:  # Case (b)
-                                edge = Edge(
-                                    qubits=[com[0]],
-                                    weight=1
-                                )
+                                edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
                                 edge.properties["highlighted"] = False
                                 edge.properties["measurement_error"] = 1
                                 graph.add_edge(
@@ -618,10 +544,7 @@ class CSSDecodingGraph:
                                 logging.debug(" qubits %s", [com[0]])
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
-                edge = Edge(
-                    qubits=[],
-                    weight=0
-                )
+                edge = DecodingGraphEdge(qubits=[], weight=0)
                 edge.properties["highlighted"] = False
                 edge.properties["measurement_error"] = 0
                 graph.add_edge(
