@@ -20,6 +20,8 @@ from qiskit_aer.noise import depolarizing_error, pauli_error
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
+import stim
+from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 
 class CssCodeCircuit(CodeCircuit):
     """
