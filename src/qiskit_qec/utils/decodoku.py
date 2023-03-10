@@ -331,7 +331,7 @@ class Decodoku:
                 {
                     "y": 0,
                     "x": (d - 1) * (elem == 1) - 1 * (elem == 0),
-                    "element": elem,
+                    "index": elem,
                     "is_boundary": True,
                 }
             )
@@ -340,10 +340,10 @@ class Decodoku:
         nodes = dg.graph.nodes()
         # connect edges to boundary nodes
         for y in range(self.size):
-            n0 = nodes.index({"y": 0, "x": -1, "element": 0, "is_boundary": True})
+            n0 = nodes.index({"y": 0, "x": -1, "index": 0, "is_boundary": True})
             n1 = nodes.index({"y": y, "x": 0, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
-            n0 = nodes.index({"y": 0, "x": d - 1, "element": 1, "is_boundary": True})
+            n0 = nodes.index({"y": 0, "x": d - 1, "index": 1, "is_boundary": True})
             n1 = nodes.index({"y": y, "x": d - 2, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with space-like edges
@@ -536,7 +536,7 @@ class Decodoku:
 
         def get_label(node):
             if node["is_boundary"] and parity:
-                return str(parity[node["element"]])
+                return str(parity[node["index"]])
             elif node["highlighted"] and "value" in node and self.k != 2:
                 return str(node["value"])
             else:
