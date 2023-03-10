@@ -534,6 +534,4 @@ class UnionFindDecoder(ClusteringDecoder):
                 ]
                 erasure[pendant_vertex].properties["syndrome"] = False
 
-        return [
-            erasure.edges()[edge].qubits[0] for edge in edges if erasure.edges()[edge].qubits
-        ]
+        return [erasure.edges()[edge].qubits[0] for edge in edges if erasure.edges()[edge].qubits]

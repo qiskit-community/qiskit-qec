@@ -1344,7 +1344,7 @@ class ArcCircuit(CodeCircuit):
                     if new_node not in nodes:
                         nodes.append(new_node)
             else:
-                node.time = 0
+                node.time = None
                 nodes.append(node)
 
         # find pairs that should be connected
@@ -1353,7 +1353,7 @@ class ArcCircuit(CodeCircuit):
             for n1, node1 in enumerate(nodes):
                 if n0 < n1:
                     # just record all possible edges for now (should be improved later)
-                    dt = abs(node1.time - node0.time)
+                    dt = abs((node1.time or 0) - (node0.time or 0))
                     adj = set(node0.qubits).intersection(set(node1.qubits))
                     if adj:
                         if (node0.is_boundary ^ node1.is_boundary) or dt <= 1:
