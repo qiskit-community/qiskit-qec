@@ -18,7 +18,7 @@
 
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
