@@ -137,7 +137,8 @@ class ClAYGDecoderTest(unittest.TestCase):
 
     def test_error_rates(self):
         """
-        Test the error rates using some ARCs.
+        Test the error rates using some codes (currently only repetition codes, but in
+        the future also ARCs, surface codes, HHCs etc).
         """
         d = 8
         p = 0.01
