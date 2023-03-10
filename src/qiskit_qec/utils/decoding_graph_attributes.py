@@ -22,8 +22,6 @@ from typing import Any, Dict, List, Optional
 
 from qiskit_qec.exceptions import QiskitQECError
 
-from qiskit_qec.exceptions import QiskitQECError
-
 
 class DecodingGraphNode:
     """
@@ -40,7 +38,7 @@ class DecodingGraphNode:
         Are not considered when comparing nodes.
     """
 
-    def __init__(self, qubits: List[int], index: int, is_boundary=False, time=None) -> None:
+    def __init__(self, index: int, qubits: List[int] = None, is_boundary=False, time=None) -> None:
         if not is_boundary and time is None:
             raise QiskitQECError(
                 "DecodingGraph node must either have a time or be a boundary node."
@@ -48,7 +46,7 @@ class DecodingGraphNode:
 
         self.is_boundary: bool = is_boundary
         self.time: Optional[int] = time if not is_boundary else None
-        self.qubits: List[int] = qubits
+        self.qubits: List[int] = qubits if qubits else []
         self.index: int = index
         self.properties: Dict[str, Any] = {}
 
