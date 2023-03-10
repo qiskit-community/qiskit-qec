@@ -220,7 +220,7 @@ class CssCodeCircuit(CodeCircuit):
 
         return nodes
     
-        def to_stim_circuit(self):
+    def to_stim_circuit(self):
         '''Returns a list of dictionaries. The first one contains the stim circuits for the two logicals,
            the second contatins the data how the stim measurement outcomes are ordered
         '''
