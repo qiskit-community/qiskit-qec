@@ -155,9 +155,9 @@ class HexagonTile(Tile):
             None,  # 11
         ],
         "cYZX2-hXX": [
-            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 0
-            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 1
-            PauliList(["YZXYXZ"], input_qubit_order="left-to-right"),  # 2
+            PauliList(["YZXYZX"], input_qubit_order="left-to-right"),  # 0
+            PauliList(["YZXYZX"], input_qubit_order="left-to-right"),  # 1
+            PauliList(["YZXYZX"], input_qubit_order="left-to-right"),  # 2
             None,  # 3
             PauliList(["XX"]),  # 4
             None,  # 5
