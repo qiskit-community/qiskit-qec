@@ -21,8 +21,7 @@ from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 
 
 def get_stim_circuits(circuit_dict):
-    """Returns a list of dictionaries. The first one contains the stim circuits for the two logicals,
-    the second contatins the data how the stim measurement outcomes are ordered.
+    """Converts compatible qiskit circuits to stim circuits.
 
     Args:
         circuit_dict: Dictionary with Qiskit circuits as values. Compatible gates are paulis,
