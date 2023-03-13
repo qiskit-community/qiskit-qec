@@ -23,7 +23,7 @@ from qiskit_qec.circuits.code_circuit import CodeCircuit
 import stim
 from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 
-class CssCodeCircuit(CodeCircuit):
+class CssCodeCircuit():
     """
     CodeCircuit class for generic CSS codes.
     """
@@ -39,8 +39,6 @@ class CssCodeCircuit(CodeCircuit):
             p_meas: Probability of measurement errors
         """
 
-        super().__init__()
-
         self.code = code
         self.T = T
         self.basis = basis
@@ -53,8 +51,11 @@ class CssCodeCircuit(CodeCircuit):
         self._depol_error = depolarizing_error(p_depol, 1)
         self._meas_error = pauli_error([("X", p_meas), ("I", 1 - p_meas)])
 
-        self.circuit = {}
-        for state in ["0", "1"]:
+        circuit = {}
+        states = ["0", "1"]
+        if self._noise:
+            states += ["0n", "1n"]
+        for state in states:
             qc = QuantumCircuit()
             qregs = []
             qregs.append(QuantumRegister(code.n, name="code qubits"))
@@ -63,7 +64,7 @@ class CssCodeCircuit(CodeCircuit):
             for qreg in qregs:
                 qc.add_register(qreg)
             # prepare initial state
-            if state == "1":
+            if state[0] == "1":
                 if basis == "z":
                     qc.x(code.logical_x[0])
                 else:
@@ -72,16 +73,16 @@ class CssCodeCircuit(CodeCircuit):
                 qc.h(qregs[0])
             # peform syndrome measurements
             for t in range(T):
-                if self._noise:
+                if state[-1] == 'n':
                     for q in qregs[0]:
                         qc.append(self._depol_error, [q])
                 # gauge measurements
                 if round_schedule == "zx":
-                    self._z_gauge_measurements(qc, t)
-                    self._x_gauge_measurements(qc, t)
+                    self._z_gauge_measurements(qc, t, state)
+                    self._x_gauge_measurements(qc, t, state)
                 elif round_schedule == "xz":
-                    self._x_gauge_measurements(qc, t)
-                    self._z_gauge_measurements(qc, t)
+                    self._x_gauge_measurements(qc, t, state)
+                    self._z_gauge_measurements(qc, t, state)
                 else:
                     print("Round schedule " + round_schedule + " not supported.")
             # final readout
@@ -89,11 +90,19 @@ class CssCodeCircuit(CodeCircuit):
             qc.add_register(creg)
             if basis == "x":
                 qc.h(qregs[0])
-            if self._noise:
+            if state[-1] == 'n':
                 for q in qregs[0]:
                     qc.append(self._meas_error, [q])
             qc.measure(qregs[0], creg)
-            self.circuit[state] = qc
+            circuit[state] = qc
+
+        self.circuit = {}
+        self.noisy_circuit = {}
+        for state, qc in circuit.items():
+            if state[-1] == 'n':
+                self.noisy_circuit[state[0]] = qc
+            else:
+                self.circuit[state] = qc
 
         self._gauges4stabilizers = []
         self._stabilizers = [code.x_stabilizers, code.z_stabilizers]
@@ -107,18 +116,18 @@ class CssCodeCircuit(CodeCircuit):
                         gauges.append(g)
                 self._gauges4stabilizers[j].append(gauges)
 
-    def _z_gauge_measurements(self, qc, t):
+    def _z_gauge_measurements(self, qc, t, state):
         creg = ClassicalRegister(len(self.code.z_gauges), name="round_" + str(t) + "_z_bits")
         qc.add_register(creg)
         for g, z_gauge in enumerate(self.code.z_gauges):
             for q in z_gauge:
                 qc.cx(qc.qregs[0][q], qc.qregs[1][g])
-            if self._noise:
+            if state[-1] == 'n':
                 qc.append(self._meas_error, [qc.qregs[1][g]])
             qc.measure(qc.qregs[1][g], creg[g])
             qc.reset(qc.qregs[1][g])
 
-    def _x_gauge_measurements(self, qc, t):
+    def _x_gauge_measurements(self, qc, t, state):
         creg = ClassicalRegister(len(self.code.x_gauges), name="round_" + str(t) + "_x_bits")
         qc.add_register(creg)
         for g, x_gauge in enumerate(self.code.x_gauges):
@@ -126,7 +135,7 @@ class CssCodeCircuit(CodeCircuit):
                 qc.h(qc.qregs[0][q])
                 qc.cx(qc.qregs[0][q], qc.qregs[2][g])
                 qc.h(qc.qregs[0][q])
-            if self._noise:
+            if state[-1] == 'n':
                 qc.append(self._meas_error, [qc.qregs[2][g]])
             qc.measure(qc.qregs[2][g], creg[g])
             qc.reset(qc.qregs[2][g])
@@ -222,96 +231,3 @@ class CssCodeCircuit(CodeCircuit):
 
         return nodes
     
-def get_stim_circuit(code_circuit):
-    '''Returns a list of dictionaries. The first one contains the stim circuits for the two logicals,
-        the second contatins the data how the stim measurement outcomes are ordered
-    '''
-    stim_circuits = {}
-    stim_measurement_data = {}
-    for circ_label, circuit in code_circuit.items():
-        stim_circuit = stim.Circuit()
-
-        '''Dictionaries are not complete. For the stim definitions see: 
-            https://github.com/quantumlib/Stim/blob/main/doc/gates.md
-        ''' 
-        qiskit_to_stim_dict = {'id':'I','x':'X','y':'Y','z':'Z','h':'H','s':'S','sdg':'S_DAG',
-                            'cx':'CNOT','cy':'CY','cz':'CZ','swap':'SWAP',
-                            'reset':'R','measure':'M','barrier':'TICK'}
-        pauli_error_1_stim_order = {'id':0,'I':0,'X':1,'x':1,'Y':2,'y':2,'Z':3,'z':3}
-        pauli_error_2_stim_order = {'II':0,'IX':1,'IY':2,'IZ':3,
-                                    'XI':4,'XX':5,'XY':6,'XZ':7,
-                                    'YI':8,'YX':9,'YY':10,'YZ':11,
-                                    'ZI':12,'ZX':13,'ZY':14,'ZZ':15} 
-
-        measurement_data = []
-        register_offset = {}
-        previous_offset = 0
-        for inst, qargs, cargs in circuit.data:
-            for qubit in qargs:
-                if qubit._register.name not in register_offset:
-                    register_offset[qubit._register.name] = previous_offset
-                    previous_offset += qubit._register.size
-
-            qubit_indices = [qargs[i]._index+register_offset[qargs[i]._register.name] for i in range(len(qargs))]
-
-            if isinstance(inst, QuantumChannelInstruction):
-                '''Errors: it would be good to add exeptions for delpoarizinng noise, Z error etc,
-                because the stim detctor error model relies on the disjoint error assumption 
-                for general Pauli channel
-                '''
-                qerror = inst._quantum_error
-                pauli_errors_types=qerror.to_dict()['instructions']
-                pauli_probs = qerror.to_dict()['probabilities']
-                if pauli_errors_types[0][0]['name'] in pauli_error_1_stim_order.keys():
-                    probs = 4*[0.]
-                    for pind,ptype in enumerate(pauli_errors_types):
-                        probs[pauli_error_1_stim_order[ptype[0]['name']]] = pauli_probs[pind]
-                    stim_circuit.append("PAULI_CHANNEL_1",qubit_indices,probs[1:])
-                elif pauli_errors_types[0][0]['params'][0] in pauli_error_2_stim_order.keys(): 
-                    #here the name is always 'pauli' and the params gives the Pauli type
-                    probs = 16*[0.]
-                    for pind,ptype in enumerate(pauli_errors_types):
-                        probs[pauli_error_2_stim_order[ptype[0]['params'][0]]] = pauli_probs[pind]
-                    stim_circuit.append("PAULI_CHANNEL_2",qubit_indices,probs[1:])
-                else:
-                    error_types = qerror.to_dict()['instructions']
-                    print("I didn't see this comming: "+str([inst, qargs, cargs]))+str(qerror)
-            else:
-                '''Gates and measurements'''
-                if inst.name in qiskit_to_stim_dict:
-                    if len(cargs)>0: #keeping track of measurement indices in stim
-                        measurement_data.append([cargs[0]._index+register_offset[qargs[0]._register.name],qargs[0]._register.name])
-                    if qiskit_to_stim_dict[inst.name] == "TICK": #barrier
-                        stim_circuit.append("TICK")
-                    else: #gates/measurements acting on qubits
-                        stim_circuit.append(qiskit_to_stim_dict[inst.name],qubit_indices)
-                else: 
-                    print("I didn't see this comming: "+str([inst, qargs, cargs]))
-
-        stim_circuits[circ_label] = stim_circuit
-        stim_measurement_data[circ_label] = measurement_data
-    return [stim_circuits, stim_measurement_data]
-
-def get_counts_via_stim(code_circuit, logical: str = '0', shots: int = 1024):
-    '''Returns a qiskit compatible dictionary of measurement outcomes'''
-    stim_circuits, stim_measurement_data = get_stim_circuit(code_circuit)
-    stim_circuit = stim_circuits[logical]
-    measurement_data = stim_measurement_data[logical]
-
-    stim_samples = stim_circuit.compile_sampler().sample(shots=shots)
-    qiskit_counts = {}
-    for stim_sample in stim_samples:
-        prev_reg = measurement_data[-1][1]
-        qiskit_count = ''
-        for idx,meas in enumerate(measurement_data[::-1]):
-            _, reg = meas
-            if reg != prev_reg:
-                qiskit_count += ' '
-            qiskit_count += str(int(stim_sample[-idx-1]))
-            prev_reg = reg
-        if qiskit_count in qiskit_counts.keys():
-            qiskit_counts[qiskit_count] = qiskit_counts[qiskit_count]+1
-        else:
-            qiskit_counts[qiskit_count] = 1
-    
-    return qiskit_counts
