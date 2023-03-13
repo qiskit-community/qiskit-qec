@@ -2,7 +2,7 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2023.
 #
 # This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
@@ -22,7 +22,16 @@ from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 
 def get_stim_circuits(circuit_dict):
     """Returns a list of dictionaries. The first one contains the stim circuits for the two logicals,
-    the second contatins the data how the stim measurement outcomes are ordered
+    the second contatins the data how the stim measurement outcomes are ordered.
+
+    Args:
+        circuit_dict: Dictionary with Qiskit circuits as values. Compatible gates are paulis,
+        controlled paulis, h, s, and sdg, swap, reset, measure and barrier. Compatible noise
+        operators correspond to a single or two qubit pauli channel.
+
+    Returns:
+        stim_circuits: TODO
+        stim_measurement_data: TODO
     """
     stim_circuits = {}
     stim_measurement_data = {}
@@ -120,11 +129,19 @@ def get_stim_circuits(circuit_dict):
 
         stim_circuits[circ_label] = stim_circuit
         stim_measurement_data[circ_label] = measurement_data
-    return [stim_circuits, stim_measurement_data]
+    return stim_circuits, stim_measurement_data
 
 
 def get_counts_via_stim(circuit, shots: int = 4000):
-    """Returns a qiskit compatible dictionary of measurement outcomes"""
+    """Returns a qiskit compatible dictionary of measurement outcomes
+
+    Args:
+        circuit: Qiskit circuit compatible with `get_stim_circuits`.
+        shots: Number of samples to be generated.
+
+    Returns:
+        counts: Counts dictionary in standard Qiskit form.
+    """
 
     stim_circuits, stim_measurement_data = get_stim_circuits({"": circuit})
     stim_circuit = stim_circuits[""]
