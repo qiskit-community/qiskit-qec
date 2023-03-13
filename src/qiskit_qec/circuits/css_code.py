@@ -20,10 +20,8 @@ from qiskit_aer.noise import depolarizing_error, pauli_error
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
-import stim
-from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 
-class CssCodeCircuit():
+class CssCodeCircuit(CodeCircuit):
     """
     CodeCircuit class for generic CSS codes.
     """
@@ -38,6 +36,8 @@ class CssCodeCircuit():
             p_depol: Probabity of depolarizing noise on code qubits between rounds
             p_meas: Probability of measurement errors
         """
+
+        super().__init__()
 
         self.code = code
         self.T = T
@@ -73,7 +73,7 @@ class CssCodeCircuit():
                 qc.h(qregs[0])
             # peform syndrome measurements
             for t in range(T):
-                if state[-1] == 'n':
+                if state[-1] == "n":
                     for q in qregs[0]:
                         qc.append(self._depol_error, [q])
                 # gauge measurements
@@ -90,7 +90,7 @@ class CssCodeCircuit():
             qc.add_register(creg)
             if basis == "x":
                 qc.h(qregs[0])
-            if state[-1] == 'n':
+            if state[-1] == "n":
                 for q in qregs[0]:
                     qc.append(self._meas_error, [q])
             qc.measure(qregs[0], creg)
@@ -99,7 +99,7 @@ class CssCodeCircuit():
         self.circuit = {}
         self.noisy_circuit = {}
         for state, qc in circuit.items():
-            if state[-1] == 'n':
+            if state[-1] == "n":
                 self.noisy_circuit[state[0]] = qc
             else:
                 self.circuit[state] = qc
@@ -122,7 +122,7 @@ class CssCodeCircuit():
         for g, z_gauge in enumerate(self.code.z_gauges):
             for q in z_gauge:
                 qc.cx(qc.qregs[0][q], qc.qregs[1][g])
-            if state[-1] == 'n':
+            if state[-1] == "n":
                 qc.append(self._meas_error, [qc.qregs[1][g]])
             qc.measure(qc.qregs[1][g], creg[g])
             qc.reset(qc.qregs[1][g])
@@ -135,7 +135,7 @@ class CssCodeCircuit():
                 qc.h(qc.qregs[0][q])
                 qc.cx(qc.qregs[0][q], qc.qregs[2][g])
                 qc.h(qc.qregs[0][q])
-            if state[-1] == 'n':
+            if state[-1] == "n":
                 qc.append(self._meas_error, [qc.qregs[2][g]])
             qc.measure(qc.qregs[2][g], creg[g])
             qc.reset(qc.qregs[2][g])
@@ -230,4 +230,9 @@ class CssCodeCircuit():
             nodes.append(node)
 
         return nodes
-    
+
+    def check_nodes(self, nodes, ignore_extra_boundary=False):
+        pass
+
+    def is_cluster_neutral(self, atypical_nodes):
+        pass
