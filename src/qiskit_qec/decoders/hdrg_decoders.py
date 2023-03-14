@@ -21,9 +21,9 @@ from dataclasses import dataclass
 from typing import Dict, List, Set
 from rustworkx import connected_components, distance_matrix, PyGraph
 
-from qiskit_qec.circuits.repetition_code import ArcCircuit, RepetitionCodeCircuit
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.exceptions import QiskitQECError
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
 class ClusteringDecoder:
@@ -51,22 +51,20 @@ class BravyiHaahDecoder(ClusteringDecoder):
         code_circuit,
         decoding_graph: DecodingGraph = None,
     ):
-        if not isinstance(code_circuit, (ArcCircuit, RepetitionCodeCircuit)):
-            raise QiskitQECError("Error: code_circuit not supported.")
 
         super().__init__(code_circuit, decoding_graph)
 
-        if isinstance(self.code, ArcCircuit):
-            self.z_logicals = self.code.z_logicals
-        elif isinstance(self.code, RepetitionCodeCircuit):
+        if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
-                self.z_logicals = self.code.css_x_logical[0]
+                self.measured_logicals = self.code.css_x_logical
             else:
-                self.z_logicals = self.code.css_z_logical[0]
-        if isinstance(self.code, ArcCircuit):
+                self.measured_logicals = self.code.css_z_logical
+        else:
+            self.measured_logicals = self.code.css_z_logical
+        if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
-        elif isinstance(self.code, RepetitionCodeCircuit):
-            self.code_index = {2 * j: j for j in range(self.code.d)}
+        else:
+            self.code_index = {j: j for j in range(self.code.n)}
 
     def _cluster(self, ns, dist_max):
         """
@@ -127,12 +125,10 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
     def _get_boundary_nodes(self):
         boundary_nodes = []
-        for element, z_logical in enumerate(self.z_logicals):
-            node = {"time": 0, "is_boundary": True}
+        for element, z_logical in enumerate(self.measured_logicals):
+            node = DecodingGraphNode(is_boundary=True, qubits=z_logical, index=element)
             if isinstance(self.code, ArcCircuit):
-                node["link qubit"] = None
-            node["qubits"] = [z_logical]
-            node["element"] = element
+                node.properties["link qubit"] = None
             boundary_nodes.append(node)
         return boundary_nodes
 
@@ -169,7 +165,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
                 if c is not None:
                     final_clusters[n] = c
                 else:
-                    if not dg[n]["is_boundary"]:
+                    if not dg[n].is_boundary:
                         ns.append(n)
             con_comps.append(con_comp)
             clusterss.append(clusters)
@@ -183,46 +179,46 @@ class BravyiHaahDecoder(ClusteringDecoder):
         Args:
             string (str): Output string of the code.
         Returns:
-            corrected_z_logicals (list): A list of integers that are 0 or 1.
+            corrected_logicals (list): A list of integers that are 0 or 1.
         These are the corrected values of the final transversal
         measurement, corresponding to the logical operators of
-        self.z_logicals.
+        self.measured_logicals.
         """
         code = self.code
         decoding_graph = self.decoding_graph
 
         # turn string into nodes and cluster
-        nodes = code.string2nodes(string)
+        nodes = code.string2nodes(string, all_logicals=True)
         clusters = self.cluster(nodes)
 
         # get the list of bulk nodes for each cluster
         cluster_nodes = {c: [] for c in clusters.values()}
         for n, c in clusters.items():
             node = decoding_graph.graph[n]
-            if not node["is_boundary"]:
+            if not node.is_boundary:
                 cluster_nodes[c].append(node)
 
         # get the list of required logicals for each cluster
         cluster_logicals = {}
         for c, nodes in cluster_nodes.items():
             _, logical_nodes, _ = code.check_nodes(nodes)
-            z_logicals = [node["qubits"][0] for node in logical_nodes]
+            z_logicals = [node.qubits[0] for node in logical_nodes]
             cluster_logicals[c] = z_logicals
 
         # get the net effect on each logical
-        net_z_logicals = {z_logical: 0 for z_logical in self.z_logicals}
+        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
         for c, z_logicals in cluster_logicals.items():
-            for z_logical in self.z_logicals:
-                if z_logical in z_logicals:
-                    net_z_logicals[z_logical] += 1
+            for z_logical in self.measured_logicals:
+                if z_logical[0] in z_logicals:
+                    net_z_logicals[z_logical[0]] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
 
         corrected_z_logicals = []
         string = string.split(" ")[0]
-        for z_logical in self.z_logicals:
-            raw_logical = int(string[-1 - self.code_index[z_logical]])
-            corrected_logical = (raw_logical + net_z_logicals[z_logical]) % 2
+        for z_logical in self.measured_logicals:
+            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
+            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
             corrected_z_logicals.append(corrected_logical)
 
         return corrected_z_logicals
@@ -247,7 +243,7 @@ class BoundaryEdge:
     index: int
     cluster_vertex: int
     neighbour_vertex: int
-    data: Dict[str, object]
+    data: DecodingGraphEdge
 
     def reverse(self):
         """
@@ -333,10 +329,10 @@ class UnionFindDecoder(ClusteringDecoder):
             if isinstance(self.code, ArcCircuit):
                 # NOTE: it just corrects for final logical readout
                 for node in erasure.nodes():
-                    if node["is_boundary"]:
+                    if node.is_boundary:
                         # FIXME: Find a general way to go from physical qubit
                         # index to code qubit index
-                        qubit_to_be_corrected = int(node["qubits"][0] / 2)
+                        qubit_to_be_corrected = int(node.qubits[0] / 2)
                         output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
                 continue
 
@@ -360,12 +356,12 @@ class UnionFindDecoder(ClusteringDecoder):
         """
         node_indices = [self.graph.nodes().index(node) for node in nodes]
         for node_index, _ in enumerate(self.graph.nodes()):
-            self.graph[node_index]["syndrome"] = node_index in node_indices
-            self.graph[node_index]["root"] = node_index
+            self.graph[node_index].properties["syndrome"] = node_index in node_indices
+            self.graph[node_index].properties["root"] = node_index
 
         for edge in self.graph.edges():
-            edge["growth"] = 0
-            edge["fully_grown"] = False
+            edge.properties["growth"] = 0
+            edge.properties["fully_grown"] = False
 
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots = set(node_indices)
@@ -409,11 +405,11 @@ class UnionFindDecoder(ClusteringDecoder):
         Returns:
             root (int): The root of the cluster of node u.
         """
-        if self.graph[u]["root"] == u:
-            return self.graph[u]["root"]
+        if self.graph[u].properties["root"] == u:
+            return self.graph[u].properties["root"]
 
-        self.graph[u]["root"] = self.find(self.graph[u]["root"])
-        return self.graph[u]["root"]
+        self.graph[u].properties["root"] = self.find(self.graph[u].properties["root"])
+        return self.graph[u].properties["root"]
 
     def _grow_clusters(self) -> List[FusionEntry]:
         """
@@ -427,9 +423,12 @@ class UnionFindDecoder(ClusteringDecoder):
         for root in self.odd_cluster_roots:
             cluster = self.clusters[root]
             for edge in cluster.boundary:
-                edge.data["growth"] += 0.5
-                if edge.data["growth"] >= edge.data["weight"] and not edge.data["fully_grown"]:
-                    edge.data["fully_grown"] = True
+                edge.data.properties["growth"] += 0.5
+                if (
+                    edge.data.properties["growth"] >= edge.data.weight
+                    and not edge.data.properties["fully_grown"]
+                ):
+                    edge.data.properties["fully_grown"] = True
                     cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(
                         u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge
@@ -473,7 +472,7 @@ class UnionFindDecoder(ClusteringDecoder):
             else:
                 self.odd_cluster_roots.discard(new_root)
             self.odd_cluster_roots.discard(root_to_update)
-            self.graph[root_to_update]["root"] = new_root
+            self.graph[root_to_update].properties["root"] = new_root
 
     def peeling(self, erasure: PyGraph) -> List[int]:
         """ "
@@ -497,7 +496,7 @@ class UnionFindDecoder(ClusteringDecoder):
         # Construct spanning forest
         # Pick starting vertex
         for vertex in erasure.node_indices():
-            if erasure[vertex]["is_boundary"]:
+            if erasure[vertex].is_boundary:
                 tree.vertices[vertex] = []
                 break
         if not tree.vertices:
@@ -522,11 +521,14 @@ class UnionFindDecoder(ClusteringDecoder):
             pendant_vertex = endpoints[0] if not tree.vertices[endpoints[0]] else endpoints[1]
             tree_vertex = endpoints[0] if pendant_vertex == endpoints[1] else endpoints[1]
             tree.vertices[tree_vertex].remove(edge)
-            if erasure[pendant_vertex]["syndrome"] and not erasure[pendant_vertex]["is_boundary"]:
+            if (
+                erasure[pendant_vertex].properties["syndrome"]
+                and not erasure[pendant_vertex].is_boundary
+            ):
                 edges.add(edge)
-                erasure[tree_vertex]["syndrome"] = not erasure[tree_vertex]["syndrome"]
-                erasure[pendant_vertex]["syndrome"] = False
+                erasure[tree_vertex].properties["syndrome"] = not erasure[tree_vertex].properties[
+                    "syndrome"
+                ]
+                erasure[pendant_vertex].properties["syndrome"] = False
 
-        return [
-            erasure.edges()[edge]["qubits"][0] for edge in edges if erasure.edges()[edge]["qubits"]
-        ]
+        return [erasure.edges()[edge].qubits[0] for edge in edges if erasure.edges()[edge].qubits]
