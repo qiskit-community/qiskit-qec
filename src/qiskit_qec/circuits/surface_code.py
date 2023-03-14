@@ -18,6 +18,7 @@
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 
@@ -49,6 +50,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         super().__init__()
 
         self.d = d
+        self.n = d**2
         self.T = 0
         self.basis = basis
         self._resets = resets
@@ -107,7 +109,6 @@ class SurfaceCodeCircuit(CodeCircuit):
             self.readout()
 
     def _get_plaquettes(self):
-
         """
         Returns `zplaqs` and `xplaqs`, which are lists of the Z and X type
         stabilizers. Each plaquettes is specified as a list of four qubits,
@@ -122,7 +123,6 @@ class SurfaceCodeCircuit(CodeCircuit):
         xplaq_coords = []
         for y in range(-1, d):
             for x in range(-1, d):
-
                 bulk = x in range(d - 1) and y in range(d - 1)
                 ztab = (x == -1 and y % 2 == 0) or (x == d - 1 and y % 2 == 1)
                 xtab = (y == -1 and x % 2 == 1) or (y == d - 1 and x % 2 == 0)
@@ -219,7 +219,6 @@ class SurfaceCodeCircuit(CodeCircuit):
         )
 
         for log in ["0", "1"]:
-
             self.circuit[log].add_register(self.zplaq_bits[-1])
             self.circuit[log].add_register(self.xplaq_bits[-1])
 
@@ -262,7 +261,6 @@ class SurfaceCodeCircuit(CodeCircuit):
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
     def _string2changes(self, string):
-
         basis = self.basis
 
         # final syndrome for plaquettes deduced from final code qubit readout
@@ -347,7 +345,6 @@ class SurfaceCodeCircuit(CodeCircuit):
         return str(Z[0]) + " " + str(Z[1])
 
     def _process_string(self, string):
-
         # get logical readout
         measured_Z = self.string2raw_logicals(string)
 
@@ -361,7 +358,6 @@ class SurfaceCodeCircuit(CodeCircuit):
         return new_string
 
     def _separate_string(self, string):
-
         separated_string = []
         for syndrome_type_string in string.split("  "):
             separated_string.append(syndrome_type_string.split(" "))
@@ -399,11 +395,12 @@ class SurfaceCodeCircuit(CodeCircuit):
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
-                bnode = {"time": 0}
-                bnode["qubits"] = self._logicals[self.basis][-bqec_index - 1]
-                bnode["is_boundary"] = True
-                bnode["element"] = 1 - bqec_index
-                nodes.append(bnode)
+                node = DecodingGraphNode(
+                    is_boundary=True,
+                    qubits=self._logicals[self.basis][-bqec_index - 1],
+                    index=1 - bqec_index,
+                )
+                nodes.append(node)
 
         # bulk nodes
         for syn_type in range(1, len(separated_string)):
@@ -411,14 +408,11 @@ class SurfaceCodeCircuit(CodeCircuit):
                 elements = separated_string[syn_type][syn_round]
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
-                        node = {"time": syn_round}
                         if self.basis == "x":
                             qubits = self.css_x_stabilizer_ops[qec_index]
                         else:
                             qubits = self.css_z_stabilizer_ops[qec_index]
-                        node["qubits"] = qubits
-                        node["is_boundary"] = False
-                        node["element"] = qec_index
+                        node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes
 
@@ -441,9 +435,9 @@ class SurfaceCodeCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
-        bulk_nodes = [node for node in nodes if not node["is_boundary"]]
-        boundary_nodes = [node for node in nodes if node["is_boundary"]]
-        given_logicals = set(node["element"] for node in boundary_nodes)
+        bulk_nodes = [node for node in nodes if not node.is_boundary]
+        boundary_nodes = [node for node in nodes if node.is_boundary]
+        given_logicals = set(node.index for node in boundary_nodes)
 
         if self.basis == "z":
             coords = self._zplaq_coords
@@ -459,7 +453,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                     xs = []
                     ys = []
                     for node in bulk_nodes:
-                        x, y = coords[node["element"]]
+                        x, y = coords[node.index]
                         xs.append(x)
                         ys.append(y)
                     dx = max(xs) - min(xs)
@@ -477,7 +471,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             # find nearest boundary
             num_errors = (self.d - 1) / 2
             for node in bulk_nodes:
-                x, y = coords[node["element"]]
+                x, y = coords[node.index]
                 if self.basis == "z":
                     p = y
                 else:
@@ -497,12 +491,9 @@ class SurfaceCodeCircuit(CodeCircuit):
         # get the required boundary nodes
         flipped_logical_nodes = []
         for elem in flipped_logicals:
-            node = {
-                "time": 0,
-                "qubits": self._logicals[self.basis][elem],
-                "is_boundary": True,
-                "element": elem,
-            }
+            node = DecodingGraphNode(
+                is_boundary=True, qubits=self._logicals[self.basis][elem], index=elem
+            )
             flipped_logical_nodes.append(node)
 
         return neutral, flipped_logical_nodes, num_errors

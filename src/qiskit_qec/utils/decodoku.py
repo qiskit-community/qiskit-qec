@@ -58,7 +58,6 @@ class Decodoku:
         self._generate_graph()
 
     def _generate_syndrome(self):
-
         syndrome = {}
         for x in range(self.size):
             for y in range(self.size):
@@ -69,7 +68,6 @@ class Decodoku:
         else:
             error_num = poisson(self.p * 2 * self.size**2)
             for _ in range(error_num):
-
                 x0 = choice(range(self.size))
                 y0 = choice(range(self.size))
 
@@ -317,7 +315,6 @@ class Decodoku:
         self.boundary_errors = parity
 
     def _generate_graph(self):
-
         dg = DecodingGraph(None)
 
         d = self.size - 1
@@ -334,7 +331,7 @@ class Decodoku:
                 {
                     "y": 0,
                     "x": (d - 1) * (elem == 1) - 1 * (elem == 0),
-                    "element": elem,
+                    "index": elem,
                     "is_boundary": True,
                 }
             )
@@ -343,10 +340,10 @@ class Decodoku:
         nodes = dg.graph.nodes()
         # connect edges to boundary nodes
         for y in range(self.size):
-            n0 = nodes.index({"y": 0, "x": -1, "element": 0, "is_boundary": True})
+            n0 = nodes.index({"y": 0, "x": -1, "index": 0, "is_boundary": True})
             n1 = nodes.index({"y": y, "x": 0, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
-            n0 = nodes.index({"y": 0, "x": d - 1, "element": 1, "is_boundary": True})
+            n0 = nodes.index({"y": 0, "x": d - 1, "index": 1, "is_boundary": True})
             n1 = nodes.index({"y": y, "x": d - 2, "is_boundary": False})
             dg.graph.add_edge(n0, n1, None)
         # connect bulk nodes with space-like edges
@@ -373,7 +370,6 @@ class Decodoku:
         self._update_graph(original=False)
 
     def _update_graph(self, original=False):
-
         for node in self.decoding_graph.graph.nodes():
             node["highlighted"] = False
             if self.k != 2:
@@ -403,7 +399,6 @@ class Decodoku:
         self.node_color = highlighted_color
 
     def _start(self, engine):
-
         d = self.k
         syndrome = self.syndrome
 
@@ -439,7 +434,6 @@ class Decodoku:
 
     # this is the function that does everything
     def _next_frame(self, engine):
-
         d = self.k
         syndrome = self.syndrome
 
@@ -542,7 +536,7 @@ class Decodoku:
 
         def get_label(node):
             if node["is_boundary"] and parity:
-                return str(parity[node["element"]])
+                return str(parity[node["index"]])
             elif node["highlighted"] and "value" in node and self.k != 2:
                 return str(node["value"])
             else:
