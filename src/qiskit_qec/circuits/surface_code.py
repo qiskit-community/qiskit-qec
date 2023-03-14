@@ -50,6 +50,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         super().__init__()
 
         self.d = d
+        self.n = d**2
         self.T = 0
         self.basis = basis
         self._resets = resets

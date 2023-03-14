@@ -805,6 +805,20 @@ class ArcCircuit(CodeCircuit):
             z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
 
+        # set css attributes for decoder
+        gauge_ops = [[link[0], link[2]] for link in self.links]
+        measured_logical = [[self.z_logicals[0]]]
+        flip_logical = list(range(self.d))
+        boundary = [[logical] for logical in self.z_logicals]
+        self.css_x_gauge_ops = []
+        self.css_x_stabilizer_ops = []
+        self.css_x_logical = flip_logical
+        self.css_x_boundary = []
+        self.css_z_gauge_ops = gauge_ops
+        self.css_z_stabilizer_ops = gauge_ops
+        self.css_z_logical = measured_logical
+        self.css_z_boundary = boundary
+
     def _get_202(self, t):
         """
         Returns the position within a 202 sequence for the current measurement round:
