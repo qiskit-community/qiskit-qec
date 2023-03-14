@@ -189,7 +189,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
         decoding_graph = self.decoding_graph
 
         # turn string into nodes and cluster
-        nodes = code.string2nodes(string)
+        nodes = code.string2nodes(string, all_logicals=True)
         clusters = self.cluster(nodes)
 
         # get the list of bulk nodes for each cluster
