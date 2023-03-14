@@ -4,6 +4,7 @@ import unittest
 from typing import Dict, Tuple
 import rustworkx as rx
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
 class TestPyMatchingMatcher(unittest.TestCase):
@@ -18,14 +19,22 @@ class TestPyMatchingMatcher(unittest.TestCase):
         graph = rx.PyGraph(multigraph=False)
         idxmap = {}
         for i, q in enumerate([[0, 1], [1, 2], [2, 3], [3, 4]]):
-            node = {"time": 0, "qubits": q, "highlighted": False}
+            node = DecodingGraphNode(time=0, qubits=q, index=i)
+            node.properties["highlighted"] = False
             graph.add_node(node)
             idxmap[(0, tuple(q))] = i
         node = {"time": 0, "qubits": [], "highlighted": False, "is_boundary": True}
+        node = DecodingGraphNode(is_boundary=True, qubits=[], index=0)
+        node.properties["highlighted"] = False
         graph.add_node(node)
         idxmap[(0, tuple([]))] = 4
         for dat in [[[0], 0, 4], [[1], 0, 1], [[2], 1, 2], [[3], 2, 3], [[4], 3, 4]]:
-            edge = {"qubits": dat[0], "measurement_error": False, "weight": 1, "highlighted": False}
+            edge = DecodingGraphEdge(
+                qubits=dat[0],
+                weight=1,
+            )
+            edge.properties["measurement_error"] = False
+            edge.properties["highlighted"] = False
             graph.add_edge(dat[1], dat[2], edge)
         return graph, idxmap
 

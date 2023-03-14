@@ -6,17 +6,18 @@ from typing import Dict, List, Set, Tuple
 
 import rustworkx as rx
 from qiskit_qec.decoders.base_matcher import BaseMatcher
+from qiskit_qec.utils import DecodingGraphEdge
 
 
 class RustworkxMatcher(BaseMatcher):
     """Matching subroutines using rustworkx.
 
-    The input rustworkx graph is expected to have the following properties:
-    edge["weight"] : real edge weight
-    edge["measurement_error"] : bool, true if edge corresponds to measurement error
-    edge["qubits"] : list of qubit ids associated to edge
-    vertex["qubits"] : qubit ids involved in gauge measurement
-    vertex["time"] : integer time step of gauge measurement
+    The input rustworkx graph is expected to have decoding_graph.Node as the type of the node payload
+    and decoding_graph.Edge as the type of the edge payload.
+
+    Additionally the edges are expected to have the following properties:
+        - edge.properties["measurement_error"] (bool): Whether or not the error
+            corresponds to a measurement error.
 
     The annotated graph will also have "highlighted" properties on edges and vertices.
     """
@@ -36,8 +37,8 @@ class RustworkxMatcher(BaseMatcher):
         """
 
         # edge_cost_fn = lambda edge: edge["weight"]
-        def edge_cost_fn(edge):
-            return edge["weight"]
+        def edge_cost_fn(edge: DecodingGraphEdge):
+            return edge.weight
 
         length = rx.all_pairs_dijkstra_path_lengths(graph, edge_cost_fn)
         self.length = {s: dict(length[s]) for s in length}
@@ -111,11 +112,11 @@ class RustworkxMatcher(BaseMatcher):
         for i in range(len(vertex_path) - 1):
             v0 = vertex_path[i]
             v1 = vertex_path[i + 1]
-            if graph.get_edge_data(v0, v1)["measurement_error"] == 1:
+            if graph.get_edge_data(v0, v1).properties["measurement_error"] == 1:
                 measurement_errors ^= set(
-                    [(graph.nodes()[v0]["time"], tuple(graph.nodes()[v0]["qubits"]))]
+                    [(graph.nodes()[v0].time, tuple(graph.nodes()[v0].qubits))]
                 )
-            qubit_errors ^= set(graph.get_edge_data(v0, v1)["qubits"])
+            qubit_errors ^= set(graph.get_edge_data(v0, v1).qubits)
             logging.debug(
                 "_error_chain_for_vertex_path q = %s, m = %s",
                 qubit_errors,
@@ -173,7 +174,7 @@ class RustworkxMatcher(BaseMatcher):
         for path in paths:
             # Highlight the endpoints of the path
             for i in [0, -1]:
-                graph.nodes()[path[i]]["highlighted"] = True
+                graph.nodes()[path[i]].properties["highlighted"] = True
             # Highlight the edges along the path
             for i in range(len(path) - 1):
                 try:
@@ -181,5 +182,5 @@ class RustworkxMatcher(BaseMatcher):
                 except ValueError:
                     idx = list(graph.edge_list()).index((path[i + 1], path[i]))
                 edge = graph.edges()[idx]
-                edge["highlighted"] = True
+                edge.properties["highlighted"] = True
         return graph
