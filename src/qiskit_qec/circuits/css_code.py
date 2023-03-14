@@ -19,6 +19,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
+from qiskit_qec.utils.stim_tools import noisify_circuit
 
 
 class CssCodeCircuit(CodeCircuit):
@@ -26,15 +27,17 @@ class CssCodeCircuit(CodeCircuit):
     CodeCircuit class for generic CSS codes.
     """
 
-    def __init__(self, code, T, basis="z", round_schedule="zx", p_depol=0, p_meas=0):
+    def __init__(self, code, T, basis="z", round_schedule="zx", noise_model=None):
         """
         Args:
             code: A CSS code
             T: Number of syndrome measurement rounds
             basis: basis for encoding ('x' or 'z')
             round_schedule: Order in which to measureme gauge operators ('zx' or 'xz')
-            p_depol: Probabity of depolarizing noise on code qubits between rounds
-            p_meas: Probability of measurement errors
+            noise_model: Pauli noise model used in the construction of noisy circuits.
+            If a tuple, a pnenomological noise model is used with the entries being
+            probabity of depolarizing noise on code qubits between rounds and
+            probability of measurement errors, respectively.
         """
 
         super().__init__()
@@ -44,16 +47,16 @@ class CssCodeCircuit(CodeCircuit):
         self.basis = basis
         self.base = "0"
         self.round_schedule = round_schedule
-        self.p_depol = p_depol
-        self.p_meas = p_meas
-        self._noise = p_depol > 0 or p_meas > 0
-
-        self._depol_error = depolarizing_error(p_depol, 1)
-        self._meas_error = pauli_error([("X", p_meas), ("I", 1 - p_meas)])
+        self.noise_model = noise_model
+        self._phenom = isinstance(noise_model, tuple)
+        if self._phenom:
+            p_depol, p_meas = self.noise_model
+            self._depol_error = depolarizing_error(p_depol, 1)
+            self._meas_error = pauli_error([("X", p_meas), ("I", 1 - p_meas)])
 
         circuit = {}
         states = ["0", "1"]
-        if self._noise:
+        if self._phenom:
             states += ["0n", "1n"]
         for state in states:
             qc = QuantumCircuit()
@@ -73,7 +76,7 @@ class CssCodeCircuit(CodeCircuit):
                 qc.h(qregs[0])
             # peform syndrome measurements
             for t in range(T):
-                if state[-1] == "n":
+                if state[-1] == "n" and self._phenom:
                     for q in qregs[0]:
                         qc.append(self._depol_error, [q])
                 # gauge measurements
@@ -90,7 +93,7 @@ class CssCodeCircuit(CodeCircuit):
             qc.add_register(creg)
             if basis == "x":
                 qc.h(qregs[0])
-            if state[-1] == "n":
+            if state[-1] == "n" and self._phenom:
                 for q in qregs[0]:
                     qc.append(self._meas_error, [q])
             qc.measure(qregs[0], creg)
@@ -99,10 +102,13 @@ class CssCodeCircuit(CodeCircuit):
         self.circuit = {}
         self.noisy_circuit = {}
         for state, qc in circuit.items():
-            if state[-1] == "n":
+            if state[-1] == "n" and self._phenom:
                 self.noisy_circuit[state[0]] = qc
             else:
                 self.circuit[state] = qc
+        if noise_model and not self._phenom:
+            for state, qc in circuit.items():
+                self.noisy_circuit[state] = noisify_circuit(qc, noise_model)
 
         self._gauges4stabilizers = []
         self._stabilizers = [code.x_stabilizers, code.z_stabilizers]
@@ -122,7 +128,7 @@ class CssCodeCircuit(CodeCircuit):
         for g, z_gauge in enumerate(self.code.z_gauges):
             for q in z_gauge:
                 qc.cx(qc.qregs[0][q], qc.qregs[1][g])
-            if state[-1] == "n":
+            if state[-1] == "n" and self._phenom:
                 qc.append(self._meas_error, [qc.qregs[1][g]])
             qc.measure(qc.qregs[1][g], creg[g])
             qc.reset(qc.qregs[1][g])
@@ -135,7 +141,7 @@ class CssCodeCircuit(CodeCircuit):
                 qc.h(qc.qregs[0][q])
                 qc.cx(qc.qregs[0][q], qc.qregs[2][g])
                 qc.h(qc.qregs[0][q])
-            if state[-1] == "n":
+            if state[-1] == "n" and self._phenom:
                 qc.append(self._meas_error, [qc.qregs[2][g]])
             qc.measure(qc.qregs[2][g], creg[g])
             qc.reset(qc.qregs[2][g])

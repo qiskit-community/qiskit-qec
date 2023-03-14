@@ -12,12 +12,15 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, disable=no-name-in-module
 
 """Tools to use functionality from Stim."""
 
 from stim import Circuit as StimCircuit
+
+from qiskit import QuantumCircuit
 from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
+from qiskit_aer.noise import pauli_error
 
 
 def get_stim_circuits(circuit_dict):
@@ -131,35 +134,106 @@ def get_stim_circuits(circuit_dict):
     return stim_circuits, stim_measurement_data
 
 
-def get_counts_via_stim(circuit, shots: int = 4000):
+def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
-        circuit: Qiskit circuit compatible with `get_stim_circuits`.
+        circuit: Qiskit circuit compatible with `get_stim_circuits` or list thereof.
         shots: Number of samples to be generated.
+        noise_model: Pauli noise model for any additional noise to be applied.
 
     Returns:
-        counts: Counts dictionary in standard Qiskit form.
+        counts: Counts dictionary in standard Qiskit form or list thereof.
     """
 
-    stim_circuits, stim_measurement_data = get_stim_circuits({"": circuit})
-    stim_circuit = stim_circuits[""]
-    measurement_data = stim_measurement_data[""]
+    if noise_model:
+        circuits = noisify_circuit(circuits, noise_model)
 
-    stim_samples = stim_circuit.compile_sampler().sample(shots=shots)
-    qiskit_counts = {}
-    for stim_sample in stim_samples:
-        prev_reg = measurement_data[-1][1]
-        qiskit_count = ""
-        for idx, meas in enumerate(measurement_data[::-1]):
-            _, reg = meas
-            if reg != prev_reg:
-                qiskit_count += " "
-            qiskit_count += str(int(stim_sample[-idx - 1]))
-            prev_reg = reg
-        if qiskit_count in qiskit_counts:
-            qiskit_counts[qiskit_count] += 1
-        else:
-            qiskit_counts[qiskit_count] = 1
+    single_circuit = isinstance(circuits, QuantumCircuit)
+    if single_circuit:
+        circuits = [circuits]
 
-    return qiskit_counts
+    counts = []
+    for circuit in circuits:
+
+        stim_circuits, stim_measurement_data = get_stim_circuits({"": circuit})
+        stim_circuit = stim_circuits[""]
+        measurement_data = stim_measurement_data[""]
+
+        stim_samples = stim_circuit.compile_sampler().sample(shots=shots)
+        qiskit_counts = {}
+        for stim_sample in stim_samples:
+            prev_reg = measurement_data[-1][1]
+            qiskit_count = ""
+            for idx, meas in enumerate(measurement_data[::-1]):
+                _, reg = meas
+                if reg != prev_reg:
+                    qiskit_count += " "
+                qiskit_count += str(int(stim_sample[-idx - 1]))
+                prev_reg = reg
+            if qiskit_count in qiskit_counts:
+                qiskit_counts[qiskit_count] += 1
+            else:
+                qiskit_counts[qiskit_count] = 1
+        counts.append(qiskit_counts)
+
+    if single_circuit:
+        counts = counts[0]
+
+    return counts
+
+
+def noisify_circuit(circuits, noise_model):
+    """
+    Inserts error operations into a circuit according to a pauli noise model.
+
+    Args:
+        circuits: Circuit or list thereof.
+        noise_model: Pauli noise model.
+
+    Returns:
+        noisy_circuits: Corresponding circuit or list thereof.
+    """
+
+    single_circuit = isinstance(circuits, QuantumCircuit)
+    if single_circuit:
+        circuits = [circuits]
+
+    # create pauli errors for all errors in noise model
+    errors = {}
+    for g, noise in noise_model.to_dict().items():
+        errors[g] = []
+        for pauli, prob in noise["chan"].items():
+            pauli = pauli.upper()
+            errors[g].append(pauli_error([(pauli, prob), ("I" * len(pauli), 1 - prob)]))
+
+    noisy_circuits = []
+    for qc in circuits:
+
+        noisy_qc = QuantumCircuit()
+        for qreg in qc.qregs:
+            noisy_qc.add_register(qreg)
+        for creg in qc.cregs:
+            noisy_qc.add_register(creg)
+
+        for gate in qc:
+            g = gate[0].name
+            qubits = gate[1]
+            pre_error = g == "reset"
+            # add gate if it needs to go before the error
+            if pre_error:
+                noisy_qc.append(gate)
+            # then the error
+            if g in errors:
+                for error_op in errors[g]:
+                    noisy_qc.append(error_op, qubits)
+            # add gate if it needs to go after the error
+            if not pre_error:
+                noisy_qc.append(gate)
+
+        noisy_circuits.append(noisy_qc)
+
+    if single_circuit:
+        noisy_circuits = noisy_circuits[0]
+
+    return noisy_circuits
