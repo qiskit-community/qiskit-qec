@@ -24,7 +24,6 @@ from rustworkx import connected_components, distance_matrix, PyGraph
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
-from qiskit_qec.exceptions import QiskitQECError
 
 
 class ClusteringDecoder:
