@@ -11,6 +11,7 @@ import rustworkx as rx
 from qiskit import QuantumCircuit
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.decoding_graph import CSSDecodingGraph, DecodingGraph
+from qiskit_qec.utils import DecodingGraphEdge
 from qiskit_qec.decoders.pymatching_matcher import PyMatchingMatcher
 from qiskit_qec.decoders.rustworkx_matcher import RustworkxMatcher
 from qiskit_qec.decoders.temp_code_util import temp_gauge_products, temp_syndrome
@@ -173,13 +174,13 @@ class CircuitModelMatchingDecoder(ABC):
             n0, n1 = graph.edge_list()[j]
             source = graph.nodes()[n0]
             target = graph.nodes()[n1]
-            if source["time"] != target["time"]:
-                if source["is_boundary"] == target["is_boundary"] == False:
-                    new_source = source.copy()
-                    new_source["time"] = target["time"]
+            if source.time != target.time:
+                if source.is_boundary == target.is_boundary == False:
+                    new_source = copy(source)
+                    new_source.time = target.time
                     nn0 = graph.nodes().index(new_source)
-                    new_target = target.copy()
-                    new_target["time"] = source["time"]
+                    new_target = copy(target)
+                    new_target.time = source.time
                     nn1 = graph.nodes().index(new_target)
                     graph.add_edge(nn0, nn1, edge)
 
@@ -191,16 +192,16 @@ class CircuitModelMatchingDecoder(ABC):
 
             # add the required attributes
             # highlighted', 'measurement_error','qubit_id' and 'error_probability'
-            edge["highlighted"] = False
-            edge["measurement_error"] = int(source["time"] != target["time"])
+            edge.properties["highlighted"] = False
+            edge.properties["measurement_error"] = int(source.time != target.time)
 
             # make it so times of boundary/boundary nodes agree
-            if source["is_boundary"] and not target["is_boundary"]:
-                if source["time"] != target["time"]:
-                    new_source = source.copy()
-                    new_source["time"] = target["time"]
+            if source.is_boundary and not target.is_boundary:
+                if source.time != target.time:
+                    new_source = copy(source)
+                    new_source.time = target.time
                     n = graph.add_node(new_source)
-                    edge["measurement_error"] = 0
+                    edge.properties["measurement_error"] = 0
                     edges_to_remove.append((n0, n1))
                     graph.add_edge(n, n1, edge)
 
@@ -211,29 +212,24 @@ class CircuitModelMatchingDecoder(ABC):
         for n0, source in enumerate(graph.nodes()):
             for n1, target in enumerate(graph.nodes()):
                 # add weightless nodes connecting different boundaries
-                if source["time"] == target["time"]:
-                    if source["is_boundary"] and target["is_boundary"]:
-                        if source["qubits"] != target["qubits"]:
-                            edge = {
-                                "measurement_error": 0,
-                                "weight": 0,
-                                "highlighted": False,
-                            }
-                            edge["qubits"] = list(
-                                set(source["qubits"]).intersection((set(target["qubits"])))
+                if source.time == target.time:
+                    if source.is_boundary and target.is_boundary:
+                        if source.qubits != target.qubits:
+                            edge = DecodingGraphEdge(
+                                weight=0,
+                                qubits=list(set(source.qubits).intersection((set(target.qubits)))),
                             )
+                            edge.properties["highlighted"] = False
+                            edge.properties["measurement_error"] = 0
                             if (n0, n1) not in graph.edge_list():
                                 graph.add_edge(n0, n1, edge)
 
                 # connect one of the boundaries at different times
-                if target["time"] == source["time"] + 1:
-                    if source["qubits"] == target["qubits"] == [0]:
-                        edge = {
-                            "qubits": [],
-                            "measurement_error": 0,
-                            "weight": 0,
-                            "highlighted": False,
-                        }
+                if target.time == (source.time or 0) + 1:
+                    if source.qubits == target.qubits == [0]:
+                        edge = DecodingGraphEdge(weight=0, qubits=[])
+                        edge.properties["highlighted"] = False
+                        edge.properties["measurement_error"] = 0
                         if (n0, n1) not in graph.edge_list():
                             graph.add_edge(n0, n1, edge)
 
@@ -245,14 +241,14 @@ class CircuitModelMatchingDecoder(ABC):
 
         idxmap = {}
         for n, node in enumerate(graph.nodes()):
-            idxmap[node["time"], tuple(node["qubits"])] = n
+            idxmap[node.time, tuple(node.qubits)] = n
 
         node_layers = []
         for node in graph.nodes():
-            time = node["time"]
+            time = node.time or 0
             if len(node_layers) < time + 1:
                 node_layers += [[]] * (time + 1 - len(node_layers))
-            node_layers[time].append(node["qubits"])
+            node_layers[time].append(node.qubits)
 
         # create a list of decoding graph layer types
         # the entries are 'g' for gauge and 's' for stabilizer
@@ -298,11 +294,11 @@ class CircuitModelMatchingDecoder(ABC):
                     # TODO: new edges may be needed for hooks, but raise exception for now
                     raise QiskitQECError("edge {s1} - {s2} not in decoding graph")
                 data = graph.get_edge_data(idxmap[s1], idxmap[s2])
-                data["weight_poly"] = wpoly
+                data.properties["weight_poly"] = wpoly
         remove_list = []
         for source, target in graph.edge_list():
             edge_data = graph.get_edge_data(source, target)
-            if "weight_poly" not in edge_data and edge_data["weight"] != 0:
+            if "weight_poly" not in edge_data.properties and edge_data.weight != 0:
                 # Remove the edge
                 remove_list.append((source, target))
                 logging.info("remove edge (%d, %d)", source, target)
@@ -340,7 +336,7 @@ class CircuitModelMatchingDecoder(ABC):
             # p_i is the probability that edge i carries an error
             # l(i) is 1 if the link belongs to the chain and 0 otherwise
             for source, target in self.graph.edge_list():
-                edge_data = self.graph.get_edge_data(source, target)
+                edge_data = self.graph.get_edge_data(source, target).properties
                 if "weight_poly" in edge_data:
                     logging.info(
                         "update_edge_weights (%d, %d) %s",

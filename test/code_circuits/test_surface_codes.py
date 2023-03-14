@@ -19,9 +19,10 @@
 import unittest
 
 from qiskit_qec.circuits.surface_code import SurfaceCodeCircuit
+from qiskit_qec.utils import DecodingGraphNode
 
 
-class TestRepCodes(unittest.TestCase):
+class TestSurfaceCodes(unittest.TestCase):
     """Test the surface code circuits."""
 
     def test_string2nodes(self):
@@ -41,39 +42,87 @@ class TestRepCodes(unittest.TestCase):
         test_nodes["x"] = [
             [],
             [
-                {"time": 1, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
-                {"time": 1, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[0, 1, 3, 4],
+                    index=1,
+                ),
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[4, 5, 7, 8],
+                    index=2,
+                ),
             ],
             [
-                {"time": 0, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
-                {"time": 0, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+                DecodingGraphNode(
+                    time=0,
+                    qubits=[0, 1, 3, 4],
+                    index=1,
+                ),
+                DecodingGraphNode(
+                    time=0,
+                    qubits=[4, 5, 7, 8],
+                    index=2,
+                ),
             ],
             [
-                {"time": 0, "qubits": [0, 3, 6], "is_boundary": True, "element": 0},
-                {"time": 1, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
+                DecodingGraphNode(
+                    is_boundary=True,
+                    qubits=[0, 3, 6],
+                    index=0,
+                ),
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[0, 1, 3, 4],
+                    index=1,
+                ),
             ],
             [
-                {"time": 0, "qubits": [2, 5, 8], "is_boundary": True, "element": 1},
-                {"time": 1, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+                DecodingGraphNode(
+                    is_boundary=True,
+                    qubits=[2, 5, 8],
+                    index=1,
+                ),
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[4, 5, 7, 8],
+                    index=2,
+                ),
             ],
         ]
         test_nodes["z"] = [
             [],
             [
-                {"time": 0, "qubits": [1, 4, 2, 5], "is_boundary": False, "element": 1},
-                {"time": 0, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2},
+                DecodingGraphNode(
+                    time=0,
+                    qubits=[1, 4, 2, 5],
+                    index=1,
+                ),
+                DecodingGraphNode(
+                    time=0,
+                    qubits=[3, 6, 4, 7],
+                    index=2,
+                ),
             ],
             [
-                {"time": 1, "qubits": [1, 4, 2, 5], "is_boundary": False, "element": 1},
-                {"time": 1, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2},
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[1, 4, 2, 5],
+                    index=1,
+                ),
+                DecodingGraphNode(
+                    time=1,
+                    qubits=[3, 6, 4, 7],
+                    index=2,
+                ),
             ],
             [
-                {"time": 0, "qubits": [0, 1, 2], "is_boundary": True, "element": 0},
-                {"time": 1, "qubits": [0, 3], "is_boundary": False, "element": 0},
+                DecodingGraphNode(is_boundary=True, qubits=[0, 1, 2], index=0),
+                DecodingGraphNode(time=1, qubits=[0, 3], index=0),
             ],
             [
-                {"time": 0, "qubits": [8, 7, 6], "is_boundary": True, "element": 1},
-                {"time": 1, "qubits": [5, 8], "is_boundary": False, "element": 3},
+                DecodingGraphNode(is_boundary=True, qubits=[8, 7, 6], index=1),
+                DecodingGraphNode(time=1, qubits=[5, 8], index=3),
             ],
         ]
 
@@ -81,8 +130,9 @@ class TestRepCodes(unittest.TestCase):
             code = SurfaceCodeCircuit(3, 1, basis=basis)
             for t, string in enumerate(test_string):
                 nodes = test_nodes[basis][t]
+                generated_nodes = code.string2nodes(string)
                 self.assertTrue(
-                    code.string2nodes(string) == nodes,
+                    generated_nodes == nodes,
                     "Incorrect nodes for basis = " + basis + " for string = " + string + ".",
                 )
 
@@ -99,91 +149,91 @@ class TestRepCodes(unittest.TestCase):
         valid = valid and code.check_nodes(nodes) == (True, [], 0)
         # on one side
         nodes = [
-            {"time": 0, "qubits": [0, 1, 2], "is_boundary": True, "element": 0},
-            {"time": 3, "qubits": [0, 3], "is_boundary": False, "element": 0},
+            DecodingGraphNode(qubits=[0, 1, 2], is_boundary=True, index=0),
+            DecodingGraphNode(time=3, qubits=[0, 3], index=0),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1.0)
-        nodes = [{"time": 3, "qubits": [0, 3], "is_boundary": False, "element": 0}]
+        nodes = [DecodingGraphNode(time=3, qubits=[0, 3], index=0)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [{"time": 0, "qubits": [0, 1, 2], "is_boundary": True, "element": 0}],
+            [DecodingGraphNode(time=0, qubits=[0, 1, 2], is_boundary=True, index=0)],
             1.0,
         )
         # and the other
         nodes = [
-            {"time": 0, "qubits": [8, 7, 6], "is_boundary": True, "element": 1},
-            {"time": 3, "qubits": [5, 8], "is_boundary": False, "element": 3},
+            DecodingGraphNode(time=0, qubits=[8, 7, 6], is_boundary=True, index=1),
+            DecodingGraphNode(time=3, qubits=[5, 8], index=3),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1.0)
-        nodes = [{"time": 3, "qubits": [5, 8], "is_boundary": False, "element": 3}]
+        nodes = [DecodingGraphNode(time=3, qubits=[5, 8], index=3)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [{"time": 0, "qubits": [8, 7, 6], "is_boundary": True, "element": 1}],
+            [DecodingGraphNode(time=0, qubits=[8, 7, 6], is_boundary=True, index=1)],
             1.0,
         )
         # and in the middle
         nodes = [
-            {"time": 3, "qubits": [1, 4, 2, 5], "is_boundary": False, "element": 1},
-            {"time": 3, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2},
+            DecodingGraphNode(time=3, qubits=[1, 4, 2, 5], index=1),
+            DecodingGraphNode(time=3, qubits=[3, 6, 4, 7], index=2),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1)
-        nodes = [{"time": 3, "qubits": [3, 6, 4, 7], "is_boundary": False, "element": 2}]
+        nodes = [DecodingGraphNode(time=3, qubits=[3, 6, 4, 7], index=2)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [{"time": 0, "qubits": [8, 7, 6], "is_boundary": True, "element": 1}],
+            [DecodingGraphNode(qubits=[8, 7, 6], is_boundary=True, index=1)],
             1.0,
         )
 
         # basis = 'x'
         code = SurfaceCodeCircuit(3, 3, basis="x")
         nodes = [
-            {"time": 3, "qubits": [0, 1, 3, 4], "is_boundary": False, "element": 1},
-            {"time": 3, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2},
+            DecodingGraphNode(time=3, qubits=[0, 1, 3, 4], index=1),
+            DecodingGraphNode(time=3, qubits=[4, 5, 7, 8], index=2),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1)
-        nodes = [{"time": 3, "qubits": [4, 5, 7, 8], "is_boundary": False, "element": 2}]
+        nodes = [DecodingGraphNode(time=3, qubits=[4, 5, 7, 8], index=2)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [{"time": 0, "qubits": [2, 5, 8], "is_boundary": True, "element": 1}],
+            [DecodingGraphNode(qubits=[2, 5, 8], is_boundary=True, index=1)],
             1.0,
         )
 
         # large d
         code = SurfaceCodeCircuit(5, 3, basis="z")
         nodes = [
-            {"time": 3, "qubits": [7, 12, 8, 13], "is_boundary": False, "element": 4},
-            {"time": 3, "qubits": [11, 16, 12, 17], "is_boundary": False, "element": 7},
+            DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
+            DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1)
-        nodes = [{"time": 3, "qubits": [11, 16, 12, 17], "is_boundary": False, "element": 7}]
+        nodes = [DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [{"time": 0, "qubits": [24, 23, 22, 21, 20], "is_boundary": True, "element": 1}],
+            [DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_boundary=True, index=1)],
             2.0,
         )
 
         # wrong boundary
         nodes = [
-            {"time": 3, "qubits": [7, 12, 8, 13], "is_boundary": False, "element": 4},
-            {"time": 0, "qubits": [24, 23, 22, 21, 20], "is_boundary": True, "element": 1},
+            DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
+            DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_boundary=True, index=1),
         ]
         valid = valid and code.check_nodes(nodes) == (
             False,
-            [{"time": 0, "qubits": [0, 1, 2, 3, 4], "is_boundary": True, "element": 0}],
+            [DecodingGraphNode(qubits=[0, 1, 2, 3, 4], is_boundary=True, index=0)],
             2,
         )
         # extra boundary
         nodes = [
-            {"time": 3, "qubits": [7, 12, 8, 13], "is_boundary": False, "element": 4},
-            {"time": 3, "qubits": [11, 16, 12, 17], "is_boundary": False, "element": 7},
-            {"time": 0, "qubits": [24, 23, 22, 21, 20], "is_boundary": True, "element": 1},
+            DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
+            DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
+            DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_boundary=True, index=1),
         ]
         valid = valid and code.check_nodes(nodes) == (False, [], 0)
         # ignoring extra
         nodes = [
-            {"time": 3, "qubits": [7, 12, 8, 13], "is_boundary": False, "element": 4},
-            {"time": 3, "qubits": [11, 16, 12, 17], "is_boundary": False, "element": 7},
-            {"time": 0, "qubits": [24, 23, 22, 21, 20], "is_boundary": True, "element": 1},
+            DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
+            DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
+            DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_boundary=True, index=1),
         ]
         valid = valid and code.check_nodes(nodes, ignore_extra_boundary=True) == (True, [], 1)
 

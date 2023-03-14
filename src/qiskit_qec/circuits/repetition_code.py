@@ -17,6 +17,7 @@
 """Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
+from copy import copy, deepcopy
 import numpy as np
 import rustworkx as rx
 
@@ -26,6 +27,7 @@ from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit.transpiler.passes import DynamicalDecoupling
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
 def _separate_string(string):
@@ -315,15 +317,12 @@ class RepetitionCodeCircuit(CodeCircuit):
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
-                bnode = {"time": 0}
                 i = [0, -1][bqec_index]
                 if self.basis == "z":
                     bqubits = [self.css_x_logical[i]]
                 else:
                     bqubits = [self.css_z_logical[i]]
-                bnode["qubits"] = bqubits
-                bnode["is_boundary"] = True
-                bnode["element"] = bqec_index
+                bnode = DecodingGraphNode(is_boundary=True, qubits=bqubits, index=bqec_index)
                 nodes.append(bnode)
 
         # bulk nodes
@@ -332,14 +331,11 @@ class RepetitionCodeCircuit(CodeCircuit):
                 elements = separated_string[syn_type][syn_round]
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
-                        node = {"time": syn_round}
                         if self.basis == "z":
                             qubits = self.css_z_gauge_ops[qec_index]
                         else:
                             qubits = self.css_x_gauge_ops[qec_index]
-                        node["qubits"] = qubits
-                        node["is_boundary"] = False
-                        node["element"] = qec_index
+                        node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes
 
@@ -354,7 +350,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         return _separate_string(self._process_string(string))[0]
 
     @staticmethod
-    def flatten_nodes(nodes):
+    def flatten_nodes(nodes: List[DecodingGraphNode]):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times.
@@ -365,17 +361,17 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         nodes_per_link = {}
         for node in nodes:
-            link_qubit = node["link qubit"]
+            link_qubit = node.properties["link qubit"]
             if link_qubit in nodes_per_link:
                 nodes_per_link[link_qubit] += 1
             else:
                 nodes_per_link[link_qubit] = 1
         flat_nodes = []
         for node in nodes:
-            if nodes_per_link[node["link qubit"]] % 2:
-                flat_node = node.copy()
-                if "time" in flat_node:
-                    flat_node.pop("time")
+            if nodes_per_link[node.properties["link qubit"]] % 2:
+                flat_node = copy(node)
+                # FIXME: Seems unsafe.
+                flat_node.time = None
                 flat_nodes.append(flat_node)
         return flat_nodes
 
@@ -401,15 +397,15 @@ class RepetitionCodeCircuit(CodeCircuit):
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
         for node in nodes:
-            if node["is_boundary"]:
-                given_logicals += node["qubits"]
+            if node.is_boundary:
+                given_logicals += node.qubits
         given_logicals = set(given_logicals)
 
         # bicolour code qubits according to the domain walls
         walls = []
         for node in nodes:
-            if not node["is_boundary"]:
-                walls.append(node["qubits"][1])
+            if not node.is_boundary:
+                walls.append(node.qubits[1])
         walls.sort()
         c = 0
         colors = ""
@@ -429,7 +425,6 @@ class RepetitionCodeCircuit(CodeCircuit):
         # calculate all required info for the max to see if that is fully neutral
         # if not, calculate and output for the min case
         for error_c in [error_c_max, error_c_min]:
-
             num_errors = colors.count(error_c)
 
             # determine the corresponding flipped logicals
@@ -455,7 +450,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     elem = self.css_z_boundary.index(qubits)
                 else:
                     elem = self.css_x_boundary.index(qubits)
-                node = {"time": 0, "qubits": qubits, "is_boundary": True, "element": elem}
+                node = DecodingGraphNode(is_boundary=True, qubits=qubits, index=elem)
                 flipped_logical_nodes.append(node)
 
             if neutral and flipped_logical_nodes == []:
@@ -622,6 +617,7 @@ class ArcCircuit(CodeCircuit):
         self._readout()
 
     def _get_link_graph(self, max_dist=1):
+        # FIXME: Migrate link graph to new Edge type
         graph = rx.PyGraph()
         for link in self.links:
             add_edge(graph, (link[0], link[2]), {"distance": 1, "link qubit": link[1]})
@@ -702,7 +698,7 @@ class ArcCircuit(CodeCircuit):
 
             # find a min weight matching, and then another that exlcudes the pairs from the first
             matching = [rx.max_weight_matching(graph, max_cardinality=True, weight_fn=weight_fn)]
-            cut_graph = graph.copy()
+            cut_graph = deepcopy(graph)
             for n0, n1 in matching[0]:
                 cut_graph.remove_edge(n0, n1)
             matching.append(
@@ -808,6 +804,20 @@ class ArcCircuit(CodeCircuit):
         if not z_logicals:  # z_logicals == []
             z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
+
+        # set css attributes for decoder
+        gauge_ops = [[link[0], link[2]] for link in self.links]
+        measured_logical = [[self.z_logicals[0]]]
+        flip_logical = list(range(self.d))
+        boundary = [[logical] for logical in self.z_logicals]
+        self.css_x_gauge_ops = []
+        self.css_x_stabilizer_ops = []
+        self.css_x_logical = flip_logical
+        self.css_x_boundary = []
+        self.css_z_gauge_ops = gauge_ops
+        self.css_z_stabilizer_ops = gauge_ops
+        self.css_z_logical = measured_logical
+        self.css_z_boundary = boundary
 
     def _get_202(self, t):
         """
@@ -1026,7 +1036,7 @@ class ArcCircuit(CodeCircuit):
 
         return new_string
 
-    def string2nodes(self, string, **kwargs):
+    def string2nodes(self, string, **kwargs) -> List[DecodingGraphNode]:
         """
         Convert output string from circuits into a set of nodes.
         Args:
@@ -1061,19 +1071,21 @@ class ArcCircuit(CodeCircuit):
                             code_qubits = [link[0], link[2]]
                             link_qubit = link[1]
                         tau, _, _ = self._get_202(syn_round)
-                        node = {"time": syn_round}
-                        if tau:
-                            if ((tau % 2) == 1) and tau > 1:
-                                node["conjugate"] = True
-                        node["qubits"] = code_qubits
-                        node["link qubit"] = link_qubit
-                        node["is_boundary"] = is_boundary
-                        node["element"] = elem_num
+                        if not tau:
+                            tau = 0
+                        node = DecodingGraphNode(
+                            is_boundary=is_boundary,
+                            time=syn_round if not is_boundary else None,
+                            qubits=code_qubits,
+                            index=elem_num,
+                        )
+                        node.properties["conjugate"] = ((tau % 2) == 1) and tau > 1
+                        node.properties["link qubit"] = link_qubit
                         nodes.append(node)
         return nodes
 
     @staticmethod
-    def flatten_nodes(nodes):
+    def flatten_nodes(nodes: List[DecodingGraphNode]):
         """
         Removes time information from a set of nodes, and consolidates those on
         the same position at different times. Also removes nodes corresponding
@@ -1086,26 +1098,22 @@ class ArcCircuit(CodeCircuit):
         # strip out conjugate nodes
         non_conj_nodes = []
         for node in nodes:
-            if "conjugate" not in node:
+            if not node.properties["conjugate"]:
                 non_conj_nodes.append(node)
-            else:
-                if not node["conjugate"]:
-                    non_conj_nodes.append(node)
         nodes = non_conj_nodes
         # remove time info
         nodes_per_link = {}
         for node in nodes:
-            link_qubit = node["link qubit"]
+            link_qubit = node.properties["link qubit"]
             if link_qubit in nodes_per_link:
                 nodes_per_link[link_qubit] += 1
             else:
                 nodes_per_link[link_qubit] = 1
         flat_nodes = []
         for node in nodes:
-            if nodes_per_link[node["link qubit"]] % 2:
-                flat_node = node.copy()
-                if "time" in flat_node:
-                    flat_node.pop("time")
+            if nodes_per_link[node.properties["link qubit"]] % 2:
+                flat_node = deepcopy(node)
+                flat_node.time = None
                 flat_nodes.append(flat_node)
         return flat_nodes
 
@@ -1132,8 +1140,8 @@ class ArcCircuit(CodeCircuit):
         given_logicals = []
         bulk_nodes = []
         for node in nodes:
-            if node["is_boundary"]:
-                given_logicals += node["qubits"]
+            if node.is_boundary:
+                given_logicals += node.qubits
             else:
                 bulk_nodes.append(node)
         given_logicals = set(given_logicals)
@@ -1141,7 +1149,7 @@ class ArcCircuit(CodeCircuit):
         # see whether the bulk nodes are neutral
         if bulk_nodes:
             nodes = self.flatten_nodes(nodes)
-            link_qubits = set(node["link qubit"] for node in nodes)
+            link_qubits = set(node.properties["link qubit"] for node in nodes)
             node_color = {0: 0}
             neutral = True
             link_graph = self._get_link_graph()
@@ -1196,7 +1204,6 @@ class ArcCircuit(CodeCircuit):
             # see what happens for both colours
             # once full neutrality us found, go for it!
             for c in min_cs:
-
                 this_neutral = neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
@@ -1211,13 +1218,11 @@ class ArcCircuit(CodeCircuit):
 
                 flipped_logical_nodes = []
                 for flipped_logical in flipped_logicals:
-                    node = {
-                        "time": 0,
-                        "qubits": [flipped_logical],
-                        "link qubit": None,
-                        "is_boundary": True,
-                        "element": self.z_logicals.index(flipped_logical),
-                    }
+                    node = DecodingGraphNode(
+                        is_boundary=True,
+                        qubits=[flipped_logical],
+                        index=self.z_logicals.index(flipped_logical),
+                    )
                     flipped_logical_nodes.append(node)
 
                 if this_neutral and flipped_logical_nodes == []:
@@ -1344,28 +1349,28 @@ class ArcCircuit(CodeCircuit):
             + ("0" * len(self.links) + " ") * (self.T - 1)
             + "1" * len(self.links)
         )
-        nodes = []
+        nodes: List[DecodingGraphNode] = []
         for node in self.string2nodes(string):
-            if not node["is_boundary"]:
+            if not node.is_boundary:
                 for t in range(self.T + 1):
-                    new_node = node.copy()
-                    new_node["time"] = t
+                    new_node = deepcopy(node)
+                    new_node.time = t
                     if new_node not in nodes:
                         nodes.append(new_node)
             else:
-                node["time"] = 0
+                node.time = None
                 nodes.append(node)
 
         # find pairs that should be connected
-        edges = []
+        edges: List[Tuple[int, int]] = []
         for n0, node0 in enumerate(nodes):
             for n1, node1 in enumerate(nodes):
                 if n0 < n1:
                     # just record all possible edges for now (should be improved later)
-                    dt = abs(node1["time"] - node0["time"])
-                    adj = set(node0["qubits"]).intersection(set(node1["qubits"]))
+                    dt = abs((node1.time or 0) - (node0.time or 0))
+                    adj = set(node0.qubits).intersection(set(node1.qubits))
                     if adj:
-                        if (node0["is_boundary"] ^ node1["is_boundary"]) or dt <= 1:
+                        if (node0.is_boundary ^ node1.is_boundary) or dt <= 1:
                             edges.append((n0, n1))
 
         # put it all in a graph
@@ -1377,11 +1382,11 @@ class ArcCircuit(CodeCircuit):
             source = nodes[n0]
             target = nodes[n1]
             qubits = []
-            if not (source["is_boundary"] and target["is_boundary"]):
-                qubits = list(set(source["qubits"]).intersection(target["qubits"]))
-            if source["time"] != target["time"] and len(qubits) > 1:
+            if not (source.is_boundary and target.is_boundary):
+                qubits = list(set(source.qubits).intersection(target.qubits))
+            if source.time != target.time and len(qubits) > 1:
                 qubits = []
-            edge = {"qubits": qubits, "weight": 1}
+            edge = DecodingGraphEdge(qubits=qubits, weight=1)
             S.add_edge(n0, n1, edge)
             # just record edges as hyperedges for now (should be improved later)
             hyperedges.append({(n0, n1): edge})
@@ -1428,65 +1433,65 @@ class ArcCircuit(CodeCircuit):
             node0 = nodes[n0]
             node1 = nodes[n1]
             if n0 != n1:
-                qubits = decoding_graph.graph.get_edge_data(n0, n1)["qubits"]
+                qubits = decoding_graph.graph.get_edge_data(n0, n1).qubits
                 if qubits:
                     # error on a code qubit between rounds, or during a round
-                    assert (
-                        node0["time"] == node1["time"] and node0["qubits"] != node1["qubits"]
-                    ) or (node0["time"] != node1["time"] and node0["qubits"] != node1["qubits"])
+                    assert (node0.time == node1.time and node0.qubits != node1.qubits) or (
+                        node0.time != node1.time and node0.qubits != node1.qubits
+                    )
                     qubit = qubits[0]
                     # error between rounds
-                    if node0["time"] == node1["time"]:
+                    if node0.time == node1.time:
                         dts = []
                         for node in [node0, node1]:
-                            pair = [qubit, node["link qubit"]]
+                            pair = [qubit, node.properties["link qubit"]]
                             for dt, pairs in enumerate(self.schedule):
                                 if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
-                        time = [max(0, node0["time"] - 1 + (max(dts) + 1) / round_length)]
-                        time.append(node0["time"] + min(dts) / round_length)
+                        time = [max(0, node0.time - 1 + (max(dts) + 1) / round_length)]
+                        time.append(node0.time + min(dts) / round_length)
                     # error during a round
                     else:
                         # put nodes in descending time order
-                        if node0["time"] < node1["time"]:
+                        if node0.time < node1.time:
                             node_pair = [node1, node0]
                         else:
                             node_pair = [node0, node1]
                         # see when in the schedule each node measures the qubit
                         dts = []
                         for node in node_pair:
-                            pair = [qubit, node["link qubit"]]
+                            pair = [qubit, node.properties["link qubit"]]
                             for dt, pairs in enumerate(self.schedule):
                                 if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         # use to define fractional time
                         if dts[0] < dts[1]:
-                            time = [node_pair[1]["time"] + (dts[0] + 1) / round_length]
-                            time.append(node_pair[1]["time"] + dts[1] / round_length)
+                            time = [node_pair[1].time + (dts[0] + 1) / round_length]
+                            time.append(node_pair[1].time + dts[1] / round_length)
                         else:
                             # impossible cases get no valid time
                             time = []
                 else:
                     # measurement error
-                    assert node0["time"] != node1["time"] and node0["qubits"] == node1["qubits"]
-                    qubit = node0["link qubit"]
-                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
+                    assert node0.time != node1.time and node0.qubits == node1.qubits
+                    qubit = node0.properties["link qubit"]
+                    time = [node0.time, node0.time + (round_length - 1) / round_length]
                     time.sort()
             else:
                 # detected only by one stabilizer
-                boundary_qubits = list(set(node0["qubits"]).intersection(z_logicals))
+                boundary_qubits = list(set(node0.qubits).intersection(z_logicals))
                 # for the case of boundary stabilizers
                 if boundary_qubits:
                     qubit = boundary_qubits[0]
-                    pair = [qubit, node0["link qubit"]]
+                    pair = [qubit, node0.properties["link qubit"]]
                     for dt, pairs in enumerate(self.schedule):
                         if pair in pairs or tuple(pair) in pairs:
-                            time = [max(0, node0["time"] - 1 + (dt + 1) / round_length)]
-                            time.append(node0["time"] + dt / round_length)
+                            time = [max(0, node0.time - 1 + (dt + 1) / round_length)]
+                            time.append(node0.time + dt / round_length)
 
                 else:
-                    qubit = tuple(node0["qubits"] + [node0["link qubit"]])
-                    time = [node0["time"], node0["time"] + (round_length - 1) / round_length]
+                    qubit = tuple(node0.qubits + [node0.properties["link qubit"]])
+                    time = [node0.time, node0.time + (round_length - 1) / round_length]
 
             if time != []:  # only record if not nan
                 if (qubit, time[0], time[1]) not in error_coords:

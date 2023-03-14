@@ -2,9 +2,9 @@
 
 # This code is part of Qiskit.
 #
-# (C) Copyright IBM 2019.
+# (C) Copyright IBM 2019-2023.
 #
-# This code is licensed under the Apache License, Version 2.0. You may  ddddddd
+# This code is licensed under the Apache License, Version 2.0. You may
 # obtain a copy of this license in the LICENSE.txt file in the root directory
 # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
 #
@@ -25,6 +25,7 @@ import numpy as np
 import rustworkx as rx
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.exceptions import QiskitQECError
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
 class DecodingGraph:
@@ -39,7 +40,7 @@ class DecodingGraph:
     METHOD_NAIVE: str = "naive"
     AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
 
-    def __init__(self, code, brute=False):
+    def __init__(self, code, brute=False, graph=None):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
@@ -51,10 +52,12 @@ class DecodingGraph:
         self.code = code
         self.brute = brute
 
-        self._make_syndrome_graph()
+        if graph:
+            self.graph = graph
+        else:
+            self._make_syndrome_graph()
 
     def _make_syndrome_graph(self):
-
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
         else:
@@ -62,7 +65,6 @@ class DecodingGraph:
             self.hyperedges = []
 
             if self.code is not None:
-
                 # get the circuit used as the base case
                 if isinstance(self.code.circuit, dict):
                     if "base" not in dir(self.code):
@@ -90,20 +92,18 @@ class DecodingGraph:
                                 n0 = graph.nodes().index(source)
                                 n1 = graph.nodes().index(target)
                                 qubits = []
-                                if not (source["is_boundary"] and target["is_boundary"]):
-                                    qubits = list(
-                                        set(source["qubits"]).intersection(target["qubits"])
-                                    )
+                                if not (source.is_boundary and target.is_boundary):
+                                    qubits = list(set(source.qubits).intersection(target.qubits))
                                     if not qubits:
                                         continue
                                 if (
-                                    source["time"] != target["time"]
+                                    source.time != target.time
                                     and len(qubits) > 1
-                                    and not source["is_boundary"]
-                                    and not target["is_boundary"]
+                                    and not source.is_boundary
+                                    and not target.is_boundary
                                 ):
                                     qubits = []
-                                edge = {"qubits": qubits, "weight": 1}
+                                edge = DecodingGraphEdge(qubits, 1)
                                 graph.add_edge(n0, n1, edge)
                                 if (n1, n0) not in hyperedge:
                                     hyperedge[n0, n1] = edge
@@ -112,7 +112,9 @@ class DecodingGraph:
 
             self.graph = graph
 
-    def get_error_probs(self, counts, logical: str = "0", method: str = METHOD_SPITZ):
+    def get_error_probs(
+        self, counts, logical: str = "0", method: str = METHOD_SPITZ
+    ) -> List[Tuple[Tuple[int, int], float]]:
         """
         Generate probabilities of single error events from result counts.
 
@@ -138,7 +140,6 @@ class DecodingGraph:
 
         # method for edges
         if method == self.METHOD_SPITZ:
-
             neighbours = {}
             av_v = {}
             for n in self.graph.node_indexes():
@@ -154,7 +155,6 @@ class DecodingGraph:
                 neighbours[n1].append(n0)
 
             for string in counts:
-
                 # list of i for which v_i=1
                 error_nodes = self.code.string2nodes(string, logical=logical)
 
@@ -180,10 +180,9 @@ class DecodingGraph:
             boundary = []
             error_probs = {}
             for n0, n1 in self.graph.edge_list():
-
-                if self.graph[n0]["is_boundary"]:
+                if self.graph[n0].is_boundary:
                     boundary.append(n1)
-                elif self.graph[n1]["is_boundary"]:
+                elif self.graph[n1].is_boundary:
                     boundary.append(n0)
                 else:
                     if (1 - 2 * av_xor[n0, n1]) != 0:
@@ -211,7 +210,6 @@ class DecodingGraph:
 
         # generally applicable but approximate method
         elif method == self.METHOD_NAIVE:
-
             # for every edge in the graph, we'll determine the histogram
             # of whether their nodes are in the error nodes
             count = {
@@ -238,9 +236,9 @@ class DecodingGraph:
                 else:
                     ratio = np.nan
                 p = ratio / (1 + ratio)
-                if self.graph[n0]["is_boundary"] and not self.graph[n1]["is_boundary"]:
+                if self.graph[n0].is_boundary and not self.graph[n1].is_boundary:
                     edge = (n1, n1)
-                elif not self.graph[n0]["is_boundary"] and self.graph[n1]["is_boundary"]:
+                elif not self.graph[n0].is_boundary and self.graph[n1].is_boundary:
                     edge = (n0, n0)
                 else:
                     edge = (n0, n1)
@@ -267,7 +265,7 @@ class DecodingGraph:
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
-            if node["is_boundary"]:
+            if node.is_boundary:
                 boundary_nodes.append(n)
 
         for edge in self.graph.edge_list():
@@ -346,7 +344,6 @@ class CSSDecodingGraph:
         round_schedule: str,
         basis: str,
     ):
-
         self.css_x_gauge_ops = css_x_gauge_ops
         self.css_x_stabilizer_ops = css_x_stabilizer_ops
         self.css_x_boundary = css_x_boundary
@@ -422,16 +419,18 @@ class CSSDecodingGraph:
                 all_z = gauges
             elif layer == "s":
                 all_z = stabilizers
-            for supp in all_z:
-                node = {"time": time, "qubits": supp, "highlighted": False}
+            for index, supp in enumerate(all_z):
+                node = DecodingGraphNode(time=time, qubits=supp, index=index)
+                node.properties["highlighted"] = True
                 graph.add_node(node)
                 logging.debug("node %d t=%d %s", idx, time, supp)
                 idxmap[(time, tuple(supp))] = idx
                 node_layer.append(idx)
                 idx += 1
-            for supp in boundary:
+            for index, supp in enumerate(boundary):
                 # Add optional is_boundary property for pymatching
-                node = {"time": time, "qubits": supp, "highlighted": False, "is_boundary": True}
+                node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
+                node.properties["highlighted"] = False
                 graph.add_node(node)
                 logging.debug("boundary %d t=%d %s", idx, time, supp)
                 idxmap[(time, tuple(supp))] = idx
@@ -462,12 +461,9 @@ class CSSDecodingGraph:
                         # qubit_id is an integer or set of integers
                         # weight is a floating point number
                         # error_probability is a floating point number
-                        edge = {
-                            "qubits": [com[0]],
-                            "measurement_error": 0,
-                            "weight": 1,
-                            "highlighted": False,
-                        }
+                        edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
+                        edge.properties["highlighted"] = False
+                        edge.properties["measurement_error"] = 0
                         graph.add_edge(
                             idxmap[(time, tuple(op_g))], idxmap[(time, tuple(op_h))], edge
                         )
@@ -485,12 +481,9 @@ class CSSDecodingGraph:
                 # qubit_id is an integer or set of integers
                 # weight is a floating point number
                 # error_probability is a floating point number
-                edge = {
-                    "qubits": [],
-                    "measurement_error": 0,
-                    "weight": 0,
-                    "highlighted": False,
-                }
+                edge = DecodingGraphEdge(qubits=[], weight=0)
+                edge.properties["highlighted"] = False
+                edge.properties["measurement_error"] = 0
                 graph.add_edge(idxmap[(time, tuple(bound_g))], idxmap[(time, tuple(bound_h))], edge)
                 logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
 
@@ -529,12 +522,9 @@ class CSSDecodingGraph:
                             # error_probability is a floating point number
                             # Case (a)
                             if set(com) == set(op_h) or set(com) == set(op_g):
-                                edge = {
-                                    "qubits": [],
-                                    "measurement_error": 1,
-                                    "weight": 1,
-                                    "highlighted": False,
-                                }
+                                edge = DecodingGraphEdge(qubits=[], weight=1)
+                                edge.properties["highlighted"] = False
+                                edge.properties["measurement_error"] = 1
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
                                     idxmap[(time, tuple(op_g))],
@@ -542,12 +532,9 @@ class CSSDecodingGraph:
                                 )
                                 logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
                             else:  # Case (b)
-                                edge = {
-                                    "qubits": [com[0]],
-                                    "measurement_error": 1,
-                                    "weight": 1,
-                                    "highlighted": False,
-                                }
+                                edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
+                                edge.properties["highlighted"] = False
+                                edge.properties["measurement_error"] = 1
                                 graph.add_edge(
                                     idxmap[(time - 1, tuple(op_h))],
                                     idxmap[(time, tuple(op_g))],
@@ -557,12 +544,9 @@ class CSSDecodingGraph:
                                 logging.debug(" qubits %s", [com[0]])
                 # Add a single time-like edge between boundary vertices at
                 # time t-1 and t
-                edge = {
-                    "qubits": [],
-                    "measurement_error": 0,
-                    "weight": 0,
-                    "highlighted": False,
-                }
+                edge = DecodingGraphEdge(qubits=[], weight=0)
+                edge.properties["highlighted"] = False
+                edge.properties["measurement_error"] = 0
                 graph.add_edge(
                     idxmap[(time - 1, tuple(boundary[0]))], idxmap[(time, tuple(boundary[0]))], edge
                 )
