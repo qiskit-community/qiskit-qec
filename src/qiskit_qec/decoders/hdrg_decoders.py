@@ -303,7 +303,10 @@ class UnionFindDecoder(ClusteringDecoder):
         self.logical = logical
         self.graph = deepcopy(self.decoding_graph.graph)
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        self.odd_cluster_roots: Set[int] = set()
+        # FIXME: Use a better datastructure
+        # It needs to support inserting at specific index, unique elements and
+        # sorted insert
+        self.odd_cluster_roots: List[int] = []
 
     def process(self, string: str):
         """
@@ -365,7 +368,7 @@ class UnionFindDecoder(ClusteringDecoder):
             edge.properties["fully_grown"] = False
 
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        self.odd_cluster_roots = set(node_indices)
+        self.odd_cluster_roots = node_indices
         for node_index in node_indices:
             boundary_edges = []
             for edge_index, neighbour, data in self.neighbouring_edges(node_index):
@@ -489,11 +492,17 @@ class UnionFindDecoder(ClusteringDecoder):
             if not self.code.is_cluster_neutral(
                 [self.graph[node] for node in cluster.atypical_nodes]
             ):
-                self.odd_cluster_roots.add(new_root)
+                if not new_root in self.odd_cluster_roots:
+                    self.odd_cluster_roots.append(new_root)
             else:
-                self.odd_cluster_roots.discard(new_root)
-            self.odd_cluster_roots.discard(root_to_update)
+                if new_root in self.odd_cluster_roots:
+                    self.odd_cluster_roots.remove(new_root)
+            if root_to_update in self.odd_cluster_roots:
+                self.odd_cluster_roots.remove(root_to_update)
             self.graph[root_to_update].properties["root"] = new_root
+            self.odd_cluster_roots = sorted(
+                self.odd_cluster_roots, key=lambda c: self.clusters[c].size
+            )
 
     def peeling(self, erasure: PyGraph) -> List[int]:
         """ "
@@ -648,7 +657,7 @@ class ClAYGDecoder(UnionFindDecoder):
 
     def cluster(self, nodes: List[DecodingGraphNode]):
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        self.odd_cluster_roots = set()
+        self.odd_cluster_roots = []
 
         times: List[List[DecodingGraphNode]] = [[] for _ in range(self.code.T + 1)]
         boundaries = []
@@ -710,13 +719,14 @@ class ClAYGDecoder(UnionFindDecoder):
                 size=1,
             )
             if create_new_cluster:
-                self.odd_cluster_roots.add(node_index)
+                self.odd_cluster_roots.insert(0, node_index)
 
     def _collect_neutral_clusters(self):
         neutral_clusters = []
         for root, cluster in self.clusters.copy().items():
             if self.code.is_cluster_neutral([self.graph[u] for u in cluster.atypical_nodes]):
-                self.odd_cluster_roots.discard(root)
+                if root in self.odd_cluster_roots:
+                    self.odd_cluster_roots.remove(root)
                 cluster = self.clusters.pop(root)
                 if cluster.atypical_nodes:
                     neutral_clusters.append(cluster)
