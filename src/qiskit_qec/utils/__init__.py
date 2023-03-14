@@ -31,5 +31,3 @@ Utils module classes and functions
 """
 
 from . import indexer, pauli_rep, visualizations
-from .decodoku import Decodoku
-from .stim_tools import get_counts_via_stim, get_stim_circuits
