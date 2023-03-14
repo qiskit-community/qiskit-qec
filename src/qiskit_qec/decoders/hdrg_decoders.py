@@ -24,7 +24,6 @@ from rustworkx import connected_components, distance_matrix, PyGraph
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
-from qiskit_qec.exceptions import QiskitQECError
 
 
 class ClusteringDecoder:
@@ -127,7 +126,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
     def _get_boundary_nodes(self):
         boundary_nodes = []
         for element, z_logical in enumerate(self.measured_logicals):
-            node = DecodingGraphNode(is_boundary=True, qubits=[z_logical], index=element)
+            node = DecodingGraphNode(is_boundary=True, qubits=z_logical, index=element)
             if isinstance(self.code, ArcCircuit):
                 node.properties["link qubit"] = None
             boundary_nodes.append(node)
