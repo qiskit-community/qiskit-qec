@@ -20,6 +20,9 @@ from qiskit_aer.noise import depolarizing_error, pauli_error
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils.stim_tools import noisify_circuit
+from qiskit_qec.codes import StabSubSystemCode
+from qiskit_qec.operators.pauli_list import PauliList
+from qiskit_qec.linear.symplectic import normalizer
 
 
 class CssCodeCircuit(CodeCircuit):
@@ -43,6 +46,7 @@ class CssCodeCircuit(CodeCircuit):
         super().__init__()
 
         self.code = code
+        self._get_code_properties()
         self.T = T
         self.basis = basis
         self.base = "0"
@@ -62,16 +66,16 @@ class CssCodeCircuit(CodeCircuit):
             qc = QuantumCircuit()
             qregs = []
             qregs.append(QuantumRegister(code.n, name="code qubits"))
-            qregs.append(QuantumRegister(len(code.z_gauges), name="z auxs"))
-            qregs.append(QuantumRegister(len(code.x_gauges), name="x auxs"))
+            qregs.append(QuantumRegister(len(self.z_gauges), name="z auxs"))
+            qregs.append(QuantumRegister(len(self.x_gauges), name="x auxs"))
             for qreg in qregs:
                 qc.add_register(qreg)
             # prepare initial state
             if state[0] == "1":
                 if basis == "z":
-                    qc.x(code.logical_x[0])
+                    qc.x(self.logical_x[0])
                 else:
-                    qc.x(code.logical_z[0])
+                    qc.x(self.logical_z[0])
             if basis == "x":
                 qc.h(qregs[0])
             # peform syndrome measurements
@@ -111,8 +115,8 @@ class CssCodeCircuit(CodeCircuit):
                 self.noisy_circuit[state] = noisify_circuit(qc, noise_model)
 
         self._gauges4stabilizers = []
-        self._stabilizers = [code.x_stabilizers, code.z_stabilizers]
-        self._gauges = [code.x_gauges, code.z_gauges]
+        self._stabilizers = [self.x_stabilizers, self.z_stabilizers]
+        self._gauges = [self.x_gauges, self.z_gauges]
         for j in range(2):
             self._gauges4stabilizers.append([])
             for stabilizer in self._stabilizers[j]:
@@ -122,10 +126,56 @@ class CssCodeCircuit(CodeCircuit):
                         gauges.append(g)
                 self._gauges4stabilizers[j].append(gauges)
 
+    def _get_code_properties(self):
+
+        if isinstance(self.code, StabSubSystemCode):
+
+            is_css = True
+
+            raw_gauges = code.gauge_group.generators
+            center, log, conj_log = normalizer(code.generators.matrix)
+            raw_stabilizers = PauliList(center)
+            raw_logicals = PauliList(log) + PauliList(conj_log)
+
+            gauges = [[],[]]
+            stabilizers = [[],[]]
+            logicals = [[],[]]
+
+            for raw_ops, ops, in zip(
+                [raw_gauges,raw_stabilizers,raw_logicals],
+                [gauges, stabilizers, logicals]
+                ):
+
+                for op in raw_ops:
+                    op = str(op)
+                    for j, pauli in enumerate(['X','Z']):
+                        if (op.count(pauli) + op.count('I')) == code.n:
+                            ops[j].append([k for k,p in enumerate(op[::-1]) if p==pauli])
+                is_css = is_css and (len(ops[0]) + len(ops[1])) == len(raw_ops)
+
+            if is_css:
+                self.x_gauges = gauges[0]
+                self.z_gauges = gauges[1]
+                self.x_stabilizers = stabilizers[0]
+                self.z_stabilizers = stabilizers[1]
+                self.logical_x = logicals[0]
+                self.logical_z = logicals[1]
+            else:
+                raise
+
+        else:
+            # otherwise assume it has the info
+            self.x_gauges = self.code.x_gauges
+            self.z_gauges = self.code.z_gauges
+            self.x_stabilizers = self.code.x_stabilizers
+            self.z_stabilizers = self.code.z_stabilizers
+            self.logical_x = self.code.logical_x
+            self.logical_z = self.code.logical_z
+
     def _z_gauge_measurements(self, qc, t, state):
-        creg = ClassicalRegister(len(self.code.z_gauges), name="round_" + str(t) + "_z_bits")
+        creg = ClassicalRegister(len(self.z_gauges), name="round_" + str(t) + "_z_bits")
         qc.add_register(creg)
-        for g, z_gauge in enumerate(self.code.z_gauges):
+        for g, z_gauge in enumerate(self.z_gauges):
             for q in z_gauge:
                 qc.cx(qc.qregs[0][q], qc.qregs[1][g])
             if state[-1] == "n" and self._phenom:
@@ -134,9 +184,9 @@ class CssCodeCircuit(CodeCircuit):
             qc.reset(qc.qregs[1][g])
 
     def _x_gauge_measurements(self, qc, t, state):
-        creg = ClassicalRegister(len(self.code.x_gauges), name="round_" + str(t) + "_x_bits")
+        creg = ClassicalRegister(len(self.x_gauges), name="round_" + str(t) + "_x_bits")
         qc.add_register(creg)
-        for g, x_gauge in enumerate(self.code.x_gauges):
+        for g, x_gauge in enumerate(self.x_gauges):
             for q in x_gauge:
                 qc.h(qc.qregs[0][q])
                 qc.cx(qc.qregs[0][q], qc.qregs[2][g])
@@ -216,24 +266,26 @@ class CssCodeCircuit(CodeCircuit):
                         }
                         nodes.append(node)
 
-        j = bases.index(self.basis)
-        boundary = [self.code.x_boundary, self.code.z_boundary]
-        boundary_qubits = [q[0] for q in boundary[j]]
+        if self.basis == 'x':
+            logicals = self.logical_x
+        else:
+            logicals = self.logical_z
 
-        boundary_out = 0
-        for q in boundary_qubits:
-            boundary_out += final_outs[q]
-        boundary_out = boundary_out % 2
+        for index, logical in enumerate(logicals):
+            logical_out = 0
+            for q in logical:
+                logical_out += final_outs[q]
+            logical_out = logical_out % 2
 
-        if boundary_out == 1:
-            node = {
-                "time": 0,
-                "basis": self.basis,
-                "qubits": boundary_qubits,
-                "element": 0,
-                "is_boundary": True,
-            }
-            nodes.append(node)
+            if logical_out == 1:
+                node = {
+                    "time": 0,
+                    "basis": self.basis,
+                    "qubits": logical,
+                    "element": index,
+                    "is_boundary": True,
+                }
+                nodes.append(node)
 
         return nodes
 
