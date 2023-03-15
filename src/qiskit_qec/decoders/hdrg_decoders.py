@@ -455,7 +455,6 @@ class UnionFindDecoder(ClusteringDecoder):
                             nodes=set([edge.neighbour_vertex]),
                             size=1,
                         )
-                    cluster.fully_grown_edges.add(edge.index)
                     fusion_entry = FusionEntry(
                         u=edge.cluster_vertex, v=edge.neighbour_vertex, connecting_edge=edge
                     )
@@ -484,11 +483,12 @@ class UnionFindDecoder(ClusteringDecoder):
             if new_root in new_neutral_clusters or root_to_update in new_neutral_clusters:
                 continue
 
-            entry.connecting_edge.data.properties["growth"] = 0
-            entry.connecting_edge.data.properties["fully_grown"] = True
-
             cluster = self.clusters[new_root]
             other_cluster = self.clusters.pop(root_to_update)
+
+            entry.connecting_edge.data.properties["growth"] = 0
+            entry.connecting_edge.data.properties["fully_grown"] = True
+            cluster.fully_grown_edges.add(entry.connecting_edge.index)
 
             # Merge boundaries
             cluster.boundary += other_cluster.boundary
@@ -510,13 +510,6 @@ class UnionFindDecoder(ClusteringDecoder):
                 if new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(new_root)
                     new_neutral_clusters.append(new_root)
-                
-                if self.code.is_cluster_neutral(
-                    [self.graph[node] for node in cluster.atypical_nodes]
-                ):
-                    for boundary_node in cluster.boundary_nodes:
-                        self._create_new_cluster(boundary_node)
-                    cluster.boundary_nodes = set()
             else:
                 if not new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.append(new_root)
