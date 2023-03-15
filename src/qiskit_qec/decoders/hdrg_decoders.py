@@ -505,7 +505,7 @@ class UnionFindDecoder(ClusteringDecoder):
             if self.code.is_cluster_neutral(
                 [self.graph[node] for node in cluster.atypical_nodes]
             ) or self.code.is_cluster_neutral(
-                [self.graph[node] for node in cluster.atypical_nodes | cluster.boundary_nodes]
+                [self.graph[node] for node in cluster.atypical_nodes | (set([list(cluster.boundary_nodes)[0]]) if cluster.boundary_nodes else set())]
             ):
                 if new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(new_root)
