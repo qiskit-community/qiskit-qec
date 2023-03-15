@@ -99,7 +99,7 @@ class ClAYGDecoderTest(unittest.TestCase):
         """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
-            decoder = ClAYGDecoder(code, logical)
+            decoder = ClAYGDecoder(code)
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
             )
@@ -121,7 +121,7 @@ class ClAYGDecoderTest(unittest.TestCase):
         """
         for logical in ["0", "1"]:
             code = RepetitionCodeCircuit(d=5, T=5)
-            decoder = ClAYGDecoder(code, logical)
+            decoder = ClAYGDecoder(code)
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
             )
@@ -151,7 +151,7 @@ class ClAYGDecoderTest(unittest.TestCase):
 
         # now run them all and check it works
         for code in codes:
-            decoder = ClAYGDecoder(code, logical="0")
+            decoder = ClAYGDecoder(code)
             z_logicals = code.css_z_logical[0]
 
             logical_errors = 0
