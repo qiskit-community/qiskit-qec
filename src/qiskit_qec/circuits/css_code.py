@@ -18,11 +18,13 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils.stim_tools import noisify_circuit
 from qiskit_qec.codes import StabSubSystemCode
 from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.linear.symplectic import normalizer
+from qiskit_qec.exceptions import QiskitQECError
 
 
 class CssCodeCircuit(CodeCircuit):
@@ -132,26 +134,36 @@ class CssCodeCircuit(CodeCircuit):
 
             is_css = True
 
-            raw_gauges = code.gauge_group.generators
-            center, log, conj_log = normalizer(code.generators.matrix)
+            raw_gauges = self.code.gauge_group.generators
+            center, log, conj_log = normalizer(self.code.generators.matrix)
             raw_stabilizers = PauliList(center)
             raw_logicals = PauliList(log) + PauliList(conj_log)
 
-            gauges = [[],[]]
-            stabilizers = [[],[]]
-            logicals = [[],[]]
+            gauges = [[], []]
+            stabilizers = [[], []]
+            logicals = [[], []]
 
-            for raw_ops, ops, in zip(
-                [raw_gauges,raw_stabilizers,raw_logicals],
-                [gauges, stabilizers, logicals]
-                ):
+            for (
+                raw_ops,
+                ops,
+            ) in zip([raw_gauges, raw_stabilizers, raw_logicals], [gauges, stabilizers, logicals]):
 
                 for op in raw_ops:
                     op = str(op)
-                    for j, pauli in enumerate(['X','Z']):
-                        if (op.count(pauli) + op.count('I')) == code.n:
-                            ops[j].append([k for k,p in enumerate(op[::-1]) if p==pauli])
+                    for j, pauli in enumerate(["X", "Z"]):
+                        if (op.count(pauli) + op.count("I")) == self.code.n:
+                            ops[j].append([k for k, p in enumerate(op[::-1]) if p == pauli])
                 is_css = is_css and (len(ops[0]) + len(ops[1])) == len(raw_ops)
+
+            # extra stabilizers: the product of all others
+            for j in range(2):
+                combined = []
+                for stabilizer in stabilizers[j]:
+                    combined += stabilizer
+                stabilizers[j].append([])
+                for q in combined:
+                    if combined.count(q) % 2:
+                        stabilizers[j][-1].append(q)
 
             if is_css:
                 self.x_gauges = gauges[0]
@@ -161,7 +173,7 @@ class CssCodeCircuit(CodeCircuit):
                 self.logical_x = logicals[0]
                 self.logical_z = logicals[1]
             else:
-                raise
+                raise QiskitQECError("Code is not obviously CSS.")
 
         else:
             # otherwise assume it has the info
@@ -203,7 +215,16 @@ class CssCodeCircuit(CodeCircuit):
         Args:
             string (string): Results string to convert.
             kwargs (dict): Any additional keyword arguments.
+                logical (str): Logical value whose results are used ('0' as default).
+                all_logicals (bool): Whether to include logical nodes
+                irrespective of value. (False as default).
         """
+
+        all_logicals = kwargs.get("all_logicals")
+        logical = kwargs.get("logical")
+        if logical is None:
+            logical = "0"
+
         output = string.split(" ")[::-1]
         gauge_outs = [[], []]
         for t in range(self.T):
@@ -230,14 +251,21 @@ class CssCodeCircuit(CodeCircuit):
 
         bases = ["x", "z"]
         j = bases.index(self.basis)
-        round_outs = []
-        for stabilizer in self._stabilizers[j]:
+        final_gauges = []
+        for gauge in self._gauges[j]:
             out = 0
-            for q in stabilizer:
-                out += final_outs[q]
+            for q in gauge:
+                out += final_outs[-q - 1]
             out = out % 2
-            round_outs.append(out)
-        stabilizer_outs[j].append(round_outs)
+            final_gauges.append(out)
+        final_stabilizers = []
+        for gs in self._gauges4stabilizers[j]:
+            out = 0
+            for g in gs:
+                out += final_gauges[g]
+            out = out % 2
+            final_stabilizers.append(out)
+        stabilizer_outs[j].append(final_stabilizers)
 
         stabilizer_changes = []
         for j in range(2):
@@ -257,34 +285,28 @@ class CssCodeCircuit(CodeCircuit):
             for t, round_changes in enumerate(stabilizer_changes[j]):
                 for e, change in enumerate(round_changes):
                     if change == 1:
-                        node = {
-                            "time": t,
-                            "basis": bases[j],
-                            "qubits": self._stabilizers[j][e],
-                            "element": e,
-                            "is_boundary": False,
-                        }
+                        node = DecodingGraphNode(time=t, qubits=self._stabilizers[j][e], index=e)
+                        node.properties["basis"] = bases[j]
                         nodes.append(node)
 
-        if self.basis == 'x':
+        if self.basis == "x":
             logicals = self.logical_x
         else:
             logicals = self.logical_z
 
-        for index, logical in enumerate(logicals):
+        for index, logical_op in enumerate(logicals):
             logical_out = 0
-            for q in logical:
-                logical_out += final_outs[q]
+            for q in logical_op:
+                logical_out += final_outs[-q - 1]
             logical_out = logical_out % 2
 
-            if logical_out == 1:
-                node = {
-                    "time": 0,
-                    "basis": self.basis,
-                    "qubits": logical,
-                    "element": index,
-                    "is_boundary": True,
-                }
+            if all_logicals or str(logical_out) != logical:
+                node = DecodingGraphNode(
+                    is_boundary=True,
+                    qubits=logical,
+                    index=index,
+                )
+                node.properties["basis"] = self.basis
                 nodes.append(node)
 
         return nodes
