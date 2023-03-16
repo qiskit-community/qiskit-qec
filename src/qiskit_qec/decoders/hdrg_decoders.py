@@ -51,7 +51,6 @@ class BravyiHaahDecoder(ClusteringDecoder):
         code_circuit,
         decoding_graph: DecodingGraph = None,
     ):
-
         super().__init__(code_circuit, decoding_graph)
 
         if hasattr(self.code, "_xbasis"):
@@ -378,7 +377,9 @@ class UnionFindDecoder(ClusteringDecoder):
         for _, cluster in self.clusters.items():
             if not cluster.atypical_nodes:
                 continue
-            clusters.append((list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes)))
+            clusters.append(
+                (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
+            )
         return clusters
 
     def find(self, u: int) -> int:
@@ -451,7 +452,9 @@ class UnionFindDecoder(ClusteringDecoder):
                             boundary=boundary_edges,
                             fully_grown_edges=set(),
                             atypical_nodes=set(),
-                            boundary_nodes=set([edge.neighbour_vertex]) if self.graph[edge.neighbour_vertex].is_boundary else set([]),
+                            boundary_nodes=set([edge.neighbour_vertex])
+                            if self.graph[edge.neighbour_vertex].is_boundary
+                            else set([]),
                             nodes=set([edge.neighbour_vertex]),
                             size=1,
                         )
@@ -505,7 +508,11 @@ class UnionFindDecoder(ClusteringDecoder):
             if self.code.is_cluster_neutral(
                 [self.graph[node] for node in cluster.atypical_nodes]
             ) or self.code.is_cluster_neutral(
-                [self.graph[node] for node in cluster.atypical_nodes | (set(list(cluster.boundary_nodes)[:1]) if cluster.boundary_nodes else set())]
+                [
+                    self.graph[node]
+                    for node in cluster.atypical_nodes
+                    | (set(list(cluster.boundary_nodes)[:1]) if cluster.boundary_nodes else set())
+                ]
             ):
                 if new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(new_root)
@@ -684,28 +691,31 @@ class ClAYGDecoder(UnionFindDecoder):
             else:
                 times[node.time].append(node)
                 node.time = 0
-        # FIXME: I am not sure when the optimal time to add the boundaries is. Maybe the middle? 
+        # FIXME: I am not sure when the optimal time to add the boundaries is. Maybe the middle?
         # for node in boundaries:
-        times.insert(len(times)//2, boundaries)
-        
+        times.insert(len(times) // 2, boundaries)
+
         neutral_clusters = []
         for time in times:
-            if not time: continue
+            if not time:
+                continue
             for node in time:
                 self._add_node(node)
             neutral_clusters += self._collect_neutral_clusters()
             for _ in range(self.r):
                 self._grow_and_merge_clusters()
             neutral_clusters += self._collect_neutral_clusters()
-        
+
         while self.odd_cluster_roots:
-             self._grow_and_merge_clusters()
+            self._grow_and_merge_clusters()
 
         neutral_clusters += self._collect_neutral_clusters()
 
         neutral_cluster_nodes: List[List[int]] = []
         for cluster in neutral_clusters:
-            neutral_cluster_nodes.append((list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes)))
+            neutral_cluster_nodes.append(
+                (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
+            )
 
         return neutral_cluster_nodes
 
@@ -726,7 +736,13 @@ class ClAYGDecoder(UnionFindDecoder):
     def _collect_neutral_clusters(self):
         neutral_clusters = []
         for root, cluster in self.clusters.copy().items():
-            if self.code.is_cluster_neutral([self.graph[node] for node in cluster.atypical_nodes | (set([list(cluster.boundary_nodes)[0]]) if cluster.boundary_nodes else set())]):
+            if self.code.is_cluster_neutral(
+                [
+                    self.graph[node]
+                    for node in cluster.atypical_nodes
+                    | (set([list(cluster.boundary_nodes)[0]]) if cluster.boundary_nodes else set())
+                ]
+            ):
                 if root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(root)
                 cluster = self.clusters.pop(root)

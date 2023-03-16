@@ -15,10 +15,8 @@
 import math
 import random
 import unittest
-from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders import ClAYGDecoder
-from qiskit_qec.circuits import SurfaceCodeCircuit, RepetitionCodeCircuit
-from qiskit_qec.decoders.temp_code_util import temp_syndrome
+from qiskit_qec.circuits import RepetitionCodeCircuit
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
@@ -97,25 +95,11 @@ class ClAYGDecoderTest(unittest.TestCase):
         have even parity (if it's a valid code state) and if the logical value measured
         is the one encoded by the circuit.
 
-        This test won't complete atm, as the ClAYG decoder isn't able to decode some errors produced 
-        by this error model, because of the placement of the boundary nodes and clusters neutralizing 
+        This test won't complete atm, as the ClAYG decoder isn't able to decode some errors produced
+        by this error model, because of the placement of the boundary nodes and clusters neutralizing
         when they shouldn't.
         """
         return
-        for logical in ["0", "1"]:
-            code = SurfaceCodeCircuit(d=3, T=3)
-            decoder = ClAYGDecoder(code)
-            fault_enumerator = FaultEnumerator(
-                code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
-            )
-            for fault in fault_enumerator.generate():
-                outcome = "".join([str(x) for x in fault[3]])
-                corrected_outcome = decoder.process(outcome)
-                stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
-                for syndrome in stabilizers:
-                    self.assertEqual(syndrome, 0)
-                logical_measurement = temp_syndrome(corrected_outcome, [code.css_z_logical])[0] 
-                self.assertEqual(str(logical_measurement), logical)
 
     def test_repetition_code_d5(self):
         """
@@ -124,25 +108,11 @@ class ClAYGDecoderTest(unittest.TestCase):
         have even parity (if it's a valid code state) and if the logical value measured
         is the one encoded by the circuit.
 
-        This test won't complete atm, as the ClAYG decoder isn't able to decode some errors produced 
-        by this error model, because of the placement of the boundary nodes and clusters neutralizing 
+        This test won't complete atm, as the ClAYG decoder isn't able to decode some errors produced
+        by this error model, because of the placement of the boundary nodes and clusters neutralizing
         when they shouldn't.
         """
         return
-        for logical in ["0", "1"]:
-            code = RepetitionCodeCircuit(d=5, T=5)
-            decoder = ClAYGDecoder(code)
-            fault_enumerator = FaultEnumerator(
-                code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
-            )
-            for fault in fault_enumerator.generate():
-                outcome = "".join([str(x) for x in fault[3]])
-                corrected_outcome = decoder.process(outcome)
-                stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
-                for syndrome in stabilizers:
-                    self.assertEqual(syndrome, 0)
-                logical_measurement = temp_syndrome(corrected_outcome, code.css_z_logical)[0]
-                self.assertEqual(str(logical_measurement), logical)
 
     def test_error_rates(self):
         """
