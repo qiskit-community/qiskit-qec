@@ -346,7 +346,9 @@ class CircuitModelMatchingDecoder(ABC):
                     )
                     restriction = {x: assignment[x] for x in edge_data["weight_poly"].gens}
                     p = edge_data["weight_poly"].eval(restriction).evalf()
-                    assert p < 0.5, "edge flip probability too large"
+                    # if approximate edge flip probability is large, saturate at 1/2
+                    if p > 0.5:
+                        p = 0.5
                     edge_data["weight"] = log((1 - p) / p)
         self.matcher.preprocess(self.graph)
 
