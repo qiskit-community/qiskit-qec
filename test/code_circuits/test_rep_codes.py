@@ -27,6 +27,7 @@ from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
 
@@ -135,8 +136,16 @@ class TestRepCodes(unittest.TestCase):
                 (5, 0),
                 "00001",
                 [
-                    {"time": 0, "qubits": [0], "is_boundary": True, "element": 0},
-                    {"time": 0, "qubits": [0, 1], "is_boundary": False, "element": 0},
+                    DecodingGraphNode(
+                        is_boundary=True,
+                        qubits=[0],
+                        index=0,
+                    ),
+                    DecodingGraphNode(
+                        time=0,
+                        qubits=[0, 1],
+                        index=0,
+                    ),
                 ],
             ]
         ]
@@ -188,12 +197,8 @@ class TestRepCodes(unittest.TestCase):
                 + "'."
             )
             p = dec.get_error_probs(test_results, method=method)
-            n0 = dec.graph.nodes().index(
-                {"time": 0, "is_boundary": False, "qubits": [0, 1], "element": 0}
-            )
-            n1 = dec.graph.nodes().index(
-                {"time": 0, "is_boundary": False, "qubits": [1, 2], "element": 1}
-            )
+            n0 = dec.graph.nodes().index(DecodingGraphNode(time=0, qubits=[0, 1], index=0))
+            n1 = dec.graph.nodes().index(DecodingGraphNode(time=0, qubits=[1, 2], index=1))
             # edges in graph aren't directed and could be in any order
             if (n0, n1) in p:
                 self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
@@ -236,12 +241,12 @@ class TestARCCodes(unittest.TestCase):
                 string = "".join([str(c) for c in output[::-1]])
                 nodes = code.string2nodes(string)
                 # check that it doesn't extend over more than two rounds
-                ts = [node["time"] for node in nodes if not node["is_boundary"]]
+                ts = [node.time for node in nodes if not node.is_boundary]
                 if ts:
                     minimal = minimal and (max(ts) - min(ts)) <= 1
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
                 flat_nodes = code.flatten_nodes(nodes)
-                link_qubits = set(node["link qubit"] for node in flat_nodes)
+                link_qubits = set(node.properties["link qubit"] for node in flat_nodes)
                 minimal = minimal and link_qubits in incident_links.values()
                 self.assertTrue(
                     minimal,
@@ -254,10 +259,10 @@ class TestARCCodes(unittest.TestCase):
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
-                    if not node["is_boundary"]:
+                    if not node.is_boundary:
                         for logical in flipped_logicals:
                             self.assertTrue(
-                                logical in node["qubits"],
+                                logical in node.qubits,
                                 "Error: Single error appears to flip logical is not part of nodes.",
                             )
 
@@ -352,7 +357,7 @@ class TestARCCodes(unittest.TestCase):
                         nodes = [
                             node
                             for node in code.string2nodes(string)
-                            if "conjugate" not in node and not node["is_boundary"]
+                            if "conjugate" not in node.properties and not node.is_boundary
                         ]
                         # require at most two (or three for the trivalent vertex or neighbouring aux)
                         self.assertTrue(
@@ -469,12 +474,12 @@ class TestARCCodes(unittest.TestCase):
                 + "'."
             )
             p = dec.get_error_probs(test_results, method=method)
-            n0 = dec.graph.nodes().index(
-                {"time": 0, "qubits": [0, 2], "link qubit": 1, "is_boundary": False, "element": 1}
-            )
-            n1 = dec.graph.nodes().index(
-                {"time": 0, "qubits": [2, 4], "link qubit": 3, "is_boundary": False, "element": 0}
-            )
+            node = DecodingGraphNode(time=0, qubits=[0, 2], index=1)
+            node.properties["link qubits"] = 1
+            n0 = dec.graph.nodes().index(node)
+            node = DecodingGraphNode(time=0, qubits=[2, 4], index=0)
+            node.properties["link qubits"] = 3
+            n1 = dec.graph.nodes().index(node)
             # edges in graph aren't directed and could be in any order
             if (n0, n1) in p:
                 self.assertTrue(round(p[n0, n1], 2) == 0.33, error)
@@ -532,7 +537,7 @@ class TestDecoding(unittest.TestCase):
             code = ArcCircuit(links, 0)
             decoding_graph = DecodingGraph(code)
             decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
-            errors = {z_logical: 0 for z_logical in decoder.z_logicals}
+            errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             for sample in range(N):
                 # generate random string
@@ -541,16 +546,16 @@ class TestDecoding(unittest.TestCase):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
-                for j, z_logical in enumerate(decoder.z_logicals):
+                for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
                         min_error_num = min(min_error_num, string.count("0"))
-                    errors[z_logical] += error
+                    errors[z_logical[0]] += error
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
-            for z_logical in decoder.z_logicals:
+            for z_logical in decoder.measured_logicals:
                 self.assertTrue(
-                    errors[z_logical] / (sample + 1) < p**2,
+                    errors[z_logical[0]] / (sample + 1) < p**2,
                     "Logical error rate greater than p^2.",
                 )
             self.assertTrue(
