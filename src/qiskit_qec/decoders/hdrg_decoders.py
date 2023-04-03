@@ -319,7 +319,7 @@ class UnionFindDecoder(ClusteringDecoder):
         self.z_logicals.
         """
         self.graph = deepcopy(self.decoding_graph.graph)
-        string = "".join([str(c) for c in string[::-1]])
+        # string = "".join([str(c) for c in string[::-1]]) # we dont need to reverse it. Real data comes in the correct order.
         output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
         highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
         if not highlighted_nodes:
@@ -334,7 +334,8 @@ class UnionFindDecoder(ClusteringDecoder):
                     if node.is_boundary:
                         # FIXME: Find a general way to go from physical qubit
                         # index to code qubit index
-                        qubit_to_be_corrected = int(node.qubits[0] / 2)
+                        # qubit_to_be_corrected = int(node.qubits[0] / 2)
+                        qubit_to_be_corrected = self.code.code_index[node.qubits[0]]
                         output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
                 continue
 
