@@ -50,6 +50,22 @@ class DecodingGraphNode:
         self.index: int = index
         self.properties: Dict[str, Any] = {}
 
+    def __getitem__(self, key):
+        if key in self.__dict__:
+            return self.__dict__[key]
+        elif key in self.properties:
+            return self.properties[key]
+        else:
+            raise QiskitQECError("'" + str(key) + "'" + " is not an an attribute or property of the node.")
+
+    def get(self, key, default):
+        return self.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if key in self.__dict__:
+            self.__dict__[key] = value
+        else:
+            self.properties[key] = value
     def __eq__(self, rhs):
         if not isinstance(rhs, DecodingGraphNode):
             return NotImplemented
@@ -70,6 +86,8 @@ class DecodingGraphNode:
         for attr, value in self.__dict__.items():
             yield attr, value
 
+    def __str__ (self):
+        return str(dict(self))
 
 @dataclass
 class DecodingGraphEdge:
@@ -88,6 +106,23 @@ class DecodingGraphEdge:
     # TODO: Should code/decoder specific properties be accounted for when comparing edges
     properties: Dict[str, Any] = field(default_factory=dict)
 
+    def __getitem__(self, key):
+        if key in self.__dict__:
+            return self.__dict__[key]
+        elif key in self.properties:
+            return self.properties[key]
+        else:
+            raise QiskitQECError("'" + str(key) + "'" + " is not an an attribute or property of the edge.")
+
+    def get(self, key, default):
+        return self.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if key in self.__dict__:
+            self.__dict__[key] = value
+        else:
+            self.properties[key] = value
+            
     def __eq__(self, rhs) -> bool:
         if not isinstance(rhs, DecodingGraphNode):
             return NotImplemented
@@ -100,3 +135,6 @@ class DecodingGraphEdge:
     def __iter__(self):
         for attr, value in self.__dict__.items():
             yield attr, value
+
+    def __str__ (self):
+        return str(dict(self))
