@@ -17,11 +17,19 @@
 """Tools to use functionality from Stim."""
 
 from stim import Circuit as StimCircuit
+from stim import DetectorErrorModel as StimDetectorErrorModel
+from stim import DemInstruction as StimDemInstruction
+from stim import DemTarget as StimDemTarget
 
 from qiskit import QuantumCircuit
 from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 from qiskit_aer.noise import pauli_error
+from qiskit_qec.utils.decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge
 
+import rustworkx as rx
+from typing import List, Dict
+import numpy as np
+from math import log
 
 def get_stim_circuits(circuit_dict):
     """Converts compatible qiskit circuits to stim circuits.
@@ -182,6 +190,96 @@ def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
 
     return counts
 
+def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGraph:
+    """Convert a stim error model into a RustworkX graph.
+       It assumes that the stim circuit does not contain repeat blocks.
+       Later on repeat blocks should be handled to make this function compatible with
+       user-defined stim circuits.
+    """
+
+    g = rx.PyGraph(multigraph=False)
+
+    index_to_DecodingGraphNode = {}
+
+    for instruction in model:
+        if instruction.type == "detector":
+            a = np.array(instruction.args_copy())
+            time = a[-1]
+            qubits = [int(qubit_ind) for qubit_ind in a[:-1]]
+            for t in instruction.targets_copy():
+                node = DecodingGraphNode(index=t.val, time=time, qubits=qubits)
+                index_to_DecodingGraphNode[t.val]=node
+                g.add_node(node)
+    
+    trivial_boundary_node = DecodingGraphNode(index=model.num_detectors, time=0, is_boundary=True)
+    g.add_node(trivial_boundary_node)
+    index_to_DecodingGraphNode[model.num_detectors]=trivial_boundary_node
+
+    def handle_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
+        if p == 0:
+            return
+        if len(dets) == 0:
+            return
+        if len(dets) == 1:
+            dets = [dets[0], model.num_detectors]
+            # if frame_changes == []:
+            #     dets = [dets[0], model.num_detectors]
+            # else:
+            #     dets = [dets[0], model.num_detectors+1]
+        if len(dets) > 2:
+            raise NotImplementedError(
+                f"Error with more than 2 symptoms can't become an edge or boundary edge: {dets!r}.")
+        if g.has_edge(dets[0],dets[1]):
+            edge_ind = [dets for dets in g.edge_list()].index((dets[0],dets[1]))
+            edge_data = g.edges()[edge_ind].properties
+            old_p = edge_data["error_probability"]
+            old_frame_changes = edge_data["fault_ids"]
+            # If frame changes differ, the code has distance 2; just keep whichever was first.
+            if set(old_frame_changes) == set(frame_changes):
+                p = p * (1 - old_p) + old_p * (1 - p)
+                g.remove_edge(dets[0],dets[1])
+        if p > 0.5:
+            p = 1 - p
+        if p > 0:
+            qubits = list(set(index_to_DecodingGraphNode[dets[0]].qubits).intersection(index_to_DecodingGraphNode[dets[1]].qubits))
+            edge = DecodingGraphEdge(qubits=qubits,weight=log((1 - p) / p), properties={'fault_ids': set(frame_changes), 'error_probability': p})
+            g.add_edge(dets[0],dets[1], edge)
+            hyperedge[dets[0],dets[1]] = edge
+
+    hyperedges = []
+
+    for instruction in model:
+        if isinstance(instruction, StimDemInstruction):
+            if instruction.type == "error":
+                dets: List[int] = []
+                frames: List[int] = []
+                t: StimDemTarget
+                p = instruction.args_copy()[0]
+                hyperedge = {}
+                for t in instruction.targets_copy():
+                    if t.is_relative_detector_id():
+                        dets.append(t.val)
+                    elif t.is_logical_observable_id():
+                        frames.append(t.val)
+                    elif t.is_separator():
+                        # Treat each component of a decomposed error as an independent error.
+                        handle_error(p, dets, frames, hyperedge)
+                        frames = []
+                        dets = []
+                # Handle last component.
+                handle_error(p, dets, frames, hyperedge)
+                if len(hyperedge)>1:
+                    hyperedges.append(hyperedge)
+            elif instruction.type == "detector":
+                pass
+            elif instruction.type == "logical_observable":
+                pass
+            else:
+                raise NotImplementedError()
+        else:
+            raise NotImplementedError()
+
+    return g, hyperedges
 
 def noisify_circuit(circuits, noise_model):
     """
