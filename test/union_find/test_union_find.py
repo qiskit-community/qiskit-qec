@@ -61,7 +61,7 @@ class UnionFindDecoderTest(TestCase):
             )
             for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
-                corrected_outcome = decoder.process(outcome)
+                corrected_outcome = decoder.process(outcome[::-1])
                 stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
                 for syndrome in stabilizers:
                     self.assertEqual(syndrome, 0)
@@ -83,7 +83,7 @@ class UnionFindDecoderTest(TestCase):
             )
             for fault in fault_enumerator.generate():
                 outcome = "".join([str(x) for x in fault[3]])
-                corrected_outcome = decoder.process(outcome)
+                corrected_outcome = decoder.process(outcome[::-1])
                 stabilizers = temp_syndrome(corrected_outcome, code.css_z_stabilizer_ops)
                 for syndrome in stabilizers:
                     self.assertEqual(syndrome, 0)
@@ -106,7 +106,7 @@ class UnionFindDecoderTest(TestCase):
         )
         for fault in fault_enumerator.generate():
             outcome = "".join([str(x) for x in fault[3]])
-            corrected_outcome = decoder.process(outcome)
+            corrected_outcome = decoder.process(outcome[::-1])
             logical_measurement = temp_syndrome(
                 corrected_outcome, [[int(q / 2) for q in code.z_logicals]]
             )[0]
@@ -143,7 +143,7 @@ class UnionFindDecoderTest(TestCase):
                     string += "0" * (d - 1) + " "
                 string += testcases[sample]
                 # get and check corrected_z_logicals
-                outcome = decoder.process(string)
+                outcome = decoder.process(string[::-1])
                 logical_outcome = sum([outcome[int(z_logical / 2)] for z_logical in z_logicals]) % 2
                 if not logical_outcome == 0:
                     logical_errors += 1
