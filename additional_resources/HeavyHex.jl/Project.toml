@@ -1,0 +1,37 @@
+name = "HeavyHex"
+uuid = "b0019bea-e42b-47d5-8149-fbe3a28cc86e"
+authors = ["John Lapeyre <jlapeyre@users.noreply.github.com> and contributors"]
+version = "0.1.0"
+
+[deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+BitIntegers = "c3b6d118-76ef-56ca-8cc7-ebb389d030a1"
+Bits = "1654ce90-6ed3-553a-957f-9452c3a40996"
+Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+ConcurrentCollections = "5060bff5-0b44-40c5-b522-fcd3ca5cecdd"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DictTools = "6033591e-aae9-4c88-8f5f-a341f9ca5325"
+Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
+Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
+ILog2 = "2cd5bd5f-40a1-5050-9e10-fc8cdb6109f5"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Pickle = "fbb45041-c46e-462f-888f-7c521cafbc2c"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ThreadSafeDicts = "4239201d-c60e-5e0a-9702-85d713665ba7"
+TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
+
+[compat]
+julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
