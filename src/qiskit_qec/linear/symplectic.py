@@ -26,7 +26,7 @@ from qiskit_qec.linear import matrix as mt
 def all_commute(matrix: np.ndarray) -> bool:
     r"""Determines if each possible pair of different rows of the
     GF(2) symplectic matrix have zero symplectic product. If the rows represent
-    Pauli operators then the this method deterimes if the operators
+    Pauli operators then the this method determines if the operators
     defined by the matrix generate an abelian subgroup.
 
     Args:
@@ -705,7 +705,7 @@ def symplectic_gram_schmidt(
     """Applies the sympletic Gram-Schmidt process to the input matrix
 
     Apply the symplectic GramSchmidt process to the input symplectic matrix. Resulting
-    hyperbolic pairs are added to x and z arrays. Elements of the center will we added to the
+    hyperbolic pairs are added to x and z arrays. Elements of the center will be added to the
     center array.
 
     Args:
@@ -739,7 +739,7 @@ def symplectic_gram_schmidt(
        array([[0, 0, 0, 0, 1, 1, 0, 1]])
 
     Also See:
-    _symplectic_gram_schmid
+    _symplectic_gram_schmidt
 
     TODO: Add an example that shows using the optional x and z arrays
     """
@@ -932,7 +932,7 @@ def is_symplectic_matrix_form(
 ) -> bool:
     """Is the input matrix GF(2) symplectic
 
-    Checks if the given array like matrix is in the form of a symplectic matrix:
+    Checks if the given array-like matrix is in the form of a symplectic matrix:
     two dimensional, even number of columns, 0/1 or boolean entries. The optional
     argument dtype can be given to check if entries are a specific dtype
 
@@ -1755,7 +1755,7 @@ def remove_hyper_elements_from_hyper_form(
     center_: Optional[np.ndarray], x: np.ndarray, z: np.ndarray, indices: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Transfers those elements/vectors from x with an index in indices into center_
-    and delete the corresponding hyperbolic partner from z.
+    and deletes the corresponding hyperbolic partner from z.
 
     Args:
         center_: center array
@@ -1879,7 +1879,7 @@ def min_generating(
 ) -> np.ndarray:
     """Returns a minimal generating/linearily independent set of rows.
 
-    If only a matrix is provide the method returns a submatrix with maximally
+    If only a matrix is provided, the method returns a submatrix with maximally
     independent set of rows. If a matrix and a set of hyperbolic pairs are provided then
     the method returns a submatrix such that the rows of the submatrix and the
     hyperbolic pairs are maximally linearily independent.
