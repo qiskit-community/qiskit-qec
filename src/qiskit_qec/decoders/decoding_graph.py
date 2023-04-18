@@ -293,11 +293,11 @@ class DecodingGraph:
             edge_data.weight = w
             self.graph.update_edge(edge[0], edge[1], edge_data)
 
-    def make_error_graph(self, input, all_logicals=True):
+    def make_error_graph(self, data, all_logicals=True):
         """Returns error graph.
 
         Args:
-            input: Either an ouput string of the code, or a list of
+            data: Either an ouput string of the code, or a list of
             nodes for the code.
 
         Returns:
@@ -306,13 +306,13 @@ class DecodingGraph:
         """
 
         E = rx.PyGraph(multigraph=False)
-        if type(input) is str:
-            nodes = self.code.string2nodes(input, all_logicals=all_logicals)
+        if isinstance(data, str):
+            nodes = self.code.string2nodes(data, all_logicals=all_logicals)
         else:
             if all_logicals:
-                nodes = list(set(input).union(set(self._logical_nodes)))
+                nodes = list(set(data).union(set(self._logical_nodes)))
             else:
-                nodes = input
+                nodes = data
         for node in nodes:
             if node not in E.nodes():
                 E.add_node(node)
