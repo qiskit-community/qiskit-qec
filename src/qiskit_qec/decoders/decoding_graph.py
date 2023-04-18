@@ -57,6 +57,11 @@ class DecodingGraph:
         else:
             self._make_syndrome_graph()
 
+        self._logical_nodes = []
+        for node in self.graph.nodes():
+            if node.is_boundary:
+                self._logical_nodes.append(node)
+
     def _make_syndrome_graph(self):
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
@@ -288,11 +293,12 @@ class DecodingGraph:
             edge_data.weight = w
             self.graph.update_edge(edge[0], edge[1], edge_data)
 
-    def make_error_graph(self, string: str):
+    def make_error_graph(self, input, all_logicals=True):
         """Returns error graph.
 
         Args:
-            string (str): A string describing the output from the code.
+            input: Either an ouput string of the code, or a list of
+            nodes for the code.
 
         Returns:
             The subgraph of graph which corresponds to the non-trivial
@@ -300,7 +306,13 @@ class DecodingGraph:
         """
 
         E = rx.PyGraph(multigraph=False)
-        nodes = self.code.string2nodes(string, all_logicals=True)
+        if type(input) is str:
+            nodes = self.code.string2nodes(input, all_logicals=all_logicals)
+        else:
+            if all_logicals:
+                nodes = list(set(input).union(set(self._logical_nodes)))
+            else:
+                nodes = input
         for node in nodes:
             if node not in E.nodes():
                 E.add_node(node)
@@ -317,11 +329,11 @@ class DecodingGraph:
                 source = E[source_index]
                 target = E[target_index]
                 if target != source:
-                    distance = distance_matrix[self.graph.nodes().index(source)][
-                        self.graph.nodes().index(target)
-                    ]
-                    qubits = list(set(source.qubits).intersection(target.qubits))
+                    ns = self.graph.nodes().index(source)
+                    nt = self.graph.nodes().index(target)
+                    distance =  distance_matrix[ns][nt]
                     if np.isfinite(distance):
+                        qubits = list(set(source.qubits).intersection(target.qubits))
                         distance = int(distance)
                         E.add_edge(source_index, target_index, DecodingGraphEdge(qubits, distance))
         return E
