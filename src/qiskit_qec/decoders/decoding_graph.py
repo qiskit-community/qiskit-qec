@@ -331,7 +331,7 @@ class DecodingGraph:
                 if target != source:
                     ns = self.graph.nodes().index(source)
                     nt = self.graph.nodes().index(target)
-                    distance =  distance_matrix[ns][nt]
+                    distance = distance_matrix[ns][nt]
                     if np.isfinite(distance):
                         qubits = list(set(source.qubits).intersection(target.qubits))
                         distance = int(distance)
