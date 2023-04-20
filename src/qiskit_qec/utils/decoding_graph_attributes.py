@@ -56,9 +56,12 @@ class DecodingGraphNode:
         elif key in self.properties:
             return self.properties[key]
         else:
-            raise QiskitQECError("'" + str(key) + "'" + " is not an an attribute or property of the node.")
+            raise QiskitQECError(
+                "'" + str(key) + "'" + " is not an an attribute or property of the node."
+            )
 
-    def get(self, key, default):
+    def get(self, key, _):
+        """A dummy docstring."""
         return self.__getitem__(key)
 
     def __setitem__(self, key, value):
@@ -66,6 +69,7 @@ class DecodingGraphNode:
             self.__dict__[key] = value
         else:
             self.properties[key] = value
+
     def __eq__(self, rhs):
         if not isinstance(rhs, DecodingGraphNode):
             return NotImplemented
@@ -86,8 +90,9 @@ class DecodingGraphNode:
         for attr, value in self.__dict__.items():
             yield attr, value
 
-    def __str__ (self):
+    def __str__(self):
         return str(dict(self))
+
 
 @dataclass
 class DecodingGraphEdge:
@@ -112,9 +117,12 @@ class DecodingGraphEdge:
         elif key in self.properties:
             return self.properties[key]
         else:
-            raise QiskitQECError("'" + str(key) + "'" + " is not an an attribute or property of the edge.")
+            raise QiskitQECError(
+                "'" + str(key) + "'" + " is not an an attribute or property of the edge."
+            )
 
-    def get(self, key, default):
+    def get(self, key, _):
+        """A dummy docstring."""
         return self.__getitem__(key)
 
     def __setitem__(self, key, value):
@@ -122,7 +130,7 @@ class DecodingGraphEdge:
             self.__dict__[key] = value
         else:
             self.properties[key] = value
-            
+
     def __eq__(self, rhs) -> bool:
         if not isinstance(rhs, DecodingGraphNode):
             return NotImplemented
@@ -136,5 +144,5 @@ class DecodingGraphEdge:
         for attr, value in self.__dict__.items():
             yield attr, value
 
-    def __str__ (self):
+    def __str__(self):
         return str(dict(self))
