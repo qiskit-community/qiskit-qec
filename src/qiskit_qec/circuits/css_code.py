@@ -12,21 +12,27 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, disable=no-name-in-module
 
 """Generates circuits for CSS codes."""
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
+from stim import Circuit as StimCircuit
+from stim import target_rec as StimTarget_rec
+
 from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-from qiskit_qec.utils.stim_tools import noisify_circuit, get_stim_circuits, detector_error_model_to_rx_graph
+from qiskit_qec.utils.stim_tools import (
+    noisify_circuit,
+    get_stim_circuits,
+    detector_error_model_to_rx_graph,
+)
 from qiskit_qec.codes import StabSubSystemCode
 from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.linear.symplectic import normalizer
 from qiskit_qec.exceptions import QiskitQECError
 
-import stim
 
 class CssCodeCircuit(CodeCircuit):
     """
@@ -130,9 +136,7 @@ class CssCodeCircuit(CodeCircuit):
                 self._gauges4stabilizers[j].append(gauges)
 
     def _get_code_properties(self):
-
         if isinstance(self.code, StabSubSystemCode):
-
             is_css = True
 
             raw_gauges = self.code.gauge_group.generators
@@ -148,7 +152,6 @@ class CssCodeCircuit(CodeCircuit):
                 raw_ops,
                 ops,
             ) in zip([raw_gauges, raw_stabilizers, raw_logicals], [gauges, stabilizers, logicals]):
-
                 for op in raw_ops:
                     op = str(op)
                     for j, pauli in enumerate(["X", "Z"]):
@@ -317,84 +320,146 @@ class CssCodeCircuit(CodeCircuit):
 
     def is_cluster_neutral(self, atypical_nodes):
         pass
-    
+
     def stim_circuit_with_detectors(self):
+        """Converts the qiskit circuits into stim ciruits and add detectors.
+        This is required for the stim-based construction of the DecodingGraph.
+        """
         stim_circuits, _ = get_stim_circuits(self.noisy_circuit)
-        measurements_per_cycle = len(self.x_gauges)+len(self.z_gauges)
-        
-        if self.round_schedule[0] == 'x':
-            measurement_round_offset = [0,len(self.x_gauges)]
+        measurements_per_cycle = len(self.x_gauges) + len(self.z_gauges)
+
+        if self.round_schedule[0] == "x":
+            measurement_round_offset = [0, len(self.x_gauges)]
         else:
-            measurement_round_offset = [len(self.z_gauges),0]
+            measurement_round_offset = [len(self.z_gauges), 0]
 
         ## 0th round of measurements
-        if self.basis == 'x':
-            for stabind,stabilizer in enumerate(self.x_stabilizers):
+        if self.basis == "x":
+            for stabind, stabilizer in enumerate(self.x_stabilizers):
                 record_targets = []
                 for gauge_ind in self._gauges4stabilizers[0][stabind]:
-                    record_targets.append(stim.target_rec(measurement_round_offset[0]+gauge_ind-(self.T*measurements_per_cycle + self.code.n)))
+                    record_targets.append(
+                        StimTarget_rec(
+                            measurement_round_offset[0]
+                            + gauge_ind
+                            - (self.T * measurements_per_cycle + self.code.n)
+                        )
+                    )
                 qubits_and_time = stabilizer.copy()
                 qubits_and_time.extend([0])
-                stim_circuits['0'].append("DETECTOR", record_targets, qubits_and_time)
-                stim_circuits['1'].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["0"].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["1"].append("DETECTOR", record_targets, qubits_and_time)
         else:
-            for stabind,stabilizer in enumerate(self.z_stabilizers):
+            for stabind, stabilizer in enumerate(self.z_stabilizers):
                 record_targets = []
                 for gauge_ind in self._gauges4stabilizers[1][stabind]:
-                    record_targets.append(stim.target_rec(measurement_round_offset[1]+gauge_ind-(self.T*measurements_per_cycle + self.code.n)))
+                    record_targets.append(
+                        StimTarget_rec(
+                            measurement_round_offset[1]
+                            + gauge_ind
+                            - (self.T * measurements_per_cycle + self.code.n)
+                        )
+                    )
                 qubits_and_time = stabilizer.copy()
                 qubits_and_time.extend([0])
-                stim_circuits['0'].append("DETECTOR", record_targets, qubits_and_time)
-                stim_circuits['1'].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["0"].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["1"].append("DETECTOR", record_targets, qubits_and_time)
 
-        #adding first x and then z stabilizer comparisons
+        # adding first x and then z stabilizer comparisons
         for j in range(2):
-            circuit = stim.Circuit()
-            for t in range(1,self.T): #compare stabilizer measurements with previous in each round
-                for gind,gs in enumerate(self._gauges4stabilizers[j]):
+            circuit = StimCircuit()
+            for t in range(
+                1, self.T
+            ):  # compare stabilizer measurements with previous in each round
+                for gind, gs in enumerate(self._gauges4stabilizers[j]):
                     record_targets = []
                     for gauge_ind in gs:
-                        record_targets.append(stim.target_rec(t*measurements_per_cycle+measurement_round_offset[j]+gauge_ind-(self.T*measurements_per_cycle + self.code.n)))
-                        record_targets.append(stim.target_rec((t-1)*measurements_per_cycle+measurement_round_offset[j]+gauge_ind-(self.T*measurements_per_cycle + self.code.n)))
+                        record_targets.append(
+                            StimTarget_rec(
+                                t * measurements_per_cycle
+                                + measurement_round_offset[j]
+                                + gauge_ind
+                                - (self.T * measurements_per_cycle + self.code.n)
+                            )
+                        )
+                        record_targets.append(
+                            StimTarget_rec(
+                                (t - 1) * measurements_per_cycle
+                                + measurement_round_offset[j]
+                                + gauge_ind
+                                - (self.T * measurements_per_cycle + self.code.n)
+                            )
+                        )
                     qubits_and_time = self._stabilizers[j][gind].copy()
                     qubits_and_time.extend([t])
                     circuit.append("DETECTOR", record_targets, qubits_and_time)
-            stim_circuits['0'] += circuit
-            stim_circuits['1'] += circuit
-        
-        ## final measurements        
-        if self.basis == 'x':
-            for stabind,stabilizer in enumerate(self.x_stabilizers):
+            stim_circuits["0"] += circuit
+            stim_circuits["1"] += circuit
+
+        ## final measurements
+        if self.basis == "x":
+            for stabind, stabilizer in enumerate(self.x_stabilizers):
                 record_targets = []
                 for q in stabilizer:
-                    record_targets.append(stim.target_rec(q - self.code.n))
+                    record_targets.append(StimTarget_rec(q - self.code.n))
                 for gauge_ind in self._gauges4stabilizers[0][stabind]:
-                    record_targets.append(stim.target_rec(measurement_round_offset[0]+gauge_ind-self.code.n-measurements_per_cycle))
+                    record_targets.append(
+                        StimTarget_rec(
+                            measurement_round_offset[0]
+                            + gauge_ind
+                            - self.code.n
+                            - measurements_per_cycle
+                        )
+                    )
                 qubits_and_time = stabilizer.copy()
                 qubits_and_time.extend([self.T])
-                stim_circuits['0'].append("DETECTOR", record_targets, qubits_and_time)
-                stim_circuits['1'].append("DETECTOR", record_targets, qubits_and_time)
-            stim_circuits['0'].append("OBSERVABLE_INCLUDE",[stim.target_rec(q - self.code.n) for q in sorted(self.logical_x[0])],0)
-            stim_circuits['1'].append("OBSERVABLE_INCLUDE",[stim.target_rec(q - self.code.n) for q in sorted(self.logical_x[0])],0) 
+                stim_circuits["0"].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["1"].append("DETECTOR", record_targets, qubits_and_time)
+            stim_circuits["0"].append(
+                "OBSERVABLE_INCLUDE",
+                [StimTarget_rec(q - self.code.n) for q in sorted(self.logical_x[0])],
+                0,
+            )
+            stim_circuits["1"].append(
+                "OBSERVABLE_INCLUDE",
+                [StimTarget_rec(q - self.code.n) for q in sorted(self.logical_x[0])],
+                0,
+            )
         else:
-            for stabind,stabilizer in enumerate(self.z_stabilizers):
+            for stabind, stabilizer in enumerate(self.z_stabilizers):
                 record_targets = []
                 for q in stabilizer:
-                    record_targets.append(stim.target_rec(q - self.code.n))
+                    record_targets.append(StimTarget_rec(q - self.code.n))
                 for gauge_ind in self._gauges4stabilizers[1][stabind]:
-                    record_targets.append(stim.target_rec(measurement_round_offset[1]+gauge_ind-self.code.n-measurements_per_cycle))
+                    record_targets.append(
+                        StimTarget_rec(
+                            measurement_round_offset[1]
+                            + gauge_ind
+                            - self.code.n
+                            - measurements_per_cycle
+                        )
+                    )
                 qubits_and_time = stabilizer.copy()
                 qubits_and_time.extend([self.T])
-                stim_circuits['0'].append("DETECTOR", record_targets, qubits_and_time)
-                stim_circuits['1'].append("DETECTOR", record_targets, qubits_and_time)
-            stim_circuits['0'].append("OBSERVABLE_INCLUDE",[stim.target_rec(q - self.code.n) for q in sorted(self.logical_z[0])],0)
-            stim_circuits['1'].append("OBSERVABLE_INCLUDE",[stim.target_rec(q - self.code.n) for q in sorted(self.logical_z[0])],0)
+                stim_circuits["0"].append("DETECTOR", record_targets, qubits_and_time)
+                stim_circuits["1"].append("DETECTOR", record_targets, qubits_and_time)
+            stim_circuits["0"].append(
+                "OBSERVABLE_INCLUDE",
+                [StimTarget_rec(q - self.code.n) for q in sorted(self.logical_z[0])],
+                0,
+            )
+            stim_circuits["1"].append(
+                "OBSERVABLE_INCLUDE",
+                [StimTarget_rec(q - self.code.n) for q in sorted(self.logical_z[0])],
+                0,
+            )
 
         return stim_circuits
-    
+
     def _make_syndrome_graph(self):
-        stim_circuit = self.stim_circuit_with_detectors()['0']
-        e = stim_circuit.detector_error_model(decompose_errors=True, approximate_disjoint_errors=True)
+        stim_circuit = self.stim_circuit_with_detectors()["0"]
+        e = stim_circuit.detector_error_model(
+            decompose_errors=True, approximate_disjoint_errors=True
+        )
         graph, hyperedges = detector_error_model_to_rx_graph(e)
         return graph, hyperedges
-    
