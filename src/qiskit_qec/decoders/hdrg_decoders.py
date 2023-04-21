@@ -398,11 +398,14 @@ class UnionFindDecoder(ClusteringDecoder):
 
         old_roots = copy(self.odd_cluster_roots)
         unchanged_roots = False
-        while self.odd_cluster_roots and not unchanged_roots:
+        k = 0
+        while self.odd_cluster_roots and k<100:
             self._grow_and_merge_clusters()
             unchanged_roots = self.odd_cluster_roots == old_roots
-            if self.odd_cluster_roots == old_roots:
-                print("\nNote: The following odd roots could not be removed")
+            if unchanged_roots:
+                k += 1
+            if k == 100:
+                print('Note: The following odd roots could not be removed')
                 print(self.odd_cluster_roots)
             old_roots = copy(self.odd_cluster_roots)
 
