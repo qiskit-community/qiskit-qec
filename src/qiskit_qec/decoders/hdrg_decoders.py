@@ -281,6 +281,31 @@ class FusionEntry:
     connecting_edge: BoundaryEdge
 
 
+@dataclass
+class UnionFindDecoderCluster:
+    """
+    Cluster for the UnionFindDecoder
+    """
+
+    boundary: List[BoundaryEdge]
+    atypical_nodes: Set[int]
+    boundary_nodes: Set[int]
+    nodes: Set[int]
+    fully_grown_edges: Set[int]
+    size: int
+
+
+@dataclass
+class FusionEntry:
+    """
+    Entry for the fusion list between the growing and merging of the union find decoder.
+    """
+
+    u: int
+    v: int
+    connecting_edge: BoundaryEdge
+
+
 class UnionFindDecoder(ClusteringDecoder):
     """
     Decoder based on growing clusters around syndrome errors to
@@ -371,8 +396,15 @@ class UnionFindDecoder(ClusteringDecoder):
         for node_index in node_indices:
             self._create_new_cluster(node_index)
 
-        while self.odd_cluster_roots:
+        old_roots = copy(self.odd_cluster_roots)
+        unchanged_roots = False
+        while self.odd_cluster_roots and not unchanged_roots:
             self._grow_and_merge_clusters()
+            unchanged_roots = self.odd_cluster_roots == old_roots
+            if self.odd_cluster_roots == old_roots:
+                print("\nNote: The following odd roots could not be removed")
+                print(self.odd_cluster_roots)
+            old_roots = copy(self.odd_cluster_roots)
 
         clusters = []
         for _, cluster in self.clusters.items():
