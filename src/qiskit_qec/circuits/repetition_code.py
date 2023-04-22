@@ -370,9 +370,9 @@ class RepetitionCodeCircuit(CodeCircuit):
         for node in nodes:
             if nodes_per_link[node.properties["link qubit"]] % 2:
                 flat_node = copy(node)
-                # FIXME: Seems unsafe.
                 flat_node.time = None
-                flat_nodes.append(flat_node)
+                if flat_node not in flat_nodes:
+                    flat_nodes.append(flat_node)
         return flat_nodes
 
     def check_nodes(self, nodes, ignore_extra_boundary=False):
@@ -1114,7 +1114,8 @@ class ArcCircuit(CodeCircuit):
             if nodes_per_link[node.properties["link qubit"]] % 2:
                 flat_node = deepcopy(node)
                 flat_node.time = None
-                flat_nodes.append(flat_node)
+                if flat_node not in flat_nodes:
+                    flat_nodes.append(flat_node)
         return flat_nodes
 
     def check_nodes(self, nodes, ignore_extra_boundary=False):
