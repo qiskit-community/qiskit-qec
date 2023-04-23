@@ -1198,16 +1198,11 @@ class ArcCircuit(CodeCircuit):
             for n, c in node_color.items():
                 num_nodes[c] += 1
 
-            if num_nodes[0] == num_nodes[1]:
-                min_cs = [0, 1]
-            else:
-                min_cs = [int(sum(node_color.values()) < len(node_color) / 2)]
-
             # see what happens for both colours
             # once full neutrality us found, go for it!
             neutrals = []
             flipped_logical_nodes_all = []
-            for c in min_cs:
+            for c in [0, 1]:
 
                 neutrals.append([])
                 neutrals[-1] = neutral
