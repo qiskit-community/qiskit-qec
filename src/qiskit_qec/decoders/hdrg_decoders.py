@@ -396,18 +396,8 @@ class UnionFindDecoder(ClusteringDecoder):
         for node_index in node_indices:
             self._create_new_cluster(node_index)
 
-        old_roots = copy(self.odd_cluster_roots)
-        unchanged_roots = False
-        k = 0
-        while self.odd_cluster_roots and k<100:
+        while self.odd_cluster_roots:
             self._grow_and_merge_clusters()
-            unchanged_roots = self.odd_cluster_roots == old_roots
-            if unchanged_roots:
-                k += 1
-            if k == 100:
-                print('Note: The following odd roots could not be removed')
-                print(self.odd_cluster_roots)
-            old_roots = copy(self.odd_cluster_roots)
 
         clusters = []
         for _, cluster in self.clusters.items():
