@@ -454,6 +454,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                 flipped_logical_nodes.append(node)
 
             if neutral and flipped_logical_nodes == []:
+                print(neutral, flipped_logicals)
                 break
 
         return neutral, flipped_logical_nodes, num_errors
@@ -1204,15 +1205,20 @@ class ArcCircuit(CodeCircuit):
 
             # see what happens for both colours
             # once full neutrality us found, go for it!
+            neutrals = []
+            flipped_logical_nodes_all = []
             for c in min_cs:
-                this_neutral = neutral
+
+                neutrals.append([])
+                neutrals[-1] = neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
 
                 # if unneeded logical zs are given, cluster is not neutral
                 # (unless this is ignored)
                 if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-                    this_neutral = False
+                    neutrals[-1] = False
+                    flipped_logicals = []
                 # otherwise, report only needed logicals that aren't given
                 else:
                     flipped_logicals = flipped_logicals.difference(given_logicals)
@@ -1225,9 +1231,14 @@ class ArcCircuit(CodeCircuit):
                         index=self.z_logicals.index(flipped_logical),
                     )
                     flipped_logical_nodes.append(node)
+                flipped_logical_nodes_all.append(flipped_logical_nodes)
 
+            neutral = neutrals[0]
+            flipped_logical_nodes = flipped_logical_nodes_all[0]
+            for this_neutral, these_flipped_logical_nodes in zip(neutrals, flipped_logical_nodes_all):
                 if this_neutral and flipped_logical_nodes == []:
                     neutral = this_neutral
+                    flipped_logical_nodes = these_flipped_logical_nodes
                     break
 
         else:
@@ -1244,15 +1255,20 @@ class ArcCircuit(CodeCircuit):
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, atypical_nodes, ignore_extra_boundary=True):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
         Args:
             atypical_nodes (dictionary in the form of the return value of string2nodes)
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
         """
-        neutral, logicals, _ = self.check_nodes(atypical_nodes)
+        neutral, logicals, _ = self.check_nodes(
+            atypical_nodes,
+            ignore_extra_boundary = ignore_extra_boundary
+            )
         return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
