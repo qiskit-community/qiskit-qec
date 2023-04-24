@@ -281,31 +281,6 @@ class FusionEntry:
     connecting_edge: BoundaryEdge
 
 
-@dataclass
-class UnionFindDecoderCluster:
-    """
-    Cluster for the UnionFindDecoder
-    """
-
-    boundary: List[BoundaryEdge]
-    atypical_nodes: Set[int]
-    boundary_nodes: Set[int]
-    nodes: Set[int]
-    fully_grown_edges: Set[int]
-    size: int
-
-
-@dataclass
-class FusionEntry:
-    """
-    Entry for the fusion list between the growing and merging of the union find decoder.
-    """
-
-    u: int
-    v: int
-    connecting_edge: BoundaryEdge
-
-
 class UnionFindDecoder(ClusteringDecoder):
     """
     Decoder based on growing clusters around syndrome errors to
@@ -344,7 +319,6 @@ class UnionFindDecoder(ClusteringDecoder):
         self.z_logicals.
         """
         self.graph = deepcopy(self.decoding_graph.graph)
-        # string = "".join([str(c) for c in string[::-1]]) # we dont need to reverse it. Real data comes in the correct order.
         output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
         highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
         if not highlighted_nodes:

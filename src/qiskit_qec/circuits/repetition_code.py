@@ -1198,11 +1198,15 @@ class ArcCircuit(CodeCircuit):
             for n, c in node_color.items():
                 num_nodes[c] += 1
 
+            if num_nodes[0] == num_nodes[1]:
+                min_cs = [0, 1]
+            else:
+                min_cs = [int(sum(node_color.values()) < len(node_color) / 2)]
+
             # see what happens for both colours
-            # once full neutrality us found, go for it!
             neutrals = []
             flipped_logical_nodes_all = []
-            for c in [0, 1]:
+            for c in min_cs:
 
                 neutrals.append([])
                 neutrals[-1] = neutral
@@ -1213,7 +1217,7 @@ class ArcCircuit(CodeCircuit):
                 # (unless this is ignored)
                 if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
                     neutrals[-1] = False
-                    flipped_logicals = []
+                    flipped_logicals = set()
                 # otherwise, report only needed logicals that aren't given
                 else:
                     flipped_logicals = flipped_logicals.difference(given_logicals)
@@ -1228,12 +1232,8 @@ class ArcCircuit(CodeCircuit):
                     flipped_logical_nodes.append(node)
                 flipped_logical_nodes_all.append(flipped_logical_nodes)
 
-            neutral = neutrals[0]
-            flipped_logical_nodes = flipped_logical_nodes_all[0]
-            for this_neutral, these_flipped_logical_nodes in zip(neutrals, flipped_logical_nodes_all):
-                if this_neutral and flipped_logical_nodes == []:
-                    neutral = this_neutral
-                    flipped_logical_nodes = these_flipped_logical_nodes
+            for neutral, flipped_logical_nodes in zip(neutrals, flipped_logical_nodes_all):
+                if neutral and flipped_logical_nodes == []:
                     break
 
         else:
@@ -1261,9 +1261,8 @@ class ArcCircuit(CodeCircuit):
             ignored.
         """
         neutral, logicals, _ = self.check_nodes(
-            atypical_nodes,
-            ignore_extra_boundary = ignore_extra_boundary
-            )
+            atypical_nodes, ignore_extra_boundary=ignore_extra_boundary
+        )
         return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):

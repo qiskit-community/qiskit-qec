@@ -255,7 +255,8 @@ class TestARCCodes(unittest.TestCase):
                 # check that the nodes are neutral
                 neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
-                    neutral and flipped_logicals == [], "Error: Single error nodes are not neutral"
+                    neutral and flipped_logicals == [],
+                    "Error: Single error nodes are not neutral: " + string,
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
@@ -500,7 +501,7 @@ class TestDecoding(unittest.TestCase):
         DecodingGraph(None)
 
     def test_clustering_decoder(self):
-        """Test decoding of ARCs and RCCs with ClusteringDecoder"""
+        """Test decoding of ARCs and RCCs with BravyiHaahDecoder"""
 
         # parameters for test
         d = 8
@@ -554,9 +555,14 @@ class TestDecoding(unittest.TestCase):
             # check that error rates are at least <p^/2
             # and that min num errors to cause logical errors >d/3
             for z_logical in decoder.measured_logicals:
+                log_p = errors[z_logical[0]] / (sample + 1)
                 self.assertTrue(
                     errors[z_logical[0]] / (sample + 1) < p**2,
-                    "Logical error rate greater than p^2.",
+                    "Logical error rate for p = "
+                    + str(p)
+                    + " is "
+                    + str(log_p)
+                    + ", which is greater than p^2.",
                 )
             self.assertTrue(
                 min_error_num > d / 3,
