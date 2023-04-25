@@ -29,7 +29,7 @@ from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
+from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -500,8 +500,10 @@ class TestDecoding(unittest.TestCase):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
 
-    def test_clustering_decoder(self):
-        """Test decoding of ARCs and RCCs with BravyiHaahDecoder"""
+    def clustering_decoder_test(
+        self, Decoder
+        ): # NOT run directly by unittest; called by test_graph_constructions
+        """Test decoding of ARCs and RCCs with clustering decoders"""
 
         # parameters for test
         d = 8
@@ -561,6 +563,13 @@ class TestDecoding(unittest.TestCase):
                 " for code "+str(c)+" with " + min_error_string+"."
             )
 
+    def test_bravyi_haah(self):
+        """Test decoding of ARCs and RCCs with Bravyi Haah"""
+        self.clustering_decoder_test(BravyiHaahDecoder)
+
+    def test_union_find(self):
+        """Test decoding of ARCs and RCCs with Union Find"""
+        self.clustering_decoder_test(UnionFindDecoder)
 
 if __name__ == "__main__":
     unittest.main()
