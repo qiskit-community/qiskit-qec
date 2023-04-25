@@ -42,17 +42,6 @@ class ClusteringDecoder:
         else:
             self.decoding_graph = DecodingGraph(self.code)
 
-
-class BravyiHaahDecoder(ClusteringDecoder):
-    """Decoder based on finding connected components within the decoding graph."""
-
-    def __init__(
-        self,
-        code_circuit,
-        decoding_graph: DecodingGraph = None,
-    ):
-        super().__init__(code_circuit, decoding_graph)
-
         if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
                 self.measured_logicals = self.code.css_x_logical
@@ -64,6 +53,17 @@ class BravyiHaahDecoder(ClusteringDecoder):
             self.code_index = self.code.code_index
         else:
             self.code_index = {j: j for j in range(self.code.n)}
+
+
+class BravyiHaahDecoder(ClusteringDecoder):
+    """Decoder based on finding connected components within the decoding graph."""
+
+    def __init__(
+        self,
+        code_circuit,
+        decoding_graph: DecodingGraph = None,
+    ):
+        super().__init__(code_circuit, decoding_graph)
 
     def _cluster(self, ns, dist_max):
         """
@@ -212,7 +212,6 @@ class BravyiHaahDecoder(ClusteringDecoder):
                     net_z_logicals[z_logical[0]] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
-        
 
         corrected_z_logicals = []
         string = string.split(" ")[0]
@@ -324,38 +323,43 @@ class UnionFindDecoder(ClusteringDecoder):
         highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
         if not highlighted_nodes:
             return output  # There's nothing for us to do here
-        clusters = self.cluster(highlighted_nodes)
+        clusters = self.cluster(highlighted_nodes, standard_form=False)
 
+        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
         for cluster_nodes, _ in clusters:
             erasure = self.graph.subgraph(cluster_nodes)
-            if isinstance(self.code, ArcCircuit):
-                # NOTE: it just corrects for final logical readout
-                for node in erasure.nodes():
-                    if node.is_boundary:
-                        # FIXME: Find a general way to go from physical qubit
-                        # index to code qubit index
-                        # qubit_to_be_corrected = int(node.qubits[0] / 2)
-                        qubit_to_be_corrected = self.code.code_index[node.qubits[0]]
-                        output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
-                continue
-
             flipped_qubits = self.peeling(erasure)
             for qubit_to_be_corrected in flipped_qubits:
-                output[qubit_to_be_corrected] = (output[qubit_to_be_corrected] + 1) % 2
+                if qubit_to_be_corrected in net_z_logicals:
+                    net_z_logicals[qubit_to_be_corrected] += 1
+        for z_logical, num in net_z_logicals.items():
+            net_z_logicals[z_logical] = num % 2
 
-        return output
+        corrected_z_logicals = []
+        string = string.split(" ")[0]
+        for z_logical in self.measured_logicals:
+            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
+            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
+            corrected_z_logicals.append(corrected_logical)
 
-    def cluster(self, nodes) -> List[List[int]]:
+        return corrected_z_logicals
+
+
+    def cluster(self, nodes, standard_form = True):
         """
         Create clusters using the union-find algorithm.
 
         Args:
             nodes (List): List of non-typical nodes in the syndrome graph,
             of the type produced by `string2nodes`.
+            standard_form (Bool): Whether to use the standard form of
+            the clusters for clustering decoders, or the form used internally
+            by the class.
 
         Returns:
-            FIXME: Make this more expressive.
-            clusters (List[List[int]]): List of Lists of indices of nodes in clusters
+            clusters (dict): If standard form, this is a dictionary with the indices of
+            the given node as keys and an integer specifying their cluster as the corresponding
+            value. Otherwise, a list of lists of indices of nodes in clusters
         """
         node_indices = [self.graph.nodes().index(node) for node in nodes]
         for node_index, _ in enumerate(self.graph.nodes()):
@@ -374,13 +378,20 @@ class UnionFindDecoder(ClusteringDecoder):
         while self.odd_cluster_roots:
             self._grow_and_merge_clusters()
 
-        clusters = []
-        for _, cluster in self.clusters.items():
-            if not cluster.atypical_nodes:
-                continue
-            clusters.append(
-                (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
-            )
+        if standard_form:
+            clusters = {}
+            for c, cluster in self.clusters.items():
+                for n in cluster.nodes:
+                    clusters[n] = c
+        else:
+            clusters = []
+            for _, cluster in self.clusters.items():
+                if not cluster.atypical_nodes:
+                    continue
+                clusters.append(
+                    (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
+                )
+
         return clusters
 
     def find(self, u: int) -> int:
