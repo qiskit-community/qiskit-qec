@@ -375,7 +375,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -385,6 +385,8 @@ class RepetitionCodeCircuit(CodeCircuit):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -421,10 +423,18 @@ class RepetitionCodeCircuit(CodeCircuit):
         error_c_min = str(int(colors.count("1") < self.d / 2))
         # and majority
         error_c_max = str((int(error_c_min) + 1) % 2)
+        
+        # list the colours with the max error one first
+        # (unless we do min only)
+        error_cs = []
+        if minimal:
+            error_cs.append(error_c_max)
+        error_cs.append(error_c_min)
 
-        # calculate all required info for the max to see if that is fully neutral
-        # if not, calculate and output for the min case
-        for error_c in [error_c_max, error_c_min]:
+        # see what happens for both colours
+        # if neutral for maximal, it's neutral
+        # otherwise, it is whatever it is for the minimal
+        for error_c in error_cs:
             num_errors = colors.count(error_c)
 
             # determine the corresponding flipped logicals
@@ -454,7 +464,6 @@ class RepetitionCodeCircuit(CodeCircuit):
                 flipped_logical_nodes.append(node)
 
             if neutral and flipped_logical_nodes == []:
-                print(neutral, flipped_logicals)
                 break
 
         return neutral, flipped_logical_nodes, num_errors
@@ -1119,7 +1128,7 @@ class ArcCircuit(CodeCircuit):
                     flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1129,6 +1138,8 @@ class ArcCircuit(CodeCircuit):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -1153,10 +1164,10 @@ class ArcCircuit(CodeCircuit):
             nodes = self.flatten_nodes(nodes)
             link_qubits = set(node.properties["link qubit"] for node in nodes)
             node_color = {0: 0}
-            neutral = True
+            base_neutral = True
             link_graph = self._get_link_graph()
             ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
-            while ns_to_do and neutral:
+            while ns_to_do and base_neutral:
                 # go through all coloured nodes
                 newly_colored = {}
                 for n, c in node_color.items():
@@ -1177,14 +1188,14 @@ class ArcCircuit(CodeCircuit):
                             newly_colored[nn] = (c + dc) % 2
                         # if it is coloured, check the colour is correct
                         else:
-                            neutral = neutral and (node_color[nn] == (c + dc) % 2)
+                            base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
                 for nn, c in newly_colored.items():
                     node_color[nn] = c
                     ns_to_do.remove(nn)
 
             # see which qubits for logical zs are needed
             flipped_logicals_all = [[], []]
-            if neutral:
+            if base_neutral:
                 for inside_c in range(2):
                     for n, c in node_color.items():
                         qubit = link_graph.nodes()[n]
@@ -1198,25 +1209,27 @@ class ArcCircuit(CodeCircuit):
             for n, c in node_color.items():
                 num_nodes[c] += 1
 
-            if num_nodes[0] == num_nodes[1]:
-                min_cs = [0, 1]
-            else:
-                min_cs = [int(sum(node_color.values()) < len(node_color) / 2)]
+            # list the colours with the max error one first
+            # (unless we do min only)
+            min_color = int(sum(node_color.values()) < len(node_color) / 2)
+            cs = []
+            if not minimal:
+                cs.append((min_color + 1)%2)
+            cs.append(min_color)
 
             # see what happens for both colours
-            neutrals = []
-            flipped_logical_nodes_all = []
-            for c in min_cs:
+            # if neutral for maximal, it's neutral
+            # otherwise, it is whatever it is for the minimal
+            for c in cs:
 
-                neutrals.append([])
-                neutrals[-1] = neutral
+                neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
 
                 # if unneeded logical zs are given, cluster is not neutral
                 # (unless this is ignored)
                 if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-                    neutrals[-1] = False
+                    neutral = False
                     flipped_logicals = set()
                 # otherwise, report only needed logicals that aren't given
                 else:
@@ -1230,9 +1243,7 @@ class ArcCircuit(CodeCircuit):
                         index=self.z_logicals.index(flipped_logical),
                     )
                     flipped_logical_nodes.append(node)
-                flipped_logical_nodes_all.append(flipped_logical_nodes)
 
-            for neutral, flipped_logical_nodes in zip(neutrals, flipped_logical_nodes_all):
                 if neutral and flipped_logical_nodes == []:
                     break
 

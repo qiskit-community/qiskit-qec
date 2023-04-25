@@ -200,7 +200,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
         # get the list of required logicals for each cluster
         cluster_logicals = {}
         for c, nodes in cluster_nodes.items():
-            _, logical_nodes, _ = code.check_nodes(nodes)
+            _, logical_nodes, _ = code.check_nodes(nodes, minimal=True)
             z_logicals = [node.qubits[0] for node in logical_nodes]
             cluster_logicals[c] = z_logicals
 
@@ -212,6 +212,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
                     net_z_logicals[z_logical[0]] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
+        
 
         corrected_z_logicals = []
         string = string.split(" ")[0]

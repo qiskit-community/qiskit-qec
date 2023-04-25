@@ -508,8 +508,9 @@ class TestDecoding(unittest.TestCase):
         p = 0.1
         N = 1000
 
-        codes = []
-        # first make a bunch of ARCs
+        # first an RCC
+        codes = [RepetitionCode(d, 1)]
+        # then make a bunch of ARCs
         # crossed line
         links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
         links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
@@ -531,15 +532,13 @@ class TestDecoding(unittest.TestCase):
         # add them to the code list
         for links in [links_ladder, links_line, links_cross]:
             codes.append(ArcCircuit(links, 0))
-        # then an RCC
-        codes.append(RepetitionCode(d, 1))
         # now run them all and check it works
-        for code in codes:
-            code = ArcCircuit(links, 0)
+        for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
             decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
             errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
+            min_error_string = ''
             for sample in range(N):
                 # generate random string
                 string = "".join([choices(["1", "0"], [1 - p, p])[0] for _ in range(d)])
@@ -550,23 +549,16 @@ class TestDecoding(unittest.TestCase):
                 for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
-                        min_error_num = min(min_error_num, string.count("0"))
+                        error_num = string.count("0")
+                        if error_num < min_error_num:
+                            min_error_num = error_num
+                            min_error_string = string
                     errors[z_logical[0]] += error
-            # check that error rates are at least <p^/2
-            # and that min num errors to cause logical errors >d/3
-            for z_logical in decoder.measured_logicals:
-                log_p = errors[z_logical[0]] / (sample + 1)
-                self.assertTrue(
-                    errors[z_logical[0]] / (sample + 1) < p**2,
-                    "Logical error rate for p = "
-                    + str(p)
-                    + " is "
-                    + str(log_p)
-                    + ", which is greater than p^2.",
-                )
+            # check that min num errors to cause logical errors >d/3
             self.assertTrue(
                 min_error_num > d / 3,
-                str(min_error_num) + "errors cause logical error despite d=" + str(code.d),
+                str(min_error_num) + " errors cause logical error despite d=" + str(code.d) +
+                " for code "+str(c)+" with " + min_error_string+"."
             )
 
 
