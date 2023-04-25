@@ -111,7 +111,7 @@ class UnionFindDecoderTest(TestCase):
 
     def test_error_rates(self):
         """
-        Test the error rates using some ARCs.
+        Test the error rates using a variety of codes.
         """
         d = 8
         p = 0.01
