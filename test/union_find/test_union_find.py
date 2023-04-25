@@ -90,15 +90,12 @@ class UnionFindDecoderTest(TestCase):
                 logical_measurement = temp_syndrome(corrected_outcome, code.css_z_logical)[0]
                 self.assertEqual(str(logical_measurement), logical)
 
-    def test_circular_arc_code(self):
+    def test_arc_code(self):
         """
-        Test the union find decoder on a circular ARC code with faults inserted
-        by FaultEnumerator by checking if the syndromes have even parity
-        (if it's a valid code state) and if the logical value measured
-        is the one encoded by the circuit (only logical 0 for the ARC circuit,
-        see issue #309).
+        Test the union find decoder on an ARC code with faults inserted
+        by FaultEnumerator by checking if the syndromes have even parity.
         """
-        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
+        links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 8)]
         code = ArcCircuit(links=links, T=len(links), resets=False)
         decoder = UnionFindDecoder(code)
         fault_enumerator = FaultEnumerator(
