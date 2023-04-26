@@ -54,6 +54,54 @@ class ClusteringDecoder:
         else:
             self.code_index = {j: j for j in range(self.code.n)}
 
+    def get_corrections(self, string, clusters):
+        """
+        Turn a set of neutral clusters into corrections.
+
+        Args:
+            string (str): Output string of the code
+            clusters (dict): Dictionary with the indices of the given node
+            as keys and an integer specifying their cluster as the corresponding
+            value.
+        Returns:
+            corrected_logicals (list): A list of integers that are 0 or 1.
+        These are the corrected values of the final transversal
+        measurement, corresponding to the logical operators of
+        self.measured_logicals.
+        """
+
+        # get the list of bulk nodes for each cluster
+        cluster_nodes = {c: [] for c in clusters.values()}
+        for n, c in clusters.items():
+            node = self.decoding_graph.graph[n]
+            if not node.is_boundary:
+                cluster_nodes[c].append(node)
+
+        # get the list of required logicals for each cluster
+        cluster_logicals = {}
+        for c, nodes in cluster_nodes.items():
+            _, logical_nodes, _ = self.code.check_nodes(nodes, minimal=True)
+            z_logicals = [node.qubits[0] for node in logical_nodes]
+            cluster_logicals[c] = z_logicals
+
+        # get the net effect on each logical
+        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
+        for c, z_logicals in cluster_logicals.items():
+            for z_logical in self.measured_logicals:
+                if z_logical[0] in z_logicals:
+                    net_z_logicals[z_logical[0]] += 1
+        for z_logical, num in net_z_logicals.items():
+            net_z_logicals[z_logical] = num % 2
+
+        corrected_z_logicals = []
+        string = string.split(" ")[0]
+        for z_logical in self.measured_logicals:
+            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
+            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
+            corrected_z_logicals.append(corrected_logical)
+
+        return corrected_z_logicals
+
 
 class BravyiHaahDecoder(ClusteringDecoder):
     """Decoder based on finding connected components within the decoding graph."""
@@ -176,44 +224,12 @@ class BravyiHaahDecoder(ClusteringDecoder):
         measurement, corresponding to the logical operators of
         self.measured_logicals.
         """
-        code = self.code
-        decoding_graph = self.decoding_graph
 
         # turn string into nodes and cluster
-        nodes = code.string2nodes(string, all_logicals=True)
+        nodes = self.code.string2nodes(string, all_logicals=True)
         clusters = self.cluster(nodes)
 
-        # get the list of bulk nodes for each cluster
-        cluster_nodes = {c: [] for c in clusters.values()}
-        for n, c in clusters.items():
-            node = decoding_graph.graph[n]
-            if not node.is_boundary:
-                cluster_nodes[c].append(node)
-
-        # get the list of required logicals for each cluster
-        cluster_logicals = {}
-        for c, nodes in cluster_nodes.items():
-            _, logical_nodes, _ = code.check_nodes(nodes, minimal=True)
-            z_logicals = [node.qubits[0] for node in logical_nodes]
-            cluster_logicals[c] = z_logicals
-
-        # get the net effect on each logical
-        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
-        for c, z_logicals in cluster_logicals.items():
-            for z_logical in self.measured_logicals:
-                if z_logical[0] in z_logicals:
-                    net_z_logicals[z_logical[0]] += 1
-        for z_logical, num in net_z_logicals.items():
-            net_z_logicals[z_logical] = num % 2
-
-        corrected_z_logicals = []
-        string = string.split(" ")[0]
-        for z_logical in self.measured_logicals:
-            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
-            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
-            corrected_z_logicals.append(corrected_logical)
-
-        return corrected_z_logicals
+        return self.get_corrections(string, clusters)
 
 
 @dataclass
