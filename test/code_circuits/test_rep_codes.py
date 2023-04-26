@@ -502,7 +502,7 @@ class TestDecoding(unittest.TestCase):
 
     def clustering_decoder_test(
         self, Decoder
-        ): # NOT run directly by unittest; called by test_graph_constructions
+    ):  # NOT run directly by unittest; called by test_graph_constructions
         """Test decoding of ARCs and RCCs with clustering decoders"""
 
         # parameters for test
@@ -512,36 +512,39 @@ class TestDecoding(unittest.TestCase):
 
         # first an RCC
         codes = [RepetitionCode(d, 1)]
-        # then make a bunch of ARCs
-        # crossed line
-        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
-        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
-        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
-        # ladder (works for even d)
-        half_d = int(d / 2)
-        links_ladder = []
-        for row in [0, 1]:
-            for j in range(half_d - 1):
-                delta = row * (2 * half_d - 1)
-                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
-        q = links_ladder[-1][2] + 1
-        for j in range(half_d):
-            delta = 2 * half_d - 1
-            links_ladder.append((2 * j, q, delta + 2 * j))
-            q += 1
-        # line
-        links_line = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
-        # add them to the code list
-        for links in [links_ladder, links_line, links_cross]:
-            codes.append(ArcCircuit(links, 0))
+        # then a linear ARC
+        links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
+        codes.append(ArcCircuit(links, 0))
+        # then make a bunch of non-linear ARCs
+        # TODO: make these work for union find too
+        if Decoder is not UnionFindDecoder:
+            # crossed line
+            links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
+            links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
+            links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+            # ladder (works for even d)
+            half_d = int(d / 2)
+            links_ladder = []
+            for row in [0, 1]:
+                for j in range(half_d - 1):
+                    delta = row * (2 * half_d - 1)
+                    links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
+            q = links_ladder[-1][2] + 1
+            for j in range(half_d):
+                delta = 2 * half_d - 1
+                links_ladder.append((2 * j, q, delta + 2 * j))
+                q += 1
+            # add them to the code list
+            for links in [links_ladder, links_cross]:
+                codes.append(ArcCircuit(links, 0))
         # now run them all and check it works
         for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
-            decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
+            decoder = Decoder(code, decoding_graph=decoding_graph)
             errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
-            min_error_string = ''
-            for sample in range(N):
+            min_error_string = ""
+            for _ in range(N):
                 # generate random string
                 string = "".join([choices(["1", "0"], [1 - p, p])[0] for _ in range(d)])
                 for _ in range(code.T):
@@ -559,8 +562,14 @@ class TestDecoding(unittest.TestCase):
             # check that min num errors to cause logical errors >d/3
             self.assertTrue(
                 min_error_num > d / 3,
-                str(min_error_num) + " errors cause logical error despite d=" + str(code.d) +
-                " for code "+str(c)+" with " + min_error_string+"."
+                str(min_error_num)
+                + " errors cause logical error despite d="
+                + str(code.d)
+                + " for code "
+                + str(c)
+                + " with "
+                + min_error_string
+                + ".",
             )
 
     def test_bravyi_haah(self):
@@ -570,6 +579,7 @@ class TestDecoding(unittest.TestCase):
     def test_union_find(self):
         """Test decoding of ARCs and RCCs with Union Find"""
         self.clustering_decoder_test(UnionFindDecoder)
+
 
 if __name__ == "__main__":
     unittest.main()
