@@ -58,13 +58,6 @@ class ClusteringDecoder:
 class BravyiHaahDecoder(ClusteringDecoder):
     """Decoder based on finding connected components within the decoding graph."""
 
-    def __init__(
-        self,
-        code_circuit,
-        decoding_graph: DecodingGraph = None,
-    ):
-        super().__init__(code_circuit, decoding_graph)
-
     def _cluster(self, ns, dist_max):
         """
         Finds connected components in the given nodes, for nodes connected by at most the given distance
@@ -319,10 +312,8 @@ class UnionFindDecoder(ClusteringDecoder):
         self.z_logicals.
         """
         self.graph = deepcopy(self.decoding_graph.graph)
-        output = [int(bit) for bit in list(string.split(" ", maxsplit=self.code.d)[0])][::-1]
         highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
-        if not highlighted_nodes:
-            return output  # There's nothing for us to do here
+
         clusters = self.cluster(highlighted_nodes, standard_form=False)
 
         net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
@@ -344,8 +335,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
         return corrected_z_logicals
 
-
-    def cluster(self, nodes, standard_form = True):
+    def cluster(self, nodes, standard_form=True):
         """
         Create clusters using the union-find algorithm.
 
@@ -381,7 +371,11 @@ class UnionFindDecoder(ClusteringDecoder):
         if standard_form:
             clusters = {}
             for c, cluster in self.clusters.items():
-                for n in cluster.nodes:
+                # determine which nodes exactly are in the neutral cluster
+                # TODO: Replace the following line with something correct
+                neutral_nodes = cluster.atypical_nodes
+                # put them in the required dict
+                for n in neutral_nodes:
                     clusters[n] = c
         else:
             clusters = []
@@ -671,7 +665,7 @@ class ClAYGDecoder(UnionFindDecoder):
         if not highlighted_nodes:
             return output  # There's nothing for us to do here
 
-        clusters = self.cluster(highlighted_nodes)
+        clusters = self.cluster(highlighted_nodes, standard_form=False)
 
         flattened_highlighted_nodes: List[DecodingGraphNode] = []
         for highlighted_node in highlighted_nodes:
@@ -691,7 +685,20 @@ class ClAYGDecoder(UnionFindDecoder):
 
         return output
 
-    def cluster(self, nodes: List[DecodingGraphNode]):
+    def cluster(self, nodes, standard_form=True):
+        """
+        Args:
+            nodes (List): List of non-typical nodes in the syndrome graph,
+            of the type produced by `string2nodes`.
+            standard_form (Bool): Whether to use the standard form of
+            the clusters for clustering decoders, or the form used internally
+            by the class.
+
+        Returns:
+            clusters (dict): If standard form, this is a dictionary with the indices of
+            the given node as keys and an integer specifying their cluster as the corresponding
+            value. Otherwise, a list of lists of indices of nodes in clusters
+        """
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots = []
 

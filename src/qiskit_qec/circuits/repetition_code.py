@@ -423,7 +423,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         error_c_min = str(int(colors.count("1") < self.d / 2))
         # and majority
         error_c_max = str((int(error_c_min) + 1) % 2)
-        
+
         # list the colours with the max error one first
         # (unless we do min only)
         error_cs = []
@@ -1214,7 +1214,7 @@ class ArcCircuit(CodeCircuit):
             min_color = int(sum(node_color.values()) < len(node_color) / 2)
             cs = []
             if not minimal:
-                cs.append((min_color + 1)%2)
+                cs.append((min_color + 1) % 2)
             cs.append(min_color)
 
             # see what happens for both colours
@@ -1261,7 +1261,7 @@ class ArcCircuit(CodeCircuit):
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes, ignore_extra_boundary=True):
+    def is_cluster_neutral(self, atypical_nodes):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
@@ -1271,9 +1271,7 @@ class ArcCircuit(CodeCircuit):
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
         """
-        neutral, logicals, _ = self.check_nodes(
-            atypical_nodes, ignore_extra_boundary=ignore_extra_boundary
-        )
+        neutral, logicals, _ = self.check_nodes(atypical_nodes)
         return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
