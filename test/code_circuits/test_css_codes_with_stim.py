@@ -12,21 +12,19 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name
-
 """Test for the CSSCodeCircuit class for Heavy-HEX code with pymatching"""
 import unittest
 import pymatching
 
 from qiskit_qec.codes.hhc import HHC
-from qiskit_qec.circuits.css_code import CssCodeCircuit
+from qiskit_qec.circuits.css_code import CSSCodeCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 
 
 class TestCircuitMatcher(unittest.TestCase):
     """Test for the CSSCodeCircuit class for Heavy-HEX code with pymatching"""
 
-    def LogFailureDists(self, error_rate: float):
+    def log_failure_dists(self, error_rate: float):
         """Constructs the stim circuit and the decoding graph (via a stim DetectorErrorModel)
         for the heavy-hex code and tests it on 10_000 samples for distance 3 and 5.
         Returns the logical failure for distance 3 and 5 at the specified error rate.
@@ -34,10 +32,10 @@ class TestCircuitMatcher(unittest.TestCase):
         not the sampling."""
         dist_list = [3, 5]
         num_shots = 10_000
-        Log_fail_d = []
+        log_fail_d = []
         for d in dist_list:
             code = HHC(d)
-            css_code = CssCodeCircuit(code, T=d, basis="x", noise_model=(error_rate, error_rate))
+            css_code = CSSCodeCircuit(code, T=d, basis="x", noise_model=(error_rate, error_rate))
             graph = DecodingGraph(css_code).graph
             m = pymatching.Matching(graph)
             stim_circuit = css_code.stim_circuit_with_detectors()["0"]
@@ -50,20 +48,20 @@ class TestCircuitMatcher(unittest.TestCase):
                 detectors_only[-1] = 0
                 predicted_observable = m.decode(detectors_only)[0]
                 num_correct += actual_observable == predicted_observable
-            Log_fail_d.append((num_shots - num_correct) / num_shots)
-        return Log_fail_d
+            log_fail_d.append((num_shots - num_correct) / num_shots)
+        return log_fail_d
 
     def test_HHC(self):
         """Tests the order of logical failure rates for two distances.
         One test is below threshold, one is above. (Threshold ~3.5% for the test code)
         Runtime is approx 5 seconds."""
         error_rate = 0.01  # this should be below threshold
-        LogFailDist = self.LogFailureDists(error_rate)
-        self.assertTrue(LogFailDist[0] > 2 * LogFailDist[1])
+        log_fail_dist = self.log_failure_dists(error_rate)
+        self.assertTrue(log_fail_dist[0] > 2 * log_fail_dist[1])
 
         error_rate = 0.1  # this should be above threshold
-        LogFailDist = self.LogFailureDists(error_rate)
-        self.assertTrue(LogFailDist[0] < LogFailDist[1])
+        log_fail_dist = self.log_failure_dists(error_rate)
+        self.assertTrue(log_fail_dist[0] < log_fail_dist[1])
 
 
 if __name__ == "__main__":

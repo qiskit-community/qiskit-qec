@@ -15,7 +15,7 @@
 # pylint: disable=invalid-name, disable=no-name-in-module
 
 """Tools to use functionality from Stim."""
-from typing import List, Dict
+from typing import Union, List, Dict
 from math import log
 from stim import Circuit as StimCircuit
 from stim import DetectorErrorModel as StimDetectorErrorModel
@@ -25,11 +25,11 @@ from stim import DemTarget as StimDemTarget
 import numpy as np
 import rustworkx as rx
 
-
 from qiskit import QuantumCircuit
 from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 from qiskit_aer.noise import pauli_error
 from qiskit_qec.utils.decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
 def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
@@ -37,8 +37,8 @@ def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
        Dictionaries are not complete. For the stim definitions see:
        https://github.com/quantumlib/Stim/blob/main/doc/gates.md
     Args:
-        circuit_dict: Compatible gates are paulis, controlled paulis, h, s, 
-        and sdg, swap, reset, measure and barrier. Compatible noise operators 
+        circuit_dict: Compatible gates are paulis, controlled paulis, h, s,
+        and sdg, swap, reset, measure and barrier. Compatible noise operators
         correspond to a single or two qubit pauli channel.
 
     Returns:
@@ -138,7 +138,9 @@ def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
     return stim_circuits, stim_measurement_data
 
 
-def get_counts_via_stim(circuits: Dict[int, QuantumCircuit], shots: int = 4000, noise_model=None):
+def get_counts_via_stim(
+    circuits: Union[List, QuantumCircuit], shots: int = 4000, noise_model: PauliNoiseModel = None
+):
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
@@ -283,13 +285,13 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
     return g, hyperedges
 
 
-def noisify_circuit(circuits, noise_model):
+def noisify_circuit(circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel):
     """
     Inserts error operations into a circuit according to a pauli noise model.
 
     Args:
-        circuits: Circuit or list thereof.
-        noise_model: Pauli noise model.
+        circuits: Circuit or list thereof to which noise is added.
+        noise_model: Pauli noise model used to define types of errors to add to circuit.
 
     Returns:
         noisy_circuits: Corresponding circuit or list thereof.

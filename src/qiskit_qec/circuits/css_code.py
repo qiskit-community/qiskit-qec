@@ -34,7 +34,7 @@ from qiskit_qec.linear.symplectic import normalizer
 from qiskit_qec.exceptions import QiskitQECError
 
 
-class CssCodeCircuit(CodeCircuit):
+class CSSCodeCircuit(CodeCircuit):
     """
     CodeCircuit class for generic CSS codes.
     """
@@ -316,10 +316,10 @@ class CssCodeCircuit(CodeCircuit):
         return nodes
 
     def check_nodes(self, nodes, ignore_extra_boundary=False):
-        pass
+        raise NotImplementedError
 
     def is_cluster_neutral(self, atypical_nodes):
-        pass
+        raise NotImplementedError
 
     def stim_circuit_with_detectors(self):
         """Converts the qiskit circuits into stim ciruits and add detectors.

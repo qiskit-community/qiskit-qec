@@ -108,7 +108,6 @@ class DecodingGraphEdge:
 
     qubits: List[int]
     weight: float
-    # TODO: Should code/decoder specific properties be accounted for when comparing edges
     properties: Dict[str, Any] = field(default_factory=dict)
 
     def __getitem__(self, key):
