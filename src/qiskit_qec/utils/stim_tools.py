@@ -32,25 +32,23 @@ from qiskit_aer.noise import pauli_error
 from qiskit_qec.utils.decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge
 
 
-def get_stim_circuits(circuit_dict):
+def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
     """Converts compatible qiskit circuits to stim circuits.
-
+       Dictionaries are not complete. For the stim definitions see:
+       https://github.com/quantumlib/Stim/blob/main/doc/gates.md
     Args:
-        circuit_dict: Dictionary with Qiskit circuits as values. Compatible gates are paulis,
-        controlled paulis, h, s, and sdg, swap, reset, measure and barrier. Compatible noise
-        operators correspond to a single or two qubit pauli channel.
+        circuit_dict: Compatible gates are paulis, controlled paulis, h, s, 
+        and sdg, swap, reset, measure and barrier. Compatible noise operators 
+        correspond to a single or two qubit pauli channel.
 
     Returns:
-        stim_circuits: TODO
-        stim_measurement_data: TODO
+        stim_circuits, stim_measurement_data
     """
     stim_circuits = {}
     stim_measurement_data = {}
     for circ_label, circuit in circuit_dict.items():
         stim_circuit = StimCircuit()
 
-        # Dictionaries are not complete. For the stim definitions see:
-        #   https://github.com/quantumlib/Stim/blob/main/doc/gates.md
         qiskit_to_stim_dict = {
             "id": "I",
             "x": "X",
@@ -102,9 +100,6 @@ def get_stim_circuits(circuit_dict):
             ]
 
             if isinstance(inst, QuantumChannelInstruction):
-                # Errors: it would be good to add exeptions for delpoarizinng noise, Z error etc,
-                # because the stim detctor error model relies on the disjoint error assumption
-                # for general Pauli channel
                 qerror = inst._quantum_error
                 pauli_errors_types = qerror.to_dict()["instructions"]
                 pauli_probs = qerror.to_dict()["probabilities"]
@@ -143,7 +138,7 @@ def get_stim_circuits(circuit_dict):
     return stim_circuits, stim_measurement_data
 
 
-def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
+def get_counts_via_stim(circuits: Dict[int, QuantumCircuit], shots: int = 4000, noise_model=None):
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
@@ -223,10 +218,6 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
             return
         if len(dets) == 1:
             dets = [dets[0], model.num_detectors]
-            # if frame_changes == []:
-            #     dets = [dets[0], model.num_detectors]
-            # else:
-            #     dets = [dets[0], model.num_detectors+1]
         if len(dets) > 2:
             raise NotImplementedError(
                 f"Error with more than 2 symptoms can't become an edge or boundary edge: {dets!r}."
