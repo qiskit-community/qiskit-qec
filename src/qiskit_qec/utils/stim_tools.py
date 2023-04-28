@@ -15,41 +15,40 @@
 # pylint: disable=invalid-name, disable=no-name-in-module
 
 """Tools to use functionality from Stim."""
-
+from typing import List, Dict
+from math import log
 from stim import Circuit as StimCircuit
 from stim import DetectorErrorModel as StimDetectorErrorModel
 from stim import DemInstruction as StimDemInstruction
 from stim import DemTarget as StimDemTarget
+
+import numpy as np
+import rustworkx as rx
+
 
 from qiskit import QuantumCircuit
 from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
 from qiskit_aer.noise import pauli_error
 from qiskit_qec.utils.decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge
 
-import rustworkx as rx
-from typing import List, Dict
-import numpy as np
-from math import log
 
-def get_stim_circuits(circuit_dict):
+def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
     """Converts compatible qiskit circuits to stim circuits.
-
+       Dictionaries are not complete. For the stim definitions see:
+       https://github.com/quantumlib/Stim/blob/main/doc/gates.md
     Args:
-        circuit_dict: Dictionary with Qiskit circuits as values. Compatible gates are paulis,
-        controlled paulis, h, s, and sdg, swap, reset, measure and barrier. Compatible noise
-        operators correspond to a single or two qubit pauli channel.
+        circuit_dict: Compatible gates are paulis, controlled paulis, h, s, 
+        and sdg, swap, reset, measure and barrier. Compatible noise operators 
+        correspond to a single or two qubit pauli channel.
 
     Returns:
-        stim_circuits: TODO
-        stim_measurement_data: TODO
+        stim_circuits, stim_measurement_data
     """
     stim_circuits = {}
     stim_measurement_data = {}
     for circ_label, circuit in circuit_dict.items():
         stim_circuit = StimCircuit()
 
-        # Dictionaries are not complete. For the stim definitions see:
-        #   https://github.com/quantumlib/Stim/blob/main/doc/gates.md
         qiskit_to_stim_dict = {
             "id": "I",
             "x": "X",
@@ -101,9 +100,6 @@ def get_stim_circuits(circuit_dict):
             ]
 
             if isinstance(inst, QuantumChannelInstruction):
-                # Errors: it would be good to add exeptions for delpoarizinng noise, Z error etc,
-                # because the stim detctor error model relies on the disjoint error assumption
-                # for general Pauli channel
                 qerror = inst._quantum_error
                 pauli_errors_types = qerror.to_dict()["instructions"]
                 pauli_probs = qerror.to_dict()["probabilities"]
@@ -142,7 +138,7 @@ def get_stim_circuits(circuit_dict):
     return stim_circuits, stim_measurement_data
 
 
-def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
+def get_counts_via_stim(circuits: Dict[int, QuantumCircuit], shots: int = 4000, noise_model=None):
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
@@ -163,7 +159,6 @@ def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
 
     counts = []
     for circuit in circuits:
-
         stim_circuits, stim_measurement_data = get_stim_circuits({"": circuit})
         stim_circuit = stim_circuits[""]
         measurement_data = stim_measurement_data[""]
@@ -190,11 +185,12 @@ def get_counts_via_stim(circuits, shots: int = 4000, noise_model=None):
 
     return counts
 
+
 def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGraph:
     """Convert a stim error model into a RustworkX graph.
-       It assumes that the stim circuit does not contain repeat blocks.
-       Later on repeat blocks should be handled to make this function compatible with
-       user-defined stim circuits.
+    It assumes that the stim circuit does not contain repeat blocks.
+    Later on repeat blocks should be handled to make this function compatible with
+    user-defined stim circuits.
     """
 
     g = rx.PyGraph(multigraph=False)
@@ -208,12 +204,12 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
             qubits = [int(qubit_ind) for qubit_ind in a[:-1]]
             for t in instruction.targets_copy():
                 node = DecodingGraphNode(index=t.val, time=time, qubits=qubits)
-                index_to_DecodingGraphNode[t.val]=node
+                index_to_DecodingGraphNode[t.val] = node
                 g.add_node(node)
-    
+
     trivial_boundary_node = DecodingGraphNode(index=model.num_detectors, time=0, is_boundary=True)
     g.add_node(trivial_boundary_node)
-    index_to_DecodingGraphNode[model.num_detectors]=trivial_boundary_node
+    index_to_DecodingGraphNode[model.num_detectors] = trivial_boundary_node
 
     def handle_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
         if p == 0:
@@ -222,29 +218,34 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
             return
         if len(dets) == 1:
             dets = [dets[0], model.num_detectors]
-            # if frame_changes == []:
-            #     dets = [dets[0], model.num_detectors]
-            # else:
-            #     dets = [dets[0], model.num_detectors+1]
         if len(dets) > 2:
             raise NotImplementedError(
-                f"Error with more than 2 symptoms can't become an edge or boundary edge: {dets!r}.")
-        if g.has_edge(dets[0],dets[1]):
-            edge_ind = [dets for dets in g.edge_list()].index((dets[0],dets[1]))
+                f"Error with more than 2 symptoms can't become an edge or boundary edge: {dets!r}."
+            )
+        if g.has_edge(dets[0], dets[1]):
+            edge_ind = list(g.edge_list()).index((dets[0], dets[1]))
             edge_data = g.edges()[edge_ind].properties
             old_p = edge_data["error_probability"]
             old_frame_changes = edge_data["fault_ids"]
             # If frame changes differ, the code has distance 2; just keep whichever was first.
             if set(old_frame_changes) == set(frame_changes):
                 p = p * (1 - old_p) + old_p * (1 - p)
-                g.remove_edge(dets[0],dets[1])
+                g.remove_edge(dets[0], dets[1])
         if p > 0.5:
             p = 1 - p
         if p > 0:
-            qubits = list(set(index_to_DecodingGraphNode[dets[0]].qubits).intersection(index_to_DecodingGraphNode[dets[1]].qubits))
-            edge = DecodingGraphEdge(qubits=qubits,weight=log((1 - p) / p), properties={'fault_ids': set(frame_changes), 'error_probability': p})
-            g.add_edge(dets[0],dets[1], edge)
-            hyperedge[dets[0],dets[1]] = edge
+            qubits = list(
+                set(index_to_DecodingGraphNode[dets[0]].qubits).intersection(
+                    index_to_DecodingGraphNode[dets[1]].qubits
+                )
+            )
+            edge = DecodingGraphEdge(
+                qubits=qubits,
+                weight=log((1 - p) / p),
+                properties={"fault_ids": set(frame_changes), "error_probability": p},
+            )
+            g.add_edge(dets[0], dets[1], edge)
+            hyperedge[dets[0], dets[1]] = edge
 
     hyperedges = []
 
@@ -268,7 +269,7 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
                         dets = []
                 # Handle last component.
                 handle_error(p, dets, frames, hyperedge)
-                if len(hyperedge)>1:
+                if len(hyperedge) > 1:
                     hyperedges.append(hyperedge)
             elif instruction.type == "detector":
                 pass
@@ -280,6 +281,7 @@ def detector_error_model_to_rx_graph(model: StimDetectorErrorModel) -> rx.PyGrap
             raise NotImplementedError()
 
     return g, hyperedges
+
 
 def noisify_circuit(circuits, noise_model):
     """
@@ -307,7 +309,6 @@ def noisify_circuit(circuits, noise_model):
 
     noisy_circuits = []
     for qc in circuits:
-
         noisy_qc = QuantumCircuit()
         for qreg in qc.qregs:
             noisy_qc.add_register(qreg)

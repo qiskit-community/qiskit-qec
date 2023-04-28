@@ -55,7 +55,7 @@ class UnionFindDecoderTest(TestCase):
         """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=3)
-            decoder = UnionFindDecoder(code, logical)
+            decoder = UnionFindDecoder(code)
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
             )
@@ -77,7 +77,7 @@ class UnionFindDecoderTest(TestCase):
         """
         for logical in ["0", "1"]:
             code = RepetitionCodeCircuit(d=5, T=5)
-            decoder = UnionFindDecoder(code, logical)
+            decoder = UnionFindDecoder(code)
             fault_enumerator = FaultEnumerator(
                 code.circuit[logical], method=self.fault_enumeration_method, model=self.noise_model
             )
@@ -100,7 +100,7 @@ class UnionFindDecoderTest(TestCase):
         """
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 6), (6, 7, 0)]
         code = ArcCircuit(links=links, T=len(links), resets=False)
-        decoder = UnionFindDecoder(code, "0")
+        decoder = UnionFindDecoder(code)
         fault_enumerator = FaultEnumerator(
             code.circuit[code.base], method=self.fault_enumeration_method, model=self.noise_model
         )
@@ -128,7 +128,7 @@ class UnionFindDecoderTest(TestCase):
 
         # now run them all and check it works
         for code in codes:
-            decoder = UnionFindDecoder(code, logical="0")
+            decoder = UnionFindDecoder(code)
             if isinstance(code, ArcCircuit):
                 z_logicals = code.z_logicals
             else:
