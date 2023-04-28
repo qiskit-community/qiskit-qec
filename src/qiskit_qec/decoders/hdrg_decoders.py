@@ -19,6 +19,7 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from typing import Dict, List, Set, Tuple
+from abc import ABC
 from rustworkx import connected_components, distance_matrix, PyGraph
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit
@@ -26,7 +27,7 @@ from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
-class ClusteringDecoder:
+class ClusteringDecoder(ABC):
     """
     Generic base class for clustering decoders.
     """
@@ -37,10 +38,6 @@ class ClusteringDecoder:
         decoding_graph: DecodingGraph = None,
     ):
         self.code = code_circuit
-        if decoding_graph:
-            self.decoding_graph = decoding_graph
-        else:
-            self.decoding_graph = DecodingGraph(self.code)
 
         if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
@@ -53,6 +50,11 @@ class ClusteringDecoder:
             self.code_index = self.code.code_index
         else:
             self.code_index = {j: j for j in range(self.code.n)}
+
+        if decoding_graph:
+            self.decoding_graph = decoding_graph
+        else:
+            self.decoding_graph = DecodingGraph(self.code)
 
     def get_corrections(self, string, clusters):
         """
@@ -307,13 +309,11 @@ class UnionFindDecoder(ClusteringDecoder):
         code,
         decoding_graph: DecodingGraph = None,
     ) -> None:
-        super().__init__(code, decoding_graph)
+        super().__init__(code, decoding_graph=decoding_graph)
         self.graph = deepcopy(self.decoding_graph.graph)
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
-        # FIXME: Use a better datastructure
-        # It needs to support inserting at specific index, unique elements and
-        # sorted insert
         self.odd_cluster_roots: List[int] = []
+        self._clusters4peeling = []
 
     def process(self, string: str):
         """
@@ -330,8 +330,11 @@ class UnionFindDecoder(ClusteringDecoder):
         self.graph = deepcopy(self.decoding_graph.graph)
         highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
 
-        clusters = self.cluster(highlighted_nodes, standard_form=False)
+        # call cluster to do the clustering, but actually use the peeling form
+        self.cluster(highlighted_nodes)
+        clusters = self._clusters4peeling
 
+        # determine the net logical z
         net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
         for cluster_nodes, _ in clusters:
             erasure = self.graph.subgraph(cluster_nodes)
@@ -342,6 +345,7 @@ class UnionFindDecoder(ClusteringDecoder):
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
 
+        # apply this to the raw readout
         corrected_z_logicals = []
         string = string.split(" ")[0]
         for z_logical in self.measured_logicals:
@@ -351,7 +355,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
         return corrected_z_logicals
 
-    def cluster(self, nodes, standard_form=True):
+    def cluster(self, nodes):
         """
         Create clusters using the union-find algorithm.
 
@@ -363,9 +367,9 @@ class UnionFindDecoder(ClusteringDecoder):
             by the class.
 
         Returns:
-            clusters (dict): If standard form, this is a dictionary with the indices of
+            clusters (dict): Dictionary with the indices of
             the given node as keys and an integer specifying their cluster as the corresponding
-            value. Otherwise, a list of lists of indices of nodes in clusters
+            value.
         """
         node_indices = [self.graph.nodes().index(node) for node in nodes]
         for node_index, _ in enumerate(self.graph.nodes()):
@@ -384,23 +388,23 @@ class UnionFindDecoder(ClusteringDecoder):
         while self.odd_cluster_roots:
             self._grow_and_merge_clusters()
 
-        if standard_form:
-            clusters = {}
-            for c, cluster in self.clusters.items():
-                # determine which nodes exactly are in the neutral cluster
-                # TODO: Replace the following line with something correct
-                neutral_nodes = cluster.atypical_nodes
-                # put them in the required dict
-                for n in neutral_nodes:
-                    clusters[n] = c
-        else:
-            clusters = []
-            for _, cluster in self.clusters.items():
-                if not cluster.atypical_nodes:
-                    continue
-                clusters.append(
-                    (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
-                )
+        # compile info into standard clusters dict
+        clusters = {}
+        for c, cluster in self.clusters.items():
+            # determine which nodes exactly are in the neutral cluster
+            neutral_nodes = list(cluster.atypical_nodes | cluster.boundary_nodes)
+            # put them in the required dict
+            for n in neutral_nodes:
+                clusters[n] = c
+
+        # also compile into form required for peeling
+        self._clusters4peeling = []
+        for _, cluster in self.clusters.items():
+            if not cluster.atypical_nodes:
+                continue
+            self._clusters4peeling.append(
+                (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
+            )
 
         return clusters
 
@@ -649,6 +653,7 @@ class ClAYGDecoder(UnionFindDecoder):
         super().__init__(code, decoding_graph)
         self.graph = deepcopy(self.decoding_graph.graph)
         self.r = 1
+        self._clusters4peeling = []
 
     def process(self, string: str):
         """
@@ -681,7 +686,8 @@ class ClAYGDecoder(UnionFindDecoder):
         if not highlighted_nodes:
             return output  # There's nothing for us to do here
 
-        clusters = self.cluster(highlighted_nodes, standard_form=False)
+        self.cluster(highlighted_nodes)
+        clusters = self._clusters4peeling
 
         flattened_highlighted_nodes: List[DecodingGraphNode] = []
         for highlighted_node in highlighted_nodes:
@@ -701,19 +707,16 @@ class ClAYGDecoder(UnionFindDecoder):
 
         return output
 
-    def cluster(self, nodes, standard_form=True):
+    def cluster(self, nodes):
         """
         Args:
             nodes (List): List of non-typical nodes in the syndrome graph,
             of the type produced by `string2nodes`.
-            standard_form (Bool): Whether to use the standard form of
-            the clusters for clustering decoders, or the form used internally
-            by the class.
 
         Returns:
-            clusters (dict): If standard form, this is a dictionary with the indices of
+            clusters (dict): Ddictionary with the indices of
             the given node as keys and an integer specifying their cluster as the corresponding
-            value. Otherwise, a list of lists of indices of nodes in clusters
+            value.
         """
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots = []
@@ -746,11 +749,22 @@ class ClAYGDecoder(UnionFindDecoder):
 
         neutral_clusters += self._collect_neutral_clusters()
 
+        # compile info into standard clusters dict
+        clusters = {}
+        for c, cluster in enumerate(neutral_clusters):
+            # determine which nodes exactly are in the neutral cluster
+            neutral_nodes = list(cluster.atypical_nodes | cluster.boundary_nodes)
+            # put them in the required dict
+            for n in neutral_nodes:
+                clusters[n] = c
+
         neutral_cluster_nodes: List[List[int]] = []
         for cluster in neutral_clusters:
             neutral_cluster_nodes.append(
                 (list(cluster.nodes), list(cluster.atypical_nodes | cluster.boundary_nodes))
             )
+
+        self._clusters4peeling = neutral_cluster_nodes
 
         return neutral_cluster_nodes
 
