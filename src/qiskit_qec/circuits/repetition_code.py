@@ -1046,6 +1046,16 @@ class ArcCircuit(CodeCircuit):
 
         return new_string
 
+    def string2raw_logicals(self, string):
+        """
+        Extracts raw logicals from output string.
+        Args:
+            string (string): Results string from which to extract logicals
+        Returns:
+            list: Raw values for logical operators that correspond to nodes.
+        """
+        return _separate_string(self._process_string(string))[0]
+
     def string2nodes(self, string, **kwargs) -> List[DecodingGraphNode]:
         """
         Convert output string from circuits into a set of nodes.

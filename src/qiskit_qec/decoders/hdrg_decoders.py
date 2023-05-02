@@ -335,22 +335,23 @@ class UnionFindDecoder(ClusteringDecoder):
         clusters = self._clusters4peeling
 
         # determine the net logical z
-        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
+        net_z_logicals = {tuple(z_logical): 0 for z_logical in self.measured_logicals}
         for cluster_nodes, _ in clusters:
             erasure = self.graph.subgraph(cluster_nodes)
             flipped_qubits = self.peeling(erasure)
             for qubit_to_be_corrected in flipped_qubits:
-                if qubit_to_be_corrected in net_z_logicals:
-                    net_z_logicals[qubit_to_be_corrected] += 1
+                for z_logical in net_z_logicals:
+                    if qubit_to_be_corrected in z_logical:
+                        net_z_logicals[z_logical] += 1
         for z_logical, num in net_z_logicals.items():
             net_z_logicals[z_logical] = num % 2
 
         # apply this to the raw readout
         corrected_z_logicals = []
-        string = string.split(" ")[0]
-        for z_logical in self.measured_logicals:
-            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
-            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
+        raw_logicals = self.code.string2raw_logicals(string)
+        for j, z_logical in enumerate(self.measured_logicals):
+            raw_logical = int(raw_logicals[j])
+            corrected_logical = (raw_logical + net_z_logicals[tuple(z_logical)]) % 2
             corrected_z_logicals.append(corrected_logical)
 
         return corrected_z_logicals
