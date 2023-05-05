@@ -69,12 +69,12 @@ class SurfaceCodeCircuit(CodeCircuit):
         # set info needed for css codes
         self.css_x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
         self.css_x_stabilizer_ops = self.css_x_gauge_ops
-        self.css_x_logical = self._logicals["x"][0]
-        self.css_x_boundary = self._logicals["x"][0] + self._logicals["x"][1]
+        self.css_x_logical = [self._logicals["x"][0]]
+        self.css_x_boundary = [self._logicals["x"][0] + self._logicals["x"][1]]
         self.css_z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
         self.css_z_stabilizer_ops = self.css_z_gauge_ops
-        self.css_z_logical = self._logicals["z"][0]
-        self.css_z_boundary = self._logicals["z"][0] + self._logicals["z"][1]
+        self.css_z_logical = [self._logicals["z"][0]]
+        self.css_z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
         self.round_schedule = self.basis
         self.blocks = T
 
@@ -342,7 +342,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                 Z[0] = (Z[0] + int(final_readout[j * self.d])) % 2
                 # evaluated using right side
                 Z[1] = (Z[1] + int(final_readout[(j + 1) * self.d - 1])) % 2
-        return str(Z[0]) + " " + str(Z[1])
+        return [str(Z[0]), str(Z[1])]
 
     def _process_string(self, string):
         # get logical readout
@@ -353,7 +353,7 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         # the space separated string of syndrome changes then gets a
         # double space separated logical value on the end
-        new_string = measured_Z + "  " + syndrome_changes
+        new_string = " ".join(measured_Z) + "  " + syndrome_changes
 
         return new_string
 
@@ -416,7 +416,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                         nodes.append(node)
         return nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -426,6 +426,8 @@ class SurfaceCodeCircuit(CodeCircuit):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
