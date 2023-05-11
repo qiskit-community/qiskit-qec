@@ -1174,13 +1174,14 @@ class ArcCircuit(CodeCircuit):
             nodes = self.flatten_nodes(nodes)
             link_qubits = set(node.properties["link qubit"] for node in nodes)
             node_color = {0: 0}
+            recently_colored = node_color.copy()
             base_neutral = True
             link_graph = self._get_link_graph()
             ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
             while ns_to_do and base_neutral:
-                # go through all coloured nodes
+                # go through all nodes coloured in the last pass
                 newly_colored = {}
-                for n, c in node_color.items():
+                for n, c in recently_colored.items():
                     # look at all the code qubits that are neighbours
                     incident_es = link_graph.incident_edges(n)
                     for e in incident_es:
@@ -1202,6 +1203,7 @@ class ArcCircuit(CodeCircuit):
                 for nn, c in newly_colored.items():
                     node_color[nn] = c
                     ns_to_do.remove(nn)
+                recently_colored = newly_colored.copy()
 
             # see which qubits for logical zs are needed
             flipped_logicals_all = [[], []]
