@@ -1157,6 +1157,8 @@ class ArcCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
+        nodes = self.flatten_nodes(nodes)
+
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
         bulk_nodes = []
