@@ -17,7 +17,7 @@
 """Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
-from copy import copy, deepcopy
+from copy import deepcopy
 import numpy as np
 import rustworkx as rx
 
@@ -349,32 +349,6 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         return _separate_string(self._process_string(string))[0]
 
-    @staticmethod
-    def flatten_nodes(nodes: List[DecodingGraphNode]):
-        """
-        Removes time information from a set of nodes, and consolidates those on
-        the same position at different times.
-        Args:
-            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
-        Returns:
-            flat_nodes (list): List of flattened nodes.
-        """
-        nodes_per_link = {}
-        for node in nodes:
-            link_qubit = node.properties["link qubit"]
-            if link_qubit in nodes_per_link:
-                nodes_per_link[link_qubit] += 1
-            else:
-                nodes_per_link[link_qubit] = 1
-        flat_nodes = []
-        for node in nodes:
-            if nodes_per_link[node.properties["link qubit"]] % 2:
-                flat_node = copy(node)
-                flat_node.time = None
-                if flat_node not in flat_nodes:
-                    flat_nodes.append(flat_node)
-        return flat_nodes
-
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
@@ -591,6 +565,7 @@ class ArcCircuit(CodeCircuit):
             self._scheduling()
         else:
             self.schedule = schedule
+        self._get_cycles()
         self._preparation()
 
         # determine the placement of [2,0,2] rounds
@@ -627,7 +602,6 @@ class ArcCircuit(CodeCircuit):
         self._readout()
 
     def _get_link_graph(self, max_dist=1):
-        # FIXME: Migrate link graph to new Edge type
         graph = rx.PyGraph()
         for link in self.links:
             add_edge(graph, (link[0], link[2]), {"distance": 1, "link qubit": link[1]})
@@ -641,6 +615,30 @@ class ArcCircuit(CodeCircuit):
                         if dist < max_dist:
                             add_edge(graph, (node0, node1), {"distance": dist})
         return graph
+
+    def _get_cycles(self):
+        """
+        For each edge in the link graph (expressed in terms of the pair of qubits), the
+        set of qubits around adjacent cycles is found.
+        """
+
+        link_graph = self._get_link_graph()
+        lg_edges = set(link_graph.edge_list())
+        lg_nodes = link_graph.nodes()
+        cycles = rx.cycle_basis(link_graph)
+        cycle_dict = {(lg_nodes[edge[0]], lg_nodes[edge[1]]): list(edge) for edge in lg_edges}
+        for cycle in cycles:
+            edges = []
+            cl = len(cycle)
+            for j in range(cl):
+                for edge in [(cycle[j], cycle[(j + 1) % cl]), (cycle[(j + 1) % cl], cycle[j])]:
+                    if edge in lg_edges:
+                        edges.append((lg_nodes[edge[0]], lg_nodes[edge[1]]))
+            for edge in edges:
+                cycle_dict[edge] += cycle
+        for edge, ns in cycle_dict.items():
+            cycle_dict[edge] = set(ns)
+        self.cycle_dict = cycle_dict
 
     def _coloring(self):
         """
@@ -1159,6 +1157,9 @@ class ArcCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
+        nodes = self.flatten_nodes(nodes)
+        # FIXME: extra errors
+
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
         bulk_nodes = []
@@ -1171,14 +1172,27 @@ class ArcCircuit(CodeCircuit):
 
         # see whether the bulk nodes are neutral
         if bulk_nodes:
-            nodes = self.flatten_nodes(nodes)
+            # bicolor the nodes of the link graph, such that node edges connect unlike edges
             link_qubits = set(node.properties["link qubit"] for node in nodes)
-            node_color = {0: 0}
+            link_graph = self._get_link_graph()
+            # all the qubits around cycles of the node edges have to be covered
+            ns_to_do = set()
+            for edge in [tuple(node.qubits) for node in bulk_nodes]:
+                ns_to_do = ns_to_do.union(self.cycle_dict[edge])
+            # start with one of these
+            if ns_to_do:
+                n = ns_to_do.pop()
+            else:
+                n = 0
+            node_color = {n: 0}
             recently_colored = node_color.copy()
             base_neutral = True
-            link_graph = self._get_link_graph()
-            ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
-            while ns_to_do and base_neutral:
+            # count the number of nodes for each colour throughout
+            num_nodes = [1, 0]
+            last_num = [None, None]
+            fully_converged = False
+            last_converged = False
+            while base_neutral and not fully_converged:
                 # go through all nodes coloured in the last pass
                 newly_colored = {}
                 for n, c in recently_colored.items():
@@ -1196,30 +1210,51 @@ class ArcCircuit(CodeCircuit):
                         # if the neighbour is not yet coloured, colour it
                         # different color if edge is given node, same otherwise
                         if nn not in node_color:
-                            newly_colored[nn] = (c + dc) % 2
+                            new_c = (c + dc) % 2
+                            newly_colored[nn] = new_c
+                            num_nodes[new_c] += 1
                         # if it is coloured, check the colour is correct
                         else:
                             base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
                 for nn, c in newly_colored.items():
                     node_color[nn] = c
-                    ns_to_do.remove(nn)
+                    if nn in ns_to_do:
+                        ns_to_do.remove(nn)
                 recently_colored = newly_colored.copy()
+                # process is converged once one colour has stoppped growing
+                # once ns_to_do is empty
+                converged = (not ns_to_do) and (
+                    (num_nodes[0] == last_num[0] != 0) or (num_nodes[1] == last_num[1] != 0)
+                )
+                fully_converged = converged and last_converged
+                if not fully_converged:
+                    last_num = num_nodes.copy()
+                    last_converged = converged
+            # see how many qubits are in the converged colour, and determine the min colour
+            for c in range(2):
+                if num_nodes[c] == last_num[c]:
+                    conv_color = c
+            if num_nodes[conv_color] <= self.d / 2:
+                min_color = conv_color
+            else:
+                min_color = (conv_color + 1) % 2
+            # calculate the number of nodes for the other
+            num_nodes[(min_color + 1) % 2] = link_graph.num_nodes() - num_nodes[min_color]
+            # get the set of min nodes
+            min_ns = set()
+            for n, c in node_color.items():
+                if c == min_color:
+                    min_ns.add(n)
 
             # see which qubits for logical zs are needed
             flipped_logicals_all = [[], []]
             if base_neutral:
-                for inside_c in range(2):
-                    for n, c in node_color.items():
-                        qubit = link_graph.nodes()[n]
-                        if qubit in self.z_logicals and c == inside_c:
-                            flipped_logicals_all[int(inside_c)].append(qubit)
+                for qubit in self.z_logicals:
+                    n = link_graph.nodes().index(qubit)
+                    dc = not n in min_ns
+                    flipped_logicals_all[(min_color + dc) % 2].append(qubit)
             for j in range(2):
                 flipped_logicals_all[j] = set(flipped_logicals_all[j])
-
-            # count the number of nodes for each colour
-            num_nodes = [0, 0]
-            for n, c in node_color.items():
-                num_nodes[c] += 1
 
             # list the colours with the max error one first
             # (unless we do min only)
