@@ -1157,8 +1157,9 @@ class ArcCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
+        num_nodes = len(nodes)
         nodes = self.flatten_nodes(nodes)
-        # FIXME: extra errors
+        flattened_pairs = int((num_nodes - len(nodes)) / 2)
 
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
@@ -1305,6 +1306,10 @@ class ArcCircuit(CodeCircuit):
             # (unless this is ignored)
             if (not ignore_extra_boundary) and given_logicals:
                 neutral = False
+
+        # add measurement errors (from flattening, lower bound)
+        if num_errors:
+            num_errors += flattened_pairs
 
         return neutral, flipped_logical_nodes, num_errors
 
