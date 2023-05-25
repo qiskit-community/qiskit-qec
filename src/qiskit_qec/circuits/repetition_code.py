@@ -515,7 +515,7 @@ class ArcCircuit(CodeCircuit):
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
-        rounds_per_202: int = 7,
+        rounds_per_202: int = 9,
         conditional_reset: bool = False,
     ):
         """
@@ -541,7 +541,8 @@ class ArcCircuit(CodeCircuit):
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least rounds_per_202xlen(links)).
             rounds_per_202 (int): Number of rounds that are part of the 202, including the typical link
-            measurements at the beginning and edge. At least 5 are required to detect conjugate errors.
+            measurements at the beginning and edge. At least 9 are required to get an event dedicated to
+            conjugate errors.
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
         """
