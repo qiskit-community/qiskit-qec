@@ -306,7 +306,7 @@ class TestARCCodes(unittest.TestCase):
         T = 15
         # first, do they appear when needed
         for run_202 in [True, False]:
-            code = ArcCircuit(links, T=T, run_202=run_202)
+            code = ArcCircuit(links, T=T, run_202=run_202, rounds_per_202=5)
             running_202 = False
             for t in range(T):
                 tau, _, _ = code._get_202(t)
@@ -318,7 +318,7 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        code = ArcCircuit(links, T=T, run_202=True, logical="1")
+        code = ArcCircuit(links, T=T, run_202=True, logical="1", rounds_per_202=5)
         backend = Aer.get_backend("aer_simulator")
         counts = backend.run(code.circuit[code.basis]).result().get_counts()
         self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
@@ -331,7 +331,7 @@ class TestARCCodes(unittest.TestCase):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         for T in [21, 25]:
-            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1")
+            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1", rounds_per_202=5)
             assert code.run_202
             # insert errors on a selection of qubits during a selection of rounds
             qc = code.circuit[code.base]
