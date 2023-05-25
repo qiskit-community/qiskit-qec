@@ -304,15 +304,12 @@ class UnionFindDecoder(ClusteringDecoder):
     See arXiv:1709.06218v3 for more details.
     """
 
-    def __init__(
-        self,
-        code,
-        decoding_graph: DecodingGraph = None,
-    ) -> None:
+    def __init__(self, code, decoding_graph: DecodingGraph = None, use_peeling=True) -> None:
         super().__init__(code, decoding_graph=decoding_graph)
         self.graph = deepcopy(self.decoding_graph.graph)
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots: List[int] = []
+        self.use_peeling = use_peeling
         self._clusters4peeling = []
 
     def process(self, string: str):
@@ -327,34 +324,40 @@ class UnionFindDecoder(ClusteringDecoder):
         measurement, corresponding to the logical operators of
         self.z_logicals.
         """
-        self.graph = deepcopy(self.decoding_graph.graph)
-        highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
 
-        # call cluster to do the clustering, but actually use the peeling form
-        self.cluster(highlighted_nodes)
-        clusters = self._clusters4peeling
+        if self.use_peeling:
+            self.graph = deepcopy(self.decoding_graph.graph)
+            highlighted_nodes = self.code.string2nodes(string, all_logicals=True)
 
-        # determine the net logical z
-        net_z_logicals = {tuple(z_logical): 0 for z_logical in self.measured_logicals}
-        for cluster_nodes, _ in clusters:
-            erasure = self.graph.subgraph(cluster_nodes)
-            flipped_qubits = self.peeling(erasure)
-            for qubit_to_be_corrected in flipped_qubits:
-                for z_logical in net_z_logicals:
-                    if qubit_to_be_corrected in z_logical:
-                        net_z_logicals[z_logical] += 1
-        for z_logical, num in net_z_logicals.items():
-            net_z_logicals[z_logical] = num % 2
+            # call cluster to do the clustering, but actually use the peeling form
+            self.cluster(highlighted_nodes)
+            clusters = self._clusters4peeling
 
-        # apply this to the raw readout
-        corrected_z_logicals = []
-        raw_logicals = self.code.string2raw_logicals(string)
-        for j, z_logical in enumerate(self.measured_logicals):
-            raw_logical = int(raw_logicals[j])
-            corrected_logical = (raw_logical + net_z_logicals[tuple(z_logical)]) % 2
-            corrected_z_logicals.append(corrected_logical)
+            # determine the net logical z
+            net_z_logicals = {tuple(z_logical): 0 for z_logical in self.measured_logicals}
+            for cluster_nodes, _ in clusters:
+                erasure = self.graph.subgraph(cluster_nodes)
+                flipped_qubits = self.peeling(erasure)
+                for qubit_to_be_corrected in flipped_qubits:
+                    for z_logical in net_z_logicals:
+                        if qubit_to_be_corrected in z_logical:
+                            net_z_logicals[z_logical] += 1
+            for z_logical, num in net_z_logicals.items():
+                net_z_logicals[z_logical] = num % 2
 
-        return corrected_z_logicals
+            # apply this to the raw readout
+            corrected_z_logicals = []
+            raw_logicals = self.code.string2raw_logicals(string)
+            for j, z_logical in enumerate(self.measured_logicals):
+                raw_logical = int(raw_logicals[j])
+                corrected_logical = (raw_logical + net_z_logicals[tuple(z_logical)]) % 2
+                corrected_z_logicals.append(corrected_logical)
+            return corrected_z_logicals
+        else:
+            # turn string into nodes and cluster
+            nodes = self.code.string2nodes(string, all_logicals=True)
+            clusters = self.cluster(nodes)
+            return self.get_corrections(string, clusters)
 
     def cluster(self, nodes):
         """

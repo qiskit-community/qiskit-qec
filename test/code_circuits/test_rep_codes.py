@@ -516,31 +516,30 @@ class TestDecoding(unittest.TestCase):
         links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
         codes.append(ArcCircuit(links, 0))
         # then make a bunch of non-linear ARCs
-        # TODO: make these work for union find too
-        if Decoder is not UnionFindDecoder:
-            # crossed line
-            links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
-            links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
-            links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
-            # ladder (works for even d)
-            half_d = int(d / 2)
-            links_ladder = []
-            for row in [0, 1]:
-                for j in range(half_d - 1):
-                    delta = row * (2 * half_d - 1)
-                    links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
-            q = links_ladder[-1][2] + 1
-            for j in range(half_d):
-                delta = 2 * half_d - 1
-                links_ladder.append((2 * j, q, delta + 2 * j))
-                q += 1
-            # add them to the code list
-            for links in [links_ladder, links_cross]:
-                codes.append(ArcCircuit(links, 0))
+        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
+        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
+        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+        codes.append(ArcCircuit(links_cross, 0))
+        # ladder (works for even d)
+        half_d = int(d / 2)
+        links_ladder = []
+        for row in [0, 1]:
+            for j in range(half_d - 1):
+                delta = row * (2 * half_d - 1)
+                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
+        q = links_ladder[-1][2] + 1
+        for j in range(half_d):
+            delta = 2 * half_d - 1
+            links_ladder.append((2 * j, q, delta + 2 * j))
+            q += 1
+        codes.append(ArcCircuit(links_ladder, 0))
         # now run them all and check it works
         for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
-            decoder = Decoder(code, decoding_graph=decoding_graph)
+            if c == 3 and Decoder is UnionFindDecoder:
+                decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
+            else:
+                decoder = Decoder(code, decoding_graph=decoding_graph)
             errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             min_error_string = ""
