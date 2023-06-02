@@ -1346,13 +1346,12 @@ class ArcCircuit(CodeCircuit):
                 self.qubits[qreg_index][q] for q in range(self.num_qubits[qreg_index])
             ]
 
-        # transpile to backend and schedule
-        circuits = transpile(
-            circuits, backend, initial_layout=initial_layout, scheduling_method="alap"
-        )
-
         # then dynamical decoupling if needed
         if any(echo_num):
+            # transpile to backend and schedule
+            circuits = transpile(
+                circuits, backend, initial_layout=initial_layout, scheduling_method="alap"
+            )
             # set up the dd sequences
             dd_sequences = []
             spacings = []
@@ -1405,6 +1404,9 @@ class ArcCircuit(CodeCircuit):
 
             # transpile to backend and schedule again
             circuits = transpile(circuits, backend, scheduling_method="alap")
+        else:
+            # transpile to backend and don't schedule
+            circuits = transpile(circuits, backend, initial_layout=initial_layout)
 
         return {basis: circuits[j] for j, basis in enumerate(bases)}
 
