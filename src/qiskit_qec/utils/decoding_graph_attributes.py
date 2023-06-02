@@ -90,7 +90,7 @@ class DecodingGraphNode:
         for attr, value in self.__dict__.items():
             yield attr, value
 
-    def __str__(self):
+    def __repr__(self):
         return str(dict(self))
 
 
@@ -143,5 +143,5 @@ class DecodingGraphEdge:
         for attr, value in self.__dict__.items():
             yield attr, value
 
-    def __str__(self):
+    def __repr__(self):
         return str(dict(self))

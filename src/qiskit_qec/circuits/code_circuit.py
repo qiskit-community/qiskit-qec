@@ -55,7 +55,7 @@ class CodeCircuit(ABC):
         pass
 
     @abstractmethod
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -65,6 +65,8 @@ class CodeCircuit(ABC):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.

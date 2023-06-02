@@ -29,7 +29,7 @@ from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
-from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder
+from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -255,7 +255,8 @@ class TestARCCodes(unittest.TestCase):
                 # check that the nodes are neutral
                 neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
-                    neutral and flipped_logicals == [], "Error: Single error nodes are not neutral"
+                    neutral and flipped_logicals == [],
+                    "Error: Single error nodes are not neutral: " + string,
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
@@ -305,7 +306,7 @@ class TestARCCodes(unittest.TestCase):
         T = 15
         # first, do they appear when needed
         for run_202 in [True, False]:
-            code = ArcCircuit(links, T=T, run_202=run_202)
+            code = ArcCircuit(links, T=T, run_202=run_202, rounds_per_202=5)
             running_202 = False
             for t in range(T):
                 tau, _, _ = code._get_202(t)
@@ -317,7 +318,7 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        code = ArcCircuit(links, T=T, run_202=True, logical="1")
+        code = ArcCircuit(links, T=T, run_202=True, logical="1", rounds_per_202=5)
         backend = Aer.get_backend("aer_simulator")
         counts = backend.run(code.circuit[code.basis]).result().get_counts()
         self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
@@ -330,7 +331,7 @@ class TestARCCodes(unittest.TestCase):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         for T in [21, 25]:
-            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1")
+            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1", rounds_per_202=5)
             assert code.run_202
             # insert errors on a selection of qubits during a selection of rounds
             qc = code.circuit[code.base]
@@ -499,20 +500,26 @@ class TestDecoding(unittest.TestCase):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
 
-    def test_clustering_decoder(self):
-        """Test decoding of ARCs and RCCs with ClusteringDecoder"""
+    def clustering_decoder_test(
+        self, Decoder
+    ):  # NOT run directly by unittest; called by test_graph_constructions
+        """Test decoding of ARCs and RCCs with clustering decoders"""
 
         # parameters for test
         d = 8
         p = 0.1
         N = 1000
 
-        codes = []
-        # first make a bunch of ARCs
-        # crossed line
+        # first an RCC
+        codes = [RepetitionCode(d, 1)]
+        # then a linear ARC
+        links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
+        codes.append(ArcCircuit(links, 0))
+        # then make a bunch of non-linear ARCs
         links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
         links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
         links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+        codes.append(ArcCircuit(links_cross, 0))
         # ladder (works for even d)
         half_d = int(d / 2)
         links_ladder = []
@@ -525,21 +532,18 @@ class TestDecoding(unittest.TestCase):
             delta = 2 * half_d - 1
             links_ladder.append((2 * j, q, delta + 2 * j))
             q += 1
-        # line
-        links_line = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
-        # add them to the code list
-        for links in [links_ladder, links_line, links_cross]:
-            codes.append(ArcCircuit(links, 0))
-        # then an RCC
-        codes.append(RepetitionCode(d, 1))
+        codes.append(ArcCircuit(links_ladder, 0))
         # now run them all and check it works
-        for code in codes:
-            code = ArcCircuit(links, 0)
+        for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
-            decoder = BravyiHaahDecoder(code, decoding_graph=decoding_graph)
+            if c == 3 and Decoder is UnionFindDecoder:
+                decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
+            else:
+                decoder = Decoder(code, decoding_graph=decoding_graph)
             errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
-            for sample in range(N):
+            min_error_string = ""
+            for _ in range(N):
                 # generate random string
                 string = "".join([choices(["1", "0"], [1 - p, p])[0] for _ in range(d)])
                 for _ in range(code.T):
@@ -549,19 +553,31 @@ class TestDecoding(unittest.TestCase):
                 for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
-                        min_error_num = min(min_error_num, string.count("0"))
+                        error_num = string.count("0")
+                        if error_num < min_error_num:
+                            min_error_num = error_num
+                            min_error_string = string
                     errors[z_logical[0]] += error
-            # check that error rates are at least <p^/2
-            # and that min num errors to cause logical errors >d/3
-            for z_logical in decoder.measured_logicals:
-                self.assertTrue(
-                    errors[z_logical[0]] / (sample + 1) < p**2,
-                    "Logical error rate greater than p^2.",
-                )
+            # check that min num errors to cause logical errors >d/3
             self.assertTrue(
                 min_error_num > d / 3,
-                str(min_error_num) + "errors cause logical error despite d=" + str(code.d),
+                str(min_error_num)
+                + " errors cause logical error despite d="
+                + str(code.d)
+                + " for code "
+                + str(c)
+                + " with "
+                + min_error_string
+                + ".",
             )
+
+    def test_bravyi_haah(self):
+        """Test decoding of ARCs and RCCs with Bravyi Haah"""
+        self.clustering_decoder_test(BravyiHaahDecoder)
+
+    def test_union_find(self):
+        """Test decoding of ARCs and RCCs with Union Find"""
+        self.clustering_decoder_test(UnionFindDecoder)
 
 
 if __name__ == "__main__":

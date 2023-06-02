@@ -17,7 +17,7 @@
 """Generates circuits based on repetition codes."""
 from typing import List, Optional, Tuple
 
-from copy import copy, deepcopy
+from copy import deepcopy
 import numpy as np
 import rustworkx as rx
 
@@ -349,33 +349,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         return _separate_string(self._process_string(string))[0]
 
-    @staticmethod
-    def flatten_nodes(nodes: List[DecodingGraphNode]):
-        """
-        Removes time information from a set of nodes, and consolidates those on
-        the same position at different times.
-        Args:
-            nodes (list): List of nodes, of the type produced by `string2nodes`, to be flattened.
-        Returns:
-            flat_nodes (list): List of flattened nodes.
-        """
-        nodes_per_link = {}
-        for node in nodes:
-            link_qubit = node.properties["link qubit"]
-            if link_qubit in nodes_per_link:
-                nodes_per_link[link_qubit] += 1
-            else:
-                nodes_per_link[link_qubit] = 1
-        flat_nodes = []
-        for node in nodes:
-            if nodes_per_link[node.properties["link qubit"]] % 2:
-                flat_node = copy(node)
-                # FIXME: Seems unsafe.
-                flat_node.time = None
-                flat_nodes.append(flat_node)
-        return flat_nodes
-
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -385,6 +359,8 @@ class RepetitionCodeCircuit(CodeCircuit):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -422,9 +398,17 @@ class RepetitionCodeCircuit(CodeCircuit):
         # and majority
         error_c_max = str((int(error_c_min) + 1) % 2)
 
-        # calculate all required info for the max to see if that is fully neutral
-        # if not, calculate and output for the min case
-        for error_c in [error_c_max, error_c_min]:
+        # list the colours with the max error one first
+        # (unless we do min only)
+        error_cs = []
+        if minimal:
+            error_cs.append(error_c_max)
+        error_cs.append(error_c_min)
+
+        # see what happens for both colours
+        # if neutral for maximal, it's neutral
+        # otherwise, it is whatever it is for the minimal
+        for error_c in error_cs:
             num_errors = colors.count(error_c)
 
             # determine the corresponding flipped logicals
@@ -531,7 +515,7 @@ class ArcCircuit(CodeCircuit):
         max_dist: int = 2,
         schedule: Optional[list] = None,
         run_202: bool = True,
-        rounds_per_202: int = 7,
+        rounds_per_202: int = 9,
         conditional_reset: bool = False,
     ):
         """
@@ -557,7 +541,8 @@ class ArcCircuit(CodeCircuit):
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least rounds_per_202xlen(links)).
             rounds_per_202 (int): Number of rounds that are part of the 202, including the typical link
-            measurements at the beginning and edge. At least 5 are required to detect conjugate errors.
+            measurements at the beginning and edge. At least 9 are required to get an event dedicated to
+            conjugate errors.
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
         """
@@ -581,6 +566,7 @@ class ArcCircuit(CodeCircuit):
             self._scheduling()
         else:
             self.schedule = schedule
+        self._get_cycles()
         self._preparation()
 
         # determine the placement of [2,0,2] rounds
@@ -617,7 +603,6 @@ class ArcCircuit(CodeCircuit):
         self._readout()
 
     def _get_link_graph(self, max_dist=1):
-        # FIXME: Migrate link graph to new Edge type
         graph = rx.PyGraph()
         for link in self.links:
             add_edge(graph, (link[0], link[2]), {"distance": 1, "link qubit": link[1]})
@@ -631,6 +616,30 @@ class ArcCircuit(CodeCircuit):
                         if dist < max_dist:
                             add_edge(graph, (node0, node1), {"distance": dist})
         return graph
+
+    def _get_cycles(self):
+        """
+        For each edge in the link graph (expressed in terms of the pair of qubits), the
+        set of qubits around adjacent cycles is found.
+        """
+
+        link_graph = self._get_link_graph()
+        lg_edges = set(link_graph.edge_list())
+        lg_nodes = link_graph.nodes()
+        cycles = rx.cycle_basis(link_graph)
+        cycle_dict = {(lg_nodes[edge[0]], lg_nodes[edge[1]]): list(edge) for edge in lg_edges}
+        for cycle in cycles:
+            edges = []
+            cl = len(cycle)
+            for j in range(cl):
+                for edge in [(cycle[j], cycle[(j + 1) % cl]), (cycle[(j + 1) % cl], cycle[j])]:
+                    if edge in lg_edges:
+                        edges.append((lg_nodes[edge[0]], lg_nodes[edge[1]]))
+            for edge in edges:
+                cycle_dict[edge] += cycle
+        for edge, ns in cycle_dict.items():
+            cycle_dict[edge] = set(ns)
+        self.cycle_dict = cycle_dict
 
     def _coloring(self):
         """
@@ -1036,6 +1045,16 @@ class ArcCircuit(CodeCircuit):
 
         return new_string
 
+    def string2raw_logicals(self, string):
+        """
+        Extracts raw logicals from output string.
+        Args:
+            string (string): Results string from which to extract logicals
+        Returns:
+            list: Raw values for logical operators that correspond to nodes.
+        """
+        return _separate_string(self._process_string(string))[0]
+
     def string2nodes(self, string, **kwargs) -> List[DecodingGraphNode]:
         """
         Convert output string from circuits into a set of nodes.
@@ -1114,10 +1133,11 @@ class ArcCircuit(CodeCircuit):
             if nodes_per_link[node.properties["link qubit"]] % 2:
                 flat_node = deepcopy(node)
                 flat_node.time = None
-                flat_nodes.append(flat_node)
+                if flat_node not in flat_nodes:
+                    flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1127,6 +1147,8 @@ class ArcCircuit(CodeCircuit):
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
             ignored.
+            minimal (bool): Whether output should only reflect the minimal error
+            case.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -1135,6 +1157,8 @@ class ArcCircuit(CodeCircuit):
             in the original nodes.
             num_errors (int): Minimum number of errors required to create nodes.
         """
+
+        nodes = self.flatten_nodes(nodes)
 
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
@@ -1148,16 +1172,30 @@ class ArcCircuit(CodeCircuit):
 
         # see whether the bulk nodes are neutral
         if bulk_nodes:
-            nodes = self.flatten_nodes(nodes)
+            # bicolor the nodes of the link graph, such that node edges connect unlike edges
             link_qubits = set(node.properties["link qubit"] for node in nodes)
-            node_color = {0: 0}
-            neutral = True
             link_graph = self._get_link_graph()
-            ns_to_do = set(n for n in range(1, len(link_graph.nodes())))
-            while ns_to_do and neutral:
-                # go through all coloured nodes
+            # all the qubits around cycles of the node edges have to be covered
+            ns_to_do = set()
+            for edge in [tuple(node.qubits) for node in bulk_nodes]:
+                ns_to_do = ns_to_do.union(self.cycle_dict[edge])
+            # start with one of these
+            if ns_to_do:
+                n = ns_to_do.pop()
+            else:
+                n = 0
+            node_color = {n: 0}
+            recently_colored = node_color.copy()
+            base_neutral = True
+            # count the number of nodes for each colour throughout
+            num_nodes = [1, 0]
+            last_num = [None, None]
+            fully_converged = False
+            last_converged = False
+            while base_neutral and not fully_converged:
+                # go through all nodes coloured in the last pass
                 newly_colored = {}
-                for n, c in node_color.items():
+                for n, c in recently_colored.items():
                     # look at all the code qubits that are neighbours
                     incident_es = link_graph.incident_edges(n)
                     for e in incident_es:
@@ -1172,46 +1210,74 @@ class ArcCircuit(CodeCircuit):
                         # if the neighbour is not yet coloured, colour it
                         # different color if edge is given node, same otherwise
                         if nn not in node_color:
-                            newly_colored[nn] = (c + dc) % 2
+                            new_c = (c + dc) % 2
+                            newly_colored[nn] = new_c
+                            num_nodes[new_c] += 1
                         # if it is coloured, check the colour is correct
                         else:
-                            neutral = neutral and (node_color[nn] == (c + dc) % 2)
+                            base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
                 for nn, c in newly_colored.items():
                     node_color[nn] = c
-                    ns_to_do.remove(nn)
+                    if nn in ns_to_do:
+                        ns_to_do.remove(nn)
+                recently_colored = newly_colored.copy()
+                # process is converged once one colour has stoppped growing
+                # once ns_to_do is empty
+                converged = (not ns_to_do) and (
+                    (num_nodes[0] == last_num[0] != 0) or (num_nodes[1] == last_num[1] != 0)
+                )
+                fully_converged = converged and last_converged
+                if not fully_converged:
+                    last_num = num_nodes.copy()
+                    last_converged = converged
+            # see how many qubits are in the converged colour, and determine the min colour
+            for c in range(2):
+                if num_nodes[c] == last_num[c]:
+                    conv_color = c
+            if num_nodes[conv_color] <= self.d / 2:
+                min_color = conv_color
+            else:
+                min_color = (conv_color + 1) % 2
+            # calculate the number of nodes for the other
+            num_nodes[(min_color + 1) % 2] = link_graph.num_nodes() - num_nodes[min_color]
+            # get the set of min nodes
+            min_ns = set()
+            for n, c in node_color.items():
+                if c == min_color:
+                    min_ns.add(n)
 
             # see which qubits for logical zs are needed
             flipped_logicals_all = [[], []]
-            if neutral:
-                for inside_c in range(2):
-                    for n, c in node_color.items():
-                        qubit = link_graph.nodes()[n]
-                        if qubit in self.z_logicals and c == inside_c:
-                            flipped_logicals_all[int(inside_c)].append(qubit)
+            if base_neutral:
+                for qubit in self.z_logicals:
+                    n = link_graph.nodes().index(qubit)
+                    dc = not n in min_ns
+                    flipped_logicals_all[(min_color + dc) % 2].append(qubit)
             for j in range(2):
                 flipped_logicals_all[j] = set(flipped_logicals_all[j])
 
-            # count the number of nodes for each colour
-            num_nodes = [0, 0]
-            for n, c in node_color.items():
-                num_nodes[c] += 1
-
-            if num_nodes[0] == num_nodes[1]:
-                min_cs = [0, 1]
-            else:
-                min_cs = [int(sum(node_color.values()) < len(node_color) / 2)]
+            # list the colours with the max error one first
+            # (unless we do min only)
+            min_color = int(sum(node_color.values()) < len(node_color) / 2)
+            cs = []
+            if not minimal:
+                cs.append((min_color + 1) % 2)
+            cs.append(min_color)
 
             # see what happens for both colours
-            # once full neutrality us found, go for it!
-            for c in min_cs:
-                this_neutral = neutral
+            # if neutral for maximal, it's neutral
+            # otherwise, it is whatever it is for the minimal
+            for c in cs:
+
+                neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
 
                 # if unneeded logical zs are given, cluster is not neutral
                 # (unless this is ignored)
                 if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
-                    this_neutral = False
+                    neutral = False
+                    flipped_logicals = set()
                 # otherwise, report only needed logicals that aren't given
                 else:
                     flipped_logicals = flipped_logicals.difference(given_logicals)
@@ -1225,8 +1291,7 @@ class ArcCircuit(CodeCircuit):
                     )
                     flipped_logical_nodes.append(node)
 
-                if this_neutral and flipped_logical_nodes == []:
-                    neutral = this_neutral
+                if neutral and flipped_logical_nodes == []:
                     break
 
         else:
@@ -1250,6 +1315,8 @@ class ArcCircuit(CodeCircuit):
         to the method.
         Args:
             atypical_nodes (dictionary in the form of the return value of string2nodes)
+            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignored.
         """
         neutral, logicals, _ = self.check_nodes(atypical_nodes)
         return neutral and not logicals
