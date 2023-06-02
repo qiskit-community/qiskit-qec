@@ -164,7 +164,7 @@ class DecodingGraph:
 
             for string in counts:
                 # list of i for which v_i=1
-                error_nodes = self.code.string2nodes(string, logical=logical)
+                error_nodes = set(self.code.string2nodes(string, logical=logical))
 
                 for node0 in error_nodes:
                     n0 = self.graph.nodes().index(node0)
@@ -225,7 +225,7 @@ class DecodingGraph:
                 for edge in self.graph.edge_list()
             }
             for string in counts:
-                error_nodes = self.code.string2nodes(string, logical=logical)
+                error_nodes = set(self.code.string2nodes(string, logical=logical))
                 for edge in self.graph.edge_list():
                     element = ""
                     for j in range(2):
