@@ -39,10 +39,21 @@ class CSSCodeCircuit(CodeCircuit):
     CodeCircuit class for generic CSS codes.
     """
 
-    def __init__(self, code, T, basis="z", round_schedule="zx", noise_model=None):
+    def __init__(
+        self, code, T: int, basis: str = "z", round_schedule: str = "zx", noise_model=None
+    ):
         """
         Args:
-            code: A CSS code
+            code: A CSS code class which is either
+                a) StabSubSystemCode
+                b) a class with the following methods:
+                    'x_gauges' (as a list of list of qubit indices),
+                    'z_gauges',
+                    'x_stabilizers',
+                    'z_stabilizers',
+                    'logical_x',
+                    'logical_z',
+                    'n' (number of qubits),
             T: Number of syndrome measurement rounds
             basis: basis for encoding ('x' or 'z')
             round_schedule: Order in which to measureme gauge operators ('zx' or 'xz')
@@ -50,6 +61,13 @@ class CSSCodeCircuit(CodeCircuit):
             If a tuple, a pnenomological noise model is used with the entries being
             probabity of depolarizing noise on code qubits between rounds and
             probability of measurement errors, respectively.
+        Examples:
+            The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code
+            >>> from qiskit_qec.codes.hhc import HHC
+            >>> from qiskit_qec.circuits.css_code import CSSCodeCircuit
+            >>> css_code = CSSCodeCircuit(HHC(3),T=3,basis='x',noise_model=(0.01,0.01),round_schedule='xz')
+            >>> css_code.circuit['0']
+            <qiskit.circuit.quantumcircuit.QuantumCircuit at 0x13313f090>
         """
 
         super().__init__()
@@ -79,37 +97,11 @@ class CSSCodeCircuit(CodeCircuit):
             qregs.append(QuantumRegister(len(self.x_gauges), name="x auxs"))
             for qreg in qregs:
                 qc.add_register(qreg)
-            # prepare initial state
-            if state[0] == "1":
-                if basis == "z":
-                    qc.x(self.logical_x[0])
-                else:
-                    qc.x(self.logical_z[0])
-            if basis == "x":
-                qc.h(qregs[0])
-            # peform syndrome measurements
-            for t in range(T):
-                if state[-1] == "n" and self._phenom:
-                    for q in qregs[0]:
-                        qc.append(self._depol_error, [q])
-                # gauge measurements
-                if round_schedule == "zx":
-                    self._z_gauge_measurements(qc, t, state)
-                    self._x_gauge_measurements(qc, t, state)
-                elif round_schedule == "xz":
-                    self._x_gauge_measurements(qc, t, state)
-                    self._z_gauge_measurements(qc, t, state)
-                else:
-                    print("Round schedule " + round_schedule + " not supported.")
-            # final readout
+            self.prepare_initial_state(qc, qregs, state)
+            self.peform_syndrome_measurements(qc, qregs, state)
             creg = ClassicalRegister(code.n, name="final_readout")
             qc.add_register(creg)
-            if basis == "x":
-                qc.h(qregs[0])
-            if state[-1] == "n" and self._phenom:
-                for q in qregs[0]:
-                    qc.append(self._meas_error, [q])
-            qc.measure(qregs[0], creg)
+            self.final_readout(qc, qregs, creg, state)
             circuit[state] = qc
 
         self.circuit = {}
@@ -187,6 +179,40 @@ class CSSCodeCircuit(CodeCircuit):
             self.z_stabilizers = self.code.z_stabilizers
             self.logical_x = self.code.logical_x
             self.logical_z = self.code.logical_z
+
+    def prepare_initial_state(self, qc, qregs, state):
+        if state[0] == "1":
+            if self.basis == "z":
+                qc.x(self.logical_x[0])
+            else:
+                qc.x(self.logical_z[0])
+        if self.basis == "x":
+            qc.h(qregs[0])
+
+    def peform_syndrome_measurements(self, qc, qregs, state):
+        for t in range(self.T):
+            if state[-1] == "n" and self._phenom:
+                for q in qregs[0]:
+                    qc.append(self._depol_error, [q])
+            # gauge measurements
+            if self.round_schedule == "zx":
+                self._z_gauge_measurements(qc, t, state)
+                self._x_gauge_measurements(qc, t, state)
+            elif self.round_schedule == "xz":
+                self._x_gauge_measurements(qc, t, state)
+                self._z_gauge_measurements(qc, t, state)
+            else:
+                raise NotImplementedError(
+                    "Round schedule " + self.round_schedule + " not supported."
+                )
+
+    def final_readout(self, qc, qregs, creg, state):
+        if self.basis == "x":
+            qc.h(qregs[0])
+        if state[-1] == "n" and self._phenom:
+            for q in qregs[0]:
+                qc.append(self._meas_error, [q])
+        qc.measure(qregs[0], creg)
 
     def _z_gauge_measurements(self, qc, t, state):
         creg = ClassicalRegister(len(self.z_gauges), name="round_" + str(t) + "_z_bits")
