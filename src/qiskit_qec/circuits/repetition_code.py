@@ -24,7 +24,9 @@ import rustworkx as rx
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
-from qiskit.transpiler.passes import DynamicalDecoupling
+from qiskit_ibm_provider.transpiler.passes.scheduling import DynamicCircuitInstructionDurations
+from qiskit_ibm_provider.transpiler.passes.scheduling import PadDynamicalDecoupling
+from qiskit_ibm_provider.transpiler.passes.scheduling import ALAPScheduleAnalysis
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
@@ -1346,12 +1348,16 @@ class ArcCircuit(CodeCircuit):
                 self.qubits[qreg_index][q] for q in range(self.num_qubits[qreg_index])
             ]
 
+        # transpile to backend
+        circuits = transpile(circuits, backend, initial_layout=initial_layout)
+
         # then dynamical decoupling if needed
         if any(echo_num):
-            # transpile to backend and schedule
-            circuits = transpile(
-                circuits, backend, initial_layout=initial_layout, scheduling_method="alap"
-            )
+            if self.run_202:
+                durations = DynamicCircuitInstructionDurations().from_backend(backend)
+            else:
+                durations = InstructionDurations().from_backend(backend)
+
             # set up the dd sequences
             dd_sequences = []
             spacings = []
@@ -1360,8 +1366,8 @@ class ArcCircuit(CodeCircuit):
                     dd_sequences.append([XGate()] * echo_num[j])
                     spacings.append(None)
                 elif echo[j] == "XZX":
-                    dd_sequences.append([XGate(), RZGate(np.pi), XGate()] * echo_num)
-                    d = 1.0 / (2 * echo_num - 1 + 1)
+                    dd_sequences.append([XGate(), RZGate(np.pi), XGate()] * echo_num[j])
+                    d = 1.0 / (2 * echo_num[j] - 1 + 1)
                     spacing = [d / 2] + ([0, d, d] * echo_num[j])[:-1] + [d / 2]
                     for _ in range(2):
                         spacing[0] += 1 - sum(spacing)
@@ -1371,7 +1377,6 @@ class ArcCircuit(CodeCircuit):
                     spacings.append(None)
 
             # add in the dd sequences
-            durations = InstructionDurations().from_backend(backend)
             for j, dd_sequence in enumerate(dd_sequences):
                 if dd_sequence:
                     if echo_num[j]:
@@ -1380,33 +1385,31 @@ class ArcCircuit(CodeCircuit):
                         qubits = None
                     pm = PassManager(
                         [
-                            DynamicalDecoupling(
-                                durations, dd_sequence, qubits=qubits, spacing=spacings[j]
-                            )
+                            ALAPScheduleAnalysis(durations),
+                            PadDynamicalDecoupling(
+                                durations, dd_sequence, qubits=qubits, spacings=spacings[j]
+                            ),
                         ]
                     )
                     circuits = pm.run(circuits)
             if not isinstance(circuits, list):
                 circuits = [circuits]
 
-            # make sure delays are a multiple of 16 samples, while keeping the barriers
-            # as aligned as possible
-            for qc in circuits:
-                total_delay = [{q: 0 for q in qc.qubits} for _ in range(2)]
-                for gate in qc.data:
-                    if gate[0].name == "delay":
-                        q = gate[1][0]
-                        t = gate[0].params[0]
-                        total_delay[0][q] += t
-                        new_t = 16 * np.ceil((total_delay[0][q] - total_delay[1][q]) / 16)
-                        total_delay[1][q] += new_t
-                        gate[0].params[0] = new_t
+            # # make sure delays are a multiple of 16 samples, while keeping the barriers
+            # # as aligned as possible
+            # for qc in circuits:
+            #     total_delay = [{q: 0 for q in qc.qubits} for _ in range(2)]
+            #     for gate in qc.data:
+            #         if gate[0].name == "delay":
+            #             q = gate[1][0]
+            #             t = gate[0].params[0]
+            #             total_delay[0][q] += t
+            #             new_t = 16 * np.ceil((total_delay[0][q] - total_delay[1][q]) / 16)
+            #             total_delay[1][q] += new_t
+            #             gate[0].params[0] = new_t
 
-            # transpile to backend and schedule again
-            circuits = transpile(circuits, backend, scheduling_method="alap")
-        else:
-            # transpile to backend and don't schedule
-            circuits = transpile(circuits, backend, initial_layout=initial_layout)
+            # # transpile to backend and schedule again
+            # circuits = transpile(circuits, backend, scheduling_method="alap")
 
         return {basis: circuits[j] for j, basis in enumerate(bases)}
 
