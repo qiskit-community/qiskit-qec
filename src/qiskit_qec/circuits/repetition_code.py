@@ -1331,7 +1331,7 @@ class ArcCircuit(CodeCircuit):
             the numbering used in `self.links`.
             echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and
             link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
-            echo_num(tuple): Number of times to repeat the sequences (as a list) for code qubits and
+            echo_num (tuple): Number of times to repeat the sequences for code qubits and
             link qubits, respectively.
         Returns:
             transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
@@ -1422,12 +1422,15 @@ class ArcCircuit(CodeCircuit):
         for n0, node0 in enumerate(nodes):
             for n1, node1 in enumerate(nodes):
                 if n0 < n1:
-                    # just record all possible edges for now (should be improved later)
+                    # just record all possible edges for now
                     dt = abs((node1.time or 0) - (node0.time or 0))
                     adj = set(node0.qubits).intersection(set(node1.qubits))
                     if adj:
                         if (node0.is_boundary ^ node1.is_boundary) or dt <= 1:
                             edges.append((n0, n1))
+                        elif not self.resets:
+                            if node0.qubits == node1.qubits and dt == 2:
+                                edges.append((n0, n1))
 
         # put it all in a graph
         S = rx.PyGraph(multigraph=False)
@@ -1454,7 +1457,6 @@ class ArcCircuit(CodeCircuit):
 
         return S, hyperedges
 
-    
     def get_error_coords(self, counts, decoding_graph, method="spitz", remove_invalid_edges=False):
         """
         Uses the `get_error_probs` method of the given decoding graph to generate probabilities
@@ -1482,7 +1484,7 @@ class ArcCircuit(CodeCircuit):
         # though the documented use case requires a decoding graph and a counts dict, there is also an
         # undocumented internal use case, where just the bare graph is provided and no counts. This is
         # to find and delete invalid edges
-        if type(decoding_graph) is rx.PyGraph:
+        if isinstance(decoding_graph, rx.PyGraph):
             graph = decoding_graph
         else:
             graph = decoding_graph.graph
@@ -1531,7 +1533,7 @@ class ArcCircuit(CodeCircuit):
                                 if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         time = [max(0, node0.time - 1 + (max(dts) + 1) / round_length)]
-                        time.append(min(code.T, node0.time + min(dts) / round_length))
+                        time.append(min(self.T, node0.time + min(dts) / round_length))
                     # error during a round
                     else:
                         # put nodes in descending time order
