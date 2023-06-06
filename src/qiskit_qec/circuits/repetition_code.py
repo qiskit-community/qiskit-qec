@@ -1395,22 +1395,6 @@ class ArcCircuit(CodeCircuit):
             if not isinstance(circuits, list):
                 circuits = [circuits]
 
-            # # make sure delays are a multiple of 16 samples, while keeping the barriers
-            # # as aligned as possible
-            # for qc in circuits:
-            #     total_delay = [{q: 0 for q in qc.qubits} for _ in range(2)]
-            #     for gate in qc.data:
-            #         if gate[0].name == "delay":
-            #             q = gate[1][0]
-            #             t = gate[0].params[0]
-            #             total_delay[0][q] += t
-            #             new_t = 16 * np.ceil((total_delay[0][q] - total_delay[1][q]) / 16)
-            #             total_delay[1][q] += new_t
-            #             gate[0].params[0] = new_t
-
-            # # transpile to backend and schedule again
-            # circuits = transpile(circuits, backend, scheduling_method="alap")
-
         return {basis: circuits[j] for j, basis in enumerate(bases)}
 
     def _make_syndrome_graph(self):
@@ -1447,7 +1431,6 @@ class ArcCircuit(CodeCircuit):
 
         # put it all in a graph
         S = rx.PyGraph(multigraph=False)
-        hyperedges = []
         for node in nodes:
             S.add_node(node)
         for n0, n1 in edges:
@@ -1460,12 +1443,19 @@ class ArcCircuit(CodeCircuit):
                 qubits = []
             edge = DecodingGraphEdge(qubits=qubits, weight=1)
             S.add_edge(n0, n1, edge)
-            # just record edges as hyperedges for now (should be improved later)
-            hyperedges.append({(n0, n1): edge})
+
+        # remove invalid edges
+        self.get_error_coords(None, S, remove_invalid_edges=True)
+
+        # just record edges as hyperedges for now (should be improved later)
+        hyperedges = []
+        for e, n0n1 in enumerate(S.edge_list()):
+            hyperedges.append({n0n1: S.edges()[e]})
 
         return S, hyperedges
 
-    def get_error_coords(self, counts, decoding_graph, method="spitz"):
+    
+    def get_error_coords(self, counts, decoding_graph, method="spitz", remove_invalid_edges=False):
         """
         Uses the `get_error_probs` method of the given decoding graph to generate probabilities
         of single error events from given counts. The location and time of each error is
@@ -1477,6 +1467,8 @@ class ArcCircuit(CodeCircuit):
             from this code.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
+            remove_invalid_edges (string): Whether to delete edges from the graph if
+            they are found to be invalid.
         Returns:
             dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
             events. Time refers to measurement rounds. Values are a dictionary whose keys are
@@ -1487,8 +1479,26 @@ class ArcCircuit(CodeCircuit):
             is in units of rounds.
         """
 
-        error_probs = decoding_graph.get_error_probs(counts, method=method)
-        nodes = decoding_graph.graph.nodes()
+        # though the documented use case requires a decoding graph and a counts dict, there is also an
+        # undocumented internal use case, where just the bare graph is provided and no counts. This is
+        # to find and delete invalid edges
+        if type(decoding_graph) is rx.PyGraph:
+            graph = decoding_graph
+        else:
+            graph = decoding_graph.graph
+        nodes = graph.nodes()
+        if counts:
+            error_probs = decoding_graph.get_error_probs(counts, method=method)
+        else:
+            error_probs = {}
+            for n0, n1 in graph.edge_list():
+                if nodes[n0].is_boundary:
+                    edge = (n1, n1)
+                elif nodes[n1].is_boundary:
+                    edge = (n0, n0)
+                else:
+                    edge = (n0, n1)
+                error_probs[edge] = np.nan
 
         if hasattr(self, "z_logicals"):
             z_logicals = set(self.z_logicals)
@@ -1505,7 +1515,7 @@ class ArcCircuit(CodeCircuit):
             node0 = nodes[n0]
             node1 = nodes[n1]
             if n0 != n1:
-                qubits = decoding_graph.graph.get_edge_data(n0, n1).qubits
+                qubits = graph.get_edge_data(n0, n1).qubits
                 if qubits:
                     # error on a code qubit between rounds, or during a round
                     assert (node0.time == node1.time and node0.qubits != node1.qubits) or (
@@ -1521,7 +1531,7 @@ class ArcCircuit(CodeCircuit):
                                 if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         time = [max(0, node0.time - 1 + (max(dts) + 1) / round_length)]
-                        time.append(node0.time + min(dts) / round_length)
+                        time.append(min(code.T, node0.time + min(dts) / round_length))
                     # error during a round
                     else:
                         # put nodes in descending time order
@@ -1543,6 +1553,8 @@ class ArcCircuit(CodeCircuit):
                         else:
                             # impossible cases get no valid time
                             time = []
+                            if remove_invalid_edges:
+                                graph.remove_edge(n0, n1)
                 else:
                     # measurement error
                     assert node0.time != node1.time and node0.qubits == node1.qubits
@@ -1559,7 +1571,7 @@ class ArcCircuit(CodeCircuit):
                     for dt, pairs in enumerate(self.schedule):
                         if pair in pairs or tuple(pair) in pairs:
                             time = [max(0, node0.time - 1 + (dt + 1) / round_length)]
-                            time.append(node0.time + dt / round_length)
+                            time.append(min(self.T, node0.time + dt / round_length))
 
                 else:
                     qubit = tuple(node0.qubits + [node0.properties["link qubit"]])
