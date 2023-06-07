@@ -1301,7 +1301,7 @@ class ArcCircuit(CodeCircuit):
             neutral = not bool(given_logicals)
             # and no flipped logicals
             flipped_logical_nodes = []
-            num_errors = None
+            num_errors = 0
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
