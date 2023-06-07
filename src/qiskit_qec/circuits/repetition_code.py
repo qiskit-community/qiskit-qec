@@ -1561,8 +1561,14 @@ class ArcCircuit(CodeCircuit):
                     # measurement error
                     assert node0.time != node1.time and node0.qubits == node1.qubits
                     qubit = node0.properties["link qubit"]
-                    time = [node0.time, node0.time + (round_length - 1) / round_length]
-                    time.sort()
+                    t0 = min(node0.time, node1.time)
+                    if abs(node0.time - node1.time) == 1:
+                        if code.resets:
+                            time = [t0, t0 + 1]
+                        else:
+                            time = [t0, t0 + (round_length - 1) / round_length]
+                    else:
+                        time = [t0 + (round_length - 1) / round_length, t0 + 1]
             else:
                 # detected only by one stabilizer
                 boundary_qubits = list(set(node0.qubits).intersection(z_logicals))
