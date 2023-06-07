@@ -65,9 +65,8 @@ class CSSCodeCircuit(CodeCircuit):
             The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code
             >>> from qiskit_qec.codes.hhc import HHC
             >>> from qiskit_qec.circuits.css_code import CSSCodeCircuit
-            >>> css_code = CSSCodeCircuit(HHC(3),T=3,basis='x',noise_model=(0.01,0.01),round_schedule='xz')
-            >>> css_code.circuit['0']
-            <qiskit.circuit.quantumcircuit.QuantumCircuit at 0x13313f090>
+            >>> code = CSSCodeCircuit(HHC(3),T=3,basis='x',noise_model=(0.01,0.01),round_schedule='xz')
+            >>> code.circuit['0']
         """
 
         super().__init__()
@@ -97,11 +96,11 @@ class CSSCodeCircuit(CodeCircuit):
             qregs.append(QuantumRegister(len(self.x_gauges), name="x auxs"))
             for qreg in qregs:
                 qc.add_register(qreg)
-            self.prepare_initial_state(qc, qregs, state)
-            self.peform_syndrome_measurements(qc, qregs, state)
+            self._prepare_initial_state(qc, qregs, state)
+            self._perform_syndrome_measurements(qc, qregs, state)
             creg = ClassicalRegister(code.n, name="final_readout")
             qc.add_register(creg)
-            self.final_readout(qc, qregs, creg, state)
+            self._final_readout(qc, qregs, creg, state)
             circuit[state] = qc
 
         self.circuit = {}
@@ -180,7 +179,7 @@ class CSSCodeCircuit(CodeCircuit):
             self.logical_x = self.code.logical_x
             self.logical_z = self.code.logical_z
 
-    def prepare_initial_state(self, qc, qregs, state):
+    def _prepare_initial_state(self, qc, qregs, state):
         if state[0] == "1":
             if self.basis == "z":
                 qc.x(self.logical_x[0])
@@ -189,7 +188,7 @@ class CSSCodeCircuit(CodeCircuit):
         if self.basis == "x":
             qc.h(qregs[0])
 
-    def peform_syndrome_measurements(self, qc, qregs, state):
+    def _perform_syndrome_measurements(self, qc, qregs, state):
         for t in range(self.T):
             if state[-1] == "n" and self._phenom:
                 for q in qregs[0]:
@@ -206,7 +205,7 @@ class CSSCodeCircuit(CodeCircuit):
                     "Round schedule " + self.round_schedule + " not supported."
                 )
 
-    def final_readout(self, qc, qregs, creg, state):
+    def _final_readout(self, qc, qregs, creg, state):
         if self.basis == "x":
             qc.h(qregs[0])
         if state[-1] == "n" and self._phenom:
@@ -341,7 +340,7 @@ class CSSCodeCircuit(CodeCircuit):
 
         return nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False):
+    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         raise NotImplementedError
 
     def is_cluster_neutral(self, atypical_nodes):
