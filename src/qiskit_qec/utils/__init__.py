@@ -31,4 +31,6 @@ Utils module classes and functions
 """
 
 from . import indexer, pauli_rep, visualizations
+
+from .stim_tools import get_counts_via_stim, get_stim_circuits, noisify_circuit
 from .decoding_graph_attributes import DecodingGraphNode, DecodingGraphEdge
