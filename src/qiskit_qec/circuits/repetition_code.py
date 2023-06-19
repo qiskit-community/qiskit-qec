@@ -1563,7 +1563,7 @@ class ArcCircuit(CodeCircuit):
                     qubit = node0.properties["link qubit"]
                     t0 = min(node0.time, node1.time)
                     if abs(node0.time - node1.time) == 1:
-                        if code.resets:
+                        if self.resets:
                             time = [t0, t0 + 1]
                         else:
                             time = [t0, t0 + (round_length - 1) / round_length]

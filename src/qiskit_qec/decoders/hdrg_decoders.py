@@ -152,7 +152,9 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
             # it's fully neutral if no extra logicals are needed
             # and if the error num is less than the max dist
-            fully_neutral = neutral and logicals == [] and num_errors < dist_max
+            fully_neutral = neutral and logicals == []
+            if num_errors:
+                fully_neutral = fully_neutral and num_errors < dist_max
 
             # if a cluster is neutral, all nodes are labelled with c
             # otherwise, it gets a None
