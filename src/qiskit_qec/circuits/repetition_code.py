@@ -403,7 +403,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         # list the colours with the max error one first
         # (unless we do min only)
         error_cs = []
-        if minimal:
+        if not minimal:
             error_cs.append(error_c_max)
         error_cs.append(error_c_min)
 
