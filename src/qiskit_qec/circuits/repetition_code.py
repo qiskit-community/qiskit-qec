@@ -537,13 +537,13 @@ class ArcCircuit(CodeCircuit):
             color (dict): Dictionary with code qubits as keys and 0 or 1 for each value, to specify
             a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
             max_dist (int): Maximum edge distance used when determining the bicoloring of code qubits.
-            schedule(list): Specifies order in which entangling gates are applied in each syndrome
+            schedule (list): Specifies order in which entangling gates are applied in each syndrome
             measurement round. Each element is a list of lists [c, a] for entangling gates to be
             applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least rounds_per_202xlen(links)).
             rounds_per_202 (int): Number of rounds that are part of the 202, including the typical link
-            measurements at the beginning and edge. At least 9 are required to get an event dedicated to
+            measurements at the beginning and end. At least 9 are required to get an event dedicated to
             conjugate errors.
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
@@ -1213,8 +1213,9 @@ class ArcCircuit(CodeCircuit):
                         # different color if edge is given node, same otherwise
                         if nn not in node_color:
                             new_c = (c + dc) % 2
-                            newly_colored[nn] = new_c
-                            num_nodes[new_c] += 1
+                            if nn not in newly_colored:
+                                newly_colored[nn] = new_c
+                                num_nodes[new_c] += 1
                         # if it is coloured, check the colour is correct
                         else:
                             base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
@@ -1241,7 +1242,7 @@ class ArcCircuit(CodeCircuit):
             else:
                 min_color = (conv_color + 1) % 2
             # calculate the number of nodes for the other
-            num_nodes[(min_color + 1) % 2] = link_graph.num_nodes() - num_nodes[min_color]
+            num_nodes[(conv_color + 1) % 2] = link_graph.num_nodes() - num_nodes[conv_color]
             # get the set of min nodes
             min_ns = set()
             for n, c in node_color.items():
@@ -1260,7 +1261,6 @@ class ArcCircuit(CodeCircuit):
 
             # list the colours with the max error one first
             # (unless we do min only)
-            min_color = int(sum(node_color.values()) < len(node_color) / 2)
             cs = []
             if not minimal:
                 cs.append((min_color + 1) % 2)
@@ -1457,7 +1457,14 @@ class ArcCircuit(CodeCircuit):
 
         return S, hyperedges
 
-    def get_error_coords(self, counts, decoding_graph, method="spitz", remove_invalid_edges=False):
+    def get_error_coords(
+        self,
+        counts,
+        decoding_graph,
+        method="spitz",
+        remove_invalid_edges=False,
+        return_samples=False,
+    ):
         """
         Uses the `get_error_probs` method of the given decoding graph to generate probabilities
         of single error events from given counts. The location and time of each error is
@@ -1471,6 +1478,8 @@ class ArcCircuit(CodeCircuit):
             methods are 'spitz' (default) and 'naive'.
             remove_invalid_edges (string): Whether to delete edges from the graph if
             they are found to be invalid.
+            return_samples (bool): Whether to also return the number of
+            samples used to calculated each probability.
         Returns:
             dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
             events. Time refers to measurement rounds. Values are a dictionary whose keys are
@@ -1490,7 +1499,12 @@ class ArcCircuit(CodeCircuit):
             graph = decoding_graph.graph
         nodes = graph.nodes()
         if counts:
-            error_probs = decoding_graph.get_error_probs(counts, method=method)
+            if return_samples:
+                error_probs, samples = decoding_graph.get_error_probs(
+                    counts, method=method, return_samples=True
+                )
+            else:
+                error_probs = decoding_graph.get_error_probs(counts, method=method)
         else:
             error_probs = {}
             for n0, n1 in graph.edge_list():
@@ -1513,6 +1527,7 @@ class ArcCircuit(CodeCircuit):
         round_length = len(self.schedule) + 1
 
         error_coords = {}
+        sample_coords = {}
         for (n0, n1), prob in error_probs.items():
             node0 = nodes[n0]
             node1 = nodes[n1]
@@ -1588,6 +1603,12 @@ class ArcCircuit(CodeCircuit):
             if time != []:  # only record if not nan
                 if (qubit, time[0], time[1]) not in error_coords:
                     error_coords[qubit, time[0], time[1]] = {}
+                    sample_coords[qubit, time[0], time[1]] = {}
                 error_coords[qubit, time[0], time[1]][n0, n1] = prob
+                if return_samples:
+                    sample_coords[qubit, time[0], time[1]][n0, n1] = samples[n0, n1]
 
-        return error_coords
+        if return_samples:
+            return error_coords, sample_coords
+        else:
+            return error_coords

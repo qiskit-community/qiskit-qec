@@ -121,7 +121,7 @@ class DecodingGraph:
             self.graph = graph
 
     def get_error_probs(
-        self, counts, logical: str = "0", method: str = METHOD_SPITZ
+        self, counts, logical: str = "0", method: str = METHOD_SPITZ, return_samples=False
     ) -> List[Tuple[Tuple[int, int], float]]:
         """
         Generate probabilities of single error events from result counts.
@@ -131,6 +131,8 @@ class DecodingGraph:
             logical (string): Logical value whose results are used.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
+            output_samples (bool): Whether to also return the number of
+            samples used to calculated each probability.
         Returns:
             dict: Keys are the edges for specific error
             events, and values are the calculated probabilities.
@@ -238,6 +240,7 @@ class DecodingGraph:
             # ratio of error on both to error on neither is, to first order,
             # p/(1-p) where p is the prob to be determined.
             error_probs = {}
+            samples = {}
             for n0, n1 in self.graph.edge_list():
                 if count[n0, n1]["00"] > 0:
                     ratio = count[n0, n1]["11"] / count[n0, n1]["00"]
@@ -251,8 +254,12 @@ class DecodingGraph:
                 else:
                     edge = (n0, n1)
                 error_probs[edge] = p
+                samples[edge] = count[n0, n1]["11"] + count[n0, n1]["00"]
 
-        return error_probs
+        if return_samples:
+            return error_probs, samples
+        else:
+            return error_probs
 
     def weight_syndrome_graph(self, counts, method: str = METHOD_SPITZ):
         """Generate weighted syndrome graph from result counts.
