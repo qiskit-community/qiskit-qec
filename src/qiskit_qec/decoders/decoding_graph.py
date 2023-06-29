@@ -131,7 +131,7 @@ class DecodingGraph:
             logical (string): Logical value whose results are used.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
-            output_samples (bool): Whether to also return the number of
+            return_samples (bool): Whether to also return the number of
             samples used to calculated each probability.
         Returns:
             dict: Keys are the edges for specific error
