@@ -512,7 +512,7 @@ class ArcCircuit(CodeCircuit):
         logical: str = "0",
         resets: bool = True,
         delay: Optional[int] = None,
-        barriers: bool = False,
+        barriers: bool = True,
         color: Optional[dict] = None,
         max_dist: int = 2,
         schedule: Optional[list] = None,
@@ -879,6 +879,7 @@ class ArcCircuit(CodeCircuit):
         links_to_reset = set()
         for basis, qc in self.circuit.items():
             if self._barriers:
+                # pre round barrier
                 qc.barrier()
             for pairs in self.schedule:
                 for qubit_c, qubit_l in pairs:
@@ -899,11 +900,12 @@ class ArcCircuit(CodeCircuit):
         # measurement and resets
         for basis, qc in self.circuit.items():
             # measurement
+            if final:
+                # already prep code qubits for readout
+                self._basis_change(basis, inverse=True)
             if self._barriers:
-                if final:
-                    qc.barrier(self.link_qubit)
-                else:
-                    qc.barrier()
+                # post-round, pre-measurement barrier
+                qc.barrier()
             qc.add_register(self.link_bits[self.T])
             for q_l in links_to_measure:
                 qc.measure(self.link_qubit[q_l], self.link_bits[self.T][q_l])
@@ -941,6 +943,7 @@ class ArcCircuit(CodeCircuit):
             # delay
             if self.delay > 0 and not final:
                 if self._barriers:
+                    # post-reset, pre-delay barrier
                     qc.barrier()
                 qc.delay(self.delay, self.link_qubit)
 
@@ -953,9 +956,11 @@ class ArcCircuit(CodeCircuit):
         """
 
         for basis, qc in self.circuit.items():
-            self._basis_change(basis, inverse=True)
-            if self._barriers:
-                qc.barrier(self.code_qubit)
+            if self.T == 0:
+                self._basis_change(basis, inverse=True)
+                if self._barriers:
+                    qc.barrier()
+                # otherwise, code qubits are already prepped
             qc.add_register(self.code_bit)
             qc.measure(self.code_qubit, self.code_bit)
 
