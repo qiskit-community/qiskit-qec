@@ -1,7 +1,8 @@
 """Test a heavy-hexagon code decoder"""
 import unittest
 
-from qiskit import execute, Aer
+from qiskit import execute
+from qiskit_aer import Aer
 
 from qiskit_qec.codes.hhc import HHC
 from qiskit_qec.circuits.hhc_circuit import HHCCircuit

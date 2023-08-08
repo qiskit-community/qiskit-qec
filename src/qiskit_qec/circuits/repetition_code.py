@@ -24,7 +24,7 @@ import rustworkx as rx
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
-from qiskit.transpiler.passes import DynamicalDecoupling
+from qiskit.transpiler.passes import ALAPScheduleAnalysis, PadDynamicalDecoupling
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
@@ -1268,7 +1268,6 @@ class ArcCircuit(CodeCircuit):
             # if neutral for maximal, it's neutral
             # otherwise, it is whatever it is for the minimal
             for c in cs:
-
                 neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
@@ -1381,9 +1380,10 @@ class ArcCircuit(CodeCircuit):
                         qubits = None
                     pm = PassManager(
                         [
-                            DynamicalDecoupling(
+                            ALAPScheduleAnalysis(durations),
+                            PadDynamicalDecoupling(
                                 durations, dd_sequence, qubits=qubits, spacing=spacings[j]
-                            )
+                            ),
                         ]
                     )
                     circuits = pm.run(circuits)

@@ -20,8 +20,9 @@ import unittest
 import itertools
 from random import choices
 
-from qiskit import Aer, QuantumCircuit, execute
+from qiskit import QuantumCircuit, execute
 from qiskit.providers.fake_provider import FakeJakarta
+from qiskit_aer import Aer, AerSimulator
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
 from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
@@ -352,7 +353,7 @@ class TestARCCodes(unittest.TestCase):
                                 else:
                                     error_qc.x(code.link_qubit[code.link_index[q]])
                         error_qc.append(gate)
-                    counts = Aer.get_backend("qasm_simulator").run(error_qc).result().get_counts()
+                    counts = AerSimulator().run(error_qc).result().get_counts()
                     for string in counts:
                         # look at only bulk non-conjugate nodes
                         nodes = [
@@ -391,7 +392,7 @@ class TestARCCodes(unittest.TestCase):
             for gate in qc:
                 test_qc.append(gate)
             test_qcs.append(test_qc)
-        result = Aer.get_backend("qasm_simulator").run(test_qcs).result()
+        result = AerSimulator().run(test_qcs).result()
         # check result strings are correct
         for j in range(2):
             counts = result.get_counts(j)
