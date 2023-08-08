@@ -1,6 +1,5 @@
 pylint==2.11.1
 coverage==6.1.1
-cmake!=3.17.1,!=3.17.0
 qiskit-sphinx-theme>=1.6
 sphinx-autodoc-typehints
 jupyter-sphinx
