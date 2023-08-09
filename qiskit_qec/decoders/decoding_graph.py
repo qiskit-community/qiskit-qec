@@ -807,6 +807,21 @@ def make_syndrome_graph_from_aer(code, shots=1):
 
     return graph, hyperedges, hyperedge_errors, error_circuit
 
+import itertools
+import copy
+import logging
+from typing import List, Tuple
+
+import numpy as np
+
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+import rustworkx as rx
+
+
+from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.exceptions import QiskitQECError
+
 def make_syndrome_graph_from_aer(code, shots=1):
     """
     Generates a graph and list of hyperedges for a given code by inserting single qubit
@@ -842,7 +857,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
     for j in range(depth):
         gate = qc.data[j][0].qasm()
         qubits = qc.data[j][1]
-        if gate not in ["measure", "reset", "barrier"]:
+        if gate not in ["measure", "reset", "barrier", "cx"]:
             for error in ["x", "y", "z"]:
                 for qubit in qubits:
                     temp_qc = copy.deepcopy(blank_qc)
@@ -854,6 +869,28 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     getattr(temp_qc, error)(qubit)
                     temp_qc.data += qc.data[j : depth + 1]
                     error_circuit[temp_qc_name] = temp_qc
+        elif gate == "cx":
+            qregs = []
+            for qubit in qubits:
+                for qreg in qc.qregs:
+                    if qubit in qreg:
+                        qregs.append(qreg)
+                        break
+            for pauli_0 in ["id", "x", "y", "z"]:
+                for pauli_1 in ["id", "x", "y", "z"]:
+                    if not (pauli_0 ==  pauli_1 and pauli_0 in ["id", "x", "z"]):
+                        temp_qc = copy.deepcopy(blank_qc)
+                        temp_qc_name = (
+                            j,
+                            (qc.qregs.index(qregs[0]), qc.qregs.index(qregs[1])),
+                            (qregs[0].index(qubits[0]), qregs[1].index(qubits[1])),
+                            pauli_0 + ',' + pauli_1
+                            )
+                        temp_qc.data = qc.data[0:j]
+                        getattr(temp_qc, pauli_0)(qubits[0])
+                        getattr(temp_qc, pauli_1)(qubits[1])
+                        temp_qc.data += qc.data[j : depth + 1]
+                        error_circuit[temp_qc_name] = temp_qc
         elif gate == "measure":
             pre_error = "x"
             for post_error in ["id", "x"]:
@@ -874,15 +911,6 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     getattr(temp_qc, post_error)(qubit)
                     temp_qc.data += qc.data[j + 1 : depth + 1]
                     error_circuit[temp_qc_name] = temp_qc
-        '''
-        if gate[0:2] == 'if':
-            # if a c_if, miss it out
-            temp_qc = copy.deepcopy(blank_qc)
-            temp_qc_name = (j, qc.qregs.index(qreg), qreg.index(qubit), 'missing c_if')
-            temp_qc.data = qc.data[0:j]
-            temp_qc.data += qc.data[j+1 : depth + 1]
-            error_circuit[temp_qc_name] = temp_qc
-        '''
     errors = []
     circuits = []
     for error, circuit in error_circuit.items():
