@@ -84,11 +84,7 @@ class TestCircuitMatcher(unittest.TestCase):
             False,
         )
         backend = Aer.get_backend("aer_simulator")
-        options = {
-            "method": "stabilizer",
-            "shots": shots,
-            "seed_simulator": seed
-        }
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
         result = backend.run(self.qc, **options).result()
         counts = result.get_counts(self.qc)
         dec.update_edge_weights(self.pnm)
@@ -121,11 +117,7 @@ class TestCircuitMatcher(unittest.TestCase):
             False,
         )
         backend = Aer.get_backend("aer_simulator")
-        options = {
-            "method": "stabilizer",
-            "shots": shots,
-            "seed_simulator": seed
-        }
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
         result = backend.run(self.qc, **options).result()
         counts = result.get_counts(self.qc)
         dec.update_edge_weights(self.pnm)

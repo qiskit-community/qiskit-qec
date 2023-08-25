@@ -83,12 +83,8 @@ class TestHHCDecoder(unittest.TestCase):
         shots = 10
         seed = 100
         backend = Aer.get_backend("aer_simulator")
-        options = {
-            "method": "stabilizer",
-            "shots": shots,
-            "seed_simulator": seed
-        }
-        result = backend.run(circ, **options).result() 
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
+        result = backend.run(circ, **options).result()
         counts = result.get_counts(circ)
         dec.update_edge_weights(model)
         failures = 0
