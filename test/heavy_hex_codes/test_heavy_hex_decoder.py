@@ -1,7 +1,7 @@
 """Test a heavy-hexagon code decoder"""
 import unittest
 
-from qiskit import execute, Aer
+from qiskit_aer import Aer
 
 from qiskit_qec.codes.hhc import HHC
 from qiskit_qec.circuits.hhc_circuit import HHCCircuit
@@ -82,14 +82,9 @@ class TestHHCDecoder(unittest.TestCase):
         """Test for correct behavior without faults."""
         shots = 10
         seed = 100
-        result = execute(
-            circ,
-            Aer.get_backend("aer_simulator"),
-            method="stabilizer",
-            shots=shots,
-            optimization_level=0,
-            seed_simulator=seed,
-        ).result()
+        backend = Aer.get_backend("aer_simulator")
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
+        result = backend.run(circ, **options).result()
         counts = result.get_counts(circ)
         dec.update_edge_weights(model)
         failures = 0
