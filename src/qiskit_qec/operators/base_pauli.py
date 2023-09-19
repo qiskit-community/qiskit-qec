@@ -20,7 +20,6 @@ from typing import List, Optional, Union
 import numpy as np
 
 # Must be imported as follows to avoid circular import errors
-import qiskit.quantum_info.operators.symplectic.clifford
 from qiskit import QiskitError
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.barrier import Barrier
@@ -28,6 +27,7 @@ from qiskit.circuit.delay import Delay
 from qiskit.circuit.instruction import Instruction
 from qiskit.quantum_info.operators.base_operator import BaseOperator
 from qiskit.quantum_info.operators.mixins import AdjointMixin, MultiplyMixin
+
 from qiskit_qec.linear import matrix as mt
 from qiskit_qec.linear.symplectic import symplectic_product
 from qiskit_qec.utils import pauli_rep
@@ -692,59 +692,10 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
                 ret = ret.compose(other, front=True, qargs=qargs)
             return ret
 
-        # Convert Clifford to quantum circuits
-        if isinstance(other, qiskit.quantum_info.operators.symplectic.clifford.Clifford):
-            return self._evolve_clifford(other, qargs=qargs, frame=frame)
-
-        # Otherwise evolve by the inverse circuit to compute C^dg.P.C
+        # Evolve by the inverse circuit to compute C^dg.P.C
         if frame == "s":
             return self.copy()._append_circuit(other, qargs=qargs)
         return self.copy()._append_circuit(other.inverse(), qargs=qargs)
-
-    def _evolve_clifford(
-        self,
-        other: qiskit.quantum_info.operators.symplectic.clifford.Clifford,
-        qargs: Union[None, List, int] = None,
-        frame: str = "h",
-    ):
-        """Heisenberg picture evolution of a Pauli by a Clifford."""
-        if qargs is None:
-            idx = slice(None)
-            num_act = self.num_qubits
-        else:
-            idx = list(qargs)
-            num_act = len(idx)
-
-        # Set return to I on qargs
-        ret = self.copy()
-        ret._x[:, idx] = False
-        ret._z[:, idx] = False
-
-        # pylint: disable=cyclic-import
-        from qiskit_qec.operators.pauli import Pauli
-        from qiskit_qec.operators.pauli_list import PauliList
-
-        # Get action of Pauli's from Clifford
-        if frame == "s":
-            adj = other.copy()
-        else:
-            adj = other.adjoint()
-        pauli_list = []
-        for z in self._z[:, idx]:
-            pauli = Pauli("I" * num_act)
-            for row in adj.stabilizer[z]:
-                pauli.compose(Pauli((row.Z[0], row.X[0], 2 * row.phase[0])), inplace=True)
-            pauli_list.append(pauli)
-        ret.dot(PauliList(pauli_list), qargs=qargs, inplace=True)
-
-        pauli_list = []
-        for x in self._x[:, idx]:
-            pauli = Pauli("I" * num_act)
-            for row in adj.destabilizer[x]:
-                pauli.compose(Pauli((row.Z[0], row.X[0], 2 * row.phase[0])), inplace=True)
-            pauli_list.append(pauli)
-        ret.dot(PauliList(pauli_list), qargs=qargs, inplace=True)
-        return ret
 
     # ---------------------------------------------------------------------
     # Helper Metods
