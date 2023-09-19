@@ -50,7 +50,7 @@ For information on how to contribute to this project, please take a look at our 
 
 ## Acknowledgements
 
-Development was partially supported by IARPA under contract W911NF-16-1-0114. All statements of fact, opinion or conclusions contained herein are those of the authors and should not be construed as representing the official views or policies of the US Government.
+Development was partially supported by IARPA under contract W911NF-16-1-0114 and the DOE Office of Science National Quantum Information Science Research Centers, Co-design Center for Quantum Advantage (C2QA) under contract number DE-SC0012704. All statements of fact, opinion or conclusions contained herein are those of the authors and should not be construed as representing the official views or policies of the US Government.
 
 ----------------------------------------------------------------------------------------------------
 
