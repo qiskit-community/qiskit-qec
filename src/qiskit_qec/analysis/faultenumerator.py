@@ -18,7 +18,6 @@ from typing import Tuple
 from qiskit import QuantumCircuit
 from qiskit.converters import circuit_to_dag
 from qiskit.circuit.library import IGate, XGate, YGate, ZGate
-from qiskit import execute
 from qiskit_aer import Aer
 
 from qiskit_qec.analysis.extensions import C_FAULT_ENUMERATOR

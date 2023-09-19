@@ -7,7 +7,6 @@ from qiskit import QuantumCircuit
 from qiskit.dagcircuit.dagnode import DAGNode
 from qiskit.converters import circuit_to_dag
 from qiskit.circuit.library import IGate, XGate, YGate, ZGate
-from qiskit import execute
 from qiskit_aer import Aer
 
 from qiskit_qec.utils.dag import node_name_label

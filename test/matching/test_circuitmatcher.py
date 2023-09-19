@@ -1,7 +1,7 @@
 """Tests for the subsystem CSS circuit-level matching decoder."""
 import unittest
 
-from qiskit import execute, QuantumCircuit
+from qiskit import QuantumCircuit
 from qiskit_aer import Aer
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
