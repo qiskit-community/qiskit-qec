@@ -1,6 +1,6 @@
 qiskit-terra>=0.24.0
 qiskit-aer>=0.11.0
-qiskit_ibm_provider>=0.7.0
+qiskit_ibm_provider>=0.5.0
 pybind11<=2.9.1
 PyMatching>=0.6.0,!=2.0.0
 rustworkx>=0.12.0
