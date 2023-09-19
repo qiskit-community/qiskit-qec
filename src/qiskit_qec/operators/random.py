@@ -16,10 +16,6 @@ Random symplectic operator functions
 import numpy as np
 from numpy.random import default_rng
 
-from qiskit.quantum_info.operators.symplectic.clifford import Clifford
-from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
-from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
-
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
 
@@ -77,123 +73,6 @@ def random_pauli_list(num_qubits, size=1, seed=None, phase=True):
         _phase = rng.integers(4, size=size)
         return PauliList.from_symplectic(z, x, _phase)
     return PauliList.from_symplectic(z, x)
-
-
-def random_pauli_table(num_qubits, size=1, seed=None):
-    """Return a random PauliTable.
-
-    Args:
-        num_qubits (int): the number of qubits.
-        size (int): Optional. The number of rows of the table (Default: 1).
-        seed (int or np.random.Generator): Optional. Set a fixed seed or
-                                           generator for RNG.
-
-    Returns:
-        PauliTable: a random PauliTable.
-    """
-    if seed is None:
-        rng = np.random.default_rng()
-    elif isinstance(seed, np.random.Generator):
-        rng = seed
-    else:
-        rng = default_rng(seed)
-
-    table = rng.integers(2, size=(size, 2 * num_qubits)).astype(bool)
-    return PauliTable(table)
-
-
-def random_stabilizer_table(num_qubits, size=1, seed=None):
-    """Return a random StabilizerTable.
-
-    Args:
-        num_qubits (int): the number of qubits.
-        size (int): Optional. The number of rows of the table (Default: 1).
-        seed (int or np.random.Generator): Optional. Set a fixed seed or
-                                           generator for RNG.
-
-    Returns:
-        PauliTable: a random StabilizerTable.
-    """
-    if seed is None:
-        rng = np.random.default_rng()
-    elif isinstance(seed, np.random.Generator):
-        rng = seed
-    else:
-        rng = default_rng(seed)
-
-    table = rng.integers(2, size=(size, 2 * num_qubits)).astype(bool)
-    phase = rng.integers(2, size=size).astype(bool)
-    return StabilizerTable(table, phase)
-
-
-def random_clifford(num_qubits, seed=None):
-    """Return a random Clifford operator.
-
-    The Clifford is sampled using the method of Reference [1].
-
-    Args:
-        num_qubits (int): the number of qubits for the Clifford
-        seed (int or np.random.Generator): Optional. Set a fixed seed or
-                                           generator for RNG.
-
-    Returns:
-        Clifford: a random Clifford operator.
-
-    Reference:
-        1. S. Bravyi and D. Maslov, *Hadamard-free circuits expose the
-           structure of the Clifford group*.
-           `arXiv:2003.09412 [quant-ph] <https://arxiv.org/abs/2003.09412>`_
-    """
-    if seed is None:
-        rng = np.random.default_rng()
-    elif isinstance(seed, np.random.Generator):
-        rng = seed
-    else:
-        rng = default_rng(seed)
-
-    had, perm = _sample_qmallows(num_qubits, rng)
-
-    gamma1 = np.diag(rng.integers(2, size=num_qubits, dtype=np.int8))
-    gamma2 = np.diag(rng.integers(2, size=num_qubits, dtype=np.int8))
-    delta1 = np.eye(num_qubits, dtype=np.int8)
-    delta2 = delta1.copy()
-
-    _fill_tril(gamma1, rng, symmetric=True)
-    _fill_tril(gamma2, rng, symmetric=True)
-    _fill_tril(delta1, rng)
-    _fill_tril(delta2, rng)
-
-    # For large num_qubits numpy.inv function called below can
-    # return invalid output leading to a non-symplectic Clifford
-    # being generated. This can be prevented by manually forcing
-    # block inversion of the matrix.
-    block_inverse_threshold = 50
-
-    # Compute stabilizer table
-    zero = np.zeros((num_qubits, num_qubits), dtype=np.int8)
-    prod1 = np.matmul(gamma1, delta1) % 2
-    prod2 = np.matmul(gamma2, delta2) % 2
-    inv1 = _inverse_tril(delta1, block_inverse_threshold).transpose()
-    inv2 = _inverse_tril(delta2, block_inverse_threshold).transpose()
-    table1 = np.block([[delta1, zero], [prod1, inv1]])
-    table2 = np.block([[delta2, zero], [prod2, inv2]])
-
-    # Apply qubit permutation
-    table = table2[np.concatenate([perm, num_qubits + perm])]
-
-    # Apply layer of Hadamards
-    inds = had * np.arange(1, num_qubits + 1)
-    inds = inds[inds > 0] - 1
-    lhs_inds = np.concatenate([inds, inds + num_qubits])
-    rhs_inds = np.concatenate([inds + num_qubits, inds])
-    table[lhs_inds, :] = table[rhs_inds, :]
-
-    # Apply table
-    table = np.mod(np.matmul(table1, table), 2).astype(bool)
-
-    # Generate random phases
-    phase = rng.integers(2, size=2 * num_qubits).astype(bool)
-    return Clifford(StabilizerTable(table, phase))
 
 
 def _sample_qmallows(n, rng=None):
