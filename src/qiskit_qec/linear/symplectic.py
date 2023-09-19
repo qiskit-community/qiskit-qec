@@ -13,12 +13,11 @@
 """Symplectic functions."""
 
 from collections import deque
-from typing import List, Any, Tuple
-from typing import Union, Optional
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
-
 from qiskit import QiskitError
+
 from qiskit_qec.linear import matrix as mt
 
 
@@ -1888,7 +1887,8 @@ def min_generating(
 
     Args:
         matrix (Optional[np.ndarray]): Input GF(2) symplectic matrix
-        x, z (Optional[np.ndarray]): Input hyperbolic set - pair of GF(2) symplectic matrices
+        x (Optional[np.ndarray]): Input hyperbolic set - pair of GF(2) symplectic matrices
+        z (Optional[np.ndarray]): Input hyperbolic set - pair of GF(2) symplectic matrices
 
     Raises:
         QiskitError: An input matrix is required

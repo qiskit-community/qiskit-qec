@@ -23,6 +23,7 @@ from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.mixins import generate_apidocs
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from qiskit.utils.deprecation import deprecate_function
+
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.utils import pauli_rep
 
@@ -520,11 +521,11 @@ class Pauli(BasePauli):
             gate = {"I": IGate(), "X": XGate(), "Y": YGate(), "Z": ZGate()}[pauli]
         else:
             gate = PauliGate(pauli)
-        if not phase_exp:
+        if not phase_exp[0]:
             return gate
         # Add global phase
         circuit = QuantumCircuit(self.num_qubits, name=str(self))
-        circuit.global_phase = -phase_exp * pi / 2
+        circuit.global_phase = -phase_exp[0] * pi / 2
         circuit.append(gate, range(self.num_qubits))
         return circuit.to_instruction()
 
@@ -674,9 +675,8 @@ class Pauli(BasePauli):
         """
         if qargs is None:
             qargs = getattr(other, "qargs", None)
-        from qiskit.quantum_info.operators.symplectic.clifford import Clifford
 
-        if not isinstance(other, (Pauli, Instruction, QuantumCircuit, Clifford)):
+        if not isinstance(other, (Pauli, Instruction, QuantumCircuit)):
             # Convert to a Pauli
             other = Pauli(other)
 
@@ -712,7 +712,7 @@ class Pauli(BasePauli):
             if not isinstance(dinstr, (Barrier, Delay)):
                 next_instr = BasePauli(*Pauli.instrs2symplectic(dinstr))
                 if next_instr is not None:
-                    qargs = [tup.index for tup in qregs]
+                    qargs = [instr.find_bit(tup)[0] for tup in qregs]
                     ret = ret.compose(next_instr, qargs=qargs)
         return ret.matrix, ret._phase_exp
 

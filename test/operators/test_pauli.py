@@ -14,39 +14,36 @@
 
 """Tests for Pauli operator class."""
 
-import unittest
 import itertools as it
+import unittest
 from functools import lru_cache
 
 import numpy as np
-from ddt import ddt, data, unpack
-
+from ddt import data, ddt, unpack
 from qiskit import QuantumCircuit
-from qiskit.exceptions import QiskitError
 from qiskit.circuit.library import (
+    CXGate,
+    CYGate,
+    CZGate,
+    HGate,
     IGate,
+    SdgGate,
+    SGate,
+    SwapGate,
     XGate,
     YGate,
     ZGate,
-    HGate,
-    SGate,
-    SdgGate,
-    CXGate,
-    CZGate,
-    CYGate,
-    SwapGate,
 )
 from qiskit.circuit.library.generalized_gates import PauliGate
+from qiskit.exceptions import QiskitError
+from qiskit.quantum_info.operators import Operator
 from qiskit.test import QiskitTestCase
 
-from qiskit.quantum_info.operators import Operator
-
-from qiskit_qec.operators.random import random_clifford, random_pauli
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
-from qiskit_qec.utils.pauli_rep import split_pauli, cpxstr2exp
 
-# from qiskit.quantum_info.operators.symplectic.pauli import _split_pauli_label, _phase_from_label
+
+from qiskit_qec.utils.pauli_rep import cpxstr2exp, split_pauli
 
 
 @lru_cache(maxsize=8)
@@ -400,21 +397,6 @@ class TestPauli(QiskitTestCase):
         value_s = Operator(pauli.evolve(gate, frame="s"))
         value_inv = Operator(pauli.evolve(gate.inverse()))
         target = op.adjoint().dot(pauli).dot(op)
-        self.assertEqual(value, target)
-        self.assertEqual(value, value_h)
-        self.assertEqual(value_inv, value_s)
-
-    def test_evolve_clifford_qargs(self):
-        """Test evolve method for random Clifford"""
-        cliff = random_clifford(3, seed=10)
-        op = Operator(cliff)
-        pauli = random_pauli(5, seed=10)
-        qargs = [3, 0, 1]
-        value = Operator(pauli.evolve(cliff, qargs=qargs))
-        value_h = Operator(pauli.evolve(cliff, qargs=qargs, frame="h"))
-        value_s = Operator(pauli.evolve(cliff, qargs=qargs, frame="s"))
-        value_inv = Operator(pauli.evolve(cliff.adjoint(), qargs=qargs))
-        target = Operator(pauli).compose(op.adjoint(), qargs=qargs).dot(op, qargs=qargs)
         self.assertEqual(value, target)
         self.assertEqual(value, value_h)
         self.assertEqual(value_inv, value_s)
