@@ -521,11 +521,11 @@ class Pauli(BasePauli):
             gate = {"I": IGate(), "X": XGate(), "Y": YGate(), "Z": ZGate()}[pauli]
         else:
             gate = PauliGate(pauli)
-        if not phase_exp:
+        if not phase_exp[0]:
             return gate
         # Add global phase
         circuit = QuantumCircuit(self.num_qubits, name=str(self))
-        circuit.global_phase = -phase_exp * pi / 2
+        circuit.global_phase = -phase_exp[0] * pi / 2
         circuit.append(gate, range(self.num_qubits))
         return circuit.to_instruction()
 
