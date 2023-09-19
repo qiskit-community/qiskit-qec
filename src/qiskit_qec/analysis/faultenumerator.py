@@ -186,14 +186,9 @@ class FaultEnumerator:
             else:
                 return c
 
-        result = execute(
-            circ,
-            Aer.get_backend("aer_simulator"),
-            method="stabilizer",
-            shots=1,
-            optimization_level=0,
-            seed_simulator=self.sim_seed,
-        ).result()
+        backend = Aer.get_backend("aer_simulator")
+        options = {"method": "stabilizer", "shots": 1, "seed_simulator": self.sim_seed}
+        result = backend.run(circ, **options).result()
         outcomes = result.get_counts(circ)
         raw_outcome = list(outcomes.keys())[0]
         outcome = list(map(gint, raw_outcome[::-1]))
