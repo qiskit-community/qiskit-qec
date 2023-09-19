@@ -16,20 +16,21 @@
 
 """Run codes and decoders."""
 
-import unittest
 import itertools
+import unittest
 from random import choices
 
 from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.fake_provider import FakeJakarta
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
-from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.circuits.repetition_code import ArcCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.utils import DecodingGraphNode
+
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.circuits.repetition_code import ArcCircuit
+from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
+from qiskit_qec.utils import DecodingGraphNode
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -324,7 +325,7 @@ class TestARCCodes(unittest.TestCase):
         self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
         nodeless = True
         for string in counts:
-            nodeless = nodeless and code.string2nodes(string) == []
+            nodeless = nodeless and not code.string2nodes(string)
         self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
 
     def test_single_error_202s(self):

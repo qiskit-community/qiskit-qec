@@ -1,4 +1,4 @@
-qiskit-terra>=0.21.2
+qiskit-terra>=0.24.0
 qiskit-aer>=0.11.0
 qiskit_ibm_provider>=0.6.0
 pybind11<=2.9.1

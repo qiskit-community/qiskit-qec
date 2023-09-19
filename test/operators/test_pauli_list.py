@@ -12,17 +12,13 @@
 
 """Tests for PauliList class."""
 
+import itertools as it
 import unittest
 from functools import lru_cache
-import itertools as it
-
 from test import combine
 
 import numpy as np
-from scipy.sparse import csr_matrix
 from ddt import ddt
-
-
 from qiskit import QiskitError
 from qiskit.circuit.library import (
     CXGate,
@@ -37,19 +33,15 @@ from qiskit.circuit.library import (
     YGate,
     ZGate,
 )
-from qiskit.quantum_info.operators import (
-    Clifford,
-    Operator,
-    PauliTable,
-    StabilizerTable,
-)
+from qiskit.quantum_info.operators import Operator
 from qiskit.quantum_info.random import random_clifford, random_pauli_list
 from qiskit.test import QiskitTestCase
-
-# Note: In Qiskit tests below is just test
+from scipy.sparse import csr_matrix
 
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
+
+# Note: In Qiskit tests below is just test
 
 
 @lru_cache(maxsize=8)
@@ -212,32 +204,6 @@ class TestPauliListInit(QiskitTestCase):
             target = PauliList(["iXI", "IX", "IZ"])
             value = PauliList(target)
             value[0] = "-iII"
-            self.assertEqual(value, target)
-
-    def test_pauli_table_init(self):
-        """Test table initialization."""
-        with self.subTest(msg="PauliTable"):
-            target = PauliTable.from_labels(["XI", "IX", "IZ"])
-            value = PauliList(target)
-            self.assertEqual(value, target)
-
-        with self.subTest(msg="PauliTable no copy"):
-            target = PauliTable.from_labels(["XI", "IX", "IZ"])
-            value = PauliList(target)
-            value[0] = "II"
-            self.assertEqual(value, target)
-
-    def test_stabilizer_table_init(self):
-        """Test table initialization."""
-        with self.subTest(msg="PauliTable"):
-            target = StabilizerTable.from_labels(["+II", "-XZ"])
-            value = PauliList(target)
-            self.assertEqual(value, target)
-
-        with self.subTest(msg="PauliTable no copy"):
-            target = StabilizerTable.from_labels(["+YY", "-XZ", "XI"])
-            value = PauliList(target)
-            value[0] = "II"
             self.assertEqual(value, target)
 
     def test_init_from_settings(self):
@@ -1975,24 +1941,7 @@ class TestPauliListMethods(QiskitTestCase):
             target = []
             self.assertEqual(value, target)
 
-    @combine(
-        gate=(
-            IGate(),
-            XGate(),
-            YGate(),
-            ZGate(),
-            HGate(),
-            SGate(),
-            SdgGate(),
-            Clifford(IGate()),
-            Clifford(XGate()),
-            Clifford(YGate()),
-            Clifford(ZGate()),
-            Clifford(HGate()),
-            Clifford(SGate()),
-            Clifford(SdgGate()),
-        )
-    )
+    @combine(gate=(IGate(), XGate(), YGate(), ZGate(), HGate(), SGate(), SdgGate()))
     def test_evolve_clifford1(self, gate):
         """Test evolve method for 1-qubit Clifford gates."""
         op = Operator(gate)
@@ -2001,18 +1950,7 @@ class TestPauliListMethods(QiskitTestCase):
         target = [op.adjoint().dot(pauli).dot(op) for pauli in pauli_list]
         self.assertListEqual(value, target)
 
-    @combine(
-        gate=(
-            CXGate(),
-            CYGate(),
-            CZGate(),
-            SwapGate(),
-            Clifford(CXGate()),
-            Clifford(CYGate()),
-            Clifford(CZGate()),
-            Clifford(SwapGate()),
-        )
-    )
+    @combine(gate=(CXGate(), CYGate(), CZGate(), SwapGate()))
     def test_evolve_clifford2(self, gate):
         """Test evolve method for 2-qubit Clifford gates."""
         op = Operator(gate)

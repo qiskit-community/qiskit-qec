@@ -62,6 +62,7 @@ class DecodingGraphNode:
 
     def get(self, key, _):
         """A dummy docstring."""
+        # pylint: disable=unnecessary-dunder-call
         return self.__getitem__(key)
 
     def __setitem__(self, key, value):
@@ -122,6 +123,7 @@ class DecodingGraphEdge:
 
     def get(self, key, _):
         """A dummy docstring."""
+        # pylint: disable=unnecessary-dunder-call
         return self.__getitem__(key)
 
     def __setitem__(self, key, value):

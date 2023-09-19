@@ -15,8 +15,9 @@
 import math
 import random
 import unittest
-from qiskit_qec.decoders import ClAYGDecoder
+
 from qiskit_qec.circuits import RepetitionCodeCircuit
+from qiskit_qec.decoders import ClAYGDecoder
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 
@@ -144,6 +145,7 @@ class ClAYGDecoderTest(unittest.TestCase):
                 string += testcases[sample]
                 # get and check corrected_z_logicals
                 outcome = decoder.process(string)
+                # pylint: disable=consider-using-generator
                 logical_outcome = sum([outcome[int(z_logical / 2)] for z_logical in z_logicals]) % 2
                 if not logical_outcome == 0:
                     logical_errors += 1
