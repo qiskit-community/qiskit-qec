@@ -16,15 +16,16 @@
 
 """Hard decision renormalization group decoders."""
 
+from abc import ABC
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from typing import Dict, List, Set, Tuple
-from abc import ABC
-from rustworkx import connected_components, distance_matrix, PyGraph
+
+from rustworkx import PyGraph, connected_components, distance_matrix
 
 from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 
 
 class ClusteringDecoder(ABC):
@@ -359,16 +360,13 @@ class UnionFindDecoder(ClusteringDecoder):
             clusters = self.cluster(nodes)
             return self.get_corrections(string, clusters)
 
-    def cluster(self, nodes):
+    def cluster(self, nodes: List):
         """
         Create clusters using the union-find algorithm.
 
         Args:
             nodes (List): List of non-typical nodes in the syndrome graph,
             of the type produced by `string2nodes`.
-            standard_form (Bool): Whether to use the standard form of
-            the clusters for clustering decoders, or the form used internally
-            by the class.
 
         Returns:
             clusters (dict): Dictionary with the indices of

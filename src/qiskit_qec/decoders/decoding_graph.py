@@ -19,13 +19,14 @@ Graph used as the basis of decoders.
 """
 import itertools
 import logging
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import rustworkx as rx
+
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 
 
 class DecodingGraph:
@@ -293,12 +294,13 @@ class DecodingGraph:
             edge_data.weight = w
             self.graph.update_edge(edge[0], edge[1], edge_data)
 
-    def make_error_graph(self, data, all_logicals=True):
+    def make_error_graph(self, data: Union[str, List], all_logicals=True):
         """Returns error graph.
 
         Args:
             data: Either an ouput string of the code, or a list of
             nodes for the code.
+            all_logicals(bool): Whether to do all logicals
 
         Returns:
             The subgraph of graph which corresponds to the non-trivial
