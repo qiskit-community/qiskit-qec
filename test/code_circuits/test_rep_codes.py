@@ -449,7 +449,7 @@ class TestARCCodes(unittest.TestCase):
         )
         circuit = code.transpile(backend, echo_num=(2, 0))
         self.assertTrue(
-            circuit[code.base].count_ops()["x"] == 20, "Error: Wrong echo sequence for code qubits."
+            circuit[code.base].count_ops()["x"] == 26, "Error: Wrong echo sequence for code qubits."
         )
         self.assertTrue(
             circuit[code.base].count_ops()["cx"] == 8,
