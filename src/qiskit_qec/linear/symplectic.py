@@ -690,7 +690,7 @@ def _build_hyper_partner(matrix, index: int) -> np.ndarray:
     for i in range(ncols):
         if heads[i] == 1:
             result[i] = trans_e_index[pivot]
-            pivot = +1
+            pivot += 1
 
     return result
 
