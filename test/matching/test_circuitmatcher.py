@@ -1,7 +1,8 @@
 """Tests for the subsystem CSS circuit-level matching decoder."""
 import unittest
 
-from qiskit import execute, QuantumCircuit, Aer
+from qiskit import QuantumCircuit
+from qiskit_aer import Aer
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.decoders.circuit_matching_decoder import temp_syndrome
@@ -82,14 +83,9 @@ class TestCircuitMatcher(unittest.TestCase):
             "rustworkx",
             False,
         )
-        result = execute(
-            self.qc,
-            Aer.get_backend("aer_simulator"),
-            method="stabilizer",
-            shots=shots,
-            optimization_level=0,
-            seed_simulator=seed,
-        ).result()
+        backend = Aer.get_backend("aer_simulator")
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
+        result = backend.run(self.qc, **options).result()
         counts = result.get_counts(self.qc)
         dec.update_edge_weights(self.pnm)
         failures = 0
@@ -120,14 +116,9 @@ class TestCircuitMatcher(unittest.TestCase):
             "pymatching",
             False,
         )
-        result = execute(
-            self.qc,
-            Aer.get_backend("aer_simulator"),
-            method="stabilizer",
-            shots=shots,
-            optimization_level=0,
-            seed_simulator=seed,
-        ).result()
+        backend = Aer.get_backend("aer_simulator")
+        options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
+        result = backend.run(self.qc, **options).result()
         counts = result.get_counts(self.qc)
         dec.update_edge_weights(self.pnm)
         failures = 0
