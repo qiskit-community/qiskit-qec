@@ -478,7 +478,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                     p = y
                 else:
                     p = x
-                num_errors = min(num_errors, min(p + 1, self.d - p))
+                num_errors = min(num_errors, p + 1, self.d - p)
             flipped_logicals = {1 - int(p < (self.d - 1) / 2)}
 
         # if unneeded logical zs are given, cluster is not neutral

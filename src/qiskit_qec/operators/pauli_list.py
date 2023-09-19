@@ -20,8 +20,7 @@ import rustworkx as rx
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.custom_iterator import CustomIterator
 from qiskit.quantum_info.operators.mixins import GroupMixin, LinearMixin
-from qiskit.quantum_info.operators.symplectic.pauli_table import PauliTable
-from qiskit.quantum_info.operators.symplectic.stabilizer_table import StabilizerTable
+
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.utils import pauli_rep
@@ -35,9 +34,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
     def __init__(
         self,
-        data: Union[
-            BasePauli, StabilizerTable, PauliTable, np.ndarray, Tuple[np.ndarray], Iterable, None
-        ] = None,
+        data: Union[BasePauli, np.ndarray, Tuple[np.ndarray], Iterable, None] = None,
         phase_exp: Union[int, np.ndarray, None] = None,
         *,
         input_pauli_encoding: str = BasePauli.EXTERNAL_PAULI_ENCODING,
@@ -60,14 +57,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         elif isinstance(data, BasePauli):
             matrix = data.matrix
             phase_exp = data._phase_exp
-        elif isinstance(data, StabilizerTable):
-            # Conversion from legacy StabilizerTable
-            matrix = data._array
-            phase_exp = 2 * data.phase
-        elif isinstance(data, PauliTable):
-            # Conversion from legacy PauliTable
-            matrix = data._array
-            phase_exp = np.zeros(shape=(matrix.shape[0],), dtype=np.int8)
+
         elif isinstance(data, np.ndarray):
             if data.size == 0:
                 matrix = np.empty(shape=(0, 0), dtype=np.bool_)
@@ -160,7 +150,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             matrix[index][num_qubits : num_qubits + pauli.num_qubits] = pauli.matrix[0][
                 pauli.num_qubits :
             ]
-            phase_exp[index] = pauli._phase_exp
+            phase_exp[index] = pauli._phase_exp[0]
         return matrix, phase_exp
 
     # ---------------------------------------------------------------------
@@ -289,7 +279,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         if not isinstance(index, tuple):
             # Row-only indexing
-            self._phase_exp[index] = value._phase_exp
+            self._phase_exp[index] = value._phase_exp[0]
         else:
             # Row and Qubit indexing
             self._phase_exp[index[0]] += value._phase_exp
@@ -919,12 +909,11 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             QiskitError: if the Clifford number of qubits and qargs don't match.
         """
         from qiskit.circuit import Instruction, QuantumCircuit
-        from qiskit.quantum_info.operators.symplectic.clifford import Clifford
 
         if qargs is None:
             qargs = getattr(other, "qargs", None)
 
-        if not isinstance(other, (BasePauli, Instruction, QuantumCircuit, Clifford)):
+        if not isinstance(other, (BasePauli, Instruction, QuantumCircuit)):
             # Convert to a PauliList
             other = PauliList(other)
 
