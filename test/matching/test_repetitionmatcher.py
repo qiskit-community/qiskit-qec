@@ -53,11 +53,7 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
             dec = RepetitionDecoder(self.code_circuit, self.pnm, method, False, logical)
             qc = self.code_circuit.circuit[logical]
             backend = Aer.get_backend("aer_simulator")
-            options = {
-                "method": "stabilizer",
-                "shots": shots,
-                "seed_simulator": seed
-            }
+            options = {"method": "stabilizer", "shots": shots, "seed_simulator": seed}
             result = backend.run(qc, **options).result()
             counts = result.get_counts(qc)
             dec.update_edge_weights(self.pnm)
