@@ -16,20 +16,21 @@
 
 """Run codes and decoders."""
 
-import unittest
 import itertools
+import unittest
 from random import choices
 
 from qiskit import Aer, QuantumCircuit, execute
 from qiskit.providers.fake_provider import FakeJakarta
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
-from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
-from qiskit_qec.circuits.repetition_code import ArcCircuit
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.utils import DecodingGraphNode
+
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
+from qiskit_qec.circuits.repetition_code import ArcCircuit
+from qiskit_qec.circuits.repetition_code import RepetitionCodeCircuit as RepetitionCode
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.decoders.hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
+from qiskit_qec.utils import DecodingGraphNode
 
 
 def get_syndrome(code, noise_model, shots=1024):
@@ -306,7 +307,7 @@ class TestARCCodes(unittest.TestCase):
         T = 15
         # first, do they appear when needed
         for run_202 in [True, False]:
-            code = ArcCircuit(links, T=T, run_202=run_202)
+            code = ArcCircuit(links, T=T, run_202=run_202, rounds_per_202=5)
             running_202 = False
             for t in range(T):
                 tau, _, _ = code._get_202(t)
@@ -318,20 +319,20 @@ class TestARCCodes(unittest.TestCase):
                 + "Error: [[2,0,2]] codes present when not required." * (not run_202),
             )
         # second, do they yield non-trivial outputs yet trivial nodes
-        code = ArcCircuit(links, T=T, run_202=True, logical="1")
+        code = ArcCircuit(links, T=T, run_202=True, logical="1", rounds_per_202=5)
         backend = Aer.get_backend("aer_simulator")
         counts = backend.run(code.circuit[code.basis]).result().get_counts()
         self.assertTrue(len(counts) > 1, "No randomness in the results for [[2,0,2]] circuits.")
         nodeless = True
         for string in counts:
-            nodeless = nodeless and code.string2nodes(string) == []
+            nodeless = nodeless and not code.string2nodes(string)
         self.assertTrue(nodeless, "Non-trivial nodes found for noiseless [[2,0,2]] circuits.")
 
     def test_single_error_202s(self):
         """Test a range of single errors for a code with [[2,0,2]] codes."""
         links = [(0, 1, 2), (2, 3, 4), (4, 5, 0), (2, 7, 6)]
         for T in [21, 25]:
-            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1")
+            code = ArcCircuit(links, T, run_202=True, barriers=True, logical="1", rounds_per_202=5)
             assert code.run_202
             # insert errors on a selection of qubits during a selection of rounds
             qc = code.circuit[code.base]
@@ -516,31 +517,30 @@ class TestDecoding(unittest.TestCase):
         links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
         codes.append(ArcCircuit(links, 0))
         # then make a bunch of non-linear ARCs
-        # TODO: make these work for union find too
-        if Decoder is not UnionFindDecoder:
-            # crossed line
-            links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
-            links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
-            links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
-            # ladder (works for even d)
-            half_d = int(d / 2)
-            links_ladder = []
-            for row in [0, 1]:
-                for j in range(half_d - 1):
-                    delta = row * (2 * half_d - 1)
-                    links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
-            q = links_ladder[-1][2] + 1
-            for j in range(half_d):
-                delta = 2 * half_d - 1
-                links_ladder.append((2 * j, q, delta + 2 * j))
-                q += 1
-            # add them to the code list
-            for links in [links_ladder, links_cross]:
-                codes.append(ArcCircuit(links, 0))
+        links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
+        links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
+        links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
+        codes.append(ArcCircuit(links_cross, 0))
+        # ladder (works for even d)
+        half_d = int(d / 2)
+        links_ladder = []
+        for row in [0, 1]:
+            for j in range(half_d - 1):
+                delta = row * (2 * half_d - 1)
+                links_ladder.append((delta + 2 * j, delta + 2 * j + 1, delta + 2 * (j + 1)))
+        q = links_ladder[-1][2] + 1
+        for j in range(half_d):
+            delta = 2 * half_d - 1
+            links_ladder.append((2 * j, q, delta + 2 * j))
+            q += 1
+        codes.append(ArcCircuit(links_ladder, 0))
         # now run them all and check it works
         for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
-            decoder = Decoder(code, decoding_graph=decoding_graph)
+            if c == 3 and Decoder is UnionFindDecoder:
+                decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
+            else:
+                decoder = Decoder(code, decoding_graph=decoding_graph)
             errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             min_error_string = ""
