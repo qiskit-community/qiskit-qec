@@ -144,7 +144,7 @@ def get_counts_via_stim(
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
-        circuit: Qiskit circuit compatible with `get_stim_circuits` or list thereof.
+        circuits: Qiskit circuit compatible with `get_stim_circuits` or list thereof.
         shots: Number of samples to be generated.
         noise_model: Pauli noise model for any additional noise to be applied.
 

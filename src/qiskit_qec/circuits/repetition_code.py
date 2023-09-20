@@ -15,19 +15,18 @@
 # pylint: disable=invalid-name
 
 """Generates circuits based on repetition codes."""
+from copy import deepcopy
 from typing import List, Optional, Tuple
 
-from copy import deepcopy
 import numpy as np
 import rustworkx as rx
-
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
-from qiskit.transpiler.passes import DynamicalDecoupling
+from qiskit.transpiler.passes import ALAPScheduleAnalysis, PadDynamicalDecoupling
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
-from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
+from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 
 
 def _separate_string(string):
@@ -310,7 +309,8 @@ class RepetitionCodeCircuit(CodeCircuit):
             logical = "0"
 
         string = self._process_string(string)
-        separated_string = _separate_string(string)  # [ <boundary>, <syn>, <syn>,...]
+        # [ <boundary>, <syn>, <syn>,...]
+        separated_string = _separate_string(string)
         nodes = []
 
         # boundary nodes
@@ -437,7 +437,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                 node = DecodingGraphNode(is_boundary=True, qubits=qubits, index=elem)
                 flipped_logical_nodes.append(node)
 
-            if neutral and flipped_logical_nodes == []:
+            if neutral and not flipped_logical_nodes:
                 break
 
         return neutral, flipped_logical_nodes, num_errors
@@ -1268,7 +1268,6 @@ class ArcCircuit(CodeCircuit):
             # if neutral for maximal, it's neutral
             # otherwise, it is whatever it is for the minimal
             for c in cs:
-
                 neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
@@ -1291,7 +1290,7 @@ class ArcCircuit(CodeCircuit):
                     )
                     flipped_logical_nodes.append(node)
 
-                if neutral and flipped_logical_nodes == []:
+                if neutral and not flipped_logical_nodes:
                     break
 
         else:
@@ -1308,15 +1307,13 @@ class ArcCircuit(CodeCircuit):
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, atypical_nodes: dict):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
         to the method.
         Args:
-            atypical_nodes (dictionary in the form of the return value of string2nodes)
-            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
-            ignored.
+            atypical_nodes: dictionary in the form of the return value of string2nodes
         """
         neutral, logicals, _ = self.check_nodes(atypical_nodes)
         return neutral and not logicals
@@ -1381,9 +1378,10 @@ class ArcCircuit(CodeCircuit):
                         qubits = None
                     pm = PassManager(
                         [
-                            DynamicalDecoupling(
+                            ALAPScheduleAnalysis(durations),
+                            PadDynamicalDecoupling(
                                 durations, dd_sequence, qubits=qubits, spacing=spacings[j]
-                            )
+                            ),
                         ]
                     )
                     circuits = pm.run(circuits)
@@ -1560,7 +1558,7 @@ class ArcCircuit(CodeCircuit):
                     qubit = tuple(node0.qubits + [node0.properties["link qubit"]])
                     time = [node0.time, node0.time + (round_length - 1) / round_length]
 
-            if time != []:  # only record if not nan
+            if time:  # only record if not nan
                 if (qubit, time[0], time[1]) not in error_coords:
                     error_coords[qubit, time[0], time[1]] = {}
                 error_coords[qubit, time[0], time[1]][n0, n1] = prob
