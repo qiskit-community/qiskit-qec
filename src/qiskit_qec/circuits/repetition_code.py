@@ -1275,7 +1275,6 @@ class ArcCircuit(CodeCircuit):
             # if neutral for maximal, it's neutral
             # otherwise, it is whatever it is for the minimal
             for c in cs:
-
                 neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
