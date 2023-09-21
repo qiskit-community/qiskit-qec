@@ -60,8 +60,6 @@ Linear symplectic functions
     is_stabilizer_group
 """
 
-from .bit.bit import Bit
-from .smatrix_api.smatrix import SMatrix
 from .matrix import create_lambda_matrix, augment_mat, rref, rank, rref_complete
 from .symplectic import (
     all_commute,
