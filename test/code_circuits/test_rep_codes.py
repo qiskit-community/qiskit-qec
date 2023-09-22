@@ -446,11 +446,11 @@ class TestARCCodes(unittest.TestCase):
         self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
         circuit = code.transpile(backend, echo_num=(0, 2))
         self.assertTrue(
-            circuit[code.base].count_ops()["x"] == 2, "Error: Wrong echo sequence for link qubits."
+            circuit[code.base].count_ops()["x"] == 4, "Error: Wrong echo sequence for link qubits."
         )
         circuit = code.transpile(backend, echo_num=(2, 0))
         self.assertTrue(
-            circuit[code.base].count_ops()["x"] == 8, "Error: Wrong echo sequence for code qubits."
+            circuit[code.base].count_ops()["x"] == 26, "Error: Wrong echo sequence for code qubits."
         )
         self.assertTrue(
             circuit[code.base].count_ops()["cx"] == 8,
