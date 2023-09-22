@@ -21,9 +21,11 @@ from typing import List, Optional, Tuple
 import numpy as np
 import rustworkx as rx
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
-from qiskit.circuit.library import RZGate, XGate
-from qiskit.transpiler import InstructionDurations, PassManager
-from qiskit.transpiler.passes import DynamicalDecoupling
+from qiskit.circuit.library import XGate, RZGate
+from qiskit.transpiler import PassManager, InstructionDurations
+from qiskit_ibm_provider.transpiler.passes.scheduling import DynamicCircuitInstructionDurations
+from qiskit_ibm_provider.transpiler.passes.scheduling import PadDynamicalDecoupling
+from qiskit_ibm_provider.transpiler.passes.scheduling import ALAPScheduleAnalysis
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
@@ -401,7 +403,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         # list the colours with the max error one first
         # (unless we do min only)
         error_cs = []
-        if minimal:
+        if not minimal:
             error_cs.append(error_c_max)
         error_cs.append(error_c_min)
 
@@ -510,7 +512,7 @@ class ArcCircuit(CodeCircuit):
         logical: str = "0",
         resets: bool = True,
         delay: Optional[int] = None,
-        barriers: bool = False,
+        barriers: bool = True,
         color: Optional[dict] = None,
         max_dist: int = 2,
         schedule: Optional[list] = None,
@@ -535,13 +537,13 @@ class ArcCircuit(CodeCircuit):
             color (dict): Dictionary with code qubits as keys and 0 or 1 for each value, to specify
             a predetermined bicoloring. If not provided, a bicoloring is found on initialization.
             max_dist (int): Maximum edge distance used when determining the bicoloring of code qubits.
-            schedule(list): Specifies order in which entangling gates are applied in each syndrome
+            schedule (list): Specifies order in which entangling gates are applied in each syndrome
             measurement round. Each element is a list of lists [c, a] for entangling gates to be
             applied simultaneously.
             run_202 (bool): Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
             enough (at least rounds_per_202xlen(links)).
             rounds_per_202 (int): Number of rounds that are part of the 202, including the typical link
-            measurements at the beginning and edge. At least 9 are required to get an event dedicated to
+            measurements at the beginning and end. At least 9 are required to get an event dedicated to
             conjugate errors.
             conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
             previous measurement), rather than a reset gate.
@@ -877,6 +879,7 @@ class ArcCircuit(CodeCircuit):
         links_to_reset = set()
         for basis, qc in self.circuit.items():
             if self._barriers:
+                # pre round barrier
                 qc.barrier()
             for pairs in self.schedule:
                 for qubit_c, qubit_l in pairs:
@@ -897,11 +900,12 @@ class ArcCircuit(CodeCircuit):
         # measurement and resets
         for basis, qc in self.circuit.items():
             # measurement
+            if final:
+                # already prep code qubits for readout
+                self._basis_change(basis, inverse=True)
             if self._barriers:
-                if final:
-                    qc.barrier(self.link_qubit)
-                else:
-                    qc.barrier()
+                # post-round, pre-measurement barrier
+                qc.barrier()
             qc.add_register(self.link_bits[self.T])
             for q_l in links_to_measure:
                 qc.measure(self.link_qubit[q_l], self.link_bits[self.T][q_l])
@@ -939,6 +943,7 @@ class ArcCircuit(CodeCircuit):
             # delay
             if self.delay > 0 and not final:
                 if self._barriers:
+                    # post-reset, pre-delay barrier
                     qc.barrier()
                 qc.delay(self.delay, self.link_qubit)
 
@@ -951,9 +956,11 @@ class ArcCircuit(CodeCircuit):
         """
 
         for basis, qc in self.circuit.items():
-            self._basis_change(basis, inverse=True)
-            if self._barriers:
-                qc.barrier(self.code_qubit)
+            if self.T == 0:
+                self._basis_change(basis, inverse=True)
+                if self._barriers:
+                    qc.barrier()
+                # otherwise, code qubits are already prepped
             qc.add_register(self.code_bit)
             qc.measure(self.code_qubit, self.code_bit)
 
@@ -1211,8 +1218,9 @@ class ArcCircuit(CodeCircuit):
                         # different color if edge is given node, same otherwise
                         if nn not in node_color:
                             new_c = (c + dc) % 2
-                            newly_colored[nn] = new_c
-                            num_nodes[new_c] += 1
+                            if nn not in newly_colored:
+                                newly_colored[nn] = new_c
+                                num_nodes[new_c] += 1
                         # if it is coloured, check the colour is correct
                         else:
                             base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
@@ -1239,7 +1247,7 @@ class ArcCircuit(CodeCircuit):
             else:
                 min_color = (conv_color + 1) % 2
             # calculate the number of nodes for the other
-            num_nodes[(min_color + 1) % 2] = link_graph.num_nodes() - num_nodes[min_color]
+            num_nodes[(conv_color + 1) % 2] = link_graph.num_nodes() - num_nodes[conv_color]
             # get the set of min nodes
             min_ns = set()
             for n, c in node_color.items():
@@ -1258,7 +1266,6 @@ class ArcCircuit(CodeCircuit):
 
             # list the colours with the max error one first
             # (unless we do min only)
-            min_color = int(sum(node_color.values()) < len(node_color) / 2)
             cs = []
             if not minimal:
                 cs.append((min_color + 1) % 2)
@@ -1268,7 +1275,6 @@ class ArcCircuit(CodeCircuit):
             # if neutral for maximal, it's neutral
             # otherwise, it is whatever it is for the minimal
             for c in cs:
-
                 neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]
@@ -1299,7 +1305,7 @@ class ArcCircuit(CodeCircuit):
             neutral = not bool(given_logicals)
             # and no flipped logicals
             flipped_logical_nodes = []
-            num_errors = None
+            num_errors = 0
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
@@ -1327,7 +1333,7 @@ class ArcCircuit(CodeCircuit):
             the numbering used in `self.links`.
             echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and
             link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
-            echo_num(tuple): Number of times to repeat the sequences (as a list) for code qubits and
+            echo_num (tuple): Number of times to repeat the sequences for code qubits and
             link qubits, respectively.
         Returns:
             transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
@@ -1344,13 +1350,16 @@ class ArcCircuit(CodeCircuit):
                 self.qubits[qreg_index][q] for q in range(self.num_qubits[qreg_index])
             ]
 
-        # transpile to backend and schedule
-        circuits = transpile(
-            circuits, backend, initial_layout=initial_layout, scheduling_method="alap"
-        )
+        # transpile to backend
+        circuits = transpile(circuits, backend, initial_layout=initial_layout)
 
         # then dynamical decoupling if needed
         if any(echo_num):
+            if self.run_202:
+                durations = DynamicCircuitInstructionDurations().from_backend(backend)
+            else:
+                durations = InstructionDurations().from_backend(backend)
+
             # set up the dd sequences
             dd_sequences = []
             spacings = []
@@ -1359,8 +1368,8 @@ class ArcCircuit(CodeCircuit):
                     dd_sequences.append([XGate()] * echo_num[j])
                     spacings.append(None)
                 elif echo[j] == "XZX":
-                    dd_sequences.append([XGate(), RZGate(np.pi), XGate()] * echo_num)
-                    d = 1.0 / (2 * echo_num - 1 + 1)
+                    dd_sequences.append([XGate(), RZGate(np.pi), XGate()] * echo_num[j])
+                    d = 1.0 / (2 * echo_num[j] - 1 + 1)
                     spacing = [d / 2] + ([0, d, d] * echo_num[j])[:-1] + [d / 2]
                     for _ in range(2):
                         spacing[0] += 1 - sum(spacing)
@@ -1370,7 +1379,6 @@ class ArcCircuit(CodeCircuit):
                     spacings.append(None)
 
             # add in the dd sequences
-            durations = InstructionDurations().from_backend(backend)
             for j, dd_sequence in enumerate(dd_sequences):
                 if dd_sequence:
                     if echo_num[j]:
@@ -1379,30 +1387,15 @@ class ArcCircuit(CodeCircuit):
                         qubits = None
                     pm = PassManager(
                         [
-                            DynamicalDecoupling(
-                                durations, dd_sequence, qubits=qubits, spacing=spacings[j]
-                            )
+                            ALAPScheduleAnalysis(durations),
+                            PadDynamicalDecoupling(
+                                durations, dd_sequence, qubits=qubits, spacings=spacings[j]
+                            ),
                         ]
                     )
                     circuits = pm.run(circuits)
             if not isinstance(circuits, list):
                 circuits = [circuits]
-
-            # make sure delays are a multiple of 16 samples, while keeping the barriers
-            # as aligned as possible
-            for qc in circuits:
-                total_delay = [{q: 0 for q in qc.qubits} for _ in range(2)]
-                for gate in qc.data:
-                    if gate[0].name == "delay":
-                        q = gate[1][0]
-                        t = gate[0].params[0]
-                        total_delay[0][q] += t
-                        new_t = 16 * np.ceil((total_delay[0][q] - total_delay[1][q]) / 16)
-                        total_delay[1][q] += new_t
-                        gate[0].params[0] = new_t
-
-            # transpile to backend and schedule again
-            circuits = transpile(circuits, backend, scheduling_method="alap")
 
         return {basis: circuits[j] for j, basis in enumerate(bases)}
 
@@ -1431,16 +1424,18 @@ class ArcCircuit(CodeCircuit):
         for n0, node0 in enumerate(nodes):
             for n1, node1 in enumerate(nodes):
                 if n0 < n1:
-                    # just record all possible edges for now (should be improved later)
+                    # just record all possible edges for now
                     dt = abs((node1.time or 0) - (node0.time or 0))
                     adj = set(node0.qubits).intersection(set(node1.qubits))
                     if adj:
                         if (node0.is_boundary ^ node1.is_boundary) or dt <= 1:
                             edges.append((n0, n1))
+                        elif not self.resets:
+                            if node0.qubits == node1.qubits and dt == 2:
+                                edges.append((n0, n1))
 
         # put it all in a graph
         S = rx.PyGraph(multigraph=False)
-        hyperedges = []
         for node in nodes:
             S.add_node(node)
         for n0, n1 in edges:
@@ -1453,12 +1448,25 @@ class ArcCircuit(CodeCircuit):
                 qubits = []
             edge = DecodingGraphEdge(qubits=qubits, weight=1)
             S.add_edge(n0, n1, edge)
-            # just record edges as hyperedges for now (should be improved later)
-            hyperedges.append({(n0, n1): edge})
+
+        # remove invalid edges
+        self.get_error_coords(None, S, remove_invalid_edges=True)
+
+        # just record edges as hyperedges for now (should be improved later)
+        hyperedges = []
+        for e, n0n1 in enumerate(S.edge_list()):
+            hyperedges.append({n0n1: S.edges()[e]})
 
         return S, hyperedges
 
-    def get_error_coords(self, counts, decoding_graph, method="spitz"):
+    def get_error_coords(
+        self,
+        counts,
+        decoding_graph,
+        method="spitz",
+        remove_invalid_edges=False,
+        return_samples=False,
+    ):
         """
         Uses the `get_error_probs` method of the given decoding graph to generate probabilities
         of single error events from given counts. The location and time of each error is
@@ -1470,6 +1478,10 @@ class ArcCircuit(CodeCircuit):
             from this code.
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
+            remove_invalid_edges (string): Whether to delete edges from the graph if
+            they are found to be invalid.
+            return_samples (bool): Whether to also return the number of
+            samples used to calculated each probability.
         Returns:
             dict: Keys are the coordinates (qubit, start_time, end_time) for specific error
             events. Time refers to measurement rounds. Values are a dictionary whose keys are
@@ -1480,8 +1492,31 @@ class ArcCircuit(CodeCircuit):
             is in units of rounds.
         """
 
-        error_probs = decoding_graph.get_error_probs(counts, method=method)
-        nodes = decoding_graph.graph.nodes()
+        # though the documented use case requires a decoding graph and a counts dict, there is also an
+        # undocumented internal use case, where just the bare graph is provided and no counts. This is
+        # to find and delete invalid edges
+        if isinstance(decoding_graph, rx.PyGraph):
+            graph = decoding_graph
+        else:
+            graph = decoding_graph.graph
+        nodes = graph.nodes()
+        if counts:
+            if return_samples:
+                error_probs, samples = decoding_graph.get_error_probs(
+                    counts, method=method, return_samples=True
+                )
+            else:
+                error_probs = decoding_graph.get_error_probs(counts, method=method)
+        else:
+            error_probs = {}
+            for n0, n1 in graph.edge_list():
+                if nodes[n0].is_boundary:
+                    edge = (n1, n1)
+                elif nodes[n1].is_boundary:
+                    edge = (n0, n0)
+                else:
+                    edge = (n0, n1)
+                error_probs[edge] = np.nan
 
         if hasattr(self, "z_logicals"):
             z_logicals = set(self.z_logicals)
@@ -1494,11 +1529,12 @@ class ArcCircuit(CodeCircuit):
         round_length = len(self.schedule) + 1
 
         error_coords = {}
+        sample_coords = {}
         for (n0, n1), prob in error_probs.items():
             node0 = nodes[n0]
             node1 = nodes[n1]
             if n0 != n1:
-                qubits = decoding_graph.graph.get_edge_data(n0, n1).qubits
+                qubits = graph.get_edge_data(n0, n1).qubits
                 if qubits:
                     # error on a code qubit between rounds, or during a round
                     assert (node0.time == node1.time and node0.qubits != node1.qubits) or (
@@ -1514,7 +1550,7 @@ class ArcCircuit(CodeCircuit):
                                 if pair in pairs or tuple(pair) in pairs:
                                     dts.append(dt)
                         time = [max(0, node0.time - 1 + (max(dts) + 1) / round_length)]
-                        time.append(node0.time + min(dts) / round_length)
+                        time.append(min(self.T, node0.time + min(dts) / round_length))
                     # error during a round
                     else:
                         # put nodes in descending time order
@@ -1536,12 +1572,20 @@ class ArcCircuit(CodeCircuit):
                         else:
                             # impossible cases get no valid time
                             time = []
+                            if remove_invalid_edges:
+                                graph.remove_edge(n0, n1)
                 else:
                     # measurement error
                     assert node0.time != node1.time and node0.qubits == node1.qubits
                     qubit = node0.properties["link qubit"]
-                    time = [node0.time, node0.time + (round_length - 1) / round_length]
-                    time.sort()
+                    t0 = min(node0.time, node1.time)
+                    if abs(node0.time - node1.time) == 1:
+                        if self.resets:
+                            time = [t0, t0 + 1]
+                        else:
+                            time = [t0, t0 + (round_length - 1) / round_length]
+                    else:
+                        time = [t0 + (round_length - 1) / round_length, t0 + 1]
             else:
                 # detected only by one stabilizer
                 boundary_qubits = list(set(node0.qubits).intersection(z_logicals))
@@ -1552,7 +1596,7 @@ class ArcCircuit(CodeCircuit):
                     for dt, pairs in enumerate(self.schedule):
                         if pair in pairs or tuple(pair) in pairs:
                             time = [max(0, node0.time - 1 + (dt + 1) / round_length)]
-                            time.append(node0.time + dt / round_length)
+                            time.append(min(self.T, node0.time + dt / round_length))
 
                 else:
                     qubit = tuple(node0.qubits + [node0.properties["link qubit"]])
@@ -1561,6 +1605,12 @@ class ArcCircuit(CodeCircuit):
             if time:  # only record if not nan
                 if (qubit, time[0], time[1]) not in error_coords:
                     error_coords[qubit, time[0], time[1]] = {}
+                    sample_coords[qubit, time[0], time[1]] = {}
                 error_coords[qubit, time[0], time[1]][n0, n1] = prob
+                if return_samples:
+                    sample_coords[qubit, time[0], time[1]][n0, n1] = samples[n0, n1]
 
-        return error_coords
+        if return_samples:
+            return error_coords, sample_coords
+        else:
+            return error_coords
