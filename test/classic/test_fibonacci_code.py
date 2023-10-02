@@ -1,8 +1,23 @@
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2017, 2020
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 import unittest
 
-from qiskit_qec.codes.classic.fibonacci_code import generate_fibonacci_code_word
-from qiskit_qec.decoders.classic.fibonacci_decoding.fibonacci_decoder import ClassicFibDecoder
-from qiskit_qec.noise.classic.swath_error_generator import generate_swath_error
+from qiskit_qec.codes.classic.fibonacci_code import ClassicFibonacciCode
+from qiskit_qec.decoders.classic.fibonacci_decoder import (
+    ClassicFibonacciSpanningErrorDecoder,
+)
+from qiskit_qec.noise.classic.fibonacci_spanning_noise_generator import (
+    generate_spanning_error,
+)
 
 
 class TestClassicFibCode(unittest.TestCase):
@@ -20,16 +35,19 @@ class TestClassicFibCode(unittest.TestCase):
             for p, accuracy_sol in test[1]:
                 success_no = 0
                 for round in range(num_shots):
-                    codeword = generate_fibonacci_code_word(
+                    code = ClassicFibonacciCode(
                         L
                     )  # generate an initial codeword. The default one bit at bottom center and cellular automata rules upward
-                    error_board, error_mask = generate_swath_error(
-                        codeword, L, probability_of_error=p
+
+                    error_board, error_mask = generate_spanning_error(
+                        code, probability_of_error=p
                     )  # setting width to L and vertical=True makes iid noise
-                    f = ClassicFibDecoder(error_board)  # give this class the errored codeword
+                    f = ClassicFibonacciSpanningErrorDecoder(
+                        error_board
+                    )  # give this class the errored codeword
                     f.decode_fib_code()
                     f.board.shape = (L // 2, L)
-                    if (f.board == codeword).all():
+                    if (f.board == code.code_word).all():
                         success_no += 1
                 p_success = success_no / num_shots
                 self.assertAlmostEqual(
