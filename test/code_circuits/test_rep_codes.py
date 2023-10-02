@@ -516,7 +516,7 @@ class TestDecoding(unittest.TestCase):
         codes = [RepetitionCode(d, 1)]
         # then a linear ARC
         links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
-        codes.append(ArcCircuit(links, 0))
+        codes.append(ArcCircuit(links, 0, logical="1"))
         # then make a bunch of non-linear ARCs
         links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
         links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
