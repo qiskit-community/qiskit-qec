@@ -1408,7 +1408,7 @@ class ArcCircuit(CodeCircuit):
             + "1" * len(self.links)
         )
         nodes: List[DecodingGraphNode] = []
-        for node in self.string2nodes(string):
+        for node in self.string2nodes(string, all_logicals=True):
             if not node.is_boundary:
                 for t in range(self.T + 1):
                     new_node = deepcopy(node)
