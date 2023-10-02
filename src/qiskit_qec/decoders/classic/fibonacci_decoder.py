@@ -55,7 +55,8 @@ class ClassicFibonacciSpanningErrorDecoder:
         The code is envisioned as being on a ((L//2, L)) codeboard,
         which is represented by an (L//2, L) numpy array.
 
-        self.board is where the results of the decoder are applied during self.decode_fib_code().
+        self.board is where the results of the decoder
+        are applied during self.decode_fib_code().
 
         Args:
             original_errorword (np.array): An (L/bl/2, L) np.array
