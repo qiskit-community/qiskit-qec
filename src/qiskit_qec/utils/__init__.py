@@ -16,9 +16,6 @@ Utils (:mod:`qiskit_qec.utils`)
 ===============================
 
 .. currentmodule:: qiskit_qec.utils
-=======
-.. currentmodule:: qiskit_qec.utils
-
 
 Utils module classes and functions
 ==================================
