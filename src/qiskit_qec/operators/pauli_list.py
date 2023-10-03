@@ -534,7 +534,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         Consider sorting all a random ordering of all 2-qubit Paulis
 
-        .. jupyter-execute::
+        .. plot::
+           :include-source:
 
             from numpy.random import shuffle
             from qiskit.quantum_info.operators import PauliList
@@ -573,7 +574,8 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         **Example**
 
-        .. jupyter-execute::
+        .. plot::
+           :include-source:
 
             from qiskit.quantum_info.operators import PauliList
 
