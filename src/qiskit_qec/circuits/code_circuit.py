@@ -15,28 +15,29 @@
 """Class that manage circuits for codes."""
 from abc import ABC, abstractmethod
 
+
 class CodeCircuit(ABC):
     """Abstract class to manage circuits for codes, as well
-        as other fault-tolerant circuits.
+    as other fault-tolerant circuits.
 
-        A CodeCircuit requires the methods `string2nodes`,
-        `check_nodes` and `is_cluster_neutral` in order to
-        interface with its `DecodingGraph` and decoders.
+    A CodeCircuit requires the methods `string2nodes`,
+    `check_nodes` and `is_cluster_neutral` in order to
+    interface with its `DecodingGraph` and decoders.
     """
 
     def __init__(self):
         """Initialization of classes that inherent from CodeCircuit can
-            be done in various ways, depending on the code or code family
-            to be initialized. In all cases, the initialization must define
-            the following attributes:
+        be done in various ways, depending on the code or code family
+        to be initialized. In all cases, the initialization must define
+        the following attributes:
 
-            Args:
-                circuit (dict): A dictionary with circuits as values, and
-                    labels (typically strings) as keys.
-                base (string) The label for the above regarded as the base case,
-                    used in decoding graph generation.
-                d (int): Code distance.
-                T (int): number of syndrome measurement rounds.
+        Args:
+            circuit (dict): A dictionary with circuits as values, and
+                labels (typically strings) as keys.
+            base (string) The label for the above regarded as the base case,
+                used in decoding graph generation.
+            d (int): Code distance.
+            T (int): number of syndrome measurement rounds.
         """
         pass
 

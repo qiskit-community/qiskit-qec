@@ -24,11 +24,13 @@ from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 class SurfaceCodeCircuit(CodeCircuit):
 
-    """Implementation of a distance d rotated surface code, implemented over T syndrome measurement rounds.
-    """
+    """Distance d rotated surface code with  T syndrome measurement rounds."""
 
     def __init__(self, d: int, T: int, basis: str = "z", resets=True):
-        """ Creates the circuits corresponding to logical basis states encoded using a rotated surface code.
+        """Creates the circuits corresponding to logical basis states.
+
+        Creates the circuits corresponding to logical basis states encoded
+        using a rotated surface code.
 
         Args:
             d (int): Number of code qubits (and hence repetitions) used.
@@ -359,11 +361,13 @@ class SurfaceCodeCircuit(CodeCircuit):
         return separated_string
 
     def string2nodes(self, string, **kwargs):
-        """ Convert output string from circuits into a set of nodes.
+        """Convert output string from circuits into a set of nodes.
 
         Args:
             string (string): Results string to convert.
-            kwargs (dict): Additional keyword arguments.
+            kwargs (dict): Additional keyword arguments. See below:
+
+        kwargs:
             logical (str): Logical value whose results are used ('0' as default).
             all_logicals (bool): Whether to include logical nodes
                 irrespective of value. (False as default).

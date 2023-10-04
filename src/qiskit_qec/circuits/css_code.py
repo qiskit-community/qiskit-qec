@@ -11,6 +11,8 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
+"""Class that manage circuits for CSS codes."""
+# pylint: disable=invalid-name
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
@@ -29,10 +31,13 @@ from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.linear.symplectic import normalizer
 from qiskit_qec.exceptions import QiskitQECError
 
+
 class CSSCodeCircuit(CodeCircuit):
     """CodeCircuit class for generic CSS codes."""
 
-    def __init__(self, code, T: int, basis: str = "z", round_schedule: str = "zx", noise_model=None):
+    def __init__(
+        self, code, T: int, basis: str = "z", round_schedule: str = "zx", noise_model=None
+    ):
         """CSSCodeCircuit init method
 
         Args:

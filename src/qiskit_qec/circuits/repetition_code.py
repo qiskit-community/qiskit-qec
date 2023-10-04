@@ -1056,12 +1056,15 @@ class ArcCircuit(CodeCircuit):
         return _separate_string(self._process_string(string))[0]
 
     def string2nodes(self, string, **kwargs) -> List[DecodingGraphNode]:
-        """
-        Convert output string from circuits into a set of nodes.
+        """Convert output string from circuits into a set of nodes.
+
         Args:
             string (string): Results string to convert.
-            kwargs (dict): Additional keyword arguments.
-            all_logicals (bool): Whether to include logical nodes irrespective of value. (False as default).
+            kwargs (dict): Additional keyword arguments. See below.
+
+        kwargs:
+            all_logicals (bool): Whether to include logical nodes irrespective
+                of value. (False as default).
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
@@ -1267,7 +1270,6 @@ class ArcCircuit(CodeCircuit):
             # if neutral for maximal, it's neutral
             # otherwise, it is whatever it is for the minimal
             for c in cs:
-
                 neutral = base_neutral
                 num_errors = num_nodes[c]
                 flipped_logicals = flipped_logicals_all[c]

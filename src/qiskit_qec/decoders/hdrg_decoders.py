@@ -624,15 +624,15 @@ class UnionFindDecoder(ClusteringDecoder):
 
         Returns:
             neighbouring_edges (List[Tuple[int, int, DecodingGraphEdge]]): List of neighbouring edges
-                
-            In following format:: 
-            
+
+            In following format::
+
                 {
                     index of edge in graph,
                     index of neighbour node in graph,
                     data payload of the edge
                 }
-        
+
         """
         return [
             (edge, neighbour, data)

@@ -19,6 +19,7 @@ from qiskit_qec.geometry.tiles.tile import Tile
 from qiskit_qec.geometry.tiles.tilefactory import TileFactory
 from qiskit_qec.operators.pauli_list import PauliList
 
+
 # pylint: disable=anomalous-backslash-in-string)
 class CheckerBoardTile(Tile):
     """Checker Board Tile
@@ -47,7 +48,7 @@ class CheckerBoardTile(Tile):
         o-----o-----o
 
     """
-        
+
     wf_operator_dict = {
         "pXZXZ": [
             PauliList(["XXXX"]),

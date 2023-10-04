@@ -53,7 +53,7 @@ class SquareDiamondTile(Tile):
         o--o--o
 
 
-      """
+    """
 
     wf_operator_dict = {
         "pXZXZ": [PauliList(["XXX"]), PauliList(["ZZZ"]), PauliList(["ZZZ"]), PauliList(["XXX"])],

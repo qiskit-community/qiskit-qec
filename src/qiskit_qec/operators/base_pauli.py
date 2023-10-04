@@ -36,8 +36,9 @@ from qiskit_qec.utils import pauli_rep
 # pylint: disable=no-member
 class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
     r"""Base class for Pauli and PauliList.
-    
-    Symplectic representation of a list of N-qubit Paulis with phases using numpy arrays for symplectic matrices and phase vectors.
+
+    Symplectic representation of a list of N-qubit Paulis with phases using numpy
+    arrays for symplectic matrices and phase vectors.
 
     """
 
@@ -58,7 +59,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         order: str = "xz",
     ) -> None:
         """Init method for BasePauli
-        
+
         A BasePauli object represents a list N-qubit Pauli operators with phases.
         Numpy arrays are used to represent the symplectic matrix represention of these
         Paulis. The phases of the Paulis are stored encoded. The phases of the Pauli
@@ -262,7 +263,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Args:
             encoding (optional): Pauli encoding.
             Defaults to pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.
-            
+
         """
         assert encoding in pauli_rep.get_pauli_encodings(), QiskitError(
             f"Invalid pauli encoding: {encoding}. Must be one of {pauli_rep.get_pauli_encodings()}"
@@ -286,8 +287,8 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
                                                     are 0 for product syntax, 1 for index syntax and 2
                                                     for latex syntax. Defaults to None.
             syntax_str (Optional[str], optional): sets the syntax of Pauli tensors. Possible inputs are
-                                                    Product or Latex, if another input is given the syntax
-                                                    is set to Order. Defaults to "Product".
+                                                    Product or Latex, if another input is given
+                                                    the syntax is set to Order. Defaults to "Product".
 
         Raises:
             QiskitError: Unknown syntax: {syntax_code}. See pauli_rep for options.
