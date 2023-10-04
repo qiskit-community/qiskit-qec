@@ -22,46 +22,49 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class OctaSquareTile(Tile):
-    r"""Octa-Square Tile
-                            q0        q1
-                            v0        v1
-      q2     q3               o------o
-      v0     v1         q3   /        \   q4
-       o-----o          v7  o          o  v2
-       |     |              |          |
-       |  0  |          q6  |    1     |  q7
-       o-----o          v6  o          o  v3
-      v3     v4              \        /
-      q5     q6          q9   o-----o  q10
-                         v5            v4
-     q5        q6
-     v0        v1
-       o-----o               q9      q10
- q8   /       \   q9         v0      v1
- v7  o         o  v2          o-----o
-     |    2    |              |     |
-q11  |         |  q12         |  3  |
- v6  o         o  v3          o-----o
-`     \       /              q12     q13
-       o-----o               v3      v2
-    q14        q15
-    v5         v4
+    """Octa-Square Tile
+
+    The tile has the following structure::
+
+                                    q0        q1
+                                    v0        v1
+              q2     q3               o------o
+              v0     v1         q3   /        \   q4
+               o-----o          v7  o          o  v2
+               |     |              |          |
+               |  0  |          q6  |    1     |  q7
+               o-----o          v6  o          o  v3
+              v3     v4              \        /
+              q5     q6          q9   o-----o  q10
+                                 v5            v4
+             q5        q6
+             v0        v1
+               o-----o               q9      q10
+         q8   /       \   q9         v0      v1
+         v7  o         o  v2          o-----o
+             |    2    |              |     |
+        q11  |         |  q12         |  3  |
+         v6  o         o  v3          o-----o
+              \       /              q12     q13
+               o-----o               v3      v2
+            q14        q15
+            v5         v4
+
+                  o------o
+                 /        \
+          o-----o          o
+          |     |          |
+          |  0  |    1     |
+          o-----o          o
+         /       \        /
+        o  (0,0)  o-----o
+        |    .    |     |
+        |    2    |  3  |
+        o         o-----o
+         \       /
+          o-----o
 
 
-
-               o------o
-              /        \
-       o-----o          o
-       |     |          |
-       |  0  |    1     |
-       o-----o          o
-      /       \        /
-     o  (0,0)  o-----o
-     |    .    |     |
-     |    2    |  3  |
-     o         o-----o
-`     \       /
-       o-----o
 
     """
 
@@ -138,45 +141,46 @@ q11  |         |  q12         |  3  |
         optype="cXZZX",
     ) -> Shell:
         r"""Octa Square Tile
-                                    q0        q1
-                                    v0        v1
-              q2     q3               o------o
-              v0     v1         q3   /        \   q4
-               o-----o          v7  o          o  v2
-               |     |              |          |
-               |  0  |          q6  |    1     |  q7
-               o-----o          v6  o          o  v3
-              v3     v4              \        /
-              q5     q6          q9   o-----o  q10
-                                 v5            v4
-             q5        q6
-             v0        v1
-               o-----o               q9      q10
-         q8   /       \   q9         v0      v1
-         v7  o         o  v2          o-----o
-             |    2    |              |     |
-        q11  |         |  q12         |  3  |
-         v6  o         o  v3          o-----o
-        `     \       /              q12     q13
-               o-----o               v3      v2
-            q14        q15
-            v5         v4
 
+        The tile has the following structure::
 
-
-                       o------o
-                      /        \
-               o-----o          o
-               |     |          |
-               |  0  |    1     |
-               o-----o          o
-              /       \        /
-             o  (0,0)  o-----o
-             |    .    |     |
-             |    2    |  3  |
-             o         o-----o
-        `     \       /
-               o-----o
+                                        q0        q1
+                                        v0        v1
+                  q2     q3               o------o
+                  v0     v1         q3   /        \   q4
+                   o-----o          v7  o          o  v2
+                   |     |              |          |
+                   |  0  |          q6  |    1     |  q7
+                   o-----o          v6  o          o  v3
+                  v3     v4              \        /
+                  q5     q6          q9   o-----o  q10
+                                     v5            v4
+                 q5        q6
+                 v0        v1
+                   o-----o               q9      q10
+             q8   /       \   q9         v0      v1
+             v7  o         o  v2          o-----o
+                 |    2    |              |     |
+            q11  |         |  q12         |  3  |
+             v6  o         o  v3          o-----o
+                  \       /              q12     q13
+                   o-----o               v3      v2
+                q14        q15
+                v5         v4
+    
+                      o------o
+                     /        \
+              o-----o          o
+              |     |          |
+              |  0  |    1     |
+              o-----o          o
+             /       \        /
+            o  (0,0)  o-----o
+            |    .    |     |
+            |    2    |  3  |
+            o         o-----o
+             \       /
+              o-----o
 
         Face colors for faces [0,1,2,3] are  ["yellowgreen","tomato", "tomato", "yellowgreen"]
 
@@ -187,9 +191,9 @@ q11  |         |  q12         |  3  |
         "dXZ" -> face #0 operators are Pauli("XXXXXX") and Pauli("ZZZZZZ"), face #1 operators are
         Pauli("ZZZZZZ") and  ...
 
-        Available precomputed operator layouts are:
+        Available precomputed operator layouts are::
 
-        cXZZX, cZXXZ
+            cXZZX, cZXXZ
 
         The operator variable may be used to define the operators specifically. The operator must be
         a list of PauliList objects where each PauliList describes the opertors to be built for the
@@ -211,6 +215,7 @@ q11  |         |  q12         |  3  |
 
         Returns:
             Shell: Returns a Octa-Square tile (shell) with provided origin
+
         """
 
         if operators is None:

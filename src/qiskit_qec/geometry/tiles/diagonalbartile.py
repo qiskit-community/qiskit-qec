@@ -24,30 +24,33 @@ from qiskit_qec.operators.pauli_list import PauliList
 class DiagonalBarTile(Tile):
     """Diagonal Bar Tile
 
-    q0           q1     q1           q2
-    v0           v0     v0           v1
-     o- - - - - -o       o- - - - - -o
-     |\         /|       |           |
-     |  \     /  |       |           |
-     | 0 >   < 1 |       |     2     |
-     |  /     \  |       |           |
-     |/         \|       |           |
-     o- - - - - -o       o- - - - - -o
-    v1           v1     v3           v2
-    q3           q4     q4           q5
+    The diagram is as follows::
+
+        q0           q1     q1           q2
+        v0           v0     v0           v1
+         o- - - - - -o       o- - - - - -o
+         |\         /|       |           |
+         |  \     /  |       |           |
+         | 0 >   < 1 |       |     2     |
+         |  /     \  |       |           |
+         |/         \|       |           |
+         o- - - - - -o       o- - - - - -o
+        v1           v1     v3           v2
+        q3           q4     q4           q5
 
 
-    q3           q4     q4           q5
-    v0           v1     v0           v0
-     o- - - - - -o      o- - - - - -o
-     |           |      |\         /|
-     |           |      |  \     /  |
-     |     3     |      | 4 >   < 5 |
-     |           |      |  /     \  |
-     |           |      |/         \|
-     o- - - - - -o      o- - - - - -o
-    v3           v2    v1           v1
-    q6           q7    q7           q8
+        q3           q4     q4           q5
+        v0           v1     v0           v0
+         o- - - - - -o      o- - - - - -o
+         |           |      |\         /|
+         |           |      |  \     /  |
+         |     3     |      | 4 >   < 5 |
+         |           |      |  /     \  |
+         |           |      |/         \|
+         o- - - - - -o      o- - - - - -o
+        v3           v2    v1           v1
+        q6           q7    q7           q8
+
     """
 
     wf_operator_dict = {
@@ -112,6 +115,7 @@ class DiagonalBarTile(Tile):
     ) -> Shell:
         """Diagonal Hour Glass Tile
 
+        The diagram is as follows::
 
             q0           q1     q1           q2
             v0           v0     v0           v1
@@ -138,20 +142,19 @@ class DiagonalBarTile(Tile):
             v3           v2    v1           v1
             q6           q7    q7           q8
 
-
         Face colors for faces [0,1,2,3,4,5] are ["yellowgreen", "yellowgreen",
         "tomato", "tomato", "yellowgreen","yellowgreen"]
 
         Preformatted operators are stored in DiagonalHourGlassTile.op_dict. Keys for op_dict are of the
-        form [p|c]PPPP... where p = pattern and c = copy and P is a Pauli opertor X, Z, Y.
+        form [p|c]PPPP... where p = pattern and c = copy and P is a Pauli opertor X, Z, Y.::
 
-        "pXXZZXX" -> #0 face is Pauli('XX') operator,
-                     #1 face is Pauli('XX') operator,
-                     #3 face is Pauli('ZZZZ') operator etc.
+            "pXXZZXX" -> #0 face is Pauli('XX') operator,
+                         #1 face is Pauli('XX') operator,
+                         #3 face is Pauli('ZZZZ') operator etc.
 
-        Available precomputed operator layouts are:
+        Available precomputed operator layouts are::
 
-        "pXXZZXX", "pZZXXZZ"
+            "pXXZZXX", "pZZXXZZ"
 
         The operator variable may be used to define the operators specifically. The operator must be
         a list of PauliList objects where each PauliList describes the opertors to be built for the
@@ -170,6 +173,7 @@ class DiagonalBarTile(Tile):
 
         Returns:
             Shell: Returns a Diagonal Hour Glass tile (shell) with provided origin
+
         """
 
         if operators is None:

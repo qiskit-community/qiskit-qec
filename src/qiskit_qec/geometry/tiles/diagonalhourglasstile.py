@@ -24,30 +24,33 @@ from qiskit_qec.operators.pauli_list import PauliList
 class DiagonalHourGlassTile(Tile):
     r"""Diagonal Hour Glass Tile
 
-    q0           q1     q1           q2
-    v0           v0     v0           v1
-     o- - - - - -o       o- - - - - -o
-     |\   q3    /|       |           |
-     |  \ v1  /  |       |           |
-     | 0 o   o 1 |       |     2     |
-     |  /   v2\  |       |           |
-     |/     q3  \|       |           |
-     o- - - - - -o       o- - - - - -o
-    v2           v1     v3           v2
-    q4           q5     q5           q6
+    The diagram is as follows::
+
+        q0           q1     q1           q2
+        v0           v0     v0           v1
+        o- - - - - -o       o- - - - - -o
+        |\   q3    /|       |           |
+        |  \ v1  /  |       |           |
+        | 0 o   o 1 |       |     2     |
+        |  /   v2\  |       |           |
+        |/     q3  \|       |           |
+        o- - - - - -o       o- - - - - -o
+        v2           v1     v3           v2
+        q4           q5     q5           q6
 
 
-    q4           q5     q5           q6
-    v0           v1     v0           v0
-     o- - - - - -o      o- - - - - -o
-     |           |      |\   q7    /|
-     |           |      |  \ v1  /  |
-     |     3     |      | 4 o   o 5 |
-     |           |      |  /   v2\  |
-     |           |      |/     q7  \|
-     o- - - - - -o      o- - - - - -o
-    v3           v2    v2           v1
-    v8           v9    q9           q10
+        q4           q5     q5           q6
+        v0           v1     v0           v0
+        o- - - - - -o      o- - - - - -o
+        |           |      |\   q7    /|
+        |           |      |  \ v1  /  |
+        |     3     |      | 4 o   o 5 |
+        |           |      |  /   v2\  |
+        |           |      |/     q7  \|
+        o- - - - - -o      o- - - - - -o
+        v3           v2    v2           v1
+        v8           v9    q9           q10
+
     """
 
     wf_operator_dict = {
@@ -112,6 +115,7 @@ class DiagonalHourGlassTile(Tile):
     ) -> Shell:
         r"""Diagonal Hour Glass Tile
 
+        The diagram is as follows::
 
             o- - - - - -o- - - - - -o
             |\         /|           |
@@ -159,15 +163,15 @@ class DiagonalHourGlassTile(Tile):
 
         Preformatted operators are stored in DiagonalHourGlassTile.op_dict.
         Keys for op_dict are of the form [p|c]PPPP... where p = pattern and
-        c = copy and P is a Pauli opertor X, Z, Y.
+        c = copy and P is a Pauli opertor X, Z, Y::
 
-        "pXXZZXX" -> #0 face is Pauli('XXX') operator,
-                     #1 face is Pauli('XXX'),
-                     #3 face is Pauli('ZZZZ') etc.
+            "pXXZZXX" -> #0 face is Pauli('XXX') operator,
+                         #1 face is Pauli('XXX'),
+                         #3 face is Pauli('ZZZZ') etc.
 
-        Available precomputed operator layouts are:
+        Available precomputed operator layouts are::
 
-        "pXXZZXX", "pZZXXZZ"
+            "pXXZZXX", "pZZXXZZ"
 
         The operator variable may be used to define the operators specifically.
         The operator must be a list of PauliList objects where each PauliList

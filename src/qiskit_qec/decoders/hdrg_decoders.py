@@ -619,18 +619,22 @@ class UnionFindDecoder(ClusteringDecoder):
         return [erasure.edges()[edge].qubits[0] for edge in edges if erasure.edges()[edge].qubits]
 
     def neighbouring_edges(self, node_index) -> List[Tuple[int, int, DecodingGraphEdge]]:
-        """
-        Returns all of the neighbouring edges of a node in the decoding graph.
+        """Returns all of the neighbouring edges of a node in the decoding graph.
+
         Args:
             node_index (int): The index of the node in the graph.
 
         Returns:
             neighbouring_edges (List[Tuple[int, int, DecodingGraphEdge]]): List of neighbouring edges
-            in following format: (
-                index of edge in graph,
-                index of neighbour node in graph,
-                data payload of the edge
-            )
+
+            In following format::
+
+                {
+                    index of edge in graph,
+                    index of neighbour node in graph,
+                    data payload of the edge
+                }
+
         """
         return [
             (edge, neighbour, data)
