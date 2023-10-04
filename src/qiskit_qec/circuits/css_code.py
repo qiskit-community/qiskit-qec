@@ -16,6 +16,7 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
+# pylint: disable=no-name-in-module
 from stim import Circuit as StimCircuit
 from stim import target_rec as StimTarget_rec
 
