@@ -22,36 +22,38 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class SquareDiamondTile(Tile):
-    """Square Diamond Tile
-    (Square or non-Rotated orientation)
+    """Square Diamond Tile (Square or non-Rotated orientation)
 
-     q0    q1  q1   q2
-     v0    v1  v0   v1
-       o--o     o--o
-       |0/       \1|
-       |/         \|
-       o           o
-     v2             v2
-     q3             q4
-            .(0,0)
-     q3            q4
-     v0            v0
-       o           o
-       |\         /|
-       |2\       /3|
-       o--o     o--o
-     v1    v2 v1    v2
-     q5    q6 q6    q7
+    The follow labelling is used::
 
-       o--o--o
-       |0/ \1|
-       |/   \|
-       o     o
-       |\   /|
-       |2\ /3|
-       o--o--o
+      q0    q1  q1   q2
+      v0    v1  v0   v1
+        o--o     o--o
+        |0/       \1|
+        |/         \|
+        o           o
+      v2             v2
+      q3             q4
+             .(0,0)
+      q3            q4
+      v0            v0
+        o           o
+        |\         /|
+        |2\       /3|
+        o--o     o--o
+      v1    v2 v1    v2
+      q5    q6 q6    q7
 
-    """
+        o--o--o
+        |0/ \1|
+        |/   \|
+        o     o
+        |\   /|
+        |2\ /3|
+        o--o--o
+
+
+      """
 
     wf_operator_dict = {
         "pXZXZ": [PauliList(["XXX"]), PauliList(["ZZZ"]), PauliList(["ZZZ"]), PauliList(["XXX"])],
@@ -104,46 +106,48 @@ class SquareDiamondTile(Tile):
     ) -> Shell:
         """Square Diamond Tile
 
-         q0    q1  q1   q2
-         v0    v1  v0   v1
-           o--o     o--o
-           |0/       \1|
-           |/         \|
-           o           o
-         v2             v2
-         q3             q4
-                .(0,0)
-         q3            q4
-         v0            v0
-           o           o
-           |\         /|
-           |2\       /3|
-           o--o     o--o
-         v1    v2 v1    v2
-         q5    q6 q6    q7
+        The following labels are used::
 
-           o--o--o
-           |0/ \1|
-           |/   \|
-           o     o
-           |\   /|
-           |2\ /3|
-           o--o--o
+           q0    q1  q1   q2
+           v0    v1  v0   v1
+             o--o     o--o
+             |0/       \1|
+             |/         \|
+             o           o
+           v2             v2
+           q3             q4
+                  .(0,0)
+           q3            q4
+           v0            v0
+             o           o
+             |\         /|
+             |2\       /3|
+             o--o     o--o
+           v1    v2 v1    v2
+           q5    q6 q6    q7
+
+             o--o--o
+             |0/ \1|
+             |/   \|
+             o     o
+             |\   /|
+             |2\ /3|
+             o--o--o
 
 
         Face colors for faces [0,1,2] are ["yellowgreen","tomato","steelblue"]
 
         Preformatted operators are stored in HexagonTile.op_dict. Keys for op_dict are of the
-        form [p|c|d]PPPP... where p = pattern and c = copy, d=double and P is a Pauli opertor X, Z or Y.
+        form [p|c|d]PPPP... where p = pattern and c = copy, d=double and P is a Pauli opertor X, Z or Y::
 
-        "pXZXZ" -> face #0 operator is PauliList(["XXX"]),
-                   face #1 operator is PauliList(["ZZZ"]),
-                   face #2 operator is PauliList(["ZZZ"]), and
-                   face #3 operator is PauliList(["XXX"])]
+          "pXZXZ" -> face #0 operator is PauliList(["XXX"]),
+                     face #1 operator is PauliList(["ZZZ"]),
+                     face #2 operator is PauliList(["ZZZ"]), and
+                     face #3 operator is PauliList(["XXX"])]
 
-        Available precomputed operator layouts are:
+        Available precomputed operator layouts are::
 
-        "pXZXZ", "pZXZX", "cXXXX", "cZZZZ"
+          "pXZXZ", "pZXZX", "cXXXX", "cZZZZ"
 
         The operator variable may be used to define the operators specifically. The operator must be
         a list of PauliList objects where each PauliList describes the opertors to be built for the

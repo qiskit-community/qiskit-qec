@@ -24,15 +24,11 @@ from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 class SurfaceCodeCircuit(CodeCircuit):
 
-    """
-    Implementation of a distance d rotated surface code, implemented over
-    T syndrome measurement rounds.
+    """Implementation of a distance d rotated surface code, implemented over T syndrome measurement rounds.
     """
 
     def __init__(self, d: int, T: int, basis: str = "z", resets=True):
-        """
-        Creates the circuits corresponding to logical basis states encoded
-        using a rotated surface code.
+        """ Creates the circuits corresponding to logical basis states encoded using a rotated surface code.
 
         Args:
             d (int): Number of code qubits (and hence repetitions) used.
@@ -168,8 +164,8 @@ class SurfaceCodeCircuit(CodeCircuit):
         return circuit_list
 
     def x(self, logs=("0", "1"), barrier=False):
-        """
-        Applies a logical x to the circuits for the given logical values.
+        """Applies a logical x to the circuits for the given logical values.
+
         Args:
             logs (list or tuple): List or tuple of logical values expressed as
                 strings.
@@ -183,8 +179,8 @@ class SurfaceCodeCircuit(CodeCircuit):
                 self.circuit[log].barrier()
 
     def z(self, logs=("0", "1"), barrier=False):
-        """
-        Applies a logical z to the circuits for the given logical values.
+        """Applies a logical z to the circuits for the given logical values.
+
         Args:
             logs (list or tuple): List or tuple of logical values expressed as
                 strings.
@@ -198,12 +194,11 @@ class SurfaceCodeCircuit(CodeCircuit):
                 self.circuit[log].barrier()
 
     def syndrome_measurement(self, final=False, barrier=False):
-        """
-        Application of a syndrome measurement round.
-        Args:
+        """Application of a syndrome measurement round.
 
+        Args:
             final (bool): Whether to disregard the reset (if applicable) due to this
-            being the final syndrome measurement round.
+                being the final syndrome measurement round.
             barrier (bool): Boolean denoting whether to include a barrier at the end.
 
         """
@@ -364,22 +359,23 @@ class SurfaceCodeCircuit(CodeCircuit):
         return separated_string
 
     def string2nodes(self, string, **kwargs):
-        """
-        Convert output string from circuits into a set of nodes.
+        """ Convert output string from circuits into a set of nodes.
+
         Args:
             string (string): Results string to convert.
             kwargs (dict): Additional keyword arguments.
-                logical (str): Logical value whose results are used ('0' as default).
-                all_logicals (bool): Whether to include logical nodes
+            logical (str): Logical value whose results are used ('0' as default).
+            all_logicals (bool): Whether to include logical nodes
                 irrespective of value. (False as default).
+
         Returns:
             dict: List of nodes corresponding to to the non-trivial
-            elements in the string.
+                elements in the string.
 
         Additional information:
-        Strings are read right to left, but lists*
-        are read left to right. So, we have some ugly indexing
-        code whenever we're dealing with both strings and lists.
+            Strings are read right to left, but lists*
+            are read left to right. So, we have some ugly indexing
+            code whenever we're dealing with both strings and lists.
         """
 
         all_logicals = kwargs.get("all_logicals")

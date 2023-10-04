@@ -283,14 +283,14 @@ class RepetitionCodeCircuit(CodeCircuit):
         return new_string
 
     def string2nodes(self, string, **kwargs):
-        """
-        Convert output string from circuits into a set of nodes.
+        """Convert output string from circuits into a set of nodes.
+
         Args:
             string (string): Results string to convert.
             kwargs (dict): Additional keyword arguments.
-                logical (str): Logical value whose results are used ('0' as default).
-                all_logicals (bool): Whether to include logical nodes
-                irrespective of value. (False as default).
+                    logical (str): Logical value whose results are used ('0' as default).
+                    all_logicals (bool): Whether to include logical nodes
+                    irrespective of value. (False as default).
 
         Returns:
             dict: List of nodes corresponding to to the non-trivial
@@ -1061,8 +1061,7 @@ class ArcCircuit(CodeCircuit):
         Args:
             string (string): Results string to convert.
             kwargs (dict): Additional keyword arguments.
-                all_logicals (bool): Whether to include logical nodes
-                irrespective of value. (False as default).
+            all_logicals (bool): Whether to include logical nodes irrespective of value. (False as default).
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.

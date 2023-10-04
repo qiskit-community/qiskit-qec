@@ -24,77 +24,76 @@ from qiskit_qec.operators.pauli_list import PauliList
 class HexagonTile(Tile):
     """Hexagon Tile
 
+    Weight 6 operators (0,1,2)::
 
-    Weight 6 operators (0,1,2)
+                              q0      q1
+                              v0      v1
+                               o-----o
+                          q3  /       \  q4
+                          v5 o    0    o v2
+            q2      q3        \       /
+            v0      v1      q6 o-----o q7
+             o-----o        v4         v3
+        q5  /       \  q6  .(0,0)
+        v5 o    1    o v2    q6       q7
+            \       /        v0       v1
+             o-----o           o-----o
+            v4      v3    q9  /       \ q10
+            q8      q9    v5 o    2    o v2
+                              \       /
+                               o-----o
+                             v4       v3
+                            q11       q12
+    
+    
+                          o-----o
+                         /       \
+                  o-----o    0    o
+                 /       \       /
+                o    1    o-----o
+                 \       /       \
+                  o-----o    2    o
+                         \       /
+                          o-----o
 
-                          q0      q1
-                          v0      v1
-                           o-----o
-                      q3  /       \  q4
-                      v5 o    0    o v2
-        q2      q3        \       /
-        v0      v1      q6 o-----o q7
-         o-----o        v4         v3
-    q5  /       \  q6  .(0,0)
-    v5 o    1    o v2    q6       q7
-        \       /        v0       v1
-         o-----o           o-----o
-        v4      v3    q9  /       \ q10
-        q8      q9    v5 o    2    o v2
-                          \       /
-                           o-----o
-                         v4       v3
-                        q11       q12
+    Weight 2 operators (3,4,5,6,7,8,9,10,11)::
 
+                            q0
+                          o v1
+                       3 /
+                        o v0
+                          q3
+    
+         q2   4     q3    q3        q4
+         v1 o-----o v0  o v1      o v1
+                         \ 5     / 6
+                          o v0  o v0
+                            q6    q7
+    
+                       v0 o-----o v1
+                       q6    7    q7
+    
+                            q6    q7
+                          o v0  o v0
+         q8    10    q9  / 8     \ 9
+         v1 o-----o v0  o         o v1
+                          q9        q10
+                        o v0
+                         \ 11
+                          o v1
+                            q11
+    
+                          o
+                        3/
+                  o--4--o         o
+                         \5      /6
+                          o--7--o
+                         /8      \9
+                  o--10-o         o
+                         \11
+                          o
 
-                      o-----o
-                     /       \
-              o-----o    0    o
-             /       \       /
-            o    1    o-----o
-             \       /       \
-              o-----o    2    o
-                     \       /
-                      o-----o
-
-    Weight 2 operators (3,4,5,6,7,8,9,10,11)
-
-                        q0
-                      o v1
-                   3 /
-                    o v0
-                      q3
-
-     q2   4     q3    q3        q4
-     v1 o-----o v0  o v1      o v1
-                     \ 5     / 6
-                      o v0  o v0
-                        q6    q7
-
-                   v0 o-----o v1
-                   q6    7    q7
-
-                        q6    q7
-                      o v0  o v0
-     q8    10    q9  / 8     \ 9
-     v1 o-----o v0  o         o v1
-                      q9        q10
-                    o v0
-                     \ 11
-                      o v1
-                        q11
-
-                      o
-                    3/
-              o--4--o         o
-                     \5      /6
-                      o--7--o
-                     /8      \9
-              o--10-o         o
-                     \11
-                      o
-
-
+                        
     """
 
     wf_operator_dict = {
@@ -275,73 +274,78 @@ class HexagonTile(Tile):
         optype="cZ-aXX",
     ) -> Shell:
         """Hexagon Tile
-                                     q0      q1
-                                     v0      v1
-                                       o-----o
-                                  q3  /       \  q4
-                                  v5 o    0    o v2
-                    q2      q3        \       /
-                    v0      v1      q6 o-----o q7
-                     o-----o        v4         v3
-                q5  /       \  q6  .(0,0)
-                v5 o    1    o v2    q6       q7
-                    \       /        v0       v1
-                     o-----o           o-----o
-                    v4      v3    q9  /       \ q10
-                    q8      q9    v5 o    2    o v2
-                                      \       /
-                                       o-----o
-                                     v4       v3
-                                    q11       q12
+
+        Tile::
+
+                                        q0      q1
+                                        v0      v1
+                                        o-----o
+                                    q3  /       \  q4
+                                    v5 o    0    o v2
+                        q2      q3        \       /
+                        v0      v1      q6 o-----o q7
+                        o-----o        v4         v3
+                    q5  /       \  q6  .(0,0)
+                    v5 o    1    o v2    q6       q7
+                        \       /        v0       v1
+                        o-----o           o-----o
+                        v4      v3    q9  /       \ q10
+                        q8      q9    v5 o    2    o v2
+                                        \       /
+                                        o-----o
+                                        v4       v3
+                                        q11       q12
 
 
-                                 o-----o
-                                /       \
-                         o-----o    0    o
-                        /       \       /
-                       o    1    o-----o
-                        \       /       \
-                         o-----o    2    o
-                                \       /
-                                 o-----o
+                                    o-----o
+                                    /       \
+                            o-----o    0    o
+                            /       \       /
+                        o    1    o-----o
+                            \       /       \
+                            o-----o    2    o
+                                    \       /
+                                    o-----o
 
-        Weight 2 operators (3,4,5,6,7,8,9,10,11)
 
-                                    q0
-                                o v1
-                            3 /
-                                o v0
-                                q3
+        Weight 2 operators (3,4,5,6,7,8,9,10,11)::
 
-                q2   4     q3    q3        q4
-                v1 o-----o v0  o v1      o v1
-                                \ 5     / 6
-                                o v0  o v0
-                                    q6    q7
+                                        q0
+                                    o v1
+                                3 /
+                                    o v0
+                                    q3
 
-                            v0 o-----o v1
-                            q6    7    q7
+                    q2   4     q3    q3        q4
+                    v1 o-----o v0  o v1      o v1
+                                    \ 5     / 6
+                                    o v0  o v0
+                                        q6    q7
 
-                                    q6    q7
-                                o v0  o v0
-                q8    10    q9  / 8     \ 9
-                v1 o-----o v0  o         o v1
-                                q9        q10
-                                o v0
-                                \ 11
-                                o v1
-                                    q11
+                                v0 o-----o v1
+                                q6    7    q7
 
-                                o
-                                3/
-                        o--4--o         o
-                                \5      /6
-                                o--7--o
-                                /8      \9
-                        o--10-o         o
-                                \11
-                                o
+                                        q6    q7
+                                    o v0  o v0
+                    q8    10    q9  / 8     \ 9
+                    v1 o-----o v0  o         o v1
+                                    q9        q10
+                                    o v0
+                                    \ 11
+                                    o v1
+                                        q11
 
+                                    o
+                                    3/
+                            o--4--o         o
+                                    \5      /6
+                                    o--7--o
+                                    /8      \9
+                            o--10-o         o
+                                    \11
+                                    o
+
+                                    
         Face colors for faces [0,1,2] are ["yellowgreen","tomato","steelblue"] and red for the
         weight 2 faces.
 
