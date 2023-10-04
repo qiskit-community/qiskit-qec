@@ -35,10 +35,11 @@ from qiskit_qec.utils import pauli_rep
 
 # pylint: disable=no-member
 class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
-    r"""Symplectic representation of a list of N-qubit Paulis with phases using
-    numpy arrays for symplectic matrices and phase vectors.
+    r"""Base class for Pauli and PauliList.
 
-    Base class for Pauli and PauliList.
+    Symplectic representation of a list of N-qubit Paulis with phases using numpy
+    arrays for symplectic matrices and phase vectors.
+
     """
 
     # External string formats used when displaying Pauli's as strings
@@ -57,14 +58,16 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         phase_exp: Union[None, np.ndarray, np.integer] = None,
         order: str = "xz",
     ) -> None:
-        """A BasePauli object represents a list N-qubit Pauli operators with phases.
+        """Init method for BasePauli
+
+        A BasePauli object represents a list N-qubit Pauli operators with phases.
         Numpy arrays are used to represent the symplectic matrix represention of these
         Paulis. The phases of the Paulis are stored encoded. The phases of the Pauli
         operators are internally encoded in the '-iZX' Pauli encoding (See the pauli_rep
         module for more details). That is a Pauli operator is represented as symplectic
-        vector V and a phase exponent phase_exp such that:
+        vector V and a phase exponent phase_exp such that::
 
-        (-i)^phase_exp Z^z X^x
+            (-i)^phase_exp Z^z X^x
 
         where V = [x, z] and phase_exp is a vector of Z_4 elements (0,1,2,3). A list
         of Pauli operators is represented as a symplectic matrix S and a phase exponent
@@ -260,6 +263,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
         Args:
             encoding (optional): Pauli encoding.
             Defaults to pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.
+
         """
         assert encoding in pauli_rep.get_pauli_encodings(), QiskitError(
             f"Invalid pauli encoding: {encoding}. Must be one of {pauli_rep.get_pauli_encodings()}"
@@ -271,7 +275,7 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
     @property
     def syntax(self):
-        """_summary_"""
+        """Returns the syntax"""
         return BasePauli.EXTERNAL_SYNTAX
 
     @classmethod
@@ -280,14 +284,15 @@ class BasePauli(BaseOperator, AdjointMixin, MultiplyMixin):
 
         Args:
             syntax_code (Optional[int], optional): sets the syntax of Pauli tensors. Possible inputs
-                                                   are 0 for product syntax, 1 for index syntax and 2
-                                                   for latex syntax. Defaults to None.
+                                                    are 0 for product syntax, 1 for index syntax and 2
+                                                    for latex syntax. Defaults to None.
             syntax_str (Optional[str], optional): sets the syntax of Pauli tensors. Possible inputs are
-                                                  Product or Latex, if another input is given the syntax
-                                                   is set to Order. Defaults to "Product".
+                                                    Product or Latex, if another input is given
+                                                    the syntax is set to Order. Defaults to "Product".
 
         Raises:
             QiskitError: Unknown syntax: {syntax_code}. See pauli_rep for options.
+
         """
         if syntax_code is None:
             if syntax_str == "Product":

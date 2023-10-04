@@ -124,6 +124,8 @@ class Shape:
     ) -> "Shape":
         r"""Create a rectangle on a manifold
 
+        A rect has the following lables::
+
                       r2
                       o
                   /       \

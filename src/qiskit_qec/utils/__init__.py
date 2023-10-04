@@ -25,6 +25,12 @@ Utils module classes and functions
 
     indexer
     pauli_rep
+    visualizations
+    get_counts_via_stim
+    get_stim_circuits
+    noisify_circuit
+    DecodingGraphNode
+    DecodingGraphEdge
 """
 
 from . import indexer, pauli_rep, visualizations
