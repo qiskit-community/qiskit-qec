@@ -23,8 +23,11 @@ Circuits module classes and functions
 .. autosummary::
     :toctree: ../stubs/
 
+    CodeCircuit
     RepetitionCodeCircuit
-    CSSCircuit
+    ArcCircuit
+    SurfaceCodeCircuit
+    CSSCodeCircuit
 """
 
 from .code_circuit import CodeCircuit

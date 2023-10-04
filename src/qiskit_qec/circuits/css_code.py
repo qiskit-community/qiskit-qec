@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 # This code is part of Qiskit.
 #
 # (C) Copyright IBM 2019.
@@ -12,12 +11,12 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name, disable=no-name-in-module
-
-"""Generates circuits for CSS codes."""
+"""Class that manage circuits for CSS codes."""
+# pylint: disable=invalid-name
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer.noise import depolarizing_error, pauli_error
 
+# pylint: disable=no-name-in-module
 from stim import Circuit as StimCircuit
 from stim import target_rec as StimTarget_rec
 
@@ -35,18 +34,17 @@ from qiskit_qec.exceptions import QiskitQECError
 
 
 class CSSCodeCircuit(CodeCircuit):
-    """
-    CodeCircuit class for generic CSS codes.
-    """
+    """CodeCircuit class for generic CSS codes."""
 
     def __init__(
         self, code, T: int, basis: str = "z", round_schedule: str = "zx", noise_model=None
     ):
-        """
+        """CSSCodeCircuit init method
+
         Args:
             code: A CSS code class which is either
-                a) StabSubSystemCode
-                b) a class with the following methods:
+                    a) StabSubSystemCode
+                    b) a class with the following methods:
                     'x_gauges' (as a list of list of qubit indices),
                     'z_gauges',
                     'x_stabilizers',
@@ -58,17 +56,18 @@ class CSSCodeCircuit(CodeCircuit):
             basis: basis for encoding ('x' or 'z')
             round_schedule: Order in which to measureme gauge operators ('zx' or 'xz')
             noise_model: Pauli noise model used in the construction of noisy circuits.
-            If a tuple, a pnenomological noise model is used with the entries being
-            probabity of depolarizing noise on code qubits between rounds and
-            probability of measurement errors, respectively.
+                If a tuple, a pnenomological noise model is used with the entries being
+                probabity of depolarizing noise on code qubits between rounds and
+                probability of measurement errors, respectively.
+
         Examples:
             The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code
             >>> from qiskit_qec.codes.hhc import HHC
             >>> from qiskit_qec.circuits.css_code import CSSCodeCircuit
             >>> code = CSSCodeCircuit(HHC(3),T=3,basis='x',noise_model=(0.01,0.01),round_schedule='xz')
             >>> code.circuit['0']
-        """
 
+        """
         super().__init__()
 
         self.code = code
@@ -241,6 +240,7 @@ class CSSCodeCircuit(CodeCircuit):
         """
         Convert output string from circuits into a set of nodes for
         `DecodingGraph`.
+
         Args:
             string (string): Results string to convert.
             kwargs (dict): Any additional keyword arguments.

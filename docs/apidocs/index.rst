@@ -13,11 +13,9 @@ Qiskit QEC API Reference
    circuits
    codes
    decoders
-   extensions
    geometry
    info
    linear
-   models
    operators
    structures
    utils

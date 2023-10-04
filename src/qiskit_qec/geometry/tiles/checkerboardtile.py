@@ -24,30 +24,28 @@ from qiskit_qec.operators.pauli_list import PauliList
 class CheckerBoardTile(Tile):
     """Checker Board Tile
 
-    q0       q1  q1       q2
-    v0       v1  v0       v1
-      o-----o      o-----o
-      |  0  |      |  1  |
-      o-----o      o-----o
-    v2       v3  v2       v3
-    q3       q4  q4       q5
+    The diagram is as follows::
 
-                .(0,0)
-
-    q3       q4  q4       q5
-    v0       v1  v0       v1
-      o-----o      o-----o
-      |  2  |      |  3  |
-      o-----o      o-----o
-    v2       v3  v2       v3
-    q6       q7  q7       q8
-
-
-      o-----o-----o
-      |  0  |  1  |
-      o-----o-----o
-      |  2  |  3  |
-      o-----o-----o
+        q0       q1  q1       q2
+        v0       v1  v0       v1
+          o-----o      o-----o
+          |  0  |      |  1  |
+          o-----o      o-----o
+        v2       v3  v2       v3
+        q3       q4  q4       q5
+                    .(0,0)
+        q3       q4  q4       q5
+        v0       v1  v0       v1
+          o-----o      o-----o
+          |  2  |      |  3  |
+          o-----o      o-----o
+        v2       v3  v2       v3
+        q6       q7  q7       q8
+        o-----o-----o
+        |  0  |  1  |
+        o-----o-----o
+        |  2  |  3  |
+        o-----o-----o
 
     """
 
@@ -131,6 +129,8 @@ class CheckerBoardTile(Tile):
     ) -> Shell:
         """Creates a Checker Board Tile (Shell)
 
+        ::
+
             q0       q1  q1       q2
             v0       v1  v0       v1
               o-----o      o-----o
@@ -164,10 +164,10 @@ class CheckerBoardTile(Tile):
         "pXZXZ" -> #0 face is Pauli("XXXX") operator, #1 face is Pauli("ZZZZ"), etc.
         "cXZZX" -> #0 face is Pauli("XZZX") operator, #1 face is Pauli("XZZX"), etc.
 
-        Available precomputed operator layouts are:
+        Available precomputed operator layouts are::
 
-        "pXZXZ", "pZXZX"
-        "cXXXX", "cZZZZ", "cXZZX", "cZXXZ"
+            "pXZXZ", "pZXZX"
+            "cXXXX", "cZZZZ", "cXZZX", "cZXXZ"
 
         The operator variable may be used to define the operators specifically. The operator must be
         a list of PauliList objects where each PauliList describes the opertors to be built for the
