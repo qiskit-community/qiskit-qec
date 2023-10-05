@@ -18,7 +18,6 @@ Qiskit QEC is an open-source framework for developers, experimentalist and theor
   How-to Guides <how_tos/index>
   API References <apidocs/index>
   Discussions <discussions/index>
-  Release Notes <release_notes>
 
 .. Hiding - Indices and tables
    :ref:`genindex`

@@ -35,7 +35,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.extlinks",
     "sphinx_autodoc_typehints",
-    "reno.sphinxext",
     "nbsphinx",
     "matplotlib.sphinxext.plot_directive",
 ]
