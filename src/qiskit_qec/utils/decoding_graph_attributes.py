@@ -133,7 +133,7 @@ class DecodingGraphEdge:
             self.properties[key] = value
 
     def __eq__(self, rhs) -> bool:
-        if not isinstance(rhs, DecodingGraphNode):
+        if not isinstance(rhs, DecodingGraphEdge):
             return NotImplemented
 
         return set(self.qubits) == set(rhs.qubits) and self.weight == rhs.weight
