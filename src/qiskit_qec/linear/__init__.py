@@ -21,11 +21,6 @@ Linear (:mod:`qiskit_qec.linear`)
 Linear module classes and functions
 ===================================
 
-.. autosummary::
-    :toctree: ../stubs/
-
-    Bit
-    SMatrix
 
 Linear matrix functions
 =======================
