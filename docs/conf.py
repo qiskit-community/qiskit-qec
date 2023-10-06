@@ -37,6 +37,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "nbsphinx",
     "matplotlib.sphinxext.plot_directive",
+    'qiskit_sphinx_theme',
 ]
 templates_path = ["_templates"]
 numfig = True
@@ -47,14 +48,9 @@ add_module_names = False
 modindex_common_prefix = ["qiskit_qec."]
 
 # html theme options
-html_theme = "qiskit_sphinx_theme"
+html_theme = "qiskit-ecosystem"
+html_title = f"{project} {release}"
 html_last_updated_fmt = "%Y/%m/%d"
-html_theme_options = {
-    "logo_only": True,
-    "display_version": True,
-    "prev_next_buttons_location": "bottom",
-    "style_external_links": True,
-}
 html_css_files = ["gallery.css"]
 html_static_path = ["_static"]
 

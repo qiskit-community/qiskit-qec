@@ -2,6 +2,11 @@
 Qiskit QEC documentation
 ########################
 
+.. toctree::
+   :hidden:
+
+   Home <self>
+
 .. warning::
 
    This package is still in the early stages of development and it is very likely
