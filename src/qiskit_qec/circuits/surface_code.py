@@ -370,7 +370,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         kwargs:
             logical (str): Logical value whose results are used ('0' as default).
             all_logicals (bool): Whether to include logical nodes
-                irrespective of value. (False as default).
+            irrespective of value. (False as default).
 
         Returns:
             dict: List of nodes corresponding to to the non-trivial
