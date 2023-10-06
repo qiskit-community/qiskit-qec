@@ -36,6 +36,7 @@ def get_stim_circuits(circuit_dict: Dict[int, QuantumCircuit]):
     """Converts compatible qiskit circuits to stim circuits.
        Dictionaries are not complete. For the stim definitions see:
        https://github.com/quantumlib/Stim/blob/main/doc/gates.md
+
     Args:
         circuit_dict: Compatible gates are paulis, controlled paulis, h, s,
         and sdg, swap, reset, measure and barrier. Compatible noise operators

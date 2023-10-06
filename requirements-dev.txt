@@ -3,8 +3,6 @@ coverage==6.1.1
 cmake!=3.17.1,!=3.17.0
 qiskit-sphinx-theme>=1.6
 sphinx-autodoc-typehints
-jupyter-sphinx
-reno>=3.4.0
 nbsphinx
 ddt~=1.4.2
 matplotlib>=3.3.0
