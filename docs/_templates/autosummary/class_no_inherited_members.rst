@@ -21,11 +21,8 @@
 {% block methods_summary %}{% set wanted_methods = (methods | reject('in', inherited_members) | reject('==', '__init__') | list) %}{% if wanted_methods %}
    .. rubric:: Methods Defined Here
 
-   .. autosummary::
-      :nosignatures:
-      :toctree: ../stubs/
 {% for item in wanted_methods %}
-      ~{{ name }}.{{ item }}
+   .. automethod:: {{ name }}.{{ item }}
 {%- endfor %}
 {% endif %}{% endblock %}
 

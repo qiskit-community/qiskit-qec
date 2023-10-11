@@ -24,11 +24,8 @@
 {% block methods_summary %}{% set wanted_methods = (methods | reject('==', '__init__') | list) %}{% if wanted_methods %}
    .. rubric:: Methods
 
-   .. autosummary::
-      :nosignatures:
-      :toctree: ../stubs/
 {% for item in wanted_methods %}
-      ~{{ name }}.{{ item }}
+   .. automethod:: {{ name }}.{{ item }}
 {%- endfor %}
 {% endif %}{% endblock %}
 
