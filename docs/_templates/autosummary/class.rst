@@ -1,6 +1,6 @@
 {#
-   The general principle of this is that we manually document attributes here in
-   the same file, but give all methods their own page.  By default, we document
+   The general principle of this is that we manually document methods and attributes here in
+   the same file.  By default, we document
    all methods, including those defined by parent classes.
 -#}
 
@@ -15,11 +15,11 @@
 #}
    :no-members:
    :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
 {#
-   Methods all get their own separate page, with their names and the first lines
-   of their docstrings tabulated.  The documentation from `__init__` is
-   automatically included in the standard class documentation, so we don't want
-   to repeat it.
+   The documentation from `__init__` is automatically included in the
+   standard class documentation, so we don't want to repeat it.
 -#}
 {% block methods_summary %}{% set wanted_methods = (methods | reject('==', '__init__') | list) %}{% if wanted_methods %}
    .. rubric:: Methods
