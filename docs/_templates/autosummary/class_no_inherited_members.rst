@@ -14,18 +14,14 @@
 #}
    :no-members:
    :show-inheritance:
-{#
-   Methods all get their own separate page, with their names and the first lines
-   of their docstrings tabulated.
--#}
+   :no-inherited-members:
+   :no-special-members:
+
 {% block methods_summary %}{% set wanted_methods = (methods | reject('in', inherited_members) | reject('==', '__init__') | list) %}{% if wanted_methods %}
    .. rubric:: Methods Defined Here
 
-   .. autosummary::
-      :nosignatures:
-      :toctree: ../stubs/
 {% for item in wanted_methods %}
-      ~{{ name }}.{{ item }}
+   .. automethod:: {{ name }}.{{ item }}
 {%- endfor %}
 {% endif %}{% endblock %}
 
