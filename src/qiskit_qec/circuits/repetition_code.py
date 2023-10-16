@@ -1072,6 +1072,7 @@ class ArcCircuit(CodeCircuit):
         kwargs:
             all_logicals (bool): Whether to include logical nodes irrespective
                 of value. (False as default).
+
         Returns:
             dict: List of nodes corresponding to to the non-trivial
             elements in the string.
