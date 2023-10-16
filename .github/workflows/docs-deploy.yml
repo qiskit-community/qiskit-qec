@@ -13,7 +13,9 @@
 name: Deploy Docs
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   docs_publish:

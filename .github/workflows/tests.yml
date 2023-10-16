@@ -1,10 +1,6 @@
 name: Tests, linter and coverage
 
 on:
-  push:
-    branches:
-      - main
-      - 'stable/**'
   pull_request:
     branches:
       - main
