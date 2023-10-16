@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.rref\_complete
+=================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: rref_complete

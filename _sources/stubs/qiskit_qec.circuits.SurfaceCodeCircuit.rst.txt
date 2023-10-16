@@ -1,0 +1,25 @@
+﻿SurfaceCodeCircuit
+==================
+
+.. currentmodule:: qiskit_qec.circuits
+
+.. autoclass:: SurfaceCodeCircuit
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: SurfaceCodeCircuit.check_nodes
+   .. automethod:: SurfaceCodeCircuit.get_circuit_list
+   .. automethod:: SurfaceCodeCircuit.is_cluster_neutral
+   .. automethod:: SurfaceCodeCircuit.readout
+   .. automethod:: SurfaceCodeCircuit.string2nodes
+   .. automethod:: SurfaceCodeCircuit.string2raw_logicals
+   .. automethod:: SurfaceCodeCircuit.syndrome_measurement
+   .. automethod:: SurfaceCodeCircuit.x
+   .. automethod:: SurfaceCodeCircuit.z
+
+

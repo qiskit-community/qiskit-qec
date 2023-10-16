@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.geometry.model.shell &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" /><script src="../../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.geometry.model.shell</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.geometry.model.shell</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2017, 2020</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+<span class="sd">&quot;&quot;&quot;Module for Shell&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">qiskit.exceptions</span> <span class="kn">import</span> <span class="n">QiskitError</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.edge</span> <span class="kn">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.face</span> <span class="kn">import</span> <span class="n">Face</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.qubit_count</span> <span class="kn">import</span> <span class="n">QubitCount</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.qubit_data</span> <span class="kn">import</span> <span class="n">QubitData</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.shape_object</span> <span class="kn">import</span> <span class="n">ShapeObject</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.vertex</span> <span class="kn">import</span> <span class="n">Vertex</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.wireframe</span> <span class="kn">import</span> <span class="n">WireFrame</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.plane</span> <span class="kn">import</span> <span class="n">Plane</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli</span> <span class="kn">import</span> <span class="n">Pauli</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli_list</span> <span class="kn">import</span> <span class="n">PauliList</span>
+
+
+<div class="viewcode-block" id="Shell">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell">[docs]</a>
+<span class="k">class</span> <span class="nc">Shell</span><span class="p">(</span><span class="n">ShapeObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;`Shell` inherits from `ShapeObject`&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">faces</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Face</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inits Shell.</span>
+<span class="sd">        Each shell keeps track internally of several lists for</span>
+<span class="sd">        each type of subcomponent (ex: faces, wireframes, edges, vertices)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            faces (List[Face]): Faces that make up the `Shell` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">faces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wireframes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wireframes</span> <span class="o">+=</span> <span class="n">face</span><span class="o">.</span><span class="n">wireframes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">+=</span> <span class="n">face</span><span class="o">.</span><span class="n">edges</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+=</span> <span class="n">face</span><span class="o">.</span><span class="n">vertices</span>
+            <span class="n">face</span><span class="o">.</span><span class="n">add_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Shell.union">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.union">[docs]</a>
+    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other_shell</span><span class="p">:</span> <span class="s2">&quot;Shell&quot;</span><span class="p">):</span>
+        <span class="c1"># TODO control for overlapping subcomponents of other_shell and self</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add all subcomponents of other_shell to self.</span>
+
+<span class="sd">        Must be disjoint at moment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other_shell (Shell): A different shell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faces</span> <span class="o">+=</span> <span class="n">other_shell</span><span class="o">.</span><span class="n">faces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wireframes</span> <span class="o">+=</span> <span class="n">other_shell</span><span class="o">.</span><span class="n">wireframes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">+=</span> <span class="n">other_shell</span><span class="o">.</span><span class="n">edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+=</span> <span class="n">other_shell</span><span class="o">.</span><span class="n">vertices</span></div>
+
+
+<div class="viewcode-block" id="Shell.delete_subtree">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.delete_subtree">[docs]</a>
+    <span class="k">def</span> <span class="nf">delete_subtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roots</span><span class="p">:</span> <span class="n">ShapeObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete subcomponents of self&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Shell.extract">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.extract">[docs]</a>
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">is_inside</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Vertex</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span>
+        <span class="n">qubit_data</span><span class="p">:</span> <span class="n">QubitData</span><span class="p">,</span>
+        <span class="n">qubit_count</span><span class="p">:</span> <span class="n">QubitCount</span><span class="p">,</span>
+        <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">inside_levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">boundary_levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">boundary_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;combine&quot;</span><span class="p">,</span>
+        <span class="n">debug</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Shell&quot;</span><span class="p">,</span> <span class="n">QubitData</span><span class="p">,</span> <span class="n">QubitCount</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts the subshell defined by in_vertices and is_inside</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            is_inside (Dict[Vertex,bool]): _description_</span>
+<span class="sd">            qubit_data (QubitData): _description_</span>
+<span class="sd">            qubit_count (QubitCount): _description_</span>
+<span class="sd">            levels (Optional[List[int]], optional): _description_. Defaults to [2,3,4]</span>
+<span class="sd">            inside_levels (optional): Which operator weights to include for operators</span>
+<span class="sd">                inside the cutter region. Default is `levels`</span>
+<span class="sd">            boundary_levels (optional): Which operator weights to include for operators</span>
+<span class="sd">                cut by the cutter region (on the boundary). Default is `levels`</span>
+<span class="sd">            exclude (optional): method used to determine which boundary operators</span>
+<span class="sd">                are to be used. Must be of the form</span>
+
+<span class="sd">                def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -&gt; bool:</span>
+<span class="sd">                    pass</span>
+
+<span class="sd">                Will return a True value if the given operator (given by the vertex_paths)</span>
+<span class="sd">                is to be excluded. Deflault always returns False. That is exlude nothing</span>
+<span class="sd">                extra.</span>
+<span class="sd">            boundary_strategy (str, optional): _description_. Defaults to &quot;combine&quot;.</span>
+<span class="sd">            debug (optional) : With debug set to True a range of intermediate details are printed. Used</span>
+<span class="sd">            for debuging the addition of features to the method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[Shell, QubitData, QubitCount]: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">inside_levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inside_levels</span> <span class="o">=</span> <span class="n">levels</span>
+
+        <span class="k">if</span> <span class="n">boundary_levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundary_levels</span> <span class="o">=</span> <span class="n">levels</span>
+
+        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># pylint: disable=unused-argument</span>
+            <span class="k">def</span> <span class="nf">exclude</span><span class="p">(</span><span class="n">vertex_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Vertex</span><span class="p">]],</span> <span class="n">qubit_data</span><span class="p">:</span> <span class="n">QubitData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="nf">_other_vertex</span><span class="p">(</span><span class="n">parent</span><span class="p">:</span> <span class="n">Edge</span><span class="p">,</span> <span class="n">try_avoid</span><span class="p">:</span> <span class="n">Vertex</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vertex</span><span class="p">:</span>
+            <span class="n">next_vertex</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">next_vertex</span> <span class="o">==</span> <span class="n">try_avoid</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">return</span> <span class="n">next_vertex</span>
+
+        <span class="c1"># Set up new data store</span>
+        <span class="n">new_qubit_data</span> <span class="o">=</span> <span class="n">QubitData</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;levels must be None of a list on integers: </span><span class="si">{</span><span class="n">levels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_find_restricted_path</span><span class="p">(</span><span class="n">s_vertex</span><span class="p">:</span> <span class="n">Vertex</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Vertex</span><span class="p">]:</span>
+            <span class="n">vertex_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_vertex</span><span class="p">]</span>
+            <span class="n">edges_of_s_vertex</span> <span class="o">=</span> <span class="n">s_vertex</span><span class="o">.</span><span class="n">parents</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_of_s_vertex</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_of_s_vertex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">vertex_path</span>
+            <span class="n">v_start</span> <span class="o">=</span> <span class="n">s_vertex</span>
+            <span class="n">e_sn</span> <span class="o">=</span> <span class="n">edges_of_s_vertex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">n_vertex</span> <span class="o">=</span> <span class="n">_other_vertex</span><span class="p">(</span><span class="n">e_sn</span><span class="p">,</span> <span class="n">try_avoid</span><span class="o">=</span><span class="n">s_vertex</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_inside</span><span class="p">[</span><span class="n">n_vertex</span><span class="p">]:</span>
+                    <span class="n">vertex_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_vertex</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">n_vertex</span> <span class="o">==</span> <span class="n">v_start</span><span class="p">:</span>
+                    <span class="c1"># Path is a cycle returing to start</span>
+                    <span class="k">return</span> <span class="n">vertex_path</span>
+
+                <span class="n">edges_of_n_vertex</span> <span class="o">=</span> <span class="n">n_vertex</span><span class="o">.</span><span class="n">parents</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_of_n_vertex</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># End of path reached (not a loop)</span>
+                    <span class="k">return</span> <span class="n">vertex_path</span>
+
+                <span class="n">e_nr</span> <span class="o">=</span> <span class="n">edges_of_n_vertex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">e_nr</span> <span class="o">==</span> <span class="n">e_sn</span><span class="p">:</span>
+                    <span class="n">e_nr</span> <span class="o">=</span> <span class="n">edges_of_n_vertex</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="n">r_vertex</span> <span class="o">=</span> <span class="n">_other_vertex</span><span class="p">(</span><span class="n">e_nr</span><span class="p">,</span> <span class="n">try_avoid</span><span class="o">=</span><span class="n">n_vertex</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">r_vertex</span> <span class="o">==</span> <span class="n">n_vertex</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">is_inside</span><span class="p">[</span><span class="n">r_vertex</span><span class="p">]:</span>
+                        <span class="c1"># self loop at end of path (should not really happend but just in case)</span>
+                        <span class="n">vertex_path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_vertex</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">vertex_path</span>
+
+                <span class="n">s_vertex</span> <span class="o">=</span> <span class="n">n_vertex</span>
+                <span class="n">n_vertex</span> <span class="o">=</span> <span class="n">r_vertex</span>
+                <span class="n">e_sn</span> <span class="o">=</span> <span class="n">e_nr</span>
+
+        <span class="k">def</span> <span class="nf">_weight_len</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">length</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">length</span>
+
+        <span class="n">face_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>
+            <span class="n">face_inside</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">vertex_paths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">rd_vertices</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">face</span><span class="o">.</span><span class="n">vertices</span> <span class="k">if</span> <span class="n">is_inside</span><span class="p">[</span><span class="n">item</span><span class="p">]}</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rd_vertices</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">):</span>
+                <span class="n">face_inside</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">rd_vertices start = </span><span class="si">%s</span><span class="s2"> for face: </span><span class="si">%s</span><span class="s2"> : </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">rd_vertices</span><span class="p">,</span>
+                    <span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">rd_vertices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">s_vertex</span> <span class="o">=</span> <span class="n">rd_vertices</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">_find_restricted_path</span><span class="p">(</span><span class="n">s_vertex</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found path= </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                <span class="n">rd_vertices</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Remaining rd_vertices = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">rd_vertices</span><span class="p">)</span>
+                <span class="n">vertex_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Final Vertex paths for face=</span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">vertex_paths</span><span class="p">)</span>
+
+            <span class="c1"># Process the set of vertex paths to create edges</span>
+            <span class="k">if</span> <span class="n">boundary_strategy</span> <span class="o">==</span> <span class="s2">&quot;combine&quot;</span><span class="p">:</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">_weight_len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">vertex_paths</span><span class="p">]</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Weight=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;vertex_paths=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">vertex_paths</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;exclude=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">face_inside</span> <span class="ow">and</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">inside_levels</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">face_inside</span> <span class="ow">and</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">boundary_levels</span><span class="p">)</span>
+                <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exclude</span><span class="p">(</span><span class="n">vertex_paths</span><span class="p">,</span> <span class="n">qubit_data</span><span class="p">):</span>
+                    <span class="c1"># if weight in levels and not exclude(vertex_paths, qubit_data):</span>
+                    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">vertex_paths</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Working on v/e for path </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+                        <span class="c1"># Create the new vertices</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                                <span class="c1"># have a loop</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Have a loop!&quot;</span><span class="p">)</span>
+                                <span class="n">new_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">shallowcopy</span><span class="p">()</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                                <span class="n">short_path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;short_path is &quot;</span><span class="p">,</span> <span class="n">short_path</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># Have non loop path of edges</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Have a non loop path of edges&quot;</span><span class="p">)</span>
+                                <span class="n">new_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">shallowcopy</span><span class="p">()</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">path</span><span class="p">]</span>
+                                <span class="n">short_path</span> <span class="o">=</span> <span class="n">path</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;short_path is &quot;</span><span class="p">,</span> <span class="n">short_path</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">shallowcopy</span><span class="p">()</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">path</span><span class="p">]</span>
+                            <span class="n">short_path</span> <span class="o">=</span> <span class="n">path</span>
+                            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;short_path is &quot;</span><span class="p">,</span> <span class="n">short_path</span><span class="p">)</span>
+
+                        <span class="c1"># Copy over the qubit data for the vertices</span>
+                        <span class="k">for</span> <span class="n">new_vertex</span><span class="p">,</span> <span class="n">old_vertex</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">short_path</span><span class="p">):</span>
+                            <span class="c1"># Set the qubit for new vertex to the same qubit as old vertex</span>
+                            <span class="n">new_qubit_data</span><span class="o">.</span><span class="n">qubit</span><span class="p">[</span><span class="n">new_vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">qubit</span><span class="p">[</span><span class="n">old_vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+                            <span class="c1"># Record the use of the qubit</span>
+                            <span class="n">qubit_count</span><span class="o">.</span><span class="n">increment_qubit</span><span class="p">(</span><span class="n">new_qubit_data</span><span class="o">.</span><span class="n">qubit</span><span class="p">[</span><span class="n">new_vertex</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+
+                            <span class="c1"># Set the vertex operator</span>
+                            <span class="n">new_qubit_data</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="n">new_vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span>
+                                <span class="n">old_vertex</span><span class="o">.</span><span class="n">id</span>
+                            <span class="p">]</span>
+
+                        <span class="c1"># Create the new edges</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Path is length 1&quot;</span><span class="p">)</span>
+                            <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Edge</span><span class="p">([</span><span class="n">new_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+                            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Edges: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Path is length &gt; 1&quot;</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                                <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Edge</span><span class="p">([</span><span class="n">vertex</span><span class="p">,</span> <span class="n">new_path</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]))</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_path</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                        <span class="s2">&quot;Have a loop with len(path) == len(short_path) + 1: </span><span class="se">\</span>
+<span class="s2">                                            - adding extra edge&quot;</span>
+                                    <span class="p">)</span>
+                                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">short_path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                                    <span class="c1"># Loop</span>
+                                    <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Edge</span><span class="p">([</span><span class="n">new_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">new_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown boundary strategy </span><span class="si">{</span><span class="n">boundary_strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Create the wireframe and face</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create Wireframe and face with edges:&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                <span class="n">new_wf</span> <span class="o">=</span> <span class="n">WireFrame</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;New wireframe created with id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_wf</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">new_face</span> <span class="o">=</span> <span class="n">Face</span><span class="p">([</span><span class="n">new_wf</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;New face created with id=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_face</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+                <span class="c1"># Copy over face colors (if there any)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">new_qubit_data</span><span class="o">.</span><span class="n">face_colors</span><span class="p">[</span><span class="n">new_face</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">face_colors</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="n">face_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_face</span><span class="p">)</span>
+
+                <span class="c1"># Set face data (Keep orientation even if face is strict subface)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">new_qubit_data</span><span class="o">.</span><span class="n">orientation</span><span class="p">[</span><span class="n">new_face</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">orientation</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># Create the new shell</span>
+        <span class="n">new_shell</span> <span class="o">=</span> <span class="n">Shell</span><span class="p">(</span><span class="n">face_list</span><span class="p">)</span>
+
+        <span class="c1"># Update the qubit_counts</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="n">qubit_count</span><span class="o">.</span><span class="n">decrement_qubit</span><span class="p">(</span><span class="n">qubit_data</span><span class="o">.</span><span class="n">qubit</span><span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">new_shell</span><span class="p">,</span> <span class="n">new_qubit_data</span><span class="p">,</span> <span class="n">qubit_count</span></div>
+
+
+<div class="viewcode-block" id="Shell.shell2symplectic">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.shell2symplectic">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">shell2symplectic</span><span class="p">(</span>
+        <span class="n">shell</span><span class="p">:</span> <span class="s2">&quot;Shell&quot;</span><span class="p">,</span>
+        <span class="n">qubit_data</span><span class="p">:</span> <span class="n">QubitData</span><span class="p">,</span>
+        <span class="n">qubit_count</span><span class="p">:</span> <span class="n">QubitCount</span><span class="p">,</span>
+        <span class="n">from_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_qubit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PauliList</span><span class="p">,</span> <span class="n">QubitData</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a shell into a symplectic matrix given the qubit data and counts</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shell (Shell): _description_</span>
+<span class="sd">            qubit_data (QubitData): _description_</span>
+<span class="sd">            qubit_count (QubitCount): _description_</span>
+<span class="sd">            from_index (Optional[Dict[int,int]], optional): _description_. Defaults to None.</span>
+<span class="sd">            from_qubit (Optional[Dict[int,int]], optional): _description_. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PauliList: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">from_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">from_index</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">qubit_id</span> <span class="k">for</span> <span class="n">qubit_id</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">qubit_count</span><span class="o">.</span><span class="n">qubits_count</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">count</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="p">]</span>
+            <span class="n">from_index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">from_index</span><span class="p">))</span>
+            <span class="c1"># from_index = {index: qubit_id for index, qubit_id in enumerate(from_index)}</span>
+        <span class="k">if</span> <span class="n">from_qubit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">from_qubit</span> <span class="o">=</span> <span class="p">{</span><span class="n">qubit_id</span><span class="p">:</span> <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">qubit_id</span> <span class="ow">in</span> <span class="n">from_index</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># TODO: Make this a copy that is changed and then returned instead of</span>
+        <span class="c1"># doing in place and returning</span>
+        <span class="n">qubit_data</span><span class="o">.</span><span class="n">qubit_to_index</span> <span class="o">=</span> <span class="n">from_qubit</span>
+        <span class="n">qubit_data</span><span class="o">.</span><span class="n">index_to_qubit</span> <span class="o">=</span> <span class="n">from_index</span>
+        <span class="n">qubit_data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">from_qubit</span><span class="p">[</span><span class="n">qubit_data</span><span class="o">.</span><span class="n">qubit</span><span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]]</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">vertices</span>
+        <span class="p">}</span>
+
+        <span class="n">pauli_str_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>
+            <span class="n">num_stacked_operators</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">qubit_data</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_stacked_operators</span><span class="p">):</span>
+                <span class="n">pauli_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+                    <span class="n">pauli_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">qubit_data</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                        <span class="n">qubit_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="n">pauli_str_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pauli_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PauliList</span><span class="p">(</span><span class="n">pauli_str_list</span><span class="p">),</span> <span class="n">qubit_data</span></div>
+
+
+    <span class="c1"># pylint: disable=unused-argument</span>
+<div class="viewcode-block" id="Shell.draw">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.draw">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">qubit_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QubitData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">show_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">show_face_ids</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">show_axis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">face_colors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">show_qubits</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">point_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">xcolor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;tomato&quot;</span><span class="p">,</span>
+        <span class="n">zcolor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;yellowgreen&quot;</span><span class="p">,</span>
+        <span class="n">ycolor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;steelblue&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draws the shell</span>
+
+<span class="sd">        Coloring only works at the moment for CSS codes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            qubit_data (Optional[QubitData], optional): _description_. Defaults to None.</span>
+<span class="sd">            show_index (bool, optional): _description_. Defaults to False.</span>
+<span class="sd">            show_face_ids (bool, optional): _description_. Defaults to False.</span>
+<span class="sd">            show_axis (bool, optional): _description_. Defaults to True.</span>
+<span class="sd">            face_colors (bool, optional): _description_. Defaults to False.</span>
+<span class="sd">            show_qubits (bool, optional): _description_. Defaults to True.</span>
+<span class="sd">            figsize (Optional[Tuple[float, float]], optional): _description_. Defaults to None.</span>
+<span class="sd">            point_size (optional): size of points for qubits or vertices. Default is 50</span>
+<span class="sd">            xcolor (str, optional): _description_. Defaults to &quot;tomato&quot;.</span>
+<span class="sd">            zcolor (str, optional): _description_. Defaults to &quot;yellowgreen&quot;.</span>
+<span class="sd">            ycolor (str, optional): _description_. Defaults to &quot;steelblue&quot;.</span>
+<span class="sd">            **kwargs: other options</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            _type_: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">stab</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>
+            <span class="n">verts</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+                <span class="n">verts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">))</span>
+            <span class="c1"># The following only works for CSS codes. If there are two</span>
+            <span class="c1"># operators for a given face then only on of the operators</span>
+            <span class="c1"># will be used.</span>
+            <span class="n">pauli</span> <span class="o">=</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">operator</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">face_colors</span><span class="p">:</span>
+                <span class="n">stab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">verts</span><span class="p">,</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">face_colors</span><span class="p">[</span><span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pauli</span> <span class="o">==</span> <span class="n">Pauli</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">):</span>
+                    <span class="n">stab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">verts</span><span class="p">,</span> <span class="n">xcolor</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">pauli</span> <span class="o">==</span> <span class="n">Pauli</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">):</span>
+                    <span class="n">stab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">verts</span><span class="p">,</span> <span class="n">zcolor</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stab</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">verts</span><span class="p">,</span> <span class="n">ycolor</span><span class="p">])</span>
+
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">stabilizer</span> <span class="ow">in</span> <span class="n">stab</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stabilizer</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">stabilizer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">stabilizer</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">stabilizer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">stabilizer</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">show_index</span> <span class="ow">and</span> <span class="n">qubit_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">figsize</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span>
+            <span class="c1"># Change to run over quibits and not vertices as not to</span>
+            <span class="c1"># print multple times on the same spot</span>
+            <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                    <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">qubit_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_face_ids</span> <span class="ow">and</span> <span class="n">qubit_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">get_representative_point</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+                <span class="c1"># Just uses the centroid for the moment</span>
+                <span class="c1"># This needs to be replaced for irregular</span>
+                <span class="c1"># polygons</span>
+                <span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+                <span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+                <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="nb">sum</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
+
+            <span class="c1"># Shapely version</span>
+            <span class="c1"># from shapely.geometry import Polygon</span>
+            <span class="c1"># def get_representative_point(points):</span>
+            <span class="c1">#     poly = Polygon(points)</span>
+            <span class="c1">#     # pylint: disable=no-member</span>
+            <span class="c1">#     cx = poly.representative_point().x</span>
+            <span class="c1">#     cy = poly.representative_point().y</span>
+            <span class="c1">#     return cx, cy</span>
+
+            <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">faces</span><span class="p">:</span>
+                <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">face</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">mid_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+                        <span class="c1"># points.append(np.array([points[0][0], points[1][1]]))</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">mid_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mid_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">*</span><span class="n">get_representative_point</span><span class="p">(</span><span class="n">points</span><span class="p">),</span> <span class="n">face</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">show_axis</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_qubits</span><span class="p">:</span>
+            <span class="n">qubits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">]</span>
+            <span class="n">qubits_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">qubits</span><span class="p">]</span>
+            <span class="n">qubits_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">qubits</span><span class="p">]</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">qubits_x</span><span class="p">,</span> <span class="n">qubits_y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">point_size</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;qubits&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shell.rotate2d">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.rotate2d">[docs]</a>
+    <span class="k">def</span> <span class="nf">rotate2d</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span> <span class="n">about_point</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inplace rotation of shell</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            angle (Optional[float], optional): _description_. Defaults to 90.</span>
+<span class="sd">            about_point (Optional[Tuple[float]], optional): _description_. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">about_point</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">about_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">Plane</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">-</span> <span class="n">about_point</span><span class="p">)</span> <span class="o">+</span> <span class="n">about_point</span></div>
+
+
+<div class="viewcode-block" id="Shell.scale">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.scale">[docs]</a>
+    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale the shell by scale</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scale (float, optional): Scaling value. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span></div>
+
+
+<div class="viewcode-block" id="Shell.integer_snap">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.integer_snap">[docs]</a>
+    <span class="k">def</span> <span class="nf">integer_snap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Snap vertex components to integers&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shell.shift">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.shift">[docs]</a>
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shift/traslate the shell by vector</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            vector (optional): Shift/traslate the shell by vector. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">vector</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">vector</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">+</span> <span class="n">vector</span></div>
+</div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

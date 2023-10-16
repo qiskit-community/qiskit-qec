@@ -1,0 +1,66 @@
+﻿qiskit\_qec.utils.pauli\_rep
+============================
+
+.. automodule:: qiskit_qec.utils.pauli_rep
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      boolean_to_indices
+      change_pauli_encoding
+      cpx2cpxstr
+      cpx2exp
+      cpx2expstr
+      cpxstr2cpx
+      cpxstr2exp
+      cpxstr2expstr
+      encode_of_phase_str
+      encode_of_tensor_str
+      exp2cpx
+      exp2cpxstr
+      exp2exp
+      exp2expstr
+      expstr2cpx
+      expstr2cpxstr
+      expstr2exp
+      from_array
+      from_split_array
+      gate2symplectic
+      get_pauli_encodings
+      get_phase_enc
+      get_phase_encodings
+      get_tensor_enc
+      get_tensor_encodings
+      indices_to_boolean
+      is_exp_type
+      is_scalar
+      scalar_op2symplectic
+      split_pauli
+      split_pauli_enc
+      squeeze
+      stand_phase_str
+      str2exp
+      str2str
+      str2symplectic
+      symplectic2str
+      to_cpx_matrix
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

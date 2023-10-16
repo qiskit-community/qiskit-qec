@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>ArcCircuit &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/circuits.html">Circuits (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.circuits</span></code>)</a> &gt;</li>
+        
+      <li>ArcCircuit</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="arccircuit">
+<h1>ArcCircuit<a class="headerlink" href="#arccircuit" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ArcCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rounds_per_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditional_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit" title="qiskit_qec.circuits.code_circuit.CodeCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodeCircuit</span></code></a></p>
+<p>Anisotropic repetition code class.</p>
+<p>Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
+measurement rounds, with the syndrome measurements provided.
+:type links: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
+:param links: List of tuples (c0, a, c1), where c0 and c1 are the two code qubits in each
+:type links: list
+:param syndrome measurement:
+:param and a is the auxiliary qubit used.:
+:type T: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param T: Number of rounds of syndrome measurement.
+:type T: int
+:type basis: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param basis: Pair of <cite>‘x’</cite>, <cite>‘y’</cite> and <cite>‘z’</cite>, specifying the pair of local bases to be
+:type basis: string
+:param used.:
+:type logical: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param logical: Logical value to store (<cite>‘0’</cite> or <cite>‘1’</cite>).
+:type logical: string
+:type resets: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param resets: Whether to include a reset gate after mid-circuit measurements.
+:type resets: bool
+:param ff: Whether to correct the effects of [[2,0,2]] sequences via feed forward.
+:type ff: bool
+:type delay: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]
+:param delay: Time (in dt) to delay after mid-circuit measurements (and delay).
+:type delay: float
+:type barriers: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param barriers: Whether to include barriers between different sections of the code.
+:type barriers: bool
+:type color: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]
+:param color: Dictionary with code qubits as keys and 0 or 1 for each value, to specify
+:type color: dict
+:param a predetermined bicoloring. If not provided:
+:param a bicoloring is found on initialization.:
+:type max_dist: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param max_dist: Maximum edge distance used when determining the bicoloring of code qubits.
+:type max_dist: int
+:type schedule: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]
+:param schedule: Specifies order in which entangling gates are applied in each syndrome
+:type schedule: list
+:param measurement round. Each element is a list of lists [c:
+:param a] for entangling gates to be:
+:param applied simultaneously.:
+:type run_202: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param run_202: Whether to run [[2,0,2]] sequences. This will be overwritten if T is not high
+:type run_202: bool
+:param enough:
+:type enough: at least rounds_per_202xlen(links)
+:type rounds_per_202: <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>
+:param rounds_per_202: Number of rounds that are part of the 202, including the typical link
+:type rounds_per_202: int
+:param measurements at the beginning and end. At least 9 are required to get an event dedicated to:
+:param conjugate errors.:
+:type conditional_reset: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param conditional_reset: Whether to apply conditional resets (an x conditioned on the result of the
+:param previous measurement):
+:param rather than a reset gate.:</p>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.check_nodes">
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extra_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Determines whether a given set of nodes are neutral. If so, also
+determines any additional logical readout qubits that would be
+flipped by the errors creating such a cluster and how many errors
+would be required to make the cluster.
+:type nodes: 
+:param nodes: List of nodes, of the type produced by <cite>string2nodes</cite>.
+:type nodes: list
+:type ignore_extra_boundary: 
+:param ignore_extra_boundary: If <cite>True</cite>, undeeded boundary nodes are
+:type ignore_extra_boundary: bool
+:param ignored.:
+:type minimal: 
+:param minimal: Whether output should only reflect the minimal error
+:type minimal: bool
+:param case.:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Whether the nodes independently correspond to a valid
+set of errors.
+flipped_logical_nodes (list): List of qubits nodes for logical
+operators that are flipped by the errors, that were not included
+in the original nodes.
+num_errors (int): Minimum number of errors required to create nodes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>neutral (bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.flatten_nodes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.flatten_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Removes time information from a set of nodes, and consolidates those on
+the same position at different times. Also removes nodes corresponding
+to the conjugate error from [[2,0,2]]s.
+:type nodes: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="qiskit_qec.utils.DecodingGraphNode.html#qiskit_qec.utils.DecodingGraphNode" title="qiskit_qec.utils.decoding_graph_attributes.DecodingGraphNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">DecodingGraphNode</span></code></a>]
+:param nodes: List of nodes, of the type produced by <cite>string2nodes</cite>, to be flattened.
+:type nodes: list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of flattened nodes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>flat_nodes (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.get_error_coords">
+<span class="sig-name descname"><span class="pre">get_error_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_invalid_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.get_error_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords" title="Link to this definition">¶</a></dt>
+<dd><p>Uses the <cite>get_error_probs</cite> method of the given decoding graph to generate probabilities
+of single error events from given counts. The location and time of each error is
+also calculated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>counts</strong> (<em>dict</em>) – Counts dictionary of the results to be analyzed.</p></li>
+<li><p><strong>decoding_graph</strong> (<a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph" title="qiskit_qec.decoders.DecodingGraph"><em>DecodingGraph</em></a>) – Decoding graph object constructed</p></li>
+<li><p><strong>code.</strong> (<em>from this</em>) – </p></li>
+<li><p><strong>method</strong> (<em>string</em>) – Method to used for calculation. Supported</p></li>
+<li><p><strong>'spitz'</strong> (<em>methods are</em>) – </p></li>
+<li><p><strong>remove_invalid_edges</strong> (<em>string</em>) – Whether to delete edges from the graph if</p></li>
+<li><p><strong>invalid.</strong> (<em>they are found to be</em>) – </p></li>
+<li><p><strong>return_samples</strong> (<em>bool</em>) – Whether to also return the number of</p></li>
+<li><p><strong>probability.</strong> (<em>samples used to calculated each</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Keys are the coordinates (qubit, start_time, end_time) for specific error
+events. Time refers to measurement rounds. Values are a dictionary whose keys are
+the edges that detected the event, and whose keys are the calculated probabilities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Additional information:</dt><dd><p>Time calculation does not take into account get lengths. It assumes that the
+subrounds within the schedule and the measurement all take the same time. Time
+is in units of rounds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.is_cluster_neutral">
+<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atypical_nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral" title="Link to this definition">¶</a></dt>
+<dd><p>Determines whether or not the cluster is neutral, meaning that one or more
+errors could have caused the set of atypical nodes (syndrome changes) passed
+to the method.
+:type atypical_nodes: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>
+:param atypical_nodes: dictionary in the form of the return value of string2nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.string2nodes">
+<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Convert output string from circuits into a set of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – Results string to convert.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – Additional keyword arguments. See below.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>kwargs:</dt><dd><dl class="simple">
+<dt>all_logicals (bool): Whether to include logical nodes irrespective</dt><dd><p>of value. (False as default).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of nodes corresponding to to the non-trivial
+elements in the string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.string2raw_logicals">
+<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2raw_logicals" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts raw logicals from output string.
+:type string: 
+:param string: Results string from which to extract logicals
+:type string: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Raw values for logical operators that correspond to nodes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.transpile">
+<span class="sig-name descname"><span class="pre">transpile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('X',</span> <span class="pre">'X')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.transpile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.transpile" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>backend</strong> (<em>qiskit.providers.ibmq.IBMQBackend</em>) – Backend to transpile and schedule the</p></li>
+<li><p><strong>to</strong> (<em>circuits for. The numbering</em><em> of </em><em>the qubits in this backend should correspond</em>) – </p></li>
+<li><p><strong>self.links.</strong> (<em>the numbering used in</em>) – </p></li>
+<li><p><strong>echo</strong> (<em>tuple</em>) – List of gate sequences (expressed as strings) to be used on code qubits and</p></li>
+<li><p><strong>qubits</strong> (<em>link</em>) – </p></li>
+<li><p><strong>'XZX'.</strong> (<em>respectively. Valid strings are 'X' and</em>) – </p></li>
+<li><p><strong>echo_num</strong> (<em>tuple</em>) – Number of times to repeat the sequences for code qubits and</p></li>
+<li><p><strong>qubits</strong> – </p></li>
+<li><p><strong>respectively.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>As <cite>self.circuit</cite>, but with the circuits scheduled, transpiled and
+with dynamical decoupling added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>transpiled_circuit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS">
+<span class="sig-name descname"><span class="pre">AVAILABLE_METHODS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'naive',</span> <span class="pre">'spitz'}</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE">
+<span class="sig-name descname"><span class="pre">METHOD_NAIVE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'naive'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ">
+<span class="sig-name descname"><span class="pre">METHOD_SPITZ</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spitz'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.circuits.SurfaceCodeCircuit.html" class="btn btn-neutral float-right" title="SurfaceCodeCircuit" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.circuits.RepetitionCodeCircuit.html" class="btn btn-neutral" title="RepetitionCodeCircuit" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">ArcCircuit</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit"><code class="docutils literal notranslate"><span class="pre">ArcCircuit</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.check_nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.check_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.flatten_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.get_error_coords()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.is_cluster_neutral()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.string2nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.string2nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.string2raw_logicals"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.string2raw_logicals()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.transpile"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.transpile()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.AVAILABLE_METHODS</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.METHOD_NAIVE</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.METHOD_SPITZ</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

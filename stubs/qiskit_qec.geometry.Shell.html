@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Shell &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/geometry.html">Geometry (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.geometry</span></code>)</a> &gt;</li>
+        
+      <li>Shell</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="shell">
+<h1>Shell<a class="headerlink" href="#shell" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Shell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">faces</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject" title="qiskit_qec.geometry.model.shape_object.ShapeObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShapeObject</span></code></a></p>
+<p><cite>Shell</cite> inherits from <cite>ShapeObject</cite></p>
+<p>Inits Shell.
+Each shell keeps track internally of several lists for
+each type of subcomponent (ex: faces, wireframes, edges, vertices)
+:type faces: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="qiskit_qec.geometry.Face.html#qiskit_qec.geometry.Face" title="qiskit_qec.geometry.model.face.Face"><code class="xref py py-class docutils literal notranslate"><span class="pre">Face</span></code></a>]
+:param faces: Faces that make up the <cite>Shell</cite> instance
+:type faces: List[Face]</p>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.add_parent">
+<span class="sig-name descname"><span class="pre">add_parent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.geometry.Shell.add_parent" title="Link to this definition">¶</a></dt>
+<dd><p>Adds parent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent</strong> (<a class="reference internal" href="qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject" title="qiskit_qec.geometry.ShapeObject"><em>ShapeObject</em></a>) – Adds parent</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.create_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.geometry.Shell.create_id" title="Link to this definition">¶</a></dt>
+<dd><p>Creates int as unique ID for ShapeObject instance.
+ShapeObject class tracks which IDs have previously been used and are thus not available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Unique ID</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.delete_subtree">
+<span class="sig-name descname"><span class="pre">delete_subtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roots</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.delete_subtree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.delete_subtree" title="Link to this definition">¶</a></dt>
+<dd><p>Delete subcomponents of self</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_face_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">face_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xcolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tomato'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zcolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'yellowgreen'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ycolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'steelblue'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.draw" title="Link to this definition">¶</a></dt>
+<dd><p>Draws the shell</p>
+<p>Coloring only works at the moment for CSS codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubit_data</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData" title="qiskit_qec.geometry.QubitData"><em>QubitData</em></a><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p></li>
+<li><p><strong>show_index</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+<li><p><strong>show_face_ids</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+<li><p><strong>show_axis</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to True.</p></li>
+<li><p><strong>face_colors</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+<li><p><strong>show_qubits</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to True.</p></li>
+<li><p><strong>figsize</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p></li>
+<li><p><strong>point_size</strong> (<em>optional</em>) – size of points for qubits or vertices. Default is 50</p></li>
+<li><p><strong>xcolor</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_. Defaults to “tomato”.</p></li>
+<li><p><strong>zcolor</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_. Defaults to “yellowgreen”.</p></li>
+<li><p><strong>ycolor</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_. Defaults to “steelblue”.</p></li>
+<li><p><strong>**kwargs</strong> – other options</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.extract">
+<span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_inside</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inside_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'combine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.extract" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts the subshell defined by in_vertices and is_inside</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>is_inside</strong> (<em>Dict</em><em>[</em><a class="reference internal" href="qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex" title="qiskit_qec.geometry.Vertex"><em>Vertex</em></a><em>,</em><em>bool</em><em>]</em>) – _description_</p></li>
+<li><p><strong>qubit_data</strong> (<a class="reference internal" href="qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData" title="qiskit_qec.geometry.QubitData"><em>QubitData</em></a>) – _description_</p></li>
+<li><p><strong>qubit_count</strong> (<a class="reference internal" href="qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount" title="qiskit_qec.geometry.QubitCount"><em>QubitCount</em></a>) – _description_</p></li>
+<li><p><strong>levels</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to [2,3,4]</p></li>
+<li><p><strong>inside_levels</strong> (<em>optional</em>) – Which operator weights to include for operators
+inside the cutter region. Default is <cite>levels</cite></p></li>
+<li><p><strong>boundary_levels</strong> (<em>optional</em>) – Which operator weights to include for operators
+cut by the cutter region (on the boundary). Default is <cite>levels</cite></p></li>
+<li><p><strong>exclude</strong> (<em>optional</em>) – <p>method used to determine which boundary operators
+are to be used. Must be of the form</p>
+<dl class="simple">
+<dt>def exclude(vertex_paths: List[List[Vertex]], qubit_data: QubitData) -&gt; bool:</dt><dd><p>pass</p>
+</dd>
+</dl>
+<p>Will return a True value if the given operator (given by the vertex_paths)
+is to be excluded. Deflault always returns False. That is exlude nothing
+extra.</p>
+</p></li>
+<li><p><strong>boundary_strategy</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_. Defaults to “combine”.</p></li>
+<li><p><strong>debug</strong> (<em>optional</em>) – With debug set to True a range of intermediate details are printed. Used</p></li>
+<li><p><strong>method.</strong> (<em>for debuging the addition</em><em> of </em><em>features to the</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.Shell">Shell</a>, <a class="reference internal" href="qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData" title="qiskit_qec.geometry.QubitData">QubitData</a>, <a class="reference internal" href="qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount" title="qiskit_qec.geometry.QubitCount">QubitCount</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.integer_snap">
+<span class="sig-name descname"><span class="pre">integer_snap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.integer_snap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.integer_snap" title="Link to this definition">¶</a></dt>
+<dd><p>Snap vertex components to integers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.rotate2d">
+<span class="sig-name descname"><span class="pre">rotate2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">about_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.rotate2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.rotate2d" title="Link to this definition">¶</a></dt>
+<dd><p>Inplace rotation of shell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to 90.</p></li>
+<li><p><strong>about_point</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.scale" title="Link to this definition">¶</a></dt>
+<dd><p>Scale the shell by scale</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Scaling value. Defaults to 1.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.shell2symplectic">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shell2symplectic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.shell2symplectic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.shell2symplectic" title="Link to this definition">¶</a></dt>
+<dd><p>Converts a shell into a symplectic matrix given the qubit data and counts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shell</strong> (<a class="reference internal" href="#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.Shell"><em>Shell</em></a>) – _description_</p></li>
+<li><p><strong>qubit_data</strong> (<a class="reference internal" href="qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData" title="qiskit_qec.geometry.QubitData"><em>QubitData</em></a>) – _description_</p></li>
+<li><p><strong>qubit_count</strong> (<a class="reference internal" href="qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount" title="qiskit_qec.geometry.QubitCount"><em>QubitCount</em></a>) – _description_</p></li>
+<li><p><strong>from_index</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>int</em><em>,</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p></li>
+<li><p><strong>from_qubit</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>int</em><em>,</em><em>int</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList" title="qiskit_qec.operators.PauliList">PauliList</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.shift" title="Link to this definition">¶</a></dt>
+<dd><p>Shift/traslate the shell by vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vector</strong> (<em>optional</em>) – Shift/traslate the shell by vector. Defaults to None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.union">
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_shell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/model/shell.html#Shell.union"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shell.union" title="Link to this definition">¶</a></dt>
+<dd><p>Add all subcomponents of other_shell to self.</p>
+<p>Must be disjoint at moment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other_shell</strong> (<a class="reference internal" href="#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.Shell"><em>Shell</em></a>) – A different shell</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shell.last_id">
+<span class="sig-name descname"><span class="pre">last_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.geometry.Shell.last_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.geometry.Vertex.html" class="btn btn-neutral float-right" title="Vertex" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.geometry.ShapeObject.html" class="btn btn-neutral" title="ShapeObject" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">Shell</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell"><code class="docutils literal notranslate"><span class="pre">Shell</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.add_parent"><code class="docutils literal notranslate"><span class="pre">Shell.add_parent()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.create_id"><code class="docutils literal notranslate"><span class="pre">Shell.create_id()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.delete_subtree"><code class="docutils literal notranslate"><span class="pre">Shell.delete_subtree()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.draw"><code class="docutils literal notranslate"><span class="pre">Shell.draw()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.extract"><code class="docutils literal notranslate"><span class="pre">Shell.extract()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.integer_snap"><code class="docutils literal notranslate"><span class="pre">Shell.integer_snap()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.rotate2d"><code class="docutils literal notranslate"><span class="pre">Shell.rotate2d()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.scale"><code class="docutils literal notranslate"><span class="pre">Shell.scale()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.shell2symplectic"><code class="docutils literal notranslate"><span class="pre">Shell.shell2symplectic()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.shift"><code class="docutils literal notranslate"><span class="pre">Shell.shift()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.union"><code class="docutils literal notranslate"><span class="pre">Shell.union()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shell.last_id"><code class="docutils literal notranslate"><span class="pre">Shell.last_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

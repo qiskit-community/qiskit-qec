@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>OctaSquareTile &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/geometry.html">Geometry (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.geometry</span></code>)</a> &gt;</li>
+        
+      <li>OctaSquareTile</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="octasquaretile">
+<h1>OctaSquareTile<a class="headerlink" href="#octasquaretile" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OctaSquareTile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cXZZX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/tiles/octasquaretile.html#OctaSquareTile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile" title="qiskit_qec.geometry.tiles.tile.Tile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tile</span></code></a></p>
+<p>Octa-Square Tile</p>
+<p>The tile has the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                            <span class="n">q0</span>        <span class="n">q1</span>
+                            <span class="n">v0</span>        <span class="n">v1</span>
+      <span class="n">q2</span>     <span class="n">q3</span>               <span class="n">o</span><span class="o">------</span><span class="n">o</span>
+      <span class="n">v0</span>     <span class="n">v1</span>         <span class="n">q3</span>   <span class="o">/</span>        \   <span class="n">q4</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">v7</span>  <span class="n">o</span>          <span class="n">o</span>  <span class="n">v2</span>
+       <span class="o">|</span>     <span class="o">|</span>              <span class="o">|</span>          <span class="o">|</span>
+       <span class="o">|</span>  <span class="mi">0</span>  <span class="o">|</span>          <span class="n">q6</span>  <span class="o">|</span>    <span class="mi">1</span>     <span class="o">|</span>  <span class="n">q7</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">v6</span>  <span class="n">o</span>          <span class="n">o</span>  <span class="n">v3</span>
+      <span class="n">v3</span>     <span class="n">v4</span>              \        <span class="o">/</span>
+      <span class="n">q5</span>     <span class="n">q6</span>          <span class="n">q9</span>   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>  <span class="n">q10</span>
+                         <span class="n">v5</span>            <span class="n">v4</span>
+     <span class="n">q5</span>        <span class="n">q6</span>
+     <span class="n">v0</span>        <span class="n">v1</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>               <span class="n">q9</span>      <span class="n">q10</span>
+ <span class="n">q8</span>   <span class="o">/</span>       \   <span class="n">q9</span>         <span class="n">v0</span>      <span class="n">v1</span>
+ <span class="n">v7</span>  <span class="n">o</span>         <span class="n">o</span>  <span class="n">v2</span>          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+     <span class="o">|</span>    <span class="mi">2</span>    <span class="o">|</span>              <span class="o">|</span>     <span class="o">|</span>
+<span class="n">q11</span>  <span class="o">|</span>         <span class="o">|</span>  <span class="n">q12</span>         <span class="o">|</span>  <span class="mi">3</span>  <span class="o">|</span>
+ <span class="n">v6</span>  <span class="n">o</span>         <span class="n">o</span>  <span class="n">v3</span>          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+      \       <span class="o">/</span>              <span class="n">q12</span>     <span class="n">q13</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>               <span class="n">v3</span>      <span class="n">v2</span>
+    <span class="n">q14</span>        <span class="n">q15</span>
+    <span class="n">v5</span>         <span class="n">v4</span>
+
+          <span class="n">o</span><span class="o">------</span><span class="n">o</span>
+         <span class="o">/</span>                  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">o</span>
+  <span class="o">|</span>     <span class="o">|</span>          <span class="o">|</span>
+  <span class="o">|</span>  <span class="mi">0</span>  <span class="o">|</span>    <span class="mi">1</span>     <span class="o">|</span>
+  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">o</span>
+ <span class="o">/</span>       \        <span class="o">/</span>
+<span class="n">o</span>  <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+<span class="o">|</span>    <span class="o">.</span>    <span class="o">|</span>     <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">2</span>    <span class="o">|</span>  <span class="mi">3</span>  <span class="o">|</span>
+<span class="n">o</span>         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+ \       <span class="o">/</span>
+  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>Octa Square Tile</p>
+<p>The tile has the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                            <span class="n">q0</span>        <span class="n">q1</span>
+                            <span class="n">v0</span>        <span class="n">v1</span>
+      <span class="n">q2</span>     <span class="n">q3</span>               <span class="n">o</span><span class="o">------</span><span class="n">o</span>
+      <span class="n">v0</span>     <span class="n">v1</span>         <span class="n">q3</span>   <span class="o">/</span>        \   <span class="n">q4</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">v7</span>  <span class="n">o</span>          <span class="n">o</span>  <span class="n">v2</span>
+       <span class="o">|</span>     <span class="o">|</span>              <span class="o">|</span>          <span class="o">|</span>
+       <span class="o">|</span>  <span class="mi">0</span>  <span class="o">|</span>          <span class="n">q6</span>  <span class="o">|</span>    <span class="mi">1</span>     <span class="o">|</span>  <span class="n">q7</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">v6</span>  <span class="n">o</span>          <span class="n">o</span>  <span class="n">v3</span>
+      <span class="n">v3</span>     <span class="n">v4</span>              \        <span class="o">/</span>
+      <span class="n">q5</span>     <span class="n">q6</span>          <span class="n">q9</span>   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>  <span class="n">q10</span>
+                         <span class="n">v5</span>            <span class="n">v4</span>
+     <span class="n">q5</span>        <span class="n">q6</span>
+     <span class="n">v0</span>        <span class="n">v1</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>               <span class="n">q9</span>      <span class="n">q10</span>
+ <span class="n">q8</span>   <span class="o">/</span>       \   <span class="n">q9</span>         <span class="n">v0</span>      <span class="n">v1</span>
+ <span class="n">v7</span>  <span class="n">o</span>         <span class="n">o</span>  <span class="n">v2</span>          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+     <span class="o">|</span>    <span class="mi">2</span>    <span class="o">|</span>              <span class="o">|</span>     <span class="o">|</span>
+<span class="n">q11</span>  <span class="o">|</span>         <span class="o">|</span>  <span class="n">q12</span>         <span class="o">|</span>  <span class="mi">3</span>  <span class="o">|</span>
+ <span class="n">v6</span>  <span class="n">o</span>         <span class="n">o</span>  <span class="n">v3</span>          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+      \       <span class="o">/</span>              <span class="n">q12</span>     <span class="n">q13</span>
+       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>               <span class="n">v3</span>      <span class="n">v2</span>
+    <span class="n">q14</span>        <span class="n">q15</span>
+    <span class="n">v5</span>         <span class="n">v4</span>
+
+          <span class="n">o</span><span class="o">------</span><span class="n">o</span>
+         <span class="o">/</span>        \
+  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">o</span>
+  <span class="o">|</span>     <span class="o">|</span>          <span class="o">|</span>
+  <span class="o">|</span>  <span class="mi">0</span>  <span class="o">|</span>    <span class="mi">1</span>     <span class="o">|</span>
+  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>          <span class="n">o</span>
+ <span class="o">/</span>       \        <span class="o">/</span>
+<span class="n">o</span>  <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+<span class="o">|</span>    <span class="o">.</span>    <span class="o">|</span>     <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">2</span>    <span class="o">|</span>  <span class="mi">3</span>  <span class="o">|</span>
+<span class="n">o</span>         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+ \       <span class="o">/</span>
+  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>Face colors for faces [0,1,2,3] are  [“yellowgreen”,”tomato”, “tomato”, “yellowgreen”]</p>
+<p>Preformatted operators are stored in HexagonTile.op_dict. Keys for op_dict are of the
+form [p|c|d]PPPP… where p = pattern and c = copy, d=double and P is a Pauli opertor X, Z or Y.</p>
+<p>“cX” -&gt; face #0 operator is Pauli(“XXXXXX”), face #1 operator is Pauli(“ZZZZZZ”), …
+“dXZ” -&gt; face #0 operators are Pauli(“XXXXXX”) and Pauli(“ZZZZZZ”), face #1 operators are
+Pauli(“ZZZZZZ”) and  …</p>
+<p>Available precomputed operator layouts are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cXZZX</span><span class="p">,</span> <span class="n">cZXXZ</span>
+</pre></div>
+</div>
+<p>The operator variable may be used to define the operators specifically. The operator must be
+a list of PauliList objects where each PauliList describes the opertors to be built for the
+faces as indexed above 0,1,2,3, … If the PauliList contains k Paulis then k operators will
+be created for the given face.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>np.array</em>) – Coordinates of origin of tile (shell)</p></li>
+<li><p><strong>qubit_count</strong> – Qubit counter. Defaults to None.</p></li>
+<li><p><strong>qubit_data</strong> – Qubit data. Defaults to None.</p></li>
+<li><p><strong>operators</strong> – Operators for tile faces. Defaults to None.</p></li>
+<li><p><strong>optype</strong> (<em>optional</em>) – Which of the listed opertor mapppings to used. Defaults to “pXZXZ”.</p></li>
+</ul>
+</dd>
+</dl>
+<p>A appropriately scalled lattice basis for tiling with the OctaSquareTile can be accessed
+from [OctaSquareTile.u_vec, OctaSquareTile.v_vec]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>QiskitError</strong> – Unsupported operator type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a Octa-Square tile (shell) with provided origin</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.Shell">Shell</a></p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.draw">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.draw" title="Link to this definition">¶</a></dt>
+<dd><p>Display the tile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.c8">
+<span class="sig-name descname"><span class="pre">c8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9238795325112867</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.c8" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.face_colors">
+<span class="sig-name descname"><span class="pre">face_colors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['yellowgreen',</span> <span class="pre">'tomato',</span> <span class="pre">'tomato',</span> <span class="pre">'yellowgreen']</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.face_colors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.faces_wf_components">
+<span class="sig-name descname"><span class="pre">faces_wf_components</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0],</span> <span class="pre">[1],</span> <span class="pre">[2],</span> <span class="pre">[3]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.faces_wf_components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.num_faces">
+<span class="sig-name descname"><span class="pre">num_faces</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.num_faces" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.num_qubits">
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.num_qubits" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.s8">
+<span class="sig-name descname"><span class="pre">s8</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3826834323650897</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.s8" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([3.15432203,</span> <span class="pre">3.15432203])</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.u_vec">
+<span class="sig-name descname"><span class="pre">u_vec</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([2.61312593,</span> <span class="pre">0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">])</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.u_vec" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.v_vec">
+<span class="sig-name descname"><span class="pre">v_vec</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">2.61312593])</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.v_vec" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.wf_coordinates">
+<span class="sig-name descname"><span class="pre">wf_coordinates</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[[-0.3826834323650897,</span> <span class="pre">1.6892463972414662],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">1.6892463972414662],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">0.9238795325112867],</span> <span class="pre">[-0.3826834323650897,</span> <span class="pre">0.9238795325112867]],</span> <span class="pre">[[0.9238795325112867,</span> <span class="pre">2.230442497387663],</span> <span class="pre">[1.6892463972414662,</span> <span class="pre">2.230442497387663],</span> <span class="pre">[2.230442497387663,</span> <span class="pre">1.6892463972414662],</span> <span class="pre">[2.230442497387663,</span> <span class="pre">0.9238795325112867],</span> <span class="pre">[1.6892463972414662,</span> <span class="pre">0.3826834323650897],</span> <span class="pre">[0.9238795325112867,</span> <span class="pre">0.3826834323650897],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">0.9238795325112867],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">1.6892463972414662]],</span> <span class="pre">[[-0.3826834323650897,</span> <span class="pre">0.9238795325112867],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">0.9238795325112867],</span> <span class="pre">[0.9238795325112867,</span> <span class="pre">0.3826834323650897],</span> <span class="pre">[0.9238795325112867,</span> <span class="pre">-0.3826834323650897],</span> <span class="pre">[0.3826834323650897,</span> <span class="pre">-0.9238795325112867],</span> <span class="pre">[-0.3826834323650897,</span> <span class="pre">-0.9238795325112867],</span> <span class="pre">[-0.9238795325112867,</span> <span class="pre">-0.3826834323650897],</span> <span class="pre">[-0.9238795325112867,</span> <span class="pre">0.3826834323650897]],</span> <span class="pre">[[0.9238795325112867,</span> <span class="pre">0.3826834323650897],</span> <span class="pre">[1.6892463972414662,</span> <span class="pre">0.3826834323650897],</span> <span class="pre">[1.6892463972414662,</span> <span class="pre">-0.3826834323650897],</span> <span class="pre">[0.9238795325112867,</span> <span class="pre">-0.3826834323650897]]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.wf_coordinates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.wf_loop_indicator">
+<span class="sig-name descname"><span class="pre">wf_loop_indicator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[True,</span> <span class="pre">True,</span> <span class="pre">True,</span> <span class="pre">True]</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.wf_loop_indicator" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.wf_operator_dict">
+<span class="sig-name descname"><span class="pre">wf_operator_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'cXZZX':</span> <span class="pre">[PauliList(['XXXX']),</span> <span class="pre">PauliList(['ZZZZZZZZ']),</span> <span class="pre">PauliList(['ZZZZZZZZ']),</span> <span class="pre">PauliList(['XXXX'])],</span> <span class="pre">'cZXXZ':</span> <span class="pre">[PauliList(['ZZZZ']),</span> <span class="pre">PauliList(['XXXXXXXX']),</span> <span class="pre">PauliList(['XXXXXXXX']),</span> <span class="pre">PauliList(['ZZZZ'])]}</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.wf_operator_dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.OctaSquareTile.wf_q_indices">
+<span class="sig-name descname"><span class="pre">wf_q_indices</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[2,</span> <span class="pre">3,</span> <span class="pre">6,</span> <span class="pre">5],</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">4,</span> <span class="pre">7,</span> <span class="pre">10,</span> <span class="pre">9,</span> <span class="pre">6,</span> <span class="pre">3],</span> <span class="pre">[5,</span> <span class="pre">6,</span> <span class="pre">9,</span> <span class="pre">12,</span> <span class="pre">15,</span> <span class="pre">14,</span> <span class="pre">11,</span> <span class="pre">8],</span> <span class="pre">[9,</span> <span class="pre">10,</span> <span class="pre">13,</span> <span class="pre">12]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.OctaSquareTile.wf_q_indices" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.geometry.SquareDiamondTile.html" class="btn btn-neutral float-right" title="SquareDiamondTile" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.geometry.HexagonTile.html" class="btn btn-neutral" title="HexagonTile" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">OctaSquareTile</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.draw"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.draw()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.c8"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.c8</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.face_colors"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.face_colors</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.faces_wf_components"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.faces_wf_components</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.num_faces"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.num_faces</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.num_qubits"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.num_qubits</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.s8"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.s8</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.size"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.size</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.u_vec"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.u_vec</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.v_vec"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.v_vec</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.wf_coordinates"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.wf_coordinates</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.wf_loop_indicator"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.wf_loop_indicator</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.wf_operator_dict"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.wf_operator_dict</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.OctaSquareTile.wf_q_indices"><code class="docutils literal notranslate"><span class="pre">OctaSquareTile.wf_q_indices</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

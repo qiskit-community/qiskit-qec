@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>HexagonTile &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/geometry.html">Geometry (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.geometry</span></code>)</a> &gt;</li>
+        
+      <li>HexagonTile</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="hexagontile">
+<h1>HexagonTile<a class="headerlink" href="#hexagontile" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HexagonTile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cZ-aXX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/tiles/hexagontile.html#HexagonTile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile" title="qiskit_qec.geometry.tiles.tile.Tile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tile</span></code></a></p>
+<p>Hexagon Tile</p>
+<p>Weight 6 operators (0,1,2):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                      <span class="n">q0</span>      <span class="n">q1</span>
+                      <span class="n">v0</span>      <span class="n">v1</span>
+                       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                  <span class="n">q3</span>  <span class="o">/</span>       \  <span class="n">q4</span>
+                  <span class="n">v5</span> <span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span> <span class="n">v2</span>
+    <span class="n">q2</span>      <span class="n">q3</span>        \       <span class="o">/</span>
+    <span class="n">v0</span>      <span class="n">v1</span>      <span class="n">q6</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">q7</span>
+     <span class="n">o</span><span class="o">-----</span><span class="n">o</span>        <span class="n">v4</span>         <span class="n">v3</span>
+<span class="n">q5</span>  <span class="o">/</span>       \  <span class="n">q6</span>  <span class="o">.</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">v5</span> <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span> <span class="n">v2</span>    <span class="n">q6</span>       <span class="n">q7</span>
+    \       <span class="o">/</span>        <span class="n">v0</span>       <span class="n">v1</span>
+     <span class="n">o</span><span class="o">-----</span><span class="n">o</span>           <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+    <span class="n">v4</span>      <span class="n">v3</span>    <span class="n">q9</span>  <span class="o">/</span>       \ <span class="n">q10</span>
+    <span class="n">q8</span>      <span class="n">q9</span>    <span class="n">v5</span> <span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span> <span class="n">v2</span>
+                      \       <span class="o">/</span>
+                       <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                     <span class="n">v4</span>       <span class="n">v3</span>
+                    <span class="n">q11</span>       <span class="n">q12</span>
+
+
+                  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                 <span class="o">/</span>                         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
+         <span class="o">/</span>       \       <span class="o">/</span>
+        <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+         \       <span class="o">/</span>                         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
+                 \       <span class="o">/</span>
+                  <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>Weight 2 operators (3,4,5,6,7,8,9,10,11):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   q0
+                 o v1
+              3 /
+               o v0
+                 q3
+
+q2   4     q3    q3        q4
+v1 o-----o v0  o v1      o v1
+                \ 5     / 6
+                 o v0  o v0
+                   q6    q7
+
+              v0 o-----o v1
+              q6    7    q7
+
+                   q6    q7
+                 o v0  o v0
+q8    10    q9  / 8     \ 9
+v1 o-----o v0  o         o v1
+                 q9        q10
+               o v0
+                \ 11
+                 o v1
+                   q11
+
+                 o
+               3/
+         o--4--o         o
+                      /6
+                 o--7--o
+                /8      \9
+         o--10-o         o
+
+                 o
+</pre></div>
+</div>
+<p>Hexagon Tile</p>
+<p>Tile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    <span class="n">q0</span>      <span class="n">q1</span>
+                    <span class="n">v0</span>      <span class="n">v1</span>
+                    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                <span class="n">q3</span>  <span class="o">/</span>       \  <span class="n">q4</span>
+                <span class="n">v5</span> <span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span> <span class="n">v2</span>
+    <span class="n">q2</span>      <span class="n">q3</span>        \       <span class="o">/</span>
+    <span class="n">v0</span>      <span class="n">v1</span>      <span class="n">q6</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">q7</span>
+    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>        <span class="n">v4</span>         <span class="n">v3</span>
+<span class="n">q5</span>  <span class="o">/</span>       \  <span class="n">q6</span>  <span class="o">.</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">v5</span> <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span> <span class="n">v2</span>    <span class="n">q6</span>       <span class="n">q7</span>
+    \       <span class="o">/</span>        <span class="n">v0</span>       <span class="n">v1</span>
+    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>           <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+    <span class="n">v4</span>      <span class="n">v3</span>    <span class="n">q9</span>  <span class="o">/</span>       \ <span class="n">q10</span>
+    <span class="n">q8</span>      <span class="n">q9</span>    <span class="n">v5</span> <span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span> <span class="n">v2</span>
+                    \       <span class="o">/</span>
+                    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                    <span class="n">v4</span>       <span class="n">v3</span>
+                    <span class="n">q11</span>       <span class="n">q12</span>
+
+
+                <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+                <span class="o">/</span>                                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
+        <span class="o">/</span>       \       <span class="o">/</span>
+    <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+        \       <span class="o">/</span>                                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
+                \       <span class="o">/</span>
+                <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
+</pre></div>
+</div>
+<p>Weight 2 operators (3,4,5,6,7,8,9,10,11):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    q0
+                o v1
+            3 /
+                o v0
+                q3
+
+q2   4     q3    q3        q4
+v1 o-----o v0  o v1      o v1
+                \ 5     / 6
+                o v0  o v0
+                    q6    q7
+
+            v0 o-----o v1
+            q6    7    q7
+
+                    q6    q7
+                o v0  o v0
+q8    10    q9  / 8     \ 9
+v1 o-----o v0  o         o v1
+                q9        q10
+                o v0
+                \ 11
+                o v1
+                    q11
+
+                o
+                3/
+        o--4--o         o
+                      /6
+                o--7--o
+                /8      \9
+        o--10-o         o
+
+                o
+</pre></div>
+</div>
+<p>Face colors for faces [0,1,2] are [“yellowgreen”,”tomato”,”steelblue”] and red for the
+weight 2 faces.</p>
+<p>Preformatted operators are stored in HexagonTile.wf_operator_dict</p>
+<p>The operator variable may be used to define the operators specifically. The operator must be
+a list of PauliList objects where each PauliList describes the opertors to be built for the
+faces as indexed above 0,1,2,3, … If the PauliList contains k Paulis then k operators will
+be created for the given face. If a face is not wanted then that face should be listed as None.
+See HexagonTile.wf_operator_dict for examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>np.array</em>) – Coordinates of origin of tile (shell)</p></li>
+<li><p><strong>qubit_count</strong> – Qubit counter. Defaults to None.</p></li>
+<li><p><strong>qubit_data</strong> – Qubit data. Defaults to None.</p></li>
+<li><p><strong>operators</strong> – Operators for tile faces. Defaults to None.</p></li>
+<li><p><strong>optype</strong> (<em>optional</em>) – Which of the listed opertor mapppings to used. Defaults to “pXZXZ”.</p></li>
+</ul>
+</dd>
+</dl>
+<p>A appropriately scalled lattice basis for tiling with the HexagonTile can be accessed
+from [HexagonTile.u_vec, HexagonTile.v_vec]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>QiskitError</strong> – Unsupported operator type</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns a Checker Board tile (shell) with provided origin</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.Shell">Shell</a></p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.draw">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.draw" title="Link to this definition">¶</a></dt>
+<dd><p>Display the tile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.face_colors">
+<span class="sig-name descname"><span class="pre">face_colors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['yellowgreen',</span> <span class="pre">'tomato',</span> <span class="pre">'steelblue',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red',</span> <span class="pre">'red']</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.face_colors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.faces_wf_components">
+<span class="sig-name descname"><span class="pre">faces_wf_components</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0],</span> <span class="pre">[1],</span> <span class="pre">[2],</span> <span class="pre">[3],</span> <span class="pre">[4],</span> <span class="pre">[5],</span> <span class="pre">[6],</span> <span class="pre">[7],</span> <span class="pre">[8],</span> <span class="pre">[9],</span> <span class="pre">[10],</span> <span class="pre">[11]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.faces_wf_components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.h">
+<span class="sig-name descname"><span class="pre">h</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.h" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.num_faces">
+<span class="sig-name descname"><span class="pre">num_faces</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.num_faces" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.num_qubits">
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.num_qubits" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.r">
+<span class="sig-name descname"><span class="pre">r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.8660254037844386</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.r" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([3.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">3.46410162])</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.u_vec">
+<span class="sig-name descname"><span class="pre">u_vec</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([3,</span> <span class="pre">0])</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.u_vec" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.v_vec">
+<span class="sig-name descname"><span class="pre">v_vec</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([1.5</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">2.59807621])</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.v_vec" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.wf_coordinates">
+<span class="sig-name descname"><span class="pre">wf_coordinates</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[[0,</span> <span class="pre">1.7320508075688772],</span> <span class="pre">[1.0,</span> <span class="pre">1.7320508075688772],</span> <span class="pre">[1.5,</span> <span class="pre">0.8660254037844386],</span> <span class="pre">[1,</span> <span class="pre">0],</span> <span class="pre">[0,</span> <span class="pre">0],</span> <span class="pre">[-0.5,</span> <span class="pre">0.8660254037844386]],</span> <span class="pre">[[-1.5,</span> <span class="pre">0.8660254037844386],</span> <span class="pre">[-0.5,</span> <span class="pre">0.8660254037844386],</span> <span class="pre">[0,</span> <span class="pre">0],</span> <span class="pre">[-0.5,</span> <span class="pre">-0.8660254037844386],</span> <span class="pre">[-1.5,</span> <span class="pre">-0.8660254037844386],</span> <span class="pre">[-2,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">0],</span> <span class="pre">[1,</span> <span class="pre">0],</span> <span class="pre">[1.5,</span> <span class="pre">-0.8660254037844386],</span> <span class="pre">[1.0,</span> <span class="pre">-1.7320508075688772],</span> <span class="pre">[0,</span> <span class="pre">-1.7320508075688772],</span> <span class="pre">[-0.5,</span> <span class="pre">-0.8660254037844386]],</span> <span class="pre">[[-0.5,</span> <span class="pre">0.8660254037844386],</span> <span class="pre">[0,</span> <span class="pre">1.7320508075688772]],</span> <span class="pre">[[-0.5,</span> <span class="pre">0.8660254037844386],</span> <span class="pre">[-1.5,</span> <span class="pre">0.8660254037844386]],</span> <span class="pre">[[0,</span> <span class="pre">0],</span> <span class="pre">[-0.5,</span> <span class="pre">0.8660254037844386]],</span> <span class="pre">[[1,</span> <span class="pre">0],</span> <span class="pre">[1.5,</span> <span class="pre">0.8660254037844386]],</span> <span class="pre">[[0,</span> <span class="pre">0],</span> <span class="pre">[1,</span> <span class="pre">0]],</span> <span class="pre">[[0,</span> <span class="pre">0],</span> <span class="pre">[-0.5,</span> <span class="pre">-0.8660254037844386]],</span> <span class="pre">[[1,</span> <span class="pre">0],</span> <span class="pre">[1.5,</span> <span class="pre">-0.8660254037844386]],</span> <span class="pre">[[-0.5,</span> <span class="pre">-0.8660254037844386],</span> <span class="pre">[-1.5,</span> <span class="pre">-0.8660254037844386]],</span> <span class="pre">[[-0.5,</span> <span class="pre">-0.8660254037844386],</span> <span class="pre">[0,</span> <span class="pre">-1.7320508075688772]]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.wf_coordinates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.wf_loop_indicator">
+<span class="sig-name descname"><span class="pre">wf_loop_indicator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[True,</span> <span class="pre">True,</span> <span class="pre">True,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False,</span> <span class="pre">False]</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.wf_loop_indicator" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.wf_operator_dict">
+<span class="sig-name descname"><span class="pre">wf_operator_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'cX':</span> <span class="pre">[PauliList(['XXXXXX']),</span> <span class="pre">PauliList(['XXXXXX']),</span> <span class="pre">PauliList(['XXXXXX']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None],</span> <span class="pre">'cYZX2-hXX':</span> <span class="pre">[PauliList(['XZYXZY']),</span> <span class="pre">PauliList(['XZYXZY']),</span> <span class="pre">PauliList(['XZYXZY']),</span> <span class="pre">None,</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">None],</span> <span class="pre">'cZ':</span> <span class="pre">[PauliList(['ZZZZZZ']),</span> <span class="pre">PauliList(['ZZZZZZ']),</span> <span class="pre">PauliList(['ZZZZZZ']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None],</span> <span class="pre">'cZ-aXX':</span> <span class="pre">[PauliList(['XXXXXX']),</span> <span class="pre">PauliList(['XXXXXX']),</span> <span class="pre">PauliList(['XXXXXX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX']),</span> <span class="pre">PauliList(['XX'])],</span> <span class="pre">'dXZ':</span> <span class="pre">[PauliList(['XXXXXX',</span> <span class="pre">'ZZZZZZ']),</span> <span class="pre">PauliList(['XXXXXX',</span> <span class="pre">'ZZZZZZ']),</span> <span class="pre">PauliList(['XXXXXX',</span> <span class="pre">'ZZZZZZ']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None],</span> <span class="pre">'dZX':</span> <span class="pre">[PauliList(['ZZZZZZ',</span> <span class="pre">'XXXXXX']),</span> <span class="pre">PauliList(['ZZZZZZ',</span> <span class="pre">'XXXXXX']),</span> <span class="pre">PauliList(['ZZZZZZ',</span> <span class="pre">'XXXXXX']),</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None,</span> <span class="pre">None]}</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.wf_operator_dict" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.HexagonTile.wf_q_indices">
+<span class="sig-name descname"><span class="pre">wf_q_indices</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[[0,</span> <span class="pre">1,</span> <span class="pre">4,</span> <span class="pre">7,</span> <span class="pre">6,</span> <span class="pre">3],</span> <span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">6,</span> <span class="pre">9,</span> <span class="pre">8,</span> <span class="pre">5],</span> <span class="pre">[6,</span> <span class="pre">7,</span> <span class="pre">10,</span> <span class="pre">12,</span> <span class="pre">11,</span> <span class="pre">9],</span> <span class="pre">[3,</span> <span class="pre">0],</span> <span class="pre">[3,</span> <span class="pre">2],</span> <span class="pre">[6,</span> <span class="pre">3],</span> <span class="pre">[7,</span> <span class="pre">4],</span> <span class="pre">[6,</span> <span class="pre">7],</span> <span class="pre">[6,</span> <span class="pre">9],</span> <span class="pre">[7,</span> <span class="pre">10],</span> <span class="pre">[9,</span> <span class="pre">8],</span> <span class="pre">[9,</span> <span class="pre">11]]</span></em><a class="headerlink" href="#qiskit_qec.geometry.HexagonTile.wf_q_indices" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.geometry.OctaSquareTile.html" class="btn btn-neutral float-right" title="OctaSquareTile" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.geometry.DiagonalHourGlassTile.html" class="btn btn-neutral" title="DiagonalHourGlassTile" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">HexagonTile</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile"><code class="docutils literal notranslate"><span class="pre">HexagonTile</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.draw"><code class="docutils literal notranslate"><span class="pre">HexagonTile.draw()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.face_colors"><code class="docutils literal notranslate"><span class="pre">HexagonTile.face_colors</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.faces_wf_components"><code class="docutils literal notranslate"><span class="pre">HexagonTile.faces_wf_components</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.h"><code class="docutils literal notranslate"><span class="pre">HexagonTile.h</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.num_faces"><code class="docutils literal notranslate"><span class="pre">HexagonTile.num_faces</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.num_qubits"><code class="docutils literal notranslate"><span class="pre">HexagonTile.num_qubits</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.r"><code class="docutils literal notranslate"><span class="pre">HexagonTile.r</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.size"><code class="docutils literal notranslate"><span class="pre">HexagonTile.size</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.u_vec"><code class="docutils literal notranslate"><span class="pre">HexagonTile.u_vec</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.v_vec"><code class="docutils literal notranslate"><span class="pre">HexagonTile.v_vec</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.wf_coordinates"><code class="docutils literal notranslate"><span class="pre">HexagonTile.wf_coordinates</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.wf_loop_indicator"><code class="docutils literal notranslate"><span class="pre">HexagonTile.wf_loop_indicator</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.wf_operator_dict"><code class="docutils literal notranslate"><span class="pre">HexagonTile.wf_operator_dict</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.HexagonTile.wf_q_indices"><code class="docutils literal notranslate"><span class="pre">HexagonTile.wf_q_indices</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

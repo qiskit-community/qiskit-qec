@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.circuits.surface_code &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.circuits.surface_code</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.circuits.surface_code</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2019.</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+
+<span class="c1"># pylint: disable=invalid-name</span>
+
+<span class="sd">&quot;&quot;&quot;Generates circuits based on repetition codes.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">ClassicalRegister</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">QuantumRegister</span>
+
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphNode</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.circuits.code_circuit</span> <span class="kn">import</span> <span class="n">CodeCircuit</span>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit">[docs]</a>
+<span class="k">class</span> <span class="nc">SurfaceCodeCircuit</span><span class="p">(</span><span class="n">CodeCircuit</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Distance d rotated surface code with  T syndrome measurement rounds.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="n">resets</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates the circuits corresponding to logical basis states.</span>
+
+<span class="sd">        Creates the circuits corresponding to logical basis states encoded</span>
+<span class="sd">        using a rotated surface code.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            d (int): Number of code qubits (and hence repetitions) used.</span>
+<span class="sd">            T (int): Number of rounds of ancilla-assisted syndrome measurement.</span>
+<span class="sd">            basis (str): Basis used to initialize qubit.</span>
+<span class="sd">            resets (bool): Whether to include a reset gate after mid-circuit measurements.</span>
+
+
+<span class="sd">        Additional information:</span>
+<span class="sd">            No measurements are added to the circuit if `T=0`. Otherwise</span>
+<span class="sd">            `T` rounds are added, followed by measurement of the code</span>
+<span class="sd">            qubits (corresponding to a logical measurement and final</span>
+<span class="sd">            syndrome measurement round).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">d</span><span class="o">**</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="n">basis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resets</span> <span class="o">=</span> <span class="n">resets</span>
+
+        <span class="c1"># get layout of plaquettes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zplaqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zplaq_coords</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xplaq_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_plaquettes</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="c1"># X logicals for left and right sides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)])</span>
+        <span class="c1"># Z logicals for top and bottom rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)])</span>
+
+        <span class="c1"># set info needed for css codes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span> <span class="o">=</span> <span class="p">[[</span><span class="n">q</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">plaq</span> <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">plaq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaqs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span> <span class="o">=</span> <span class="p">[[</span><span class="n">q</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">plaq</span> <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">plaq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaqs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span> <span class="o">=</span> <span class="n">T</span>
+
+        <span class="c1"># quantum registers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;code_qubit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span><span class="p">,</span> <span class="s2">&quot;zplaq_qubit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span> <span class="o">=</span> <span class="n">QuantumRegister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span><span class="p">,</span> <span class="s2">&quot;xplaq_qubit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qubit_registers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">]</span>
+
+        <span class="c1"># classical registers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_bits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_bits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span> <span class="o">=</span> <span class="n">ClassicalRegister</span><span class="p">(</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;code_bit&quot;</span><span class="p">)</span>
+
+        <span class="c1"># create the circuits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">log</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+        <span class="c1"># apply initial logical paulis for encoded states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preparation</span><span class="p">()</span>
+
+        <span class="c1"># add the gates required for syndrome measurements</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">syndrome_measurement</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">T</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">syndrome_measurement</span><span class="p">(</span><span class="n">final</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_plaquettes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns `zplaqs` and `xplaqs`, which are lists of the Z and X type</span>
+<span class="sd">        stabilizers. Each plaquettes is specified as a list of four qubits,</span>
+<span class="sd">        in the order in which entangling gates are applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+
+        <span class="n">zplaqs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">xplaqs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">zplaq_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">xplaq_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+                <span class="n">bulk</span> <span class="o">=</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">ztab</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">xtab</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bulk</span> <span class="ow">or</span> <span class="n">ztab</span> <span class="ow">or</span> <span class="n">xtab</span><span class="p">):</span>
+                    <span class="n">plaq</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">dy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">dx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                                <span class="n">plaq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">plaq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">xplaqs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">plaq</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span>
+                        <span class="n">xplaq_coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">zplaqs</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">plaq</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">plaq</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span>
+                        <span class="n">zplaq_coords</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">zplaqs</span><span class="p">,</span> <span class="n">xplaqs</span><span class="p">,</span> <span class="n">zplaq_coords</span><span class="p">,</span> <span class="n">xplaq_coords</span>
+
+    <span class="k">def</span> <span class="nf">_preparation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares logical bit states by applying an x to the circuit that will</span>
+<span class="sd">        encode a 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">([</span><span class="s2">&quot;1&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">qc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">([</span><span class="s2">&quot;1&quot;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.get_circuit_list">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.get_circuit_list">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_circuit_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            circuit_list: self.circuit as a list, with</span>
+<span class="sd">            circuit_list[0] = circuit[&#39;0&#39;]</span>
+<span class="sd">            circuit_list[1] = circuit[&#39;1&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">circuit_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">])]</span>
+        <span class="k">return</span> <span class="n">circuit_list</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.x">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.x">[docs]</a>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">),</span> <span class="n">barrier</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies a logical x to the circuits for the given logical values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            logs (list or tuple): List or tuple of logical values expressed as</span>
+<span class="sd">                strings.</span>
+<span class="sd">            barrier (bool): Boolean denoting whether to include a barrier at</span>
+<span class="sd">                the end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">[</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">barrier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.z">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.z">[docs]</a>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">),</span> <span class="n">barrier</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies a logical z to the circuits for the given logical values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            logs (list or tuple): List or tuple of logical values expressed as</span>
+<span class="sd">                strings.</span>
+<span class="sd">            barrier (bool): Boolean denoting whether to include a barrier at</span>
+<span class="sd">                the end.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">z</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">barrier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.syndrome_measurement">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.syndrome_measurement">[docs]</a>
+    <span class="k">def</span> <span class="nf">syndrome_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">final</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">barrier</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Application of a syndrome measurement round.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            final (bool): Whether to disregard the reset (if applicable) due to this</span>
+<span class="sd">                being the final syndrome measurement round.</span>
+<span class="sd">            barrier (bool): Boolean denoting whether to include a barrier at the end.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">zplaqs</span><span class="p">,</span> <span class="n">xplaqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaqs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaqs</span>
+
+        <span class="c1"># classical registers for this round</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ClassicalRegister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span><span class="p">,</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_zplaq_bit&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_bits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ClassicalRegister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span><span class="p">,</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_xplaq_bit&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zplaq_bits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_bits</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">plaq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zplaqs</span><span class="p">):</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">plaq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">plaq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xplaqs</span><span class="p">):</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">plaq</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">cx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_xy</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaq_bits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaq_bits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resets</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">final</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xplaq_qubit</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zplaq_qubit</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">barrier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.readout">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.readout">[docs]</a>
+    <span class="k">def</span> <span class="nf">readout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Readout of all code qubits, which corresponds to a logical measurement</span>
+<span class="sd">        as well as allowing for a measurement of the syndrome to be inferred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_string2changes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span>
+
+        <span class="c1"># final syndrome for plaquettes deduced from final code qubit readout</span>
+        <span class="n">final_readout</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">plaqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zplaqs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plaqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xplaqs</span>
+        <span class="n">full_syndrome</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">plaq</span> <span class="ow">in</span> <span class="n">plaqs</span><span class="p">:</span>
+            <span class="n">parity</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">plaq</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">parity</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">final_readout</span><span class="p">[</span><span class="n">q</span><span class="p">])</span>
+            <span class="n">full_syndrome</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">parity</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">full_syndrome</span>
+
+        <span class="c1"># results from all other plaquette syndrome measurements then added</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">full_syndrome</span> <span class="o">=</span> <span class="n">full_syndrome</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">full_syndrome</span> <span class="o">=</span> <span class="n">full_syndrome</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># changes between one syndrome and the next then calculated</span>
+        <span class="n">syndrome_list</span> <span class="o">=</span> <span class="n">full_syndrome</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">syndrome_list</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">syndrome_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">syndrome_changes</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">height</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">width</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resets</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">syndrome_changes</span> <span class="o">+=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="ow">not</span> <span class="n">change</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span> <span class="o">*</span> <span class="n">change</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">:</span>
+                            <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">:</span>
+                        <span class="n">last3</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                            <span class="n">last3</span> <span class="o">+=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">dt</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                        <span class="n">change</span> <span class="o">=</span> <span class="n">last3</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">syndrome_changes</span> <span class="o">+=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="ow">not</span> <span class="n">change</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span> <span class="o">*</span> <span class="n">change</span>
+            <span class="n">syndrome_changes</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">syndrome_changes</span> <span class="o">=</span> <span class="n">syndrome_changes</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">:</span>
+            <span class="c1"># trim the noisy nonsense (first and last rounds)</span>
+            <span class="n">syndrome_changes</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">syndrome_changes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">syndrome_changes</span>
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.string2raw_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">string2raw_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts raw logicals from output string.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            string (string): Results string from which to extract logicals</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Raw values for logical operators that correspond to nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">final_readout</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># get logical readout</span>
+        <span class="c1"># (though it&#39;s called Z, it actually depends on the basis)</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                <span class="c1"># evaluated using top row</span>
+                <span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">final_readout</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="c1"># evaluated using bottom row</span>
+                <span class="n">Z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">final_readout</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># evaluated using left side</span>
+                <span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">final_readout</span><span class="p">[</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="c1"># evaluated using right side</span>
+                <span class="n">Z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">final_readout</span><span class="p">[(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_process_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="c1"># get logical readout</span>
+        <span class="n">measured_Z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string2raw_logicals</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="c1"># then get syndrome changes</span>
+        <span class="n">syndrome_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string2changes</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="c1"># the space separated string of syndrome changes then gets a</span>
+        <span class="c1"># double space separated logical value on the end</span>
+        <span class="n">new_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measured_Z</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span> <span class="o">+</span> <span class="n">syndrome_changes</span>
+
+        <span class="k">return</span> <span class="n">new_string</span>
+
+    <span class="k">def</span> <span class="nf">_separate_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="n">separated_string</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">syndrome_type_string</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="p">):</span>
+            <span class="n">separated_string</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syndrome_type_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">separated_string</span>
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.string2nodes">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.string2nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">string2nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert output string from circuits into a set of nodes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (string): Results string to convert.</span>
+<span class="sd">            kwargs (dict): Additional keyword arguments. See below:</span>
+
+<span class="sd">        kwargs:</span>
+<span class="sd">            logical (str): Logical value whose results are used (&#39;0&#39; as default).</span>
+<span class="sd">            all_logicals (bool): Whether to include logical nodes</span>
+<span class="sd">            irrespective of value. (False as default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: List of nodes corresponding to to the non-trivial</span>
+<span class="sd">                elements in the string.</span>
+
+<span class="sd">        Additional information:</span>
+<span class="sd">            Strings are read right to left, but lists*</span>
+<span class="sd">            are read left to right. So, we have some ugly indexing</span>
+<span class="sd">            code whenever we&#39;re dealing with both strings and lists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">all_logicals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all_logicals&quot;</span><span class="p">)</span>
+        <span class="n">logical</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logical</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logical</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="n">separated_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># boundary nodes</span>
+        <span class="n">boundary</span> <span class="o">=</span> <span class="n">separated_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># [&lt;last_elem&gt;, &lt;init_elem&gt;]</span>
+        <span class="k">for</span> <span class="n">bqec_index</span><span class="p">,</span> <span class="n">belement</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">boundary</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="n">belement</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                    <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">][</span><span class="o">-</span><span class="n">bqec_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="n">index</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">bqec_index</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># bulk nodes</span>
+        <span class="k">for</span> <span class="n">syn_type</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">separated_string</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">syn_round</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">separated_string</span><span class="p">[</span><span class="n">syn_type</span><span class="p">])):</span>
+                <span class="n">elements</span> <span class="o">=</span> <span class="n">separated_string</span><span class="p">[</span><span class="n">syn_type</span><span class="p">][</span><span class="n">syn_round</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">qec_index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+                            <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span><span class="p">[</span><span class="n">qec_index</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span><span class="p">[</span><span class="n">qec_index</span><span class="p">]</span>
+                        <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">syn_round</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">qec_index</span><span class="p">)</span>
+                        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.check_nodes">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
+<span class="sd">        determines any additional logical readout qubits that would be</span>
+<span class="sd">        flipped by the errors creating such a cluster and how many errors</span>
+<span class="sd">        would be required to make the cluster.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
+<span class="sd">            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are</span>
+<span class="sd">            ignored.</span>
+<span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
+<span class="sd">            case.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            neutral (bool): Whether the nodes independently correspond to a valid</span>
+<span class="sd">            set of errors.</span>
+<span class="sd">            flipped_logical_nodes (list): List of qubits nodes for logical</span>
+<span class="sd">            operators that are flipped by the errors, that were not included</span>
+<span class="sd">            in the original nodes.</span>
+<span class="sd">            num_errors (int): Minimum number of errors required to create nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">bulk_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">]</span>
+        <span class="n">boundary_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">]</span>
+        <span class="n">given_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">boundary_nodes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zplaq_coords</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xplaq_coords</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bulk_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundary_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ignore_extra_boundary</span><span class="p">:</span>
+                <span class="n">neutral</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="c1"># estimate num_errors from size</span>
+                <span class="k">if</span> <span class="n">bulk_nodes</span><span class="p">:</span>
+                    <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">:</span>
+                        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                        <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                        <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                    <span class="n">dx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+                    <span class="n">num_errors</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span>
+                    <span class="k">if</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">dy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">num_errors</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">num_errors</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="n">num_errors</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># find nearest boundary</span>
+            <span class="n">num_errors</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">x</span>
+                <span class="n">num_errors</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_errors</span><span class="p">,</span> <span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>
+            <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span> <span class="o">&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)}</span>
+
+        <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
+        <span class="c1"># (unless this is ignored)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
+            <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neutral</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
+
+        <span class="c1"># get the required boundary nodes</span>
+        <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">][</span><span class="n">elem</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">elem</span>
+            <span class="p">)</span>
+            <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">neutral</span><span class="p">,</span> <span class="n">flipped_logical_nodes</span><span class="p">,</span> <span class="n">num_errors</span></div>
+
+
+<div class="viewcode-block" id="SurfaceCodeCircuit.is_cluster_neutral">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atypical_nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether or not the cluster is neutral, meaning that one or more</span>
+<span class="sd">        errors could have caused the set of atypical nodes (syndrome changes) passed</span>
+<span class="sd">        to the method.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            atypical_nodes (dictionary in the form of the return value of string2nodes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

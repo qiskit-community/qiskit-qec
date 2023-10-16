@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>UnionFindDecoder &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a> &gt;</li>
+        
+      <li>UnionFindDecoder</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="unionfinddecoder">
+<h1>UnionFindDecoder<a class="headerlink" href="#unionfinddecoder" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnionFindDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_peeling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusteringDecoder</span></code></p>
+<p>Decoder based on growing clusters around syndrome errors to
+“convert” them into erasure errors, which can be corrected easily,
+by the peeling decoder in case of the surface code, or by checking for
+interference with the boundary in case of an abritrary ARC.</p>
+<p>TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)</p>
+<p>See arXiv:1709.06218v3 for more details.</p>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.cluster">
+<span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Create clusters using the union-find algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>List</em>) – List of non-typical nodes in the syndrome graph,</p></li>
+<li><p><strong>string2nodes.</strong> (<em>of the type produced by</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with the indices of
+the given node as keys and an integer specifying their cluster as the corresponding
+value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>clusters (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.find" title="Link to this definition">¶</a></dt>
+<dd><p>Find() function as described in the paper that returns the root
+of the cluster of a node, including path compression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>u</strong> (<em>int</em>) – The index of the node in the decoding graph.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The root of the cluster of node u.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>root (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.get_corrections">
+<span class="sig-name descname"><span class="pre">get_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.get_corrections" title="Link to this definition">¶</a></dt>
+<dd><p>Turn a set of neutral clusters into corrections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – Output string of the code</p></li>
+<li><p><strong>clusters</strong> (<em>dict</em>) – Dictionary with the indices of the given node</p></li>
+<li><p><strong>corresponding</strong> (<em>as keys and an integer specifying their cluster as the</em>) – </p></li>
+<li><p><strong>value.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of integers that are 0 or 1.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>corrected_logicals (list)</p>
+</dd>
+</dl>
+<p>These are the corrected values of the final transversal
+measurement, corresponding to the logical operators of
+self.measured_logicals.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges">
+<span class="sig-name descname"><span class="pre">neighbouring_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.neighbouring_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges" title="Link to this definition">¶</a></dt>
+<dd><p>Returns all of the neighbouring edges of a node in the decoding graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node_index</strong> (<em>int</em>) – The index of the node in the graph.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>List of neighbouring edges</p>
+<p>In following format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="n">index</span> <span class="n">of</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">,</span>
+    <span class="n">index</span> <span class="n">of</span> <span class="n">neighbour</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">,</span>
+    <span class="n">data</span> <span class="n">payload</span> <span class="n">of</span> <span class="n">the</span> <span class="n">edge</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>neighbouring_edges (List[Tuple[int, int, <a class="reference internal" href="qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge" title="qiskit_qec.utils.DecodingGraphEdge">DecodingGraphEdge</a>]])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.peeling">
+<span class="sig-name descname"><span class="pre">peeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">erasure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.peeling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.peeling" title="Link to this definition">¶</a></dt>
+<dd><p>”
+Runs the peeling decoder on the erasure provided.
+Assumes that the erasure is one connected component, if not it will run in an
+infinite loop in the tree construction.
+It works by first producing a spanning forest of the erasure and then
+going backwards through the edges of the tree computing the error based on the syndrome.
+Based on arXiv:1703.01517.</p>
+<p>TODO: Extract to a separate decoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>erasure</strong> (<em>PyGraph</em>) – subgraph of the syndrome graph that represents the erasure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of qubit indices on which Pauli errors occurred.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>errors (List[int])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.process" title="Link to this definition">¶</a></dt>
+<dd><p>Process an output string and return corrected final outcomes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Output string of the code.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of integers that are 0 or 1.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>corrected_z_logicals (list)</p>
+</dd>
+</dl>
+<p>These are the corrected values of the final transversal
+measurement, corresponding to the logical operators of
+self.z_logicals.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="../apidocs/geometry.html" class="btn btn-neutral float-right" title="Geometry (qiskit_qec.geometry)" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.decoders.ThreeBitDecoder.html" class="btn btn-neutral" title="ThreeBitDecoder" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">UnionFindDecoder</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.cluster"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.cluster()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.find"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.find()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.get_corrections"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.get_corrections()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.neighbouring_edges()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.peeling"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.peeling()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.UnionFindDecoder.process"><code class="docutils literal notranslate"><span class="pre">UnionFindDecoder.process()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

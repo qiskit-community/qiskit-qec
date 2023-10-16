@@ -1,0 +1,22 @@
+﻿Lattice
+=======
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Lattice
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Lattice.apply_transform_from
+   .. automethod:: Lattice.find_pre_transform_length
+   .. automethod:: Lattice.generate_points
+   .. automethod:: Lattice.make_transform
+   .. automethod:: Lattice.restrict
+   .. automethod:: Lattice.restrict_for_tiling
+
+

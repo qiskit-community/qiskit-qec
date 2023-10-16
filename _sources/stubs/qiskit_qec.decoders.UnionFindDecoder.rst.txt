@@ -1,0 +1,22 @@
+﻿UnionFindDecoder
+================
+
+.. currentmodule:: qiskit_qec.decoders
+
+.. autoclass:: UnionFindDecoder
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: UnionFindDecoder.cluster
+   .. automethod:: UnionFindDecoder.find
+   .. automethod:: UnionFindDecoder.get_corrections
+   .. automethod:: UnionFindDecoder.neighbouring_edges
+   .. automethod:: UnionFindDecoder.peeling
+   .. automethod:: UnionFindDecoder.process
+
+

@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.is\_same\_span
+=================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: is_same_span

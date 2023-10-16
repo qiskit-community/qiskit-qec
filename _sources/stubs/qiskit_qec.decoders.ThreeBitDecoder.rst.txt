@@ -1,0 +1,24 @@
+﻿ThreeBitDecoder
+===============
+
+.. currentmodule:: qiskit_qec.decoders
+
+.. autoclass:: ThreeBitDecoder
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: ThreeBitDecoder.process
+   .. automethod:: ThreeBitDecoder.update_edge_weights
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: AVAILABLE_METHODS
+   .. autoattribute:: METHOD_PYMATCHING
+   .. autoattribute:: METHOD_RETWORKX

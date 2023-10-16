@@ -1,0 +1,19 @@
+﻿Plane
+=====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Plane
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Plane.ison
+   .. automethod:: Plane.rot_matrix
+   .. automethod:: Plane.rotate
+
+

@@ -1,0 +1,25 @@
+﻿Vertex
+======
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Vertex
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Vertex.add_parent
+   .. automethod:: Vertex.create_id
+   .. automethod:: Vertex.set_position
+   .. automethod:: Vertex.shallowcopy
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id
+   .. autoattribute:: position

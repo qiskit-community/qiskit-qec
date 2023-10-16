@@ -1,0 +1,31 @@
+﻿Shell
+=====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Shell
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Shell.add_parent
+   .. automethod:: Shell.create_id
+   .. automethod:: Shell.delete_subtree
+   .. automethod:: Shell.draw
+   .. automethod:: Shell.extract
+   .. automethod:: Shell.integer_snap
+   .. automethod:: Shell.rotate2d
+   .. automethod:: Shell.scale
+   .. automethod:: Shell.shell2symplectic
+   .. automethod:: Shell.shift
+   .. automethod:: Shell.union
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id

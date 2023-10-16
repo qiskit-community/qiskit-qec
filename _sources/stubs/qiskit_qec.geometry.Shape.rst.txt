@@ -1,0 +1,25 @@
+﻿Shape
+=====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Shape
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Shape.bounding_box_from_lines
+   .. automethod:: Shape.contains
+   .. automethod:: Shape.contains_quad_winding_number
+   .. automethod:: Shape.contains_ray_trace
+   .. automethod:: Shape.create_lines
+   .. automethod:: Shape.inside
+   .. automethod:: Shape.is_between
+   .. automethod:: Shape.rect
+   .. automethod:: Shape.square
+
+

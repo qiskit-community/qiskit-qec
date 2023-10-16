@@ -1,0 +1,19 @@
+﻿CodeCircuit
+===========
+
+.. currentmodule:: qiskit_qec.circuits
+
+.. autoclass:: CodeCircuit
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: CodeCircuit.check_nodes
+   .. automethod:: CodeCircuit.is_cluster_neutral
+   .. automethod:: CodeCircuit.string2nodes
+
+

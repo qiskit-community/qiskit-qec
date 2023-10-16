@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Shape &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/geometry.html">Geometry (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.geometry</span></code>)</a> &gt;</li>
+        
+      <li>Shape</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="shape">
+<h1>Shape<a class="headerlink" href="#shape" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to store a boundary shape on a given manifold that is used to
+select sublattices.</p>
+<p>Init shape</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>List</em>) – points on the shape</p></li>
+<li><p><strong>lines</strong> (<em>List</em><em>[</em><em>List</em><em>]</em><em>, </em><em>optional</em>) – lines on the shape. Defaults to None</p></li>
+<li><p><strong>indices</strong> (<em>List</em><em>, </em><em>optional</em>) – indices of the shape Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – If &lt;indices&gt; are defined then lines must also be defined</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.bounding_box_from_lines">
+<span class="sig-name descname"><span class="pre">bounding_box_from_lines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.bounding_box_from_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.bounding_box_from_lines" title="Link to this definition">¶</a></dt>
+<dd><p>Generate bounding box from lines on the shape</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'winding'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.contains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.contains" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>_type_</em>) – _description_</p></li>
+<li><p><strong>on_boundary</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to True.</p></li>
+<li><p><strong>epsilon</strong> (<em>float</em><em>, </em><em>optional</em>) – _description_. Defaults to 0.01.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – _description_. Defaults to “winding”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.contains_quad_winding_number">
+<span class="sig-name descname"><span class="pre">contains_quad_winding_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.contains_quad_winding_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.contains_quad_winding_number" title="Link to this definition">¶</a></dt>
+<dd><p>Deterine if a point is inside a polygon (PIP Problem)</p>
+<p>On or near boundary method uses l2 distances and interior method uses
+algorithm from Hornmann and Agathos, Computational Geometry 20 (2001) 131-144</p>
+<p>With optional on_boundary set to False (default) the boundary is not included
+on the inside. If on_boundary is False then points positioned on the boundary
+may of may not be included. Increase the size of the shape to avoid this problem
+or set on_boundary to True. Setting on_boundary to True will be slower as it checks
+l2 distances from boundary.</p>
+<p>Currently only a simple version of the algorithm is implemented. This should be corrected
+at a later date or in next version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Point to check if inside the given shape</p></li>
+<li><p><strong>on_boundary</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Set True to include the boundary. Slow for larger boundaries.
+Default is False. Points will be included if with epsilon of the boundary.</p></li>
+<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Value used to indicate if a point is close enough to the boundary to be
+included. Default is 0.01</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True is point in on the polygon and False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.contains_ray_trace">
+<span class="sig-name descname"><span class="pre">contains_ray_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.contains_ray_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.contains_ray_trace" title="Link to this definition">¶</a></dt>
+<dd><p>Check if inside the bounded region using an infinite horizontal line from the point
+to +infinity</p>
+<p>This implementation assumes that the path is given by a sequence of
+straight lines.</p>
+<p>A more sophisticated verison is required if the path is otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>point</em>) – point to check if in region (including on boundary)</p></li>
+<li><p><strong>on_boundary</strong> (<em>bool</em>) – True if boundary to be include in “inside”. Default is True</p></li>
+<li><p><strong>epsilon</strong> (<em>real</em>) – Tolerance distance between two points to be equal. Default is 0.001</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns: (bool) Check if inside the bounded region using an infinite</dt><dd><p>horizontal line from the point to +infinity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.create_lines">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.create_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.create_lines" title="Link to this definition">¶</a></dt>
+<dd><p>Creates Lines from a set of points</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.inside">
+<span class="sig-name descname"><span class="pre">inside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tiling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.inside"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.inside" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the in-out data for a shape and a tiling</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tiling</strong> (<a class="reference internal" href="qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.model.shell.Shell"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shell</span></code></a>) – Input Tiling (shell)</p></li>
+<li><p><strong>on_boundary</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True then the in-out data will include those vertices within epsilon of
+the boundary. This is more expensive. It is better to use a shape which is slightly
+larger. Default is False.</p></li>
+<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Real number use when on_boundary is True. Default is 0.1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>vertex -&gt; bool dictionary. True for inside the shape and False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.is_between">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.is_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.is_between" title="Link to this definition">¶</a></dt>
+<dd><p>is p between a and b: a &lt;= p &lt; =b</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – point</p></li>
+<li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – end point</p></li>
+<li><p><strong>b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – end point</p></li>
+<li><p><strong>strict</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – is strict comparison. Default is False</p></li>
+<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Will squeeze inequality by epsilon</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True is a is between a and b, False if not</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.rect">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifold=&lt;qiskit_qec.geometry.plane.Plane</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'float'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.rect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.rect" title="Link to this definition">¶</a></dt>
+<dd><p>Create a rectangle on a manifold</p>
+<p>A rect has the following lables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>          <span class="n">r2</span>
+          <span class="n">o</span>
+      <span class="o">/</span>       \
+<span class="n">r3</span>  <span class="n">o</span>          \
+     \          <span class="n">o</span> <span class="n">r1</span>
+      \       <span class="o">/</span>
+          <span class="n">o</span>
+         <span class="n">r0</span><span class="o">=</span><span class="n">origin</span>
+<span class="n">direction</span> <span class="p">(</span><span class="n">r0</span> <span class="n">to</span> <span class="n">r1</span><span class="p">)</span>
+<span class="n">scale1</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span><span class="n">r1</span><span class="p">)</span>
+<span class="n">scale2</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Origin (r0) of rectangle. The origin is one of the
+corners of the rectangle.</p></li>
+<li><p><strong>direction</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Direction vector from r0 to r1</p></li>
+<li><p><strong>scale1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – how large to scale up (r0,r1) side</p></li>
+<li><p><strong>scale2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – how large to scale up (r1,r2) side</p></li>
+<li><p><strong>manifold</strong> (<a class="reference internal" href="qiskit_qec.geometry.Manifold.html#qiskit_qec.geometry.Manifold" title="qiskit_qec.geometry.manifold.Manifold"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manifold</span></code></a>) – Manifold that rectangle lives on. Defaults to Plane().</p></li>
+<li><p><strong>delta</strong> (<em>optional</em>) – How large to increase the rectangle by. Defaults to 0.</p></li>
+<li><p><strong>dtype</strong> (<em>type</em><em>, </em><em>optional</em>) – type of entries for definiting points to use.
+Defaults to float.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>QiskitError</strong> – Rectangle scales must be positive</p></li>
+<li><p><strong>QiskitError</strong> – Origin must be on the surface if the manifold</p></li>
+<li><p><strong>QiskitError</strong> – Manifold not yet supported</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rectangle of given parameters</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>rect</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.geometry.Shape.square">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">square</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/geometry/shape.html#Shape.square"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.geometry.Shape.square" title="Link to this definition">¶</a></dt>
+<dd><p>Create a square (2d) shape on the 2-manifold.</p>
+<p>The square has one corner placed at the origin (origin must be on the plane). The the
+square is defined as the path following heading in the direction &lt;direction&gt; towards the
+next corner of length &lt;length&gt;. The proceeding to the next corner and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<em>[</em><em>coordinate</em><em>]</em>) – a coordinate on the plane</p></li>
+<li><p><strong>direction</strong> (<em>[</em><em>vector</em><em>]</em>) – vector describing the direction of the second corner</p></li>
+<li><p><strong>scale</strong> (<em>[</em><em>real</em><em>]</em>) – side of square = scale * ||direction||</p></li>
+<li><p><strong>manifold</strong> (<em>[</em><a class="reference internal" href="qiskit_qec.geometry.TwoManifold.html#qiskit_qec.geometry.TwoManifold" title="qiskit_qec.geometry.TwoManifold"><em>TwoManifold</em></a><em>]</em>) – 2-manifold</p></li>
+<li><p><strong>dtype</strong> (<em>[</em><em>dtype</em><em>]</em><em>, </em><em>optional</em>) – Date type of coordinate entries. Defaults to int.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Shape obj describing a square of length &lt;length&gt; in the manifold &lt;manifold&gt;</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="#qiskit_qec.geometry.Shape" title="qiskit_qec.geometry.Shape">Shape</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.geometry.TwoManifold.html" class="btn btn-neutral float-right" title="TwoManifold" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.geometry.Plane.html" class="btn btn-neutral" title="Plane" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">Shape</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape"><code class="docutils literal notranslate"><span class="pre">Shape</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.bounding_box_from_lines"><code class="docutils literal notranslate"><span class="pre">Shape.bounding_box_from_lines()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.contains"><code class="docutils literal notranslate"><span class="pre">Shape.contains()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.contains_quad_winding_number"><code class="docutils literal notranslate"><span class="pre">Shape.contains_quad_winding_number()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.contains_ray_trace"><code class="docutils literal notranslate"><span class="pre">Shape.contains_ray_trace()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.create_lines"><code class="docutils literal notranslate"><span class="pre">Shape.create_lines()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.inside"><code class="docutils literal notranslate"><span class="pre">Shape.inside()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.is_between"><code class="docutils literal notranslate"><span class="pre">Shape.is_between()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.rect"><code class="docutils literal notranslate"><span class="pre">Shape.rect()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.geometry.Shape.square"><code class="docutils literal notranslate"><span class="pre">Shape.square()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

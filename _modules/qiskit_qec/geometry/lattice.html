@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.geometry.lattice &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.geometry.lattice</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.geometry.lattice</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2017, 2020</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+<span class="c1"># Part of the QEC framework</span>
+<span class="sd">&quot;&quot;&quot;Module for lattice&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">qiskit.exceptions</span> <span class="kn">import</span> <span class="n">QiskitError</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.bounds</span> <span class="kn">import</span> <span class="n">GeometryBounds</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.shape</span> <span class="kn">import</span> <span class="n">Shape</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.tiles.tile</span> <span class="kn">import</span> <span class="n">Tile</span>
+
+
+<div class="viewcode-block" id="Lattice">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice">[docs]</a>
+<span class="k">class</span> <span class="nc">Lattice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lattice on which tiles are tiled&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_vec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v_vec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lattice</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            u_vec ([type], optional): Zeroth basis vector. Defaults to None.</span>
+<span class="sd">            v_vec ([type], optional): First basis vector. Defaults to None.</span>
+<span class="sd">            size ([type], optional): Width/Height of lattice. Defaults to None.</span>
+<span class="sd">            points ([type], optional): Points on generated lattice. Defaults to None.</span>
+
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: Something went wrong.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">u_vec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">u_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">v_vec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">v_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span> <span class="o">=</span> <span class="n">u_vec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span> <span class="o">=</span> <span class="n">v_vec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">Lattice</span><span class="o">.</span><span class="n">make_transform</span><span class="p">(</span><span class="n">u_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unorm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u_vec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vnorm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v_vec</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Half infinite lattices not yet supported&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Lattice(u_vec=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span><span class="p">,</span><span class="w"> </span><span class="n">separator</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">                 v_vec=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">,</span><span class="w"> </span><span class="n">separator</span><span class="o">=</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">outstr</span> <span class="o">=</span> <span class="s2">&quot;Lattive[&quot;</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">outstr</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+            <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span>
+        <span class="n">outstr</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">separator</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="p">)</span>
+        <span class="n">outstr</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
+        <span class="k">return</span> <span class="n">outstr</span>
+
+<div class="viewcode-block" id="Lattice.make_transform">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.make_transform">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_transform</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">u_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a transformation to be used by other lattices&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Lattice.find_pre_transform_length">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.find_pre_transform_length">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_pre_transform_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shear length.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (int|float): size</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xynorm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">dem1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unorm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vnorm</span><span class="p">)</span>
+        <span class="n">dem2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unorm</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vnorm</span><span class="p">))</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">(</span><span class="n">xynorm</span> <span class="o">/</span> <span class="p">(</span><span class="n">dem1</span> <span class="o">*</span> <span class="n">dem2</span><span class="p">))</span>
+        <span class="n">length</span> <span class="o">+=</span> <span class="n">length</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">length</span></div>
+
+
+<div class="viewcode-block" id="Lattice.generate_points">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.generate_points">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;lattice of size points centered at (0,0)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (int|float): size vector for lattice of points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">points</span></div>
+
+
+<div class="viewcode-block" id="Lattice.apply_transform_from">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.apply_transform_from">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_transform_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="s2">&quot;Lattice&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Lattice&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply transformation to self from lattice&quot;&quot;&quot;</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Lattice points must first be generated&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">lattice</span><span class="o">.</span><span class="n">transform</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">Lattice</span><span class="p">(</span><span class="n">lattice</span><span class="o">.</span><span class="n">u_vec</span><span class="p">,</span> <span class="n">lattice</span><span class="o">.</span><span class="n">v_vec</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lattice.restrict">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.restrict">[docs]</a>
+    <span class="k">def</span> <span class="nf">restrict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">GeometryBounds</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Lattice&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new lattice with same basis but that fits inside the supplied region</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            region (GeometryBounds): region to which the lattice will be restricted.</span>
+<span class="sd">            in_place (bool): Modify lattice in place. Default is False</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: something went wrong</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Lattice : A new lattice with same basis vectors as self but</span>
+<span class="sd">                restricted to bounding_box</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">GeometryBounds</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Points must first be generated&quot;</span><span class="p">)</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">region</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+                    <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+                <span class="k">return</span> <span class="bp">self</span>
+
+            <span class="k">return</span> <span class="n">Lattice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Region should be an instance of GeometryBounds&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lattice.restrict_for_tiling">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.restrict_for_tiling">[docs]</a>
+    <span class="k">def</span> <span class="nf">restrict_for_tiling</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">region</span><span class="p">:</span> <span class="n">Shape</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">tile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tile</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expand_value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">in_place</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Given a Shape to tile based on the lattice (self), restrict lattice (self) to</span>
+<span class="sd">        the provided shape such that a tiling of that shape with the given tile will</span>
+<span class="sd">        completely fill that shape. A size can be provided instead of a tile. If both are</span>
+<span class="sd">        provided the size attribute will be used. If no Tile or size is provided then</span>
+<span class="sd">        it will be assumed that a tiling will use tiles of the size of the lattices (self)</span>
+<span class="sd">        given basis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            region (Shape): region that needs to be tiled</span>
+<span class="sd">            tile (Tile, optional): Tile to be used for tiling. Defaults to None.</span>
+<span class="sd">            size (List[Union[float, int]], optional): Size of tile. Defaults to None.</span>
+<span class="sd">            expand_value (np.array, optional): Amount to expand the region AABB by</span>
+<span class="sd">            to ensure that the entire region is filled. If no expand_value is provied then</span>
+<span class="sd">            an approximate value will be determined. Defaults to None.</span>
+<span class="sd">            in_place (bool, optional): Perform in place on lattice if set to True. Defaults to False.</span>
+<span class="sd">            alpha: tile_size = alpha * tile.size - Used for optimization of a factory</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Union[Lattice, None]: Lattice for tiling region, or None if done in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create an extended bounding box AABB</span>
+        <span class="n">extended_aabb</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Determine the size of tile expected</span>
+
+        <span class="k">if</span> <span class="n">tile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tile_size</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tile</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tile_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tile_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">unorm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vnorm</span><span class="p">))</span>
+
+        <span class="c1"># Determine how much to expand the region&#39;s AABB by</span>
+
+        <span class="k">if</span> <span class="n">expand_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expand_value</span> <span class="o">=</span> <span class="n">tile_size</span>
+
+        <span class="n">extended_aabb</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">expand_value</span><span class="p">)</span>
+
+        <span class="c1"># Choose vert_vec so that it has some y component and that horz_vec has some x component</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+                <span class="n">vert_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span>
+                <span class="n">horz_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vert_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span>
+                <span class="n">horz_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span>
+        <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+                <span class="n">vert_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_vec</span>
+                <span class="n">horz_vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_vec</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                    <span class="s2">&quot;Lattice basis not independent or too skewed or vector lengths </span><span class="se">\</span>
+<span class="s2">            to small. Resize and/or run LLL to improve basis before continuing&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">horz_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Division by zero - error in lattice basis selection&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_find_points</span><span class="p">(</span><span class="n">aabb</span><span class="p">,</span> <span class="n">u_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">):</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="n">v_vec</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">-</span> <span class="n">v_vec</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+                <span class="n">intersects</span> <span class="o">=</span> <span class="n">aabb</span><span class="o">.</span><span class="n">intercepts</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">intersects</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">intersects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">intersects</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="n">min_x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+                <span class="n">max_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+
+                <span class="n">ta_min</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="n">min_x</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">ta_max</span> <span class="o">=</span> <span class="n">floor</span><span class="p">((</span><span class="n">max_x</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">min_y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
+                    <span class="n">max_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
+
+                    <span class="n">tb_min</span> <span class="o">=</span> <span class="n">ceil</span><span class="p">((</span><span class="n">min_y</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">tb_max</span> <span class="o">=</span> <span class="n">floor</span><span class="p">((</span><span class="n">max_y</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">u_vec</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                    <span class="n">t_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ta_min</span><span class="p">,</span> <span class="n">tb_min</span><span class="p">)</span>
+                    <span class="n">t_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ta_max</span><span class="p">,</span> <span class="n">tb_max</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">t_min</span> <span class="o">=</span> <span class="n">ta_min</span>
+                    <span class="n">t_max</span> <span class="o">=</span> <span class="n">ta_max</span>
+
+                <span class="n">t_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t_val</span> <span class="ow">in</span> <span class="n">t_range</span><span class="p">:</span>
+                    <span class="n">new_point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">+</span> <span class="n">t_val</span> <span class="o">*</span> <span class="n">u_vec</span>
+                    <span class="n">pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_point</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+            <span class="k">return</span> <span class="n">pts</span>
+
+        <span class="c1"># find points on lattice on vert_vec line that are in AABB (and one just outside)</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">origin</span> <span class="o">-</span> <span class="n">vert_vec</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">_find_points</span><span class="p">(</span><span class="n">extended_aabb</span><span class="p">,</span> <span class="n">horz_vec</span><span class="p">,</span> <span class="n">vert_vec</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
+        <span class="n">point</span> <span class="o">=</span> <span class="n">origin</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">_find_points</span><span class="p">(</span><span class="n">extended_aabb</span><span class="p">,</span> <span class="n">horz_vec</span><span class="p">,</span> <span class="n">vert_vec</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create a lattice with points generated</span>
+
+        <span class="n">lattice_l</span> <span class="o">=</span> <span class="n">Lattice</span><span class="p">(</span><span class="n">u_vec</span><span class="o">=</span><span class="n">horz_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="o">=</span><span class="n">vert_vec</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_place</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">lattice_l</span><span class="o">.</span><span class="n">points</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">return</span> <span class="n">lattice_l</span></div>
+</div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

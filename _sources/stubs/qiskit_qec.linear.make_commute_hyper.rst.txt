@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.make\_commute\_hyper
+=======================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: make_commute_hyper

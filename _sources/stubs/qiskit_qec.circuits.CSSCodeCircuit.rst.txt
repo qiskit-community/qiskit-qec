@@ -1,0 +1,20 @@
+﻿CSSCodeCircuit
+==============
+
+.. currentmodule:: qiskit_qec.circuits
+
+.. autoclass:: CSSCodeCircuit
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: CSSCodeCircuit.check_nodes
+   .. automethod:: CSSCodeCircuit.is_cluster_neutral
+   .. automethod:: CSSCodeCircuit.stim_circuit_with_detectors
+   .. automethod:: CSSCodeCircuit.string2nodes
+
+

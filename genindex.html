@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Index &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="_static/gallery.css" type="text/css" /><script src="_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+      <li>Index</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData.add_data_array">add_data_array() (QubitData method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Edge.html#qiskit_qec.geometry.Edge.add_parent">add_parent() (Edge method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.Face.html#qiskit_qec.geometry.Face.add_parent">(Face method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject.add_parent">(ShapeObject method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.add_parent">(Shell method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.add_parent">(Vertex method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.WireFrame.html#qiskit_qec.geometry.WireFrame.add_parent">(WireFrame method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.adjoint">adjoint() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.adjoint">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.adjoint">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.linear.all_commute.html#qiskit_qec.linear.all_commute">all_commute() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.all_commutes">all_commutes() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.all_commutes">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.all_commutes">(PauliList method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.codes.all_small_codes.html#qiskit_qec.codes.all_small_codes">all_small_codes() (in module qiskit_qec.codes)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.anticommutes">anticommutes() (Pauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.anticommutes">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.anticommutes_with_all">anticommutes_with_all() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.append_paulis">append_paulis() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.apply_transform_from">apply_transform_from() (Lattice method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit">ArcCircuit (class in qiskit_qec.circuits)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.argsort">argsort() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.augment_mat.html#qiskit_qec.linear.augment_mat">augment_mat() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.AUT_GROUP_SIZE">AUT_GROUP_SIZE (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS">AVAILABLE_METHODS (ArcCircuit attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.AVAILABLE_METHODS">(CircuitModelMatchingDecoder attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.AVAILABLE_METHODS">(DecodingGraph attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.AVAILABLE_METHODS">(RepetitionDecoder attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.AVAILABLE_METHODS">(ThreeBitDecoder attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli">BasePauli (class in qiskit_qec.operators)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.bounding_box_from_line">bounding_box_from_line() (GeometryBounds static method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.bounding_box_from_lines">bounding_box_from_lines() (Shape method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.build_hyper_partner.html#qiskit_qec.linear.build_hyper_partner">build_hyper_partner() (in module qiskit_qec.linear)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.c8">c8 (OctaSquareTile attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.check_nodes">check_nodes() (ArcCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.check_nodes">(CodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.check_nodes">(CSSCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.check_nodes">(RepetitionCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile">CheckerBoardTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder">CircuitModelMatchingDecoder (class in qiskit_qec.decoders)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.CITATION">CITATION (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.cluster">cluster() (UnionFindDecoder method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.CODE_TYPES">CODE_TYPES (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit">CodeCircuit (class in qiskit_qec.circuits)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrarian.html#qiskit_qec.codes.CodeLibrarian">CodeLibrarian (class in qiskit_qec.codes)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrary.html#qiskit_qec.codes.CodeLibrary">CodeLibrary (class in qiskit_qec.codes)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.combine">combine() (GeometryBounds class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.commutes">commutes() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.commutes">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.commutes">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.commutes_with_all">commutes_with_all() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.compose">compose() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.compose">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.compose">(PauliList method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.conjugate">conjugate() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.conjugate">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.conjugate">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.contains">contains() (GeometryBounds method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains">(Shape method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains_quad_winding_number">contains_quad_winding_number() (Shape method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains_ray_trace">contains_ray_trace() (Shape method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.copy">copy() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.copy">(GeometryBounds method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.copy">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.copy">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Edge.html#qiskit_qec.geometry.Edge.create_id">create_id() (Edge static method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.Face.html#qiskit_qec.geometry.Face.create_id">(Face static method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject.create_id">(ShapeObject static method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.create_id">(Shell static method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.create_id">(Vertex static method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.WireFrame.html#qiskit_qec.geometry.WireFrame.create_id">(WireFrame static method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.linear.create_lambda_matrix.html#qiskit_qec.linear.create_lambda_matrix">create_lambda_matrix() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.create_lines">create_lines() (Shape static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit">CSSCodeCircuit (class in qiskit_qec.circuits)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.D">D (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrary.html#qiskit_qec.codes.CodeLibrary.data2code">data2code() (CodeLibrary static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph">DecodingGraph (class in qiskit_qec.decoders)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge">DecodingGraphEdge (class in qiskit_qec.utils)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.DecodingGraphNode.html#qiskit_qec.utils.DecodingGraphNode">DecodingGraphNode (class in qiskit_qec.utils)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount.decrement_qubit">decrement_qubit() (QubitCount method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData.del_data_array">del_data_array() (QubitData method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.delete">delete() (Pauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.delete">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.delete_qubits">delete_qubits() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.delete_subtree">delete_subtree() (Shell method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile">DiagonalBarTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile">DiagonalHourGlassTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.dim">dim (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.dim">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.dim">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Tiling.html#qiskit_qec.geometry.Tiling.distance">distance() (Tiling class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.dot">dot() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.dot">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.dot">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.draw">draw() (CheckerBoardTile class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.draw">(DiagonalBarTile class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.draw">(DiagonalHourGlassTile class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.draw">(HexagonTile class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.draw">(OctaSquareTile class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.draw">(Shell method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.draw">(SquareDiamondTile class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.codes.StabSubSystemCode.html#qiskit_qec.codes.StabSubSystemCode.draw">(StabSubSystemCode method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile.draw">(Tile class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Edge.html#qiskit_qec.geometry.Edge">Edge (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.equiv">equiv() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.evolve">evolve() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.evolve">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.evolve">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.expand">expand() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.expand">(GeometryBounds method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.expand">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.expand">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.EXTERNAL_PAULI_ENCODING">EXTERNAL_PAULI_ENCODING (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.EXTERNAL_PAULI_ENCODING">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.EXTERNAL_PAULI_ENCODING">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.EXTERNAL_PHASE_ENCODING">EXTERNAL_PHASE_ENCODING (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.EXTERNAL_PHASE_ENCODING">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.EXTERNAL_PHASE_ENCODING">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.EXTERNAL_QUBIT_ORDER">EXTERNAL_QUBIT_ORDER (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.EXTERNAL_QUBIT_ORDER">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.EXTERNAL_QUBIT_ORDER">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.EXTERNAL_SYNTAX">EXTERNAL_SYNTAX (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.EXTERNAL_SYNTAX">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.EXTERNAL_SYNTAX">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.EXTERNAL_TENSOR_ENCODING">EXTERNAL_TENSOR_ENCODING (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.EXTERNAL_TENSOR_ENCODING">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.EXTERNAL_TENSOR_ENCODING">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.extract">extract() (Shell method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Face.html#qiskit_qec.geometry.Face">Face (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.face_colors">face_colors (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.face_colors">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.face_colors">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.face_colors">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.face_colors">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.face_colors">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.faces_wf_components">faces_wf_components (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.faces_wf_components">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.faces_wf_components">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.faces_wf_components">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.faces_wf_components">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.faces_wf_components">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.find">find() (UnionFindDecoder method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.find_pre_transform_length">find_pre_transform_length() (Lattice method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.flatten_nodes">flatten_nodes() (ArcCircuit static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.from_label">from_label() (Pauli static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.from_symplectic">from_symplectic() (PauliList class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.GAUGE_GROUP">GAUGE_GROUP (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.structures.GaugeGroup.html#qiskit_qec.structures.GaugeGroup">GaugeGroup (class in qiskit_qec.structures)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.generate_points">generate_points() (Lattice method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.StabSubSystemCode.html#qiskit_qec.codes.StabSubSystemCode.generators">generators (StabSubSystemCode attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds">GeometryBounds (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrarian.html#qiskit_qec.codes.CodeLibrarian.get">get() (CodeLibrarian method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.get">(DecodingGraphEdge method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.utils.DecodingGraphNode.html#qiskit_qec.utils.DecodingGraphNode.get">(DecodingGraphNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.get_circuit_list">get_circuit_list() (RepetitionCodeCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.get_circuit_list">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.get_corrections">get_corrections() (UnionFindDecoder method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.get_counts_via_stim.html#qiskit_qec.utils.get_counts_via_stim">get_counts_via_stim() (in module qiskit_qec.utils)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.get_error_coords">get_error_coords() (ArcCircuit method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.get_error_probs">get_error_probs() (DecodingGraph method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.get_stim_circuits.html#qiskit_qec.utils.get_stim_circuits">get_stim_circuits() (in module qiskit_qec.utils)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.getaslist">getaslist() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.structures.Group.html#qiskit_qec.structures.Group">Group (class in qiskit_qec.structures)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.group_qubit_wise_commuting">group_qubit_wise_commuting() (PauliList method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.h">h (HexagonTile attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile">HexagonTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.HYPERBOLIC_GEN">HYPERBOLIC_GEN (Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrary.html#qiskit_qec.codes.CodeLibrary.in_range">in_range() (CodeLibrary method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount.increment_qubit">increment_qubit() (QubitCount method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.INDEX">INDEX (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.info">info (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.input_dims">input_dims() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.input_dims">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.input_dims">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.insert">insert() (Pauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.insert">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.insert_paulis">insert_paulis() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.inside">inside() (Shape method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.instrs2symplectic">instrs2symplectic() (Pauli static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.integer_snap">integer_snap() (Shell method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.intercepts">intercepts() (GeometryBounds method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.inverse">inverse() (Pauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.inverse">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.is_between">is_between() (Shape static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_center.html#qiskit_qec.linear.is_center">is_center() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral">is_cluster_neutral() (ArcCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.is_cluster_neutral">(CodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.is_cluster_neutral">(CSSCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.is_cluster_neutral">(RepetitionCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_CSS">IS_CSS (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_CSS_KEY">IS_CSS_KEY (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_DECOMPOSABLE">IS_DECOMPOSABLE (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_DECOMPOSABLE_KEY">IS_DECOMPOSABLE_KEY (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_DEGENERATE">IS_DEGENERATE (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_DEGENERATE_KEY">IS_DEGENERATE_KEY (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_GF4LINEAR">IS_GF4LINEAR (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_GF4LINEAR_KEY">IS_GF4LINEAR_KEY (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_hyper_form.html#qiskit_qec.linear.is_hyper_form">is_hyper_form() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_same_span.html#qiskit_qec.linear.is_same_span">is_same_span() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_stabilizer_group.html#qiskit_qec.linear.is_stabilizer_group">is_stabilizer_group() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_symplectic_form.html#qiskit_qec.linear.is_symplectic_form">is_symplectic_form() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_symplectic_matrix_form.html#qiskit_qec.linear.is_symplectic_matrix_form">is_symplectic_matrix_form() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.is_symplectic_vector_form.html#qiskit_qec.linear.is_symplectic_vector_form">is_symplectic_vector_form() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_TRIORTHOGONAL">IS_TRIORTHOGONAL (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.IS_TRIORTHOGONAL_KEY">IS_TRIORTHOGONAL_KEY (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Plane.html#qiskit_qec.geometry.Plane.ison">ison() (Plane static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.ISOTROPIC_GEN">ISOTROPIC_GEN (Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.structures.GaugeGroup.html#qiskit_qec.structures.GaugeGroup.k">k (GaugeGroup attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.K">K (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.kron">kron() (Pauli method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.label_iter">label_iter() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Edge.html#qiskit_qec.geometry.Edge.last_id">last_id (Edge attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.Face.html#qiskit_qec.geometry.Face.last_id">(Face attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject.last_id">(ShapeObject attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.last_id">(Shell attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.last_id">(Vertex attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.WireFrame.html#qiskit_qec.geometry.WireFrame.last_id">(WireFrame attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice">Lattice (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.locate_hyper_partner.html#qiskit_qec.linear.locate_hyper_partner">locate_hyper_partner() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.LOGICAL_OPS">LOGICAL_OPS (Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.linear.make_commute_hyper.html#qiskit_qec.linear.make_commute_hyper">make_commute_hyper() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.make_error_graph">make_error_graph() (DecodingGraph method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.make_transform">make_transform() (Lattice class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Manifold.html#qiskit_qec.geometry.Manifold">Manifold (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.matrix_iter">matrix_iter() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE">METHOD_NAIVE (ArcCircuit attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.METHOD_NAIVE">(DecodingGraph attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.METHOD_PYMATCHING">METHOD_PYMATCHING (CircuitModelMatchingDecoder attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.METHOD_PYMATCHING">(RepetitionDecoder attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.METHOD_PYMATCHING">(ThreeBitDecoder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.METHOD_RETWORKX">METHOD_RETWORKX (CircuitModelMatchingDecoder attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.METHOD_RETWORKX">(RepetitionDecoder attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.METHOD_RETWORKX">(ThreeBitDecoder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ">METHOD_SPITZ (ArcCircuit attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.METHOD_SPITZ">(DecodingGraph attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="apidocs/index.html#module-qiskit_qec">qiskit_qec</a>
+</li>
+        <li><a href="apidocs/analysis.html#module-qiskit_qec.analysis">qiskit_qec.analysis</a>
+</li>
+        <li><a href="apidocs/circuits.html#module-qiskit_qec.circuits">qiskit_qec.circuits</a>
+</li>
+        <li><a href="apidocs/codes.html#module-qiskit_qec.codes">qiskit_qec.codes</a>
+</li>
+        <li><a href="apidocs/decoders.html#module-qiskit_qec.decoders">qiskit_qec.decoders</a>
+</li>
+        <li><a href="apidocs/geometry.html#module-qiskit_qec.geometry">qiskit_qec.geometry</a>
+</li>
+        <li><a href="apidocs/info.html#module-qiskit_qec.info">qiskit_qec.info</a>
+</li>
+        <li><a href="apidocs/linear.html#module-qiskit_qec.linear">qiskit_qec.linear</a>
+</li>
+        <li><a href="apidocs/operators.html#module-qiskit_qec.operators">qiskit_qec.operators</a>
+</li>
+        <li><a href="apidocs/structures.html#module-qiskit_qec.structures">qiskit_qec.structures</a>
+</li>
+        <li><a href="apidocs/utils.html#module-qiskit_qec.utils">qiskit_qec.utils</a>
+</li>
+        <li><a href="stubs/qiskit_qec.utils.indexer.html#module-qiskit_qec.utils.indexer">qiskit_qec.utils.indexer</a>
+</li>
+        <li><a href="stubs/qiskit_qec.utils.pauli_rep.html#module-qiskit_qec.utils.pauli_rep">qiskit_qec.utils.pauli_rep</a>
+</li>
+        <li><a href="stubs/qiskit_qec.utils.visualizations.html#module-qiskit_qec.utils.visualizations">qiskit_qec.utils.visualizations</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.structures.GaugeGroup.html#qiskit_qec.structures.GaugeGroup.n">n (GaugeGroup attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.N">N (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.StabSubSystemCode.html#qiskit_qec.codes.StabSubSystemCode.n">n (StabSubSystemCode attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrarian.html#qiskit_qec.codes.CodeLibrarian.n_dir_format">n_dir_format (CodeLibrarian attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrarian.html#qiskit_qec.codes.CodeLibrarian.n_k_codes_file_format">n_k_codes_file_format (CodeLibrarian attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.name">name (Pauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.NAME">NAME (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges">neighbouring_edges() (UnionFindDecoder method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount.new_qubit">new_qubit() (QubitCount method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.noisify_circuit.html#qiskit_qec.utils.noisify_circuit">noisify_circuit() (in module qiskit_qec.utils)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.num_clbits">num_clbits (Pauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.num_faces">num_faces (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.num_faces">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.num_faces">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.num_faces">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.num_faces">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.num_faces">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.structures.GaugeGroup.html#qiskit_qec.structures.GaugeGroup.num_gen">num_gen (GaugeGroup attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.num_paulis">num_paulis (PauliList attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.num_qubits">num_qubits (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.num_qubits">(CheckerBoardTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.num_qubits">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.num_qubits">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.num_qubits">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.num_qubits">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.num_qubits">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.num_qubits">(PauliList attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.num_qubits">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.num_y">num_y (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.num_y">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.num_y">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile">OctaSquareTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.output_dims">output_dims() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.output_dims">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.output_dims">(PauliList method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.partition_outcomes">partition_outcomes() (RepetitionCodeCircuit method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli">Pauli (class in qiskit_qec.operators)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.pauli_encoding">pauli_encoding (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pauli_encoding">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.pauli_encoding">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pauli_single">pauli_single() (Pauli class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList">PauliList (class in qiskit_qec.operators)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.peeling">peeling() (UnionFindDecoder method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.phase">phase (Pauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.phase">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.phase_encoding">phase_encoding (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.phase_encoding">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.phase_encoding">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.phase_exp">phase_exp (Pauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.phase_exp">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Plane.html#qiskit_qec.geometry.Plane">Plane (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pltb_int">pltb_int (Pauli attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pltb_str">pltb_str (Pauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.position">position (Vertex attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.power">power() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.power">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.power">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.PRINT_PHASE_ENCODING">PRINT_PHASE_ENCODING (BasePauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.print_phase_encoding">print_phase_encoding (BasePauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.PRINT_PHASE_ENCODING">PRINT_PHASE_ENCODING (Pauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.print_phase_encoding">print_phase_encoding (Pauli attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.PRINT_PHASE_ENCODING">PRINT_PHASE_ENCODING (PauliList attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.print_phase_encoding">print_phase_encoding (PauliList attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.process">process() (CircuitModelMatchingDecoder method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.process">(RepetitionDecoder method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.process">(ThreeBitDecoder method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.process">(UnionFindDecoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties">Properties (class in qiskit_qec.info)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.properties">properties (DecodingGraphEdge attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.qargs">qargs (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.qargs">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.qargs">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.codes.QECCode.html#qiskit_qec.codes.QECCode">QECCode (class in qiskit_qec.codes)</a>
+</li>
+      <li>
+    qiskit_qec
+
+      <ul>
+        <li><a href="apidocs/index.html#module-qiskit_qec">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.analysis
+
+      <ul>
+        <li><a href="apidocs/analysis.html#module-qiskit_qec.analysis">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.circuits
+
+      <ul>
+        <li><a href="apidocs/circuits.html#module-qiskit_qec.circuits">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.codes
+
+      <ul>
+        <li><a href="apidocs/codes.html#module-qiskit_qec.codes">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.decoders
+
+      <ul>
+        <li><a href="apidocs/decoders.html#module-qiskit_qec.decoders">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.geometry
+
+      <ul>
+        <li><a href="apidocs/geometry.html#module-qiskit_qec.geometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.info
+
+      <ul>
+        <li><a href="apidocs/info.html#module-qiskit_qec.info">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.linear
+
+      <ul>
+        <li><a href="apidocs/linear.html#module-qiskit_qec.linear">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    qiskit_qec.operators
+
+      <ul>
+        <li><a href="apidocs/operators.html#module-qiskit_qec.operators">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.structures
+
+      <ul>
+        <li><a href="apidocs/structures.html#module-qiskit_qec.structures">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.utils
+
+      <ul>
+        <li><a href="apidocs/utils.html#module-qiskit_qec.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.utils.indexer
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.utils.indexer.html#module-qiskit_qec.utils.indexer">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.utils.pauli_rep
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.utils.pauli_rep.html#module-qiskit_qec.utils.pauli_rep">module</a>
+</li>
+      </ul></li>
+      <li>
+    qiskit_qec.utils.visualizations
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.utils.visualizations.html#module-qiskit_qec.utils.visualizations">module</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.qubit_order">qubit_order (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.qubit_order">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.qubit_order">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitCount.html#qiskit_qec.geometry.QubitCount">QubitCount (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.QubitData.html#qiskit_qec.geometry.QubitData">QubitData (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.qubits">qubits (DecodingGraphEdge attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.r">r (HexagonTile attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.random">random() (Pauli class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.rank.html#qiskit_qec.linear.rank">rank() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.readout">readout() (RepetitionCodeCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.readout">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.rect">rect() (Shape class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit">RepetitionCodeCircuit (class in qiskit_qec.circuits)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder">RepetitionDecoder (class in qiskit_qec.decoders)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.reshape">reshape() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.reshape">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.reshape">(PauliList method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.restrict">restrict() (Lattice method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.restrict_for_tiling">restrict_for_tiling() (Lattice method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Plane.html#qiskit_qec.geometry.Plane.rot_matrix">rot_matrix() (Plane static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Plane.html#qiskit_qec.geometry.Plane.rotate">rotate() (Plane static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.rotate2d">rotate2d() (Shell method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.rref.html#qiskit_qec.linear.rref">rref() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.rref_complete.html#qiskit_qec.linear.rref_complete">rref_complete() (in module qiskit_qec.linear)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.s8">s8 (OctaSquareTile attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.scale">scale() (Shell method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.CodeLibrary.html#qiskit_qec.codes.CodeLibrary.search">search() (CodeLibrary method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.GeometryBounds.html#qiskit_qec.geometry.GeometryBounds.set_min_max">set_min_max() (GeometryBounds method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_pauli_encoding">set_pauli_encoding() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_pauli_encoding">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_pauli_encoding">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_phase_encoding">set_phase_encoding() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_phase_encoding">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_phase_encoding">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.set_position">set_position() (Vertex method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_print_phase_encoding">set_print_phase_encoding() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_print_phase_encoding">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_print_phase_encoding">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_qubit_order">set_qubit_order() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_qubit_order">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_qubit_order">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_syntax">set_syntax() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_syntax">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_syntax">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_tensor_encoding">set_tensor_encoding() (BasePauli class method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_tensor_encoding">(Pauli class method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.set_tensor_encoding">(PauliList class method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.set_truncation">set_truncation() (Pauli class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.settings">settings (Pauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.settings">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.sgn_prod">sgn_prod() (Pauli static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.shallowcopy">shallowcopy() (Vertex method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape">Shape (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.shape">shape (PauliList attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.ShapeObject.html#qiskit_qec.geometry.ShapeObject">ShapeObject (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell">Shell (class in qiskit_qec.geometry)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.shell2symplectic">shell2symplectic() (Shell static method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.shift">shift() (Shell method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.size">size (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.size">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.size">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.size">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.size">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.size">(PauliList attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.size">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.codes.small_code.html#qiskit_qec.codes.small_code">small_code() (in module qiskit_qec.codes)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.sort">sort() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.square">square() (Shape class method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile">SquareDiamondTile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.STABILIZER">STABILIZER (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.codes.StabSubSystemCode.html#qiskit_qec.codes.StabSubSystemCode">StabSubSystemCode (class in qiskit_qec.codes)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.stim_circuit_with_detectors">stim_circuit_with_detectors() (CSSCodeCircuit method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.string2nodes">string2nodes() (ArcCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.string2nodes">(CodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.string2nodes">(CSSCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.string2nodes">(RepetitionCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.string2nodes">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.string2raw_logicals">string2raw_logicals() (ArcCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.string2raw_logicals">(RepetitionCodeCircuit method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit">SurfaceCodeCircuit (class in qiskit_qec.circuits)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.symplectic_gram_schmidt.html#qiskit_qec.linear.symplectic_gram_schmidt">symplectic_gram_schmidt() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.linear.symplectic_product.html#qiskit_qec.linear.symplectic_product">symplectic_product() (in module qiskit_qec.linear)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.syndrome_measurement">syndrome_measurement() (RepetitionCodeCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.syndrome_measurement">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.syntax">syntax (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.syntax">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.syntax">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.tensor">tensor() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.tensor">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.tensor">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.tensor_encoding">tensor_encoding (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.tensor_encoding">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.tensor_encoding">(PauliList attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder">ThreeBitDecoder (class in qiskit_qec.decoders)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile">Tile (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.TileFactory.html#qiskit_qec.geometry.TileFactory">TileFactory (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.Tiling.html#qiskit_qec.geometry.Tiling">Tiling (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_cpx_matrix">to_cpx_matrix() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_instruction">to_instruction() (Pauli method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.to_label">to_label() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_label">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.to_label">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.to_labels">to_labels() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_matrix">to_matrix() (Pauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.to_matrix">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_spmatrix">to_spmatrix() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.transpile">transpile() (ArcCircuit method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.transpose">transpose() (BasePauli method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.transpose">(Pauli method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.transpose">(PauliList method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.TwoManifold.html#qiskit_qec.geometry.TwoManifold">TwoManifold (class in qiskit_qec.geometry)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.TYPE">TYPE (Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.u_vec">u_vec (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.u_vec">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.u_vec">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.u_vec">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.u_vec">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.u_vec">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.union">union() (Shell method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder">UnionFindDecoder (class in qiskit_qec.decoders)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.unique">unique() (PauliList method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.update_edge_weights">update_edge_weights() (CircuitModelMatchingDecoder method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.update_edge_weights">(RepetitionDecoder method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.update_edge_weights">(ThreeBitDecoder method)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.update_x">update_x() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.update_z">update_z() (Pauli method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.UUID">UUID (Properties attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.v_vec">v_vec (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.v_vec">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.v_vec">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.v_vec">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.v_vec">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.v_vec">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex">Vertex (class in qiskit_qec.geometry)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.weight">weight (DecodingGraphEdge attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.WEIGHT_ENUMERATOR">WEIGHT_ENUMERATOR (Properties attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.weight_syndrome_graph">weight_syndrome_graph() (DecodingGraph method)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.wf_coordinates">wf_coordinates (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.wf_coordinates">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.wf_coordinates">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.wf_coordinates">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.wf_coordinates">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.wf_coordinates">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.wf_loop_indicator">wf_loop_indicator (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.wf_loop_indicator">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.wf_loop_indicator">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.wf_loop_indicator">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.wf_loop_indicator">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.wf_loop_indicator">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.wf_operator_dict">wf_operator_dict (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.wf_operator_dict">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.wf_operator_dict">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.wf_operator_dict">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.wf_operator_dict">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.wf_operator_dict">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.wf_orientation">wf_orientation (SquareDiamondTile attribute)</a>
+</li>
+      <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile.wf_q_indices">wf_q_indices (CheckerBoardTile attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile.wf_q_indices">(DiagonalBarTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.DiagonalHourGlassTile.html#qiskit_qec.geometry.DiagonalHourGlassTile.wf_q_indices">(DiagonalHourGlassTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.HexagonTile.html#qiskit_qec.geometry.HexagonTile.wf_q_indices">(HexagonTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.OctaSquareTile.html#qiskit_qec.geometry.OctaSquareTile.wf_q_indices">(OctaSquareTile attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.wf_q_indices">(SquareDiamondTile attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="stubs/qiskit_qec.geometry.WireFrame.html#qiskit_qec.geometry.WireFrame">WireFrame (class in qiskit_qec.geometry)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.x">x (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.x">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.x">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.x">x() (RepetitionCodeCircuit method)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.x">(SurfaceCodeCircuit method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.z">z (BasePauli attribute)</a>
+
+      <ul>
+        <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.z">(Pauli attribute)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.z">(PauliList attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.z">z() (SurfaceCodeCircuit method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script src="_static/documentation_options.js?v=7026087e"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

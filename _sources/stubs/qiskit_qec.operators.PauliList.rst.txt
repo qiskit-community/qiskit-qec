@@ -1,0 +1,81 @@
+﻿PauliList
+=========
+
+.. currentmodule:: qiskit_qec.operators
+
+.. autoclass:: PauliList
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: PauliList.adjoint
+   .. automethod:: PauliList.all_commutes
+   .. automethod:: PauliList.anticommutes
+   .. automethod:: PauliList.anticommutes_with_all
+   .. automethod:: PauliList.argsort
+   .. automethod:: PauliList.commutes
+   .. automethod:: PauliList.commutes_with_all
+   .. automethod:: PauliList.compose
+   .. automethod:: PauliList.conjugate
+   .. automethod:: PauliList.copy
+   .. automethod:: PauliList.delete
+   .. automethod:: PauliList.dot
+   .. automethod:: PauliList.evolve
+   .. automethod:: PauliList.expand
+   .. automethod:: PauliList.from_symplectic
+   .. automethod:: PauliList.getaslist
+   .. automethod:: PauliList.group_qubit_wise_commuting
+   .. automethod:: PauliList.input_dims
+   .. automethod:: PauliList.insert
+   .. automethod:: PauliList.inverse
+   .. automethod:: PauliList.label_iter
+   .. automethod:: PauliList.matrix_iter
+   .. automethod:: PauliList.output_dims
+   .. automethod:: PauliList.power
+   .. automethod:: PauliList.reshape
+   .. automethod:: PauliList.set_pauli_encoding
+   .. automethod:: PauliList.set_phase_encoding
+   .. automethod:: PauliList.set_print_phase_encoding
+   .. automethod:: PauliList.set_qubit_order
+   .. automethod:: PauliList.set_syntax
+   .. automethod:: PauliList.set_tensor_encoding
+   .. automethod:: PauliList.sort
+   .. automethod:: PauliList.tensor
+   .. automethod:: PauliList.to_label
+   .. automethod:: PauliList.to_labels
+   .. automethod:: PauliList.to_matrix
+   .. automethod:: PauliList.transpose
+   .. automethod:: PauliList.unique
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: EXTERNAL_PAULI_ENCODING
+   .. autoattribute:: EXTERNAL_PHASE_ENCODING
+   .. autoattribute:: EXTERNAL_QUBIT_ORDER
+   .. autoattribute:: EXTERNAL_SYNTAX
+   .. autoattribute:: EXTERNAL_TENSOR_ENCODING
+   .. autoattribute:: PRINT_PHASE_ENCODING
+   .. autoattribute:: dim
+   .. autoattribute:: num_paulis
+   .. autoattribute:: num_qubits
+   .. autoattribute:: num_y
+   .. autoattribute:: pauli_encoding
+   .. autoattribute:: phase
+   .. autoattribute:: phase_encoding
+   .. autoattribute:: phase_exp
+   .. autoattribute:: print_phase_encoding
+   .. autoattribute:: qargs
+   .. autoattribute:: qubit_order
+   .. autoattribute:: settings
+   .. autoattribute:: shape
+   .. autoattribute:: size
+   .. autoattribute:: syntax
+   .. autoattribute:: tensor_encoding
+   .. autoattribute:: x
+   .. autoattribute:: z

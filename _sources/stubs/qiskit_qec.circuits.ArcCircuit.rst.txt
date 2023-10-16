@@ -1,0 +1,29 @@
+﻿ArcCircuit
+==========
+
+.. currentmodule:: qiskit_qec.circuits
+
+.. autoclass:: ArcCircuit
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: ArcCircuit.check_nodes
+   .. automethod:: ArcCircuit.flatten_nodes
+   .. automethod:: ArcCircuit.get_error_coords
+   .. automethod:: ArcCircuit.is_cluster_neutral
+   .. automethod:: ArcCircuit.string2nodes
+   .. automethod:: ArcCircuit.string2raw_logicals
+   .. automethod:: ArcCircuit.transpile
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: AVAILABLE_METHODS
+   .. autoattribute:: METHOD_NAIVE
+   .. autoattribute:: METHOD_SPITZ

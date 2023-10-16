@@ -1,0 +1,6 @@
+﻿qiskit\_qec.utils.noisify\_circuit
+==================================
+
+.. currentmodule:: qiskit_qec.utils
+
+.. autofunction:: noisify_circuit

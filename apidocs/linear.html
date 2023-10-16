@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Linear (qiskit_qec.linear) &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+      <li>Linear (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.linear</span></code>)</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="linear-qiskit-qec-linear">
+<span id="module-qiskit_qec.linear"></span><h1>Linear (<a class="reference internal" href="#module-qiskit_qec.linear" title="qiskit_qec.linear"><code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.linear</span></code></a>)<a class="headerlink" href="#linear-qiskit-qec-linear" title="Link to this heading">¶</a></h1>
+<section id="linear-module-classes-and-functions">
+<h2>Linear module classes and functions<a class="headerlink" href="#linear-module-classes-and-functions" title="Link to this heading">¶</a></h2>
+</section>
+<section id="linear-matrix-functions">
+<h2>Linear matrix functions<a class="headerlink" href="#linear-matrix-functions" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.create_lambda_matrix.html#qiskit_qec.linear.create_lambda_matrix" title="qiskit_qec.linear.create_lambda_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_lambda_matrix</span></code></a>(n)</p></td>
+<td><p>Creates the GF(2) Lambda matrix</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.augment_mat.html#qiskit_qec.linear.augment_mat" title="qiskit_qec.linear.augment_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">augment_mat</span></code></a>(matrix[, pos])</p></td>
+<td><p>Augments a given matrix with the identify matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.rref.html#qiskit_qec.linear.rref" title="qiskit_qec.linear.rref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rref</span></code></a>(matrix)</p></td>
+<td><p>Computes the Row Reduced Echelon Form for a GF(2) matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.rank.html#qiskit_qec.linear.rank" title="qiskit_qec.linear.rank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rank</span></code></a>(matrix)</p></td>
+<td><p>Computes the rank of the GF(2) matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.rref_complete.html#qiskit_qec.linear.rref_complete" title="qiskit_qec.linear.rref_complete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rref_complete</span></code></a>(matrix)</p></td>
+<td><p>Computes the Row Reduced Echelon Form for a GF(2) matrix as well as pivots, transformation matrix and rank.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="linear-symplectic-functions">
+<h2>Linear symplectic functions<a class="headerlink" href="#linear-symplectic-functions" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.all_commute.html#qiskit_qec.linear.all_commute" title="qiskit_qec.linear.all_commute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_commute</span></code></a>(matrix)</p></td>
+<td><p>Determines if each possible pair of different rows of the GF(2) symplectic matrix have zero symplectic product.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.symplectic_product.html#qiskit_qec.linear.symplectic_product" title="qiskit_qec.linear.symplectic_product"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symplectic_product</span></code></a>(mat1, mat2)</p></td>
+<td><p>Returns the symplectic product of two GF(2) symplectic matrices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.make_commute_hyper.html#qiskit_qec.linear.make_commute_hyper" title="qiskit_qec.linear.make_commute_hyper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_commute_hyper</span></code></a>(a, x, z[, arange, ...])</p></td>
+<td><p>Makes an element(s) commute with hyperbolic pair(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.locate_hyper_partner.html#qiskit_qec.linear.locate_hyper_partner" title="qiskit_qec.linear.locate_hyper_partner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">locate_hyper_partner</span></code></a>(matrix, vector)</p></td>
+<td><p>Locate a hyperbolic/noncommutative parter</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.build_hyper_partner.html#qiskit_qec.linear.build_hyper_partner" title="qiskit_qec.linear.build_hyper_partner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_hyper_partner</span></code></a>(matrix, index)</p></td>
+<td><p>Builds an independent hyperbolic partner for the input vector indexed</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.symplectic_gram_schmidt.html#qiskit_qec.linear.symplectic_gram_schmidt" title="qiskit_qec.linear.symplectic_gram_schmidt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symplectic_gram_schmidt</span></code></a>(a[, x, z])</p></td>
+<td><p>Applies the sympletic Gram-Schmidt process to the input matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_symplectic_matrix_form.html#qiskit_qec.linear.is_symplectic_matrix_form" title="qiskit_qec.linear.is_symplectic_matrix_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symplectic_matrix_form</span></code></a>(matrix[, dtype])</p></td>
+<td><p>Is the input matrix GF(2) symplectic</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_symplectic_vector_form.html#qiskit_qec.linear.is_symplectic_vector_form" title="qiskit_qec.linear.is_symplectic_vector_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symplectic_vector_form</span></code></a>(vector[, dtype])</p></td>
+<td><p>Is the input vector GF(2) symplectic</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_symplectic_form.html#qiskit_qec.linear.is_symplectic_form" title="qiskit_qec.linear.is_symplectic_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_symplectic_form</span></code></a>(a[, dtype])</p></td>
+<td><p>Is the input a GF(2) symplectic matrix or vector</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_hyper_form.html#qiskit_qec.linear.is_hyper_form" title="qiskit_qec.linear.is_hyper_form"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_hyper_form</span></code></a>(x, z)</p></td>
+<td><p>Do the input matrices form a hyperbolic/symplectic basis?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_center.html#qiskit_qec.linear.is_center" title="qiskit_qec.linear.is_center"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_center</span></code></a>(cntr, matrix)</p></td>
+<td><p>Does the input center matrix represent the center of the supplied matrix?</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_same_span.html#qiskit_qec.linear.is_same_span" title="qiskit_qec.linear.is_same_span"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_same_span</span></code></a>(matrix1, matrix2)</p></td>
+<td><p>Does span(rows of matrix1) = span(rows of matrix2)?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.linear.is_stabilizer_group.html#qiskit_qec.linear.is_stabilizer_group" title="qiskit_qec.linear.is_stabilizer_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_stabilizer_group</span></code></a>(matrix)</p></td>
+<td><p>Do the rows of the input matrix represent the generators of an abelian Pauli subgroup?</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="../stubs/qiskit_qec.linear.create_lambda_matrix.html" class="btn btn-neutral float-right" title="qiskit_qec.linear.create_lambda_matrix" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="../stubs/qiskit_qec.info.Properties.html" class="btn btn-neutral" title="Properties" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">Linear (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.linear</span></code>)</a><ul>
+<li><a class="reference internal" href="#linear-module-classes-and-functions">Linear module classes and functions</a></li>
+<li><a class="reference internal" href="#linear-matrix-functions">Linear matrix functions</a></li>
+<li><a class="reference internal" href="#linear-symplectic-functions">Linear symplectic functions</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

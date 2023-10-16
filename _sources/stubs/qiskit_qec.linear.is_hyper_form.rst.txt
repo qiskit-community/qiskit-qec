@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.is\_hyper\_form
+==================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: is_hyper_form

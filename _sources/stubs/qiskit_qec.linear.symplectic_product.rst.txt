@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.symplectic\_product
+======================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: symplectic_product

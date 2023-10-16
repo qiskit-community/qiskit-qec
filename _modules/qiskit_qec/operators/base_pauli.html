@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.operators.base_pauli &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.operators.base_pauli</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.operators.base_pauli</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2017, 2020</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+
+<span class="c1"># Part of the QEC framework</span>
+<span class="sd">&quot;&quot;&quot;Module for base pauli&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># Must be imported as follows to avoid circular import errors</span>
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QiskitError</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.barrier</span> <span class="kn">import</span> <span class="n">Barrier</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.delay</span> <span class="kn">import</span> <span class="n">Delay</span>
+<span class="kn">from</span> <span class="nn">qiskit.circuit.instruction</span> <span class="kn">import</span> <span class="n">Instruction</span>
+<span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators.base_operator</span> <span class="kn">import</span> <span class="n">BaseOperator</span>
+<span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators.mixins</span> <span class="kn">import</span> <span class="n">AdjointMixin</span><span class="p">,</span> <span class="n">MultiplyMixin</span>
+
+<span class="kn">from</span> <span class="nn">qiskit_qec.linear</span> <span class="kn">import</span> <span class="n">matrix</span> <span class="k">as</span> <span class="n">mt</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.linear.symplectic</span> <span class="kn">import</span> <span class="n">symplectic_product</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">pauli_rep</span>
+
+
+<span class="c1"># pylint: disable=no-member</span>
+<div class="viewcode-block" id="BasePauli">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli">[docs]</a>
+<span class="k">class</span> <span class="nc">BasePauli</span><span class="p">(</span><span class="n">BaseOperator</span><span class="p">,</span> <span class="n">AdjointMixin</span><span class="p">,</span> <span class="n">MultiplyMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for Pauli and PauliList.</span>
+
+<span class="sd">    Symplectic representation of a list of N-qubit Paulis with phases using numpy</span>
+<span class="sd">    arrays for symplectic matrices and phase vectors.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># External string formats used when displaying Pauli&#39;s as strings</span>
+    <span class="n">EXTERNAL_TENSOR_ENCODING</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_EXTERNAL_TENSOR_ENCODING</span>
+    <span class="n">EXTERNAL_PHASE_ENCODING</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_EXTERNAL_PHASE_ENCODING</span>
+    <span class="n">EXTERNAL_PAULI_ENCODING</span> <span class="o">=</span> <span class="n">EXTERNAL_PHASE_ENCODING</span> <span class="o">+</span> <span class="n">EXTERNAL_TENSOR_ENCODING</span>
+
+    <span class="n">EXTERNAL_SYNTAX</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">PRODUCT_SYNTAX</span>
+    <span class="n">EXTERNAL_QUBIT_ORDER</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_QUBIT_ORDER</span>
+
+    <span class="n">PRINT_PHASE_ENCODING</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">matrix</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">phase_exp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;xz&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method for BasePauli</span>
+
+<span class="sd">        A BasePauli object represents a list N-qubit Pauli operators with phases.</span>
+<span class="sd">        Numpy arrays are used to represent the symplectic matrix represention of these</span>
+<span class="sd">        Paulis. The phases of the Paulis are stored encoded. The phases of the Pauli</span>
+<span class="sd">        operators are internally encoded in the &#39;-iZX&#39; Pauli encoding (See the pauli_rep</span>
+<span class="sd">        module for more details). That is a Pauli operator is represented as symplectic</span>
+<span class="sd">        vector V and a phase exponent phase_exp such that::</span>
+
+<span class="sd">            (-i)^phase_exp Z^z X^x</span>
+
+<span class="sd">        where V = [x, z] and phase_exp is a vector of Z_4 elements (0,1,2,3). A list</span>
+<span class="sd">        of Pauli operators is represented as a symplectic matrix S and a phase exponent</span>
+<span class="sd">        vector phase_exp such that the rows or S are the symplectic vector representations</span>
+<span class="sd">        of the Paulis and the phase_exp vector store the phase exponent of each</span>
+<span class="sd">        associated Pauli Operator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            matrix: Input GF(2) symplectic matrix</span>
+<span class="sd">            phase_exp (optional): Phase exponent vector for imput matrix. A value of None will</span>
+<span class="sd">                result in an a complex coefficients of 1 for each Pauli operator. Defaults to None.</span>
+<span class="sd">            order: Set to &#39;xz&#39; or &#39;zx&#39;. Defines which side the x and z parts of the input matrix</span>
+
+<span class="sd">        Raises: QiskitError: matrix and phase_exp sizes are not compatible</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; matrix = numpy.array([[1,1,0,0],[0,1,0,1]])</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli = BasePauli(matrix)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            Pauli, PauliList</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">matrix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">matrix</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">)</span>
+            <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="n">num_qubits</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;zx&quot;</span><span class="p">:</span>
+            <span class="n">nmatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">nmatrix</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="n">num_qubits</span><span class="p">:]</span>
+            <span class="n">nmatrix</span><span class="p">[:,</span> <span class="n">num_qubits</span><span class="p">:]</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_qubits</span><span class="p">]</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">nmatrix</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_paulis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">phase_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;matrix and phase_exp sizes are not compatible&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span><span class="p">)</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the X part of symplectic representation as a 2d matrix.</span>
+
+<span class="sd">        Note: The Pauli class over writes this method to return</span>
+<span class="sd">        a 1d array instead of a 2d array. Use the self._x method</span>
+<span class="sd">        if a 2d array is needed as _x method is markeded as @final</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)</span>
+<span class="sd">            &gt;&gt;&gt; phase_exp = numpy.array([0,1])</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli = BasePauli(matrix, phase_exp)</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli.x.astype(int)</span>
+<span class="sd">            array([[1, 0],</span>
+<span class="sd">                   [0, 1]])</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            _x, z, _z</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span>
+
+    <span class="nd">@x</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the X part of symplectic representation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            val: GF(2) matrix used to set the X part of</span>
+<span class="sd">                the symplectic representation</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)</span>
+<span class="sd">            &gt;&gt;&gt; phase_exp = numpy.array([0,1])</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli = BasePauli(matrix, phase_exp)</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli.x = numpy.array([[1,1],[0,0]], dtype=numpy.bool_)</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli.x.astype(int)</span>
+<span class="sd">            array([[1, 1],</span>
+<span class="sd">                   [0, 0]])</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            x, z, _z</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="c1"># @final Add when python &gt;= 3.8</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the X part of symplectic representation as a 2d matrix.</span>
+
+<span class="sd">        Note: The Pauli class over writes this method to return</span>
+<span class="sd">        a 1d array instead of a 2d array. Use the self._x method</span>
+<span class="sd">        if a 2d array is needed as _x method is markeded as @final</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; matrix = numpy.array([[1,0,0,0],[0,1,1,1]], dtype=numpy.bool_)</span>
+<span class="sd">            &gt;&gt;&gt; phase_exp = numpy.array([0,1])</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli = BasePauli(matrix, phase_exp)</span>
+<span class="sd">            &gt;&gt;&gt; base_pauli._x.astype(int)</span>
+<span class="sd">            array([[1, 0],</span>
+<span class="sd">                   [0, 1]])</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            x, z, _z</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span>
+
+    <span class="c1"># @final Add when python &gt;= 3.8</span>
+    <span class="nd">@_x</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The z array for the symplectic representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]</span>
+
+    <span class="nd">@z</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="c1"># @final Add when python &gt;= 3.8</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The z array for the symplectic representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]</span>
+
+    <span class="c1"># @final Add when python &gt;= 3.8</span>
+    <span class="nd">@_z</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of Y for each operator&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tensor_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the external symplectic matrix encoding&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_TENSOR_ENCODING</span>
+
+<div class="viewcode-block" id="BasePauli.set_tensor_encoding">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_tensor_encoding">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_tensor_encoding</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_EXTERNAL_TENSOR_ENCODING</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the external symplectic matrix format</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            encoding (optional): Symplectic matrix tensor encoding.</span>
+<span class="sd">            Defaults to pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">encoding</span> <span class="ow">in</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_tensor_encodings</span><span class="p">(),</span> <span class="n">QiskitError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid symplectic matrix encoding: </span><span class="si">{</span><span class="n">encoding</span><span class="si">}</span><span class="s2">. Must be one </span><span class="se">\</span>
+<span class="s2">                of </span><span class="si">{</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_tensor_encodings</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_TENSOR_ENCODING</span> <span class="o">=</span> <span class="n">encoding</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the phase encoding&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PHASE_ENCODING</span>
+
+<div class="viewcode-block" id="BasePauli.set_phase_encoding">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_phase_encoding">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_phase_encoding</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_EXTERNAL_PHASE_ENCODING</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the phase encoding</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            encoding (optional): phase encoding.</span>
+<span class="sd">            Defaults to pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">encoding</span> <span class="ow">in</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_phase_encodings</span><span class="p">(),</span> <span class="n">QiskitError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid phase encoding: </span><span class="si">{</span><span class="n">encoding</span><span class="si">}</span><span class="s2">. Must be one of </span><span class="si">{</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_phase_encodings</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PHASE_ENCODING</span> <span class="o">=</span> <span class="n">encoding</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pauli_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pauli format.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PAULI_ENCODING</span>
+
+<div class="viewcode-block" id="BasePauli.set_pauli_encoding">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_pauli_encoding">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_pauli_encoding</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_EXTERNAL_PAULI_ENCODING</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the Pauli encoding</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            encoding (optional): Pauli encoding.</span>
+<span class="sd">            Defaults to pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">encoding</span> <span class="ow">in</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_pauli_encodings</span><span class="p">(),</span> <span class="n">QiskitError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid pauli encoding: </span><span class="si">{</span><span class="n">encoding</span><span class="si">}</span><span class="s2">. Must be one of </span><span class="si">{</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_pauli_encodings</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">phase_encoding</span><span class="p">,</span> <span class="n">tensor_encoding</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">_split_pauli_enc</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PHASE_ENCODING</span> <span class="o">=</span> <span class="n">phase_encoding</span>
+        <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_TENSOR_ENCODING</span> <span class="o">=</span> <span class="n">tensor_encoding</span>
+        <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PAULI_ENCODING</span> <span class="o">=</span> <span class="n">phase_encoding</span> <span class="o">+</span> <span class="n">tensor_encoding</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">syntax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the syntax&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span>
+
+<div class="viewcode-block" id="BasePauli.set_syntax">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_syntax">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_syntax</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">syntax_code</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">syntax_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Product&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the global input and output format</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            syntax_code (Optional[int], optional): sets the syntax of Pauli tensors. Possible inputs</span>
+<span class="sd">                                                    are 0 for product syntax, 1 for index syntax and 2</span>
+<span class="sd">                                                    for latex syntax. Defaults to None.</span>
+<span class="sd">            syntax_str (Optional[str], optional): sets the syntax of Pauli tensors. Possible inputs are</span>
+<span class="sd">                                                    Product or Latex, if another input is given</span>
+<span class="sd">                                                    the syntax is set to Order. Defaults to &quot;Product&quot;.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: Unknown syntax: {syntax_code}. See pauli_rep for options.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">syntax_code</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">syntax_str</span> <span class="o">==</span> <span class="s2">&quot;Product&quot;</span><span class="p">:</span>
+                <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">PRODUCT_SYNTAX</span>
+            <span class="k">elif</span> <span class="n">syntax_str</span> <span class="o">==</span> <span class="s2">&quot;Latex&quot;</span><span class="p">:</span>
+                <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">LATEX_SYNTAX</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">INDEX_SYNTAX</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">syntax_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Unknown syntax: </span><span class="si">{syntax_code}</span><span class="s2">. See pauli_rep for options.&quot;</span><span class="p">)</span>
+            <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span> <span class="o">=</span> <span class="n">syntax_code</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">print_phase_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prints how the phase will be displayed in when printing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">PRINT_PHASE_ENCODING</span>
+
+<div class="viewcode-block" id="BasePauli.set_print_phase_encoding">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_print_phase_encoding">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_print_phase_encoding</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">phase_encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_summary_</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            phase_encoding (Optional[str], optional): _description_. Defaults to None.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">phase_encoding</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">phase_encoding</span> <span class="ow">in</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">PHASE_ENCODINGS</span><span class="p">:</span>
+            <span class="n">BasePauli</span><span class="o">.</span><span class="n">PRINT_PHASE_ENCODING</span> <span class="o">=</span> <span class="n">phase_encoding</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown print phase encoding </span><span class="si">{</span><span class="n">phase_encoding</span><span class="si">}</span><span class="s2">. Encoding </span><span class="se">\</span>
+<span class="s2">                must be None or one of </span><span class="si">{</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">get_phase_encodings</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">qubit_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get external qubit order&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_QUBIT_ORDER</span>
+
+<div class="viewcode-block" id="BasePauli.set_qubit_order">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.set_qubit_order">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_qubit_order</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">qubit_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set external qubit order</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            qubit_order (Optional[str], optional): _description_. Defaults to None.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">qubit_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_QUBIT_ORDER</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">DEFAULT_QUBIT_ORDER</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">qubit_order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">QUBIT_ORDERS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown qubit order: </span><span class="si">{</span><span class="n">qubit_order</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_QUBIT_ORDER</span> <span class="o">=</span> <span class="n">qubit_order</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Magic Methods</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="fm">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">front</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.copy">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.copy">[docs]</a>
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make a deep copy of current operator.&quot;&quot;&quot;</span>
+        <span class="c1"># Deepcopy has terrible performance on objects with Numpy arrays</span>
+        <span class="c1"># attributes so we make a shallow copy and then manually copy the</span>
+        <span class="c1"># Numpy arrays to efficiently mimic a deepcopy</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># BaseOperator methods</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Needed by GroupMixin class from BaseOperator class</span>
+
+    <span class="c1"># pylint: disable=arguments-differ</span>
+<div class="viewcode-block" id="BasePauli.compose">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.compose">[docs]</a>
+    <span class="k">def</span> <span class="nf">compose</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span>
+        <span class="n">qargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">front</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the composition of Paulis lists</span>
+
+<span class="sd">        To be consistent with other compose functions in Qiskit, composition is defined via</span>
+<span class="sd">        left multiplication. That is</span>
+
+<span class="sd">        A.compose(B) = B.A = B.dot(A) = A.compose(B, front=False)</span>
+
+<span class="sd">        where . is the Pauli group multiplication and so B is applied after A. Likewise</span>
+
+<span class="sd">        A.compose(B, front=True) = A.B = A.dot(B)</span>
+
+<span class="sd">        That is B is applied first or at the front.</span>
+
+<span class="sd">        This compose is:</span>
+
+<span class="sd">        [A_1,A_2,...,A_k].compose([B_1,B_2,...,B_k]) = [A_1.compose(B_1),...,A_k.compose(B_k)]</span>
+
+<span class="sd">        or</span>
+
+<span class="sd">        [A].compose([B_1,B_2,...,B_k])) = [A.compose(B_1),...,A.compose(B_k)]</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This method does compose coordinate wise (which is different from the PauliTable compose</span>
+<span class="sd">            which should be corrected at some point).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: BasePauli</span>
+<span class="sd">            front (bool): (default: False)</span>
+<span class="sd">            qargs (list or None): Optional, qubits to apply compose on</span>
+<span class="sd">                                  on (default: None-&gt;All).</span>
+<span class="sd">            inplace (bool): If True update in-place (default: False).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BasePauli : Compositon of self and other</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: if number of qubits of other does not match qargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Validation</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;other </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be on the same number of qubits.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of qubits of the other </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not match qargs.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_num_paulis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="s2">&quot;Incompatible BasePaulis. Second list must &quot;</span>
+                <span class="s2">&quot;either have 1 or the same number of Paulis.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">,</span> <span class="n">front</span><span class="o">=</span><span class="n">front</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="n">inplace</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compose</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span>
+        <span class="n">qargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">front</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the composition of two BasePauli objects.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a : BasePauli object</span>
+<span class="sd">            b : BasePauli object</span>
+<span class="sd">            qargs (Optional[list], optional): _description_. Defaults to None.</span>
+<span class="sd">            front (bool, optional): _description_. Defaults to False.</span>
+<span class="sd">            inplace (bool, optional): _description_. Defaults to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BasePauli: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">item</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">num_qubits</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">qargs</span><span class="p">]</span>
+            <span class="n">amat</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qargs</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">amat</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">matrix</span>
+        <span class="n">bmat</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">matrix</span>
+
+        <span class="c1"># Calculate the symplectic matrix for the composition</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">amat</span><span class="p">,</span> <span class="n">bmat</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the phase of the composition</span>
+        <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">_phase_exp</span>
+        <span class="k">if</span> <span class="n">front</span><span class="p">:</span>
+            <span class="n">phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">amat</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">],</span> <span class="n">bmat</span><span class="p">[:,</span> <span class="n">b</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">bmat</span><span class="p">[:,</span> <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">],</span> <span class="n">amat</span><span class="p">[:,</span> <span class="n">b</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+            <span class="p">)</span>
+        <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">BasePauli</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">)</span>
+            <span class="c1"># Inplace update</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">mat</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">phase_exp</span>
+            <span class="k">return</span> <span class="n">a</span>
+
+        <span class="c1"># Qargs update</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">a</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qargs</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.tensor">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.tensor">[docs]</a>
+    <span class="k">def</span> <span class="nf">tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_tensor</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the generalized tensor product of Paulis that are represented by</span>
+<span class="sd">        symplectic matrice and a phase exponent</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a (BasePauli): List of Pauli operators</span>
+<span class="sd">            b (BasePauli): List of Pauli operators</span>
+
+<span class="sd">        if a=[A_1,A_2,...,A_k] and b=[B_1,B_2,...,B_v] then</span>
+
+<span class="sd">        a tensor b = [A_1 tensor B_1, A_1 tensor B_2, ..., A_k tensor B_v]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [PaulisBase]: a gtensor b</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">phase1_exp</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">_num_paulis</span> <span class="o">*</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">_num_paulis</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">phase2_exp</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">_num_paulis</span><span class="p">)</span>
+
+        <span class="n">xz_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">z1</span><span class="p">))</span>
+        <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">phase1_exp</span> <span class="o">+</span> <span class="n">phase2_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="p">(</span><span class="n">xz_mat</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">)</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.expand">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.expand">[docs]</a>
+    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tensor</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Needed by MultiplyMixin class</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">roundit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-renamed</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the {cls} phase * self where phase is in ``[1, -1j, -1, 1j]``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            phase (complex): a complex number(s) in ``[1, -1j, -1, 1j]``.</span>
+<span class="sd">            roundit (bool): Set True to round components of other. Default=True</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            {cls}: the {cls} phase * self.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: if the phase is not in the set ``[1, -1j, -1, 1j]``.</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="p">)</span>
+        <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">cpx2exp</span><span class="p">(</span>
+            <span class="n">phase</span><span class="p">,</span> <span class="n">output_encoding</span><span class="o">=</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span><span class="p">,</span> <span class="n">roundit</span><span class="o">=</span><span class="n">roundit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">BasePauli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+</span> <span class="n">phase_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="c1"># Needed by AdjointMixin class</span>
+
+<div class="viewcode-block" id="BasePauli.conjugate">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.conjugate">[docs]</a>
+    <span class="k">def</span> <span class="nf">conjugate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the conjugate of each Pauli in the list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inplace (boolean) : If True will modify inplace. Default: False,</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            {cls} : a new {cls} which has phases conjugates (if replace=False) or will change</span>
+<span class="sd">            the phase of the clasing instance if replace=True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">exp2exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span> <span class="n">output_encoding</span><span class="o">=</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BasePauli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">new_phase_exp</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">new_phase_exp</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">new_phase_exp</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="BasePauli.transpose">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.transpose">[docs]</a>
+    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the transpose of each Pauli in the list.&quot;&quot;&quot;</span>
+        <span class="n">new_phase_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_y</span> <span class="o">%</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">BasePauli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">new_phase_exp</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">new_phase_exp</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">=</span> <span class="n">new_phase_exp</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="BasePauli.commutes">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.commutes">[docs]</a>
+    <span class="k">def</span> <span class="nf">commutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qargs</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if Pauli that commutes with other.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (PaulisBase): another PaulisBase operator.</span>
+<span class="sd">            qargs (list): qubits to apply dot product on (default: None).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.array: Boolean array of True if Pauli&#39;s commute, False if</span>
+<span class="sd">                      they anti-commute.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: if number of qubits of other does not match qargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of qubits of other Pauli does not match number of </span><span class="se">\</span>
+<span class="s2">                qargs (</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="s2">&quot;Number of qubits of other Pauli does not match the current </span><span class="se">\</span>
+<span class="s2">                Pauli (</span><span class="si">{other.num_qubits}</span><span class="s2"> != </span><span class="si">{self.num_qubits}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commutes</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_commutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qargs</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span>
+            <span class="n">sinds</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">]</span>
+            <span class="c1"># x1, z1 = self.x[:, inds], self.z[:, inds]</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">inds</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">sinds</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># x1, z1 = self.x, self.z</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">z1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">x1</span> <span class="o">&amp;</span> <span class="n">other</span><span class="o">.</span><span class="n">z</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">z1</span> <span class="o">&amp;</span> <span class="n">other</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Extra all_commutes method</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.all_commutes">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.all_commutes">[docs]</a>
+    <span class="k">def</span> <span class="nf">all_commutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_summary_</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (BasePauli): _description_</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">symplectic_product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">))</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Evolve Methods</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.evolve">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.evolve">[docs]</a>
+    <span class="k">def</span> <span class="nf">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;h&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Heisenberg picture evolution of a Pauli by a Clifford.</span>
+
+<span class="sd">        This returns the Pauli :math:`P^\prime = C^\dagger.P.C`.</span>
+
+<span class="sd">        By choosing the parameter frame=&#39;s&#39;, this function returns the Schrödinger evolution of the Pauli</span>
+<span class="sd">        :math:`P^\prime = C.P.C^\dagger`. This option yields a faster calculation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (BasePauli or QuantumCircuit): The Clifford circuit to evolve by.</span>
+<span class="sd">            qargs (list): a list of qubits to apply the Clifford to.</span>
+<span class="sd">            frame (string): &#39;h&#39; for Heisenberg or &#39;s&#39; for Schrödinger framework.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BasePauli: the Pauli :math:`C^\dagger.P.C`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: if the Clifford number of qubits and qargs don&#39;t match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check dimension</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Incorrect number of qubits for Clifford circuit </span><span class="se">\</span>
+<span class="s2">                    (</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Incorrect number of qubits for Clifford circuit </span><span class="se">\</span>
+<span class="s2">                    (</span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Evolve via Pauli</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">BasePauli</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">frame</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">adjoint</span><span class="p">(),</span> <span class="n">front</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">adjoint</span><span class="p">(),</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">front</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="c1"># Evolve by the inverse circuit to compute C^dg.P.C</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">_append_circuit</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">_append_circuit</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">inverse</span><span class="p">(),</span> <span class="n">qargs</span><span class="o">=</span><span class="n">qargs</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Helper Metods</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Entrywise comparison of Pauli equality.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">num_qubits</span>
+            <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Class methods for creating labels -&gt; Uses pauli_rep suite of methods</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BasePauli.to_label">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.to_label">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_label</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_pauli_encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_phase</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_phase</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">syntax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">qubit_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">index_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">squeeze</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">index_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the string representatiojn for a Pauli or Paulis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_pauli_encoding (optional): Encoding used to represent phases.</span>
+<span class="sd">                A value of None will result in complex phases notation. Defaults</span>
+<span class="sd">                to None which will in turn use BasePauli.EXTERNAL_PAULI_ENCODING.</span>
+<span class="sd">            no_phase (optional): When set to True, no phase will appear no matter</span>
+<span class="sd">                what encoding is selected. So the symplectic matrix [1, 1] will produce</span>
+<span class="sd">                the operator Y in &#39;XZY&#39; encoding but also (XZ) in the &#39;XZ&#39; encoding which</span>
+<span class="sd">                are different operators if phases are considered. Defaults to False.</span>
+<span class="sd">            return_phase (optional): If True return the adjusted phase for the coefficient</span>
+<span class="sd">                of the returned Pauli label. This can be used even if</span>
+<span class="sd">                ``full_group=False``.</span>
+<span class="sd">            syntax (optional): Syntax of pauli tensor. Values are</span>
+<span class="sd">                PRODUCT_SYNTAX = 0 and INDEX_SYNTAX=1. Defaults to INDEX_SYNTAX.</span>
+<span class="sd">            qubit_order (optional): Order in which qubits are read. options aree</span>
+<span class="sd">                &quot;right-to-left&quot; and &quot;left-to-right&quot;. Defaults to &quot;right-to-left&quot;.</span>
+<span class="sd">            index_start (optional): Lowest value for index in index syntax tensors.</span>
+<span class="sd">                Defaults to 0</span>
+<span class="sd">            squeeze (optional): Squeezes the list of reults to a scalar if the number</span>
+<span class="sd">                of Paulis is one. Defaults to True.</span>
+<span class="sd">            index_str (optional): String that get inserted between operator and numbers in</span>
+<span class="sd">                index format. Default is &quot;&quot;.</span>
+
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: the Pauli label(string) from the full Pauli group (if ``no_phase=False``) or</span>
+<span class="sd">                from the unsigned Pauli group (if ``no_phase=True``).</span>
+<span class="sd">            Tuple[str or List[str], Any or List[Any]]: if ``return_phase=True`` returns a</span>
+<span class="sd">                tuple of the Pauli</span>
+<span class="sd">                label (from either the full or unsigned Pauli group) and</span>
+<span class="sd">                the phase ``q`` for the coefficient :math:`(-i)^(q + x.z)`</span>
+<span class="sd">                for the label from the full Pauli group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output_pauli_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_phase_encoding</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">PRINT_PHASE_ENCODING</span>
+            <span class="n">output_tensor_encoding</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_TENSOR_ENCODING</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output_phase_encoding</span><span class="p">,</span> <span class="n">output_tensor_encoding</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">split_pauli_enc</span><span class="p">(</span>
+                <span class="n">output_pauli_encoding</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">syntax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">syntax</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_SYNTAX</span>
+
+        <span class="k">if</span> <span class="n">qubit_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qubit_order</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_QUBIT_ORDER</span>
+
+        <span class="n">pauli_str</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">symplectic2str</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span>
+            <span class="n">output_phase_encoding</span><span class="o">=</span><span class="n">output_phase_encoding</span><span class="p">,</span>
+            <span class="n">no_phase</span><span class="o">=</span><span class="n">no_phase</span><span class="p">,</span>
+            <span class="n">output_tensor_encoding</span><span class="o">=</span><span class="n">output_tensor_encoding</span><span class="p">,</span>
+            <span class="n">syntax</span><span class="o">=</span><span class="n">syntax</span><span class="p">,</span>
+            <span class="n">qubit_order</span><span class="o">=</span><span class="n">qubit_order</span><span class="p">,</span>
+            <span class="n">index_start</span><span class="o">=</span><span class="n">index_start</span><span class="p">,</span>
+            <span class="n">same_type</span><span class="o">=</span><span class="n">squeeze</span><span class="p">,</span>
+            <span class="n">index_str</span><span class="o">=</span><span class="n">index_str</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_phase</span><span class="p">:</span>
+            <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">change_pauli_encoding</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_y</span><span class="p">,</span>
+                <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PAULI_ENCODING</span><span class="p">,</span>
+                <span class="n">output_pauli_encoding</span><span class="o">=</span><span class="n">output_pauli_encoding</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">pauli_str</span><span class="p">,</span> <span class="n">phase_exp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pauli_str</span></div>
+
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># The methods below should be deprecated eventually as they simply refer</span>
+    <span class="c1"># to the newer versions that are now elsewhere.</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_count_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Count the number of Y Pauli&#39;s&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_y</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_stack</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vertical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mt</span><span class="o">.</span><span class="n">istack</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">interleave</span><span class="o">=</span><span class="n">vertical</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_phase_from_complex</span><span class="p">(</span><span class="n">coeff</span><span class="p">:</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Complex</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">cpxstr2exp</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span><span class="p">)</span>
+
+    <span class="c1"># ---------------------------------------------------------------------</span>
+    <span class="c1"># Apply Clifford to BasePauli</span>
+    <span class="c1"># ---------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_append_circuit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">circuit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Barrier</span><span class="p">,</span> <span class="n">Delay</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">Instruction</span><span class="p">],</span>
+        <span class="n">qargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update BasePauli inplace by applying a Clifford circuit.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circuit (QuantumCircuit or Instruction): the gate or composite gate to apply.</span>
+<span class="sd">            qargs (list or None): The qubits to apply gate to.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BasePauli: the updated Pauli.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: if input gate cannot be decomposed into Clifford gates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="p">(</span><span class="n">Barrier</span><span class="p">,</span> <span class="n">Delay</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">if</span> <span class="n">qargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
+            <span class="n">gate</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">to_instruction</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">gate</span> <span class="o">=</span> <span class="n">circuit</span>
+
+        <span class="c1"># Basis Clifford Gates</span>
+        <span class="n">basis_1q</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="n">_evolve_i</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">_evolve_i</span><span class="p">,</span>
+            <span class="s2">&quot;iden&quot;</span><span class="p">:</span> <span class="n">_evolve_i</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">_evolve_x</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">_evolve_y</span><span class="p">,</span>
+            <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">_evolve_z</span><span class="p">,</span>
+            <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="n">_evolve_h</span><span class="p">,</span>
+            <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="n">_evolve_s</span><span class="p">,</span>
+            <span class="s2">&quot;sdg&quot;</span><span class="p">:</span> <span class="n">_evolve_sdg</span><span class="p">,</span>
+            <span class="s2">&quot;sinv&quot;</span><span class="p">:</span> <span class="n">_evolve_sdg</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">basis_2q</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cx&quot;</span><span class="p">:</span> <span class="n">_evolve_cx</span><span class="p">,</span> <span class="s2">&quot;cz&quot;</span><span class="p">:</span> <span class="n">_evolve_cz</span><span class="p">,</span> <span class="s2">&quot;cy&quot;</span><span class="p">:</span> <span class="n">_evolve_cy</span><span class="p">,</span> <span class="s2">&quot;swap&quot;</span><span class="p">:</span> <span class="n">_evolve_swap</span><span class="p">}</span>
+
+        <span class="c1"># Non-Clifford gates</span>
+        <span class="n">non_clifford</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;tdg&quot;</span><span class="p">,</span> <span class="s2">&quot;ccx&quot;</span><span class="p">,</span> <span class="s2">&quot;ccz&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Check if gate is a valid Clifford basis gate string</span>
+            <span class="k">if</span> <span class="n">gate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">basis_1q</span> <span class="ow">and</span> <span class="n">gate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">basis_2q</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Clifford gate name string </span><span class="si">{</span><span class="n">gate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">gate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Assume gate is an Instruction</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># Apply gate if it is a Clifford basis gate</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">non_clifford</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot update Pauli with non-Clifford gate </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">basis_1q</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Invalid qubits for 1-qubit gate.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">basis_1q</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">basis_2q</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Invalid qubits for 2-qubit gate.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">basis_2q</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qargs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># If not a Clifford basis gate we try to unroll the gate and</span>
+        <span class="c1"># raise an exception if unrolling reaches a non-Clifford gate.</span>
+        <span class="k">if</span> <span class="n">gate</span><span class="o">.</span><span class="n">definition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot apply Instruction: </span><span class="si">{</span><span class="n">gate</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">definition</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">gate</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> instruction definition is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">gate</span><span class="o">.</span><span class="n">definition</span><span class="p">)</span><span class="si">}</span><span class="s2">; </span><span class="se">\</span>
+<span class="s2">                    expected QuantumCircuit&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">flat_instr</span> <span class="o">=</span> <span class="n">gate</span><span class="o">.</span><span class="n">definition</span>
+        <span class="n">bit_indices</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">bit</span><span class="p">:</span> <span class="n">index</span>
+            <span class="k">for</span> <span class="n">bits</span> <span class="ow">in</span> <span class="p">[</span><span class="n">flat_instr</span><span class="o">.</span><span class="n">qubits</span><span class="p">,</span> <span class="n">flat_instr</span><span class="o">.</span><span class="n">clbits</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">instr</span><span class="p">,</span> <span class="n">qregs</span><span class="p">,</span> <span class="n">cregs</span> <span class="ow">in</span> <span class="n">flat_instr</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cregs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot apply Instruction with classical registers: </span><span class="si">{</span><span class="n">instr</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Get the integer position of the flat register</span>
+            <span class="n">new_qubits</span> <span class="o">=</span> <span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="n">bit_indices</span><span class="p">[</span><span class="n">tup</span><span class="p">]]</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">qregs</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_append_circuit</span><span class="p">(</span><span class="n">instr</span><span class="p">,</span> <span class="n">new_qubits</span><span class="p">)</span>
+
+        <span class="c1"># Since the individual gate evolution functions don&#39;t take mod</span>
+        <span class="c1"># of phase we update it at the end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">%=</span> <span class="mi">4</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------</span>
+<span class="c1"># Evolution by Clifford gates</span>
+<span class="c1"># ---------------------------------------------------------------------</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_h</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; H.P.H&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_s</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; S.P.Sdg&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_sdg</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; Sdg.P.S&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">-=</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="c1"># pylint: disable=unused-argument</span>
+<span class="k">def</span> <span class="nf">_evolve_i</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; P&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_x</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; X.P.X&quot;&quot;&quot;</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_y</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; Y.P.Y&quot;&quot;&quot;</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_z</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qubit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; Z.P.Z&quot;&quot;&quot;</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qubit</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_cx</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">qtrgt</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; CX.P.CX&quot;&quot;&quot;</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qtrgt</span><span class="p">]</span> <span class="o">^=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qctrl</span><span class="p">]</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qctrl</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">qtrgt</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_cz</span><span class="p">(</span>  <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; CZ.P.CZ&quot;&quot;&quot;</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q2</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x2</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x1</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_cy</span><span class="p">(</span><span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">qctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">qtrgt</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; CY.P.CY&quot;&quot;&quot;</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qctrl</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qtrgt</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">z2</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qtrgt</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qtrgt</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x1</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qtrgt</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">x1</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">qctrl</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">^=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">z2</span><span class="p">)</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">_phase_exp</span> <span class="o">+=</span> <span class="n">x1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+
+
+<span class="k">def</span> <span class="nf">_evolve_swap</span><span class="p">(</span>  <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="n">base_pauli</span><span class="p">:</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">,</span> <span class="n">q1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BasePauli&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update P -&gt; SWAP.P.SWAP&quot;&quot;&quot;</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">z1</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q2</span><span class="p">]</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q1</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span>
+        <span class="p">:,</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span>
+    <span class="p">]</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q2</span><span class="p">]</span> <span class="o">=</span> <span class="n">x1</span>
+    <span class="n">base_pauli</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">base_pauli</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">]</span> <span class="o">=</span> <span class="n">z1</span>
+    <span class="k">return</span> <span class="n">base_pauli</span>
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.locate\_hyper\_partner
+=========================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: locate_hyper_partner

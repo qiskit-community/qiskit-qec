@@ -1,0 +1,17 @@
+﻿Tile
+====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Tile
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Tile.draw
+
+

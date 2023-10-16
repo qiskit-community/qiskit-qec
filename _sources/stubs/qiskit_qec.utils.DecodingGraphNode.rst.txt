@@ -1,0 +1,17 @@
+﻿DecodingGraphNode
+=================
+
+.. currentmodule:: qiskit_qec.utils
+
+.. autoclass:: DecodingGraphNode
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: DecodingGraphNode.get
+
+

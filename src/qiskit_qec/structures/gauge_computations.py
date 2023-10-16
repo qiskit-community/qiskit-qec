@@ -1,1 +1,0 @@
-"""Guage computations."""

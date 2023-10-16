@@ -1,0 +1,6 @@
+﻿qiskit\_qec.utils.get\_stim\_circuits
+=====================================
+
+.. currentmodule:: qiskit_qec.utils
+
+.. autofunction:: get_stim_circuits

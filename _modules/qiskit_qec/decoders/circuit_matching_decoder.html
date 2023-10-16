@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.decoders.circuit_matching_decoder &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.decoders.circuit_matching_decoder</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.decoders.circuit_matching_decoder</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Abstract object for matching decoders for CSS codes and circuit noise.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">Poly</span><span class="p">,</span> <span class="n">Symbol</span><span class="p">,</span> <span class="n">symbols</span>
+
+<span class="kn">import</span> <span class="nn">rustworkx</span> <span class="k">as</span> <span class="nn">rx</span>
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.analysis.faultenumerator</span> <span class="kn">import</span> <span class="n">FaultEnumerator</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders.decoding_graph</span> <span class="kn">import</span> <span class="n">CSSDecodingGraph</span><span class="p">,</span> <span class="n">DecodingGraph</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphEdge</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders.pymatching_matcher</span> <span class="kn">import</span> <span class="n">PyMatchingMatcher</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders.rustworkx_matcher</span> <span class="kn">import</span> <span class="n">RustworkxMatcher</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders.temp_code_util</span> <span class="kn">import</span> <span class="n">temp_gauge_products</span><span class="p">,</span> <span class="n">temp_syndrome</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.exceptions</span> <span class="kn">import</span> <span class="n">QiskitQECError</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.noise.paulinoisemodel</span> <span class="kn">import</span> <span class="n">PauliNoiseModel</span>
+
+
+<div class="viewcode-block" id="CircuitModelMatchingDecoder">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder">[docs]</a>
+<span class="k">class</span> <span class="nc">CircuitModelMatchingDecoder</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Matching decoder for circuit noise.&quot;&quot;&quot;</span>
+
+    <span class="n">METHOD_RETWORKX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rustworkx&quot;</span>
+    <span class="n">METHOD_PYMATCHING</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pymatching&quot;</span>
+    <span class="n">AVAILABLE_METHODS</span> <span class="o">=</span> <span class="p">{</span><span class="n">METHOD_RETWORKX</span><span class="p">,</span> <span class="n">METHOD_PYMATCHING</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">css_x_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">css_z_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">circuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span><span class="p">,</span>
+        <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">uniform</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">annotate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a matching decoder.</span>
+
+<span class="sd">        Specialized to (subsystem) CSS codes encoding one logical qubit,</span>
+<span class="sd">        and quantum circuits that prepare and measure in the Z or X basis</span>
+<span class="sd">        and do repeated Pauli measurements.</span>
+
+<span class="sd">        n : block size of quantum code</span>
+<span class="sd">        css_x_gauge_ops : list of supports of X gauge operators</span>
+<span class="sd">        css_x_stabilizer_ops : list of supports of X stabilizers</span>
+<span class="sd">        css_x_boundary : list of qubits along the X-type boundary</span>
+<span class="sd">        css_z_gauge_ops : list of supports of Z gauge operators</span>
+<span class="sd">        css_z_stabilizer_ops : list of supports of Z stabilizers</span>
+<span class="sd">        css_x_boundary : list of qubits along the Z-type boundary</span>
+<span class="sd">        circuit : entire quantum circuit to build the decoding graph</span>
+<span class="sd">        model : noise for operations in the circuit</span>
+<span class="sd">        basis : initializaton and measurement basis (&quot;x&quot; or &quot;z&quot;)</span>
+<span class="sd">        round_schedule : gauge measurements in each block</span>
+<span class="sd">        blocks : number of measurement blocks</span>
+<span class="sd">        method : matching implementation</span>
+<span class="sd">        uniform : use same edge weight everywhere?</span>
+<span class="sd">        annotate : for rustworkx method, compute self.matcher.annotated_graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span> <span class="o">=</span> <span class="n">css_x_gauge_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span> <span class="o">=</span> <span class="n">css_x_stabilizer_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span> <span class="o">=</span> <span class="n">css_x_boundary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span> <span class="o">=</span> <span class="n">css_z_gauge_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span> <span class="o">=</span> <span class="n">css_z_stabilizer_ops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span> <span class="o">=</span> <span class="n">css_z_boundary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span> <span class="o">=</span> <span class="n">blocks</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;expected positive integer for blocks&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span> <span class="o">=</span> <span class="n">round_schedule</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">set</span><span class="p">(</span><span class="s2">&quot;xyz&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;expected round schedule of &#39;x&#39;, &#39;y&#39;, &#39;z&#39; chars&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="n">basis</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;expected basis to be &#39;x&#39; or &#39;z&#39;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span> <span class="o">=</span> <span class="n">uniform</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">AVAILABLE_METHODS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;fmethod </span><span class="si">{method}</span><span class="s2"> is not supported.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">METHOD_PYMATCHING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span> <span class="o">=</span> <span class="n">PyMatchingMatcher</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span> <span class="o">=</span> <span class="n">RustworkxMatcher</span><span class="p">(</span><span class="n">annotate</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_gauge_products</span> <span class="o">=</span> <span class="n">temp_gauge_products</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_gauge_products</span> <span class="o">=</span> <span class="n">temp_gauge_products</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">decoding_graph</span><span class="p">:</span>
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idxmap</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_layers</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layer_types</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_graph</span><span class="p">(</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">round_schedule</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dg</span> <span class="o">=</span> <span class="n">CSSDecodingGraph</span><span class="p">(</span>
+                <span class="n">css_x_gauge_ops</span><span class="p">,</span>
+                <span class="n">css_x_stabilizer_ops</span><span class="p">,</span>
+                <span class="n">css_x_boundary</span><span class="p">,</span>
+                <span class="n">css_z_gauge_ops</span><span class="p">,</span>
+                <span class="n">css_z_stabilizer_ops</span><span class="p">,</span>
+                <span class="n">css_z_boundary</span><span class="p">,</span>
+                <span class="n">blocks</span><span class="p">,</span>
+                <span class="n">round_schedule</span><span class="p">,</span>
+                <span class="n">basis</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idxmap</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">node_layers</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layer_types</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">dg</span><span class="o">.</span><span class="n">idxmap</span><span class="p">,</span> <span class="n">dg</span><span class="o">.</span><span class="n">node_layers</span><span class="p">,</span> <span class="n">dg</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">dg</span><span class="o">.</span><span class="n">layer_types</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;layer_types = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_types</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ridxmap</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">idxmap</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_operations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_weight_polynomials</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">:</span>
+            <span class="n">fe</span> <span class="o">=</span> <span class="n">FaultEnumerator</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;propagator&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enumerate_events</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x_gauge_products</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">z_gauge_products</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layer_types</span><span class="p">,</span>
+                <span class="n">fe</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;event_map = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weight_polynomials</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_weight_polynomials</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_map</span>
+            <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;symbols = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;edge_weight_polynomials = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weight_polynomials</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_revise_decoding_graph</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idxmap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_weight_polynomials</span>
+            <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_process_graph</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">:</span> <span class="n">DecodingGraph</span><span class="p">,</span> <span class="n">blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">DecodingGraph</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process a decoding graph to add required attributes.&quot;&quot;&quot;</span>
+
+        <span class="c1"># symmetrize hook errors</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()):</span>
+            <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n0</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">is_boundary</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">is_boundary</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">new_source</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                    <span class="n">new_source</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span>
+                    <span class="n">nn0</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">new_source</span><span class="p">)</span>
+                    <span class="n">new_target</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                    <span class="n">new_target</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">time</span>
+                    <span class="n">nn1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">nn0</span><span class="p">,</span> <span class="n">nn1</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+        <span class="n">edges_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()):</span>
+            <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n0</span><span class="p">]</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n1</span><span class="p">]</span>
+
+            <span class="c1"># add the required attributes</span>
+            <span class="c1"># highlighted&#39;, &#39;measurement_error&#39;,&#39;qubit_id&#39; and &#39;error_probability&#39;</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;highlighted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;measurement_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+            <span class="c1"># make it so times of boundary/boundary nodes agree</span>
+            <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">is_boundary</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">target</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+                    <span class="n">new_source</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                    <span class="n">new_source</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span>
+                    <span class="n">n</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">new_source</span><span class="p">)</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;measurement_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">edges_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">))</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+        <span class="c1"># remove old boundary/boundary nodes</span>
+        <span class="k">for</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">edges_to_remove</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">n0</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+                <span class="c1"># add weightless nodes connecting different boundaries</span>
+                <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">is_boundary</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">qubits</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">qubits</span><span class="p">:</span>
+                            <span class="n">edge</span> <span class="o">=</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span>
+                                <span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                <span class="n">qubits</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">((</span><span class="nb">set</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">qubits</span><span class="p">)))),</span>
+                            <span class="p">)</span>
+                            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;highlighted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;measurement_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+                                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+                <span class="c1"># connect one of the boundaries at different times</span>
+                <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">qubits</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">qubits</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">edge</span> <span class="o">=</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="p">[])</span>
+                        <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;highlighted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;measurement_error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+                            <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+        <span class="c1"># symmetrize edges</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()):</span>
+            <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">j</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+
+        <span class="n">idxmap</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="n">idxmap</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)]</span> <span class="o">=</span> <span class="n">n</span>
+
+        <span class="n">node_layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">time</span> <span class="ow">or</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_layers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">node_layers</span> <span class="o">+=</span> <span class="p">[[]]</span> <span class="o">*</span> <span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_layers</span><span class="p">))</span>
+            <span class="n">node_layers</span><span class="p">[</span><span class="n">time</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span>
+
+        <span class="c1"># create a list of decoding graph layer types</span>
+        <span class="c1"># the entries are &#39;g&#39; for gauge and &#39;s&#39; for stabilizer</span>
+        <span class="n">layer_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">last_step</span> <span class="o">=</span> <span class="n">basis</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">blocks</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">round_schedule</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span> <span class="ow">and</span> <span class="n">last_step</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span> <span class="ow">and</span> <span class="n">last_step</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+                    <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">and</span> <span class="n">last_step</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+                    <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">and</span> <span class="n">step</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span> <span class="ow">and</span> <span class="n">last_step</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+                <span class="n">last_step</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="k">if</span> <span class="n">last_step</span> <span class="o">==</span> <span class="n">basis</span><span class="p">:</span>
+            <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">layer_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">idxmap</span><span class="p">,</span> <span class="n">node_layers</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">layer_types</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_revise_decoding_graph</span><span class="p">(</span>
+        <span class="n">idxmap</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">graph</span><span class="p">:</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">,</span>
+        <span class="n">edge_weight_polynomials</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Poly</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add edge weight polynomials to the decoding graph g and prune it.</span>
+
+<span class="sd">        Update attribute &quot;weight_poly&quot; on decoding graph edges contained in</span>
+<span class="sd">        edge_weight_polynomials. Remove all other edges from the decoding graph</span>
+<span class="sd">        that have non-zero weight.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">s1</span><span class="p">,</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">edge_weight_polynomials</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">s2</span><span class="p">,</span> <span class="n">wpoly</span> <span class="ow">in</span> <span class="n">sub</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">s1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idxmap</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;vertex </span><span class="si">{</span><span class="n">s1</span><span class="si">}</span><span class="s2"> not in decoding graph&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">s2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">idxmap</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;vertex </span><span class="si">{</span><span class="n">s2</span><span class="si">}</span><span class="s2"> not in decoding graph&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">idxmap</span><span class="p">[</span><span class="n">s1</span><span class="p">],</span> <span class="n">idxmap</span><span class="p">[</span><span class="n">s2</span><span class="p">]):</span>
+                    <span class="c1"># TODO: new edges may be needed for hooks, but raise exception for now</span>
+                    <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;edge </span><span class="si">{s1}</span><span class="s2"> - </span><span class="si">{s2}</span><span class="s2"> not in decoding graph&quot;</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">idxmap</span><span class="p">[</span><span class="n">s1</span><span class="p">],</span> <span class="n">idxmap</span><span class="p">[</span><span class="n">s2</span><span class="p">])</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;weight_poly&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wpoly</span>
+        <span class="n">remove_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+            <span class="n">edge_data</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;weight_poly&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="o">.</span><span class="n">properties</span> <span class="ow">and</span> <span class="n">edge_data</span><span class="o">.</span><span class="n">weight</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Remove the edge</span>
+                <span class="n">remove_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;remove edge (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">remove_edges_from</span><span class="p">(</span><span class="n">remove_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span>
+
+<div class="viewcode-block" id="CircuitModelMatchingDecoder.update_edge_weights">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.update_edge_weights">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_edge_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the numerical edge weights and update graph data.</span>
+
+<span class="sd">        For each edge in the decoding graph that has a &quot;weight_poly&quot;</span>
+<span class="sd">        property, evaluate the polynomial at the given model parameters</span>
+<span class="sd">        and set the corresponding &quot;weight&quot; property. Once this is done,</span>
+<span class="sd">        recompute the shortest paths between pairs of vertices</span>
+<span class="sd">        in the decoding graph.</span>
+
+<span class="sd">        model is a PauliNoiseModel whose error probabilities have been</span>
+<span class="sd">        previously assigned. The probabilities are then assigned to</span>
+<span class="sd">        the variables in self.symbols.</span>
+
+<span class="sd">        Updates properties of matcher.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model: moise model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parameter_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">get_error_probability</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parameter_values</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;wrong number of error rate parameters&quot;</span><span class="p">)</span>
+            <span class="n">symbol_list</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">]</span>
+            <span class="n">assignment</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">symbol_list</span><span class="p">,</span> <span class="n">parameter_values</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;update_edge_weights </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">assignment</span><span class="p">))</span>
+            <span class="c1"># P(chain) = \prod_i (1-p_i)^{1-l(i)}*p_i^{l(i)}</span>
+            <span class="c1">#          \propto \prod_i ((1-p_i)/p_i)^{l(i)}</span>
+            <span class="c1"># -log P(chain) \propto \sum_i -log[((1-p_i)/p_i)^{l(i)}]</span>
+            <span class="c1"># p_i is the probability that edge i carries an error</span>
+            <span class="c1"># l(i) is 1 if the link belongs to the chain and 0 otherwise</span>
+            <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+                <span class="n">edge_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">properties</span>
+                <span class="k">if</span> <span class="s2">&quot;weight_poly&quot;</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;update_edge_weights (</span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">) </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">source</span><span class="p">,</span>
+                        <span class="n">target</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;weight_poly&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                    <span class="n">restriction</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">assignment</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;weight_poly&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">gens</span><span class="p">}</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;weight_poly&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">restriction</span><span class="p">)</span><span class="o">.</span><span class="n">evalf</span><span class="p">()</span>
+                    <span class="c1"># if approximate edge flip probability is large, saturate at 1/2</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+                    <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">log</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_enumerate_events</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">css_x_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">x_gauge_products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">css_z_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">z_gauge_products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">layer_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">fault_enumerator</span><span class="p">:</span> <span class="n">FaultEnumerator</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enumerate fault events in the input circuit.</span>
+
+<span class="sd">        Use the code definition to identify highlighted edges</span>
+<span class="sd">        in a decoding graph and return a dict containing the events</span>
+<span class="sd">        that highlight each edge.</span>
+
+<span class="sd">        The basis input value &#39;x&#39; or &#39;z&#39; informs whether to</span>
+<span class="sd">        look at the Z error or X error syndrome, respectively.</span>
+
+<span class="sd">        fault_enumerator is a FaultEnumerator object.</span>
+
+<span class="sd">        Return a dict containing the total number of events of each</span>
+<span class="sd">        type: event_map[v0][v1][name][pauli] contains the number of</span>
+<span class="sd">        events where a gate &quot;name&quot; fails with error &quot;pauli&quot; and</span>
+<span class="sd">        the edge between v0 and v1 is highlighted.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            css_x_gauge_ops: x gauge ops</span>
+<span class="sd">            css_x_stabilizer_ops: x stabilizer ops</span>
+<span class="sd">            css_x_boundary: x boundary</span>
+<span class="sd">            x_gauge_products: x gauge products</span>
+<span class="sd">            css_z_gauge_ops: z gauge ops</span>
+<span class="sd">            css_z_stabilizer_ops: z stabilizer ops</span>
+<span class="sd">            css_z_boundary: z boundary</span>
+<span class="sd">            z_gauge_products: z gauge products</span>
+<span class="sd">            blocks: blocks</span>
+<span class="sd">            round_schedule:</span>
+<span class="sd">            basis: basis</span>
+<span class="sd">            layer_types: layer types</span>
+<span class="sd">            fault_enumerator: fault enumerator</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Events map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">fault_enumerator</span><span class="o">.</span><span class="n">generate</span><span class="p">():</span>
+            <span class="c1"># Unpack the event data</span>
+            <span class="c1"># Select the first element since order = 1</span>
+            <span class="n">ctr</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># event counter</span>
+            <span class="n">comb</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># combination of faulty operations</span>
+            <span class="n">pauli</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Pauli error string</span>
+            <span class="n">outcome</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># result of simulation</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;event </span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ctr</span><span class="p">,</span> <span class="n">comb</span><span class="p">,</span> <span class="n">pauli</span><span class="p">,</span> <span class="n">outcome</span><span class="p">)</span>
+
+            <span class="p">(</span>
+                <span class="n">x_gauge_outcomes</span><span class="p">,</span>
+                <span class="n">z_gauge_outcomes</span><span class="p">,</span>
+                <span class="n">final_outcomes</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition_outcomes</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="n">round_schedule</span><span class="p">,</span> <span class="n">outcome</span><span class="p">)</span>
+
+            <span class="c1"># Compute the highlighted vertices</span>
+            <span class="c1"># Note that this only depends on the stabilizers at each</span>
+            <span class="c1"># time and does not require an explicit decoding graph</span>
+            <span class="n">gauge_outcomes</span><span class="p">,</span> <span class="n">highlighted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_highlighted_vertices</span><span class="p">(</span>
+                <span class="n">css_x_gauge_ops</span><span class="p">,</span>
+                <span class="n">css_x_stabilizer_ops</span><span class="p">,</span>
+                <span class="n">css_x_boundary</span><span class="p">,</span>
+                <span class="n">x_gauge_products</span><span class="p">,</span>
+                <span class="n">css_z_gauge_ops</span><span class="p">,</span>
+                <span class="n">css_z_stabilizer_ops</span><span class="p">,</span>
+                <span class="n">css_z_boundary</span><span class="p">,</span>
+                <span class="n">z_gauge_products</span><span class="p">,</span>
+                <span class="n">basis</span><span class="p">,</span>
+                <span class="n">layer_types</span><span class="p">,</span>
+                <span class="n">x_gauge_outcomes</span><span class="p">,</span>
+                <span class="n">z_gauge_outcomes</span><span class="p">,</span>
+                <span class="n">final_outcomes</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;gauge_outcomes </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">gauge_outcomes</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;highlighted </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">highlighted</span><span class="p">)</span>
+            <span class="c1"># Examine the highlighted vertices to find the edge of the</span>
+            <span class="c1"># decoding graph that corresponds with this fault event</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlighted</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;too many highlighted vertices for a &quot;</span> <span class="o">+</span> <span class="s2">&quot;single fault event&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlighted</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># _highlighted_vertices highlights the boundary</span>
+                <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;only one highlighted vertex for a &quot;</span> <span class="o">+</span> <span class="s2">&quot;single fault event&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlighted</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">v0</span> <span class="o">=</span> <span class="n">highlighted</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="n">highlighted</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+                    <span class="n">boundary</span> <span class="o">=</span> <span class="n">css_z_boundary</span>
+                <span class="k">elif</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+                    <span class="n">boundary</span> <span class="o">=</span> <span class="n">css_x_boundary</span>
+                <span class="c1"># Is the special boundary vertex highlighted?</span>
+                <span class="k">if</span> <span class="n">v1</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">boundary</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                    <span class="c1"># Replace it with an adjacent vertex</span>
+                    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">boundary</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># Assume each b has one element</span>
+                        <span class="n">isect</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">v0</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">isect</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">v0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+                            <span class="k">break</span>
+                <span class="n">submap1</span> <span class="o">=</span> <span class="n">event_map</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">submap2</span> <span class="o">=</span> <span class="n">submap1</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">submap3</span> <span class="o">=</span> <span class="n">submap2</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">comb</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">eventcount</span> <span class="o">=</span> <span class="n">submap3</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">pauli</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">submap3</span><span class="p">[</span><span class="n">pauli</span><span class="p">]</span> <span class="o">=</span> <span class="n">eventcount</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">event_map</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_partition_outcomes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">outcome</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the raw outcome and return results.</span>
+
+<span class="sd">        blocks = number of repetition of round_schedule</span>
+<span class="sd">        round_schedule = string of z and x characters</span>
+<span class="sd">        outcome = list of 0, 1 outcomes</span>
+
+<span class="sd">        Return lists x_gauge_outcomes, z_gauge_outcomes, final_outcomes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_edge_weight_polynomials</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span><span class="p">,</span>
+        <span class="n">event_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">]]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
+        <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Symbol</span><span class="p">],</span>
+        <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Poly</span><span class="p">]],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute edge weight polynomials given the error events.</span>
+
+<span class="sd">        event_map is the output of _enumerate_events</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">symbs</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">symbols</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_operations</span><span class="p">()}</span>
+        <span class="n">edge_weight_expressions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">submap1</span> <span class="ow">in</span> <span class="n">event_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">submap1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># check the names in the event map and warn if symbs</span>
+                <span class="c1"># does not contain one of the names</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">event_map</span><span class="p">[</span><span class="n">n1</span><span class="p">][</span><span class="n">n2</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">symbs</span><span class="p">:</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> in event_map but not in model&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="c1"># construct a linear approximation to the edge probability</span>
+                <span class="c1"># using the weights from the noise model</span>
+                <span class="n">expr</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_operations</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">event_map</span><span class="p">[</span><span class="n">n1</span><span class="p">][</span><span class="n">n2</span><span class="p">]:</span>
+                        <span class="k">for</span> <span class="n">pauli</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">event_map</span><span class="p">[</span><span class="n">n1</span><span class="p">][</span><span class="n">n2</span><span class="p">][</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">expr</span> <span class="o">+=</span> <span class="n">count</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">get_pauli_weight</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pauli</span><span class="p">)</span> <span class="o">*</span> <span class="n">symbs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">map1</span> <span class="o">=</span> <span class="n">edge_weight_expressions</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">map1</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="o">=</span> <span class="n">Poly</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">symbs</span><span class="p">,</span> <span class="n">edge_weight_expressions</span>
+
+<div class="viewcode-block" id="CircuitModelMatchingDecoder.process">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process a set of outcomes and return corrected final outcomes.</span>
+
+<span class="sd">        Be sure to have called update_edge_weights for the</span>
+<span class="sd">        noise parameters.</span>
+
+<span class="sd">        The result is a list of code.n integers that are 0 or 1.</span>
+<span class="sd">        These are the corrected values of the final transversal</span>
+<span class="sd">        measurement in the basis given by self.basis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;process: outcomes = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">)</span>
+
+        <span class="n">x_gauge_outcomes</span><span class="p">,</span> <span class="n">z_gauge_outcomes</span><span class="p">,</span> <span class="n">final_outcomes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partition_outcomes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="p">,</span> <span class="n">outcomes</span>
+        <span class="p">)</span>
+
+        <span class="n">gauge_outcomes</span><span class="p">,</span> <span class="n">highlighted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_highlighted_vertices</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_gauge_products</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_gauge_products</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layer_types</span><span class="p">,</span>
+            <span class="n">x_gauge_outcomes</span><span class="p">,</span>
+            <span class="n">z_gauge_outcomes</span><span class="p">,</span>
+            <span class="n">final_outcomes</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;process: gauge_outcomes = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">gauge_outcomes</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;process: final_outcomes = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">final_outcomes</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;process: highlighted = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">highlighted</span><span class="p">)</span>
+
+        <span class="n">qubit_errors</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">find_errors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idxmap</span><span class="p">,</span> <span class="n">highlighted</span><span class="p">)</span>
+
+        <span class="n">corrected_outcomes</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">final_outcomes</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">qubit_errors</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">corrected_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">corrected_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;process: corrected_outcomes = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">corrected_outcomes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">temp_syndrome</span><span class="p">(</span><span class="n">corrected_outcomes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">temp_syndrome</span><span class="p">(</span><span class="n">corrected_outcomes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;process: test syndrome = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span><span class="s2">&quot;decoder failure: syndrome should be trivial!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">corrected_outcomes</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_highlighted_vertices</span><span class="p">(</span>
+        <span class="n">css_x_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_x_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">x_gauge_products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">css_z_gauge_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_stabilizer_ops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">css_z_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">z_gauge_products</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">layer_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">x_gauge_outcomes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">z_gauge_outcomes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">final_outcomes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Identify highlighted vertices in the decoding graph for an outcome.</span>
+
+<span class="sd">        Gauge operator measurement outcomes are lists of integers 0, 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">gauge_outcomes</span> <span class="o">=</span> <span class="n">z_gauge_outcomes</span>
+            <span class="n">gauges</span> <span class="o">=</span> <span class="n">css_z_gauge_ops</span>
+            <span class="n">stabilizers</span> <span class="o">=</span> <span class="n">css_z_stabilizer_ops</span>
+            <span class="n">boundary</span> <span class="o">=</span> <span class="n">css_z_boundary</span>
+            <span class="n">gauge_products</span> <span class="o">=</span> <span class="n">z_gauge_products</span>
+        <span class="k">elif</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">gauge_outcomes</span> <span class="o">=</span> <span class="n">x_gauge_outcomes</span>
+            <span class="n">gauges</span> <span class="o">=</span> <span class="n">css_x_gauge_ops</span>
+            <span class="n">stabilizers</span> <span class="o">=</span> <span class="n">css_x_stabilizer_ops</span>
+            <span class="n">boundary</span> <span class="o">=</span> <span class="n">css_x_boundary</span>
+            <span class="n">gauge_products</span> <span class="o">=</span> <span class="n">x_gauge_products</span>
+        <span class="n">final_gauges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">supp</span> <span class="ow">in</span> <span class="n">gauges</span><span class="p">:</span>
+            <span class="n">parity</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">supp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># supp can contain -1 if no qubit at that site</span>
+                    <span class="n">parity</span> <span class="o">+=</span> <span class="n">final_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">final_gauges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parity</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">gauge_outcomes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_gauges</span><span class="p">)</span>
+
+        <span class="n">highlighted</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Now iterate over the layers and look at appropriate</span>
+        <span class="c1"># syndrome differences</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ltype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer_types</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ltype</span> <span class="o">==</span> <span class="s2">&quot;g&quot;</span><span class="p">:</span>
+                <span class="c1"># compare current and past gauge measurements</span>
+                <span class="c1"># if a bit differs, the vertex (i, g) is highlighted</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">gauge_op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gauges</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gauge_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">gauge_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">gauge_outcomes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                    <span class="p">):</span>
+                        <span class="n">highlighted</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">gauge_op</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">ltype</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                <span class="c1"># compare current and past stabilizer measurements</span>
+                <span class="c1"># if a bit differs, the vertex (i, s) is highlighted</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">stab_op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stabilizers</span><span class="p">):</span>
+                    <span class="n">outcome</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">prior_outcome</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">gauge_products</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+                        <span class="n">outcome</span> <span class="o">+=</span> <span class="n">gauge_outcomes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">prior_outcome</span> <span class="o">+=</span> <span class="n">gauge_outcomes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                    <span class="n">outcome</span> <span class="o">%=</span> <span class="mi">2</span>
+                    <span class="n">prior_outcome</span> <span class="o">%=</span> <span class="mi">2</span>
+                    <span class="k">if</span> <span class="n">outcome</span> <span class="o">!=</span> <span class="n">prior_outcome</span><span class="p">:</span>
+                        <span class="n">highlighted</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stab_op</span><span class="p">)))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;|highlighted| = </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlighted</span><span class="p">))</span>
+        <span class="c1"># If the total number of highlighted vertices is odd,</span>
+        <span class="c1"># add a single special highlighted vertex at the boundary</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">highlighted</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">highlighted</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">boundary</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;highlighted = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">highlighted</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gauge_outcomes</span><span class="p">,</span> <span class="n">highlighted</span></div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

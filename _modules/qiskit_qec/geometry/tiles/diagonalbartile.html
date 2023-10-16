@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.geometry.tiles.diagonalbartile &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/gallery.css" type="text/css" /><script src="../../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.geometry.tiles.diagonalbartile</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.geometry.tiles.diagonalbartile</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2017, 2022</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+
+<span class="sd">&quot;&quot;&quot;DiagonalBarTile class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">qiskit.exceptions</span> <span class="kn">import</span> <span class="n">QiskitError</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.shell</span> <span class="kn">import</span> <span class="n">Shell</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.tiles.tile</span> <span class="kn">import</span> <span class="n">Tile</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.tiles.tilefactory</span> <span class="kn">import</span> <span class="n">TileFactory</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli_list</span> <span class="kn">import</span> <span class="n">PauliList</span>
+
+
+<span class="c1"># pylint: disable=anomalous-backslash-in-string)</span>
+<div class="viewcode-block" id="DiagonalBarTile">
+<a class="viewcode-back" href="../../../../stubs/qiskit_qec.geometry.DiagonalBarTile.html#qiskit_qec.geometry.DiagonalBarTile">[docs]</a>
+<span class="k">class</span> <span class="nc">DiagonalBarTile</span><span class="p">(</span><span class="n">Tile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Diagonal Bar Tile</span>
+
+<span class="sd">    The diagram is as follows::</span>
+
+<span class="sd">        q0           q1     q1           q2</span>
+<span class="sd">        v0           v0     v0           v1</span>
+<span class="sd">         o- - - - - -o       o- - - - - -o</span>
+<span class="sd">         |\         /|       |           |</span>
+<span class="sd">         |  \     /  |       |           |</span>
+<span class="sd">         | 0 &gt;   &lt; 1 |       |     2     |</span>
+<span class="sd">         |  /     \  |       |           |</span>
+<span class="sd">         |/         \|       |           |</span>
+<span class="sd">         o- - - - - -o       o- - - - - -o</span>
+<span class="sd">        v1           v1     v3           v2</span>
+<span class="sd">        q3           q4     q4           q5</span>
+
+
+<span class="sd">        q3           q4     q4           q5</span>
+<span class="sd">        v0           v1     v0           v0</span>
+<span class="sd">         o- - - - - -o      o- - - - - -o</span>
+<span class="sd">         |           |      |\         /|</span>
+<span class="sd">         |           |      |  \     /  |</span>
+<span class="sd">         |     3     |      | 4 &gt;   &lt; 5 |</span>
+<span class="sd">         |           |      |  /     \  |</span>
+<span class="sd">         |           |      |/         \|</span>
+<span class="sd">         o- - - - - -o      o- - - - - -o</span>
+<span class="sd">        v3           v2    v1           v1</span>
+<span class="sd">        q6           q7    q7           q8</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">wf_operator_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;pXXZZXX&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XX&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XX&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZZZ&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZZZ&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XX&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XX&quot;</span><span class="p">]),</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;pZZXXZZ&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZ&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZ&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XXXX&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;XXXX&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZ&quot;</span><span class="p">]),</span>
+            <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;ZZ&quot;</span><span class="p">]),</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Descriptions of wireframes</span>
+    <span class="c1"># qubit indices for each wireframe</span>
+    <span class="n">wf_q_indices</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]</span>
+
+    <span class="c1"># coordinates for each wireframe vertex in path list form to enable the</span>
+    <span class="c1"># creation of the associate edges</span>
+    <span class="n">wf_coordinates</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="p">]</span>
+
+    <span class="c1"># If the wf&#39;s are closed loops or not</span>
+    <span class="n">wf_loop_indicator</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+
+    <span class="c1"># How wireframes components combine into faces/operators</span>
+    <span class="n">faces_wf_components</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">]]</span>
+
+    <span class="c1"># Face colors (wf&#39;s inherit colors from faces)</span>
+    <span class="n">face_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="s2">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="s2">&quot;tomato&quot;</span><span class="p">,</span> <span class="s2">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="s2">&quot;yellowgreen&quot;</span><span class="p">]</span>
+
+    <span class="n">num_faces</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">num_qubits</span> <span class="o">=</span> <span class="mi">9</span>
+
+    <span class="n">u_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">v_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">origin</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+        <span class="n">qubit_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">qubit_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">operators</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">optype</span><span class="o">=</span><span class="s2">&quot;pXXZZXX&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Shell</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Diagonal Hour Glass Tile</span>
+
+<span class="sd">        The diagram is as follows::</span>
+
+<span class="sd">            q0           q1     q1           q2</span>
+<span class="sd">            v0           v0     v0           v1</span>
+<span class="sd">             o- - - - - -o       o- - - - - -o</span>
+<span class="sd">             |\         /|       |           |</span>
+<span class="sd">             |  \     /  |       |           |</span>
+<span class="sd">             | 0 &gt;   &lt; 1 |       |     2     |</span>
+<span class="sd">             |  /     \  |       |           |</span>
+<span class="sd">             |/         \|       |           |</span>
+<span class="sd">             o- - - - - -o       o- - - - - -o</span>
+<span class="sd">            v1           v1     v3           v2</span>
+<span class="sd">            q3           q4     q4           q5</span>
+
+
+<span class="sd">            q3           q4     q4           q5</span>
+<span class="sd">            v0           v1     v0           v0</span>
+<span class="sd">             o- - - - - -o      o- - - - - -o</span>
+<span class="sd">             |           |      |\         /|</span>
+<span class="sd">             |           |      |  \     /  |</span>
+<span class="sd">             |     3     |      | 4 &gt;   &lt; 5 |</span>
+<span class="sd">             |           |      |  /     \  |</span>
+<span class="sd">             |           |      |/         \|</span>
+<span class="sd">             o- - - - - -o      o- - - - - -o</span>
+<span class="sd">            v3           v2    v1           v1</span>
+<span class="sd">            q6           q7    q7           q8</span>
+
+<span class="sd">        Face colors for faces [0,1,2,3,4,5] are [&quot;yellowgreen&quot;, &quot;yellowgreen&quot;,</span>
+<span class="sd">        &quot;tomato&quot;, &quot;tomato&quot;, &quot;yellowgreen&quot;,&quot;yellowgreen&quot;]</span>
+
+<span class="sd">        Preformatted operators are stored in DiagonalHourGlassTile.op_dict. Keys for op_dict are of the</span>
+<span class="sd">        form [p|c]PPPP... where p = pattern and c = copy and P is a Pauli opertor X, Z, Y.::</span>
+
+<span class="sd">            &quot;pXXZZXX&quot; -&gt; #0 face is Pauli(&#39;XX&#39;) operator,</span>
+<span class="sd">                         #1 face is Pauli(&#39;XX&#39;) operator,</span>
+<span class="sd">                         #3 face is Pauli(&#39;ZZZZ&#39;) operator etc.</span>
+
+<span class="sd">        Available precomputed operator layouts are::</span>
+
+<span class="sd">            &quot;pXXZZXX&quot;, &quot;pZZXXZZ&quot;</span>
+
+<span class="sd">        The operator variable may be used to define the operators specifically. The operator must be</span>
+<span class="sd">        a list of PauliList objects where each PauliList describes the opertors to be built for the</span>
+<span class="sd">        faces as indexed above 0,1,2,3, ... If the PauliList contains k Paulis then k operators will</span>
+<span class="sd">        be created for the given face.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin (np.array): Coordinates of origin of tile (shell)</span>
+<span class="sd">            qubit_count: Qubit counter. Defaults to None.</span>
+<span class="sd">            qubit_data: Qubit data. Defaults to None.</span>
+<span class="sd">            operators: Operators for tile faces. Defaults to None.</span>
+<span class="sd">            optype (optional): Which of the listed opertor mapppings to used. Defaults to &quot;pXXZZXX&quot;.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: Unsupported operator type</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Shell: Returns a Diagonal Hour Glass tile (shell) with provided origin</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">operators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">operators</span> <span class="o">=</span> <span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">wf_operator_dict</span><span class="p">[</span><span class="n">optype</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">key_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported operator type: </span><span class="si">{</span><span class="n">optype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">key_error</span>
+
+        <span class="k">return</span> <span class="n">TileFactory</span><span class="p">(</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span>
+            <span class="n">wf_coordinates</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">wf_coordinates</span><span class="p">,</span>
+            <span class="n">wf_q_indices</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">wf_q_indices</span><span class="p">,</span>
+            <span class="n">wf_loop_indicator</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">wf_loop_indicator</span><span class="p">,</span>
+            <span class="n">faces_wf_components</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">faces_wf_components</span><span class="p">,</span>
+            <span class="n">num_qubits</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">,</span>
+            <span class="n">face_colors</span><span class="o">=</span><span class="n">DiagonalBarTile</span><span class="o">.</span><span class="n">face_colors</span><span class="p">,</span>
+            <span class="n">qubit_count</span><span class="o">=</span><span class="n">qubit_count</span><span class="p">,</span>
+            <span class="n">qubit_data</span><span class="o">=</span><span class="n">qubit_data</span><span class="p">,</span>
+            <span class="n">operators</span><span class="o">=</span><span class="n">operators</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

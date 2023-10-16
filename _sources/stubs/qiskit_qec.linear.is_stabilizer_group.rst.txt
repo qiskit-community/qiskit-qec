@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.is\_stabilizer\_group
+========================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: is_stabilizer_group

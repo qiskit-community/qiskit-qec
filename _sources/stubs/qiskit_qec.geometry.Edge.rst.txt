@@ -1,0 +1,22 @@
+﻿Edge
+====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Edge
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Edge.add_parent
+   .. automethod:: Edge.create_id
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id

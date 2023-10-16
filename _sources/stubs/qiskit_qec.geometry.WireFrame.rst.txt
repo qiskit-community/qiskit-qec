@@ -1,0 +1,22 @@
+﻿WireFrame
+=========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: WireFrame
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: WireFrame.add_parent
+   .. automethod:: WireFrame.create_id
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id

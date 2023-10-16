@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Using the Union Find decoder in qiskit_qec &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="index.html">QEC Tutorials</a> &gt;</li>
+        
+      <li>Using the Union Find decoder in qiskit_qec</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="Using-the-Union-Find-decoder-in-qiskit_qec">
+<h1>Using the Union Find decoder in qiskit_qec<a class="headerlink" href="#Using-the-Union-Find-decoder-in-qiskit_qec" title="Link to this heading">¶</a></h1>
+<p>This notebook will walk you through the process of creating a code, inserting errors and running the union find decoder on it using the qiskit_qec framework.</p>
+<p>The union find decoder was first proposed by Nicolas Delfosse and Naomi H. Nickerson in 2020 in <em>Almost linear time decoding algorithm for topological codes</em>. The core idea of the algorithm is to take a syndrome and “convert” it to an erasure. This erasure can be efficiently decoded by an erasure decoder (e.g. peeling decoder in <span class="math notranslate nohighlight">\(O(N)\)</span> time).</p>
+<p>It works by growing clusters which are started around non-typical vertices in the syndrome graph by one half-edge per step in every direction. When two clusters meet, they merge and are considered one cluster. A cluster grows when it is <strong>odd</strong>, meaning that it contains an odd number atypical nodes.</p>
+<p>The set of edges that is fully grown (meaning grown twice in an unweighted implementation) at the point where there are no more odd clusters, is considered to be the erasure and passed on to the erasure decoder.</p>
+<p>First we need to import all the relevant stuff:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">qiskit_qec.analysis.faultenumerator</span> <span class="kn">import</span> <span class="n">FaultEnumerator</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders</span> <span class="kn">import</span> <span class="n">UnionFindDecoder</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.circuits</span> <span class="kn">import</span> <span class="n">SurfaceCodeCircuit</span><span class="p">,</span> <span class="n">RepetitionCodeCircuit</span><span class="p">,</span> <span class="n">ArcCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.noise.paulinoisemodel</span> <span class="kn">import</span> <span class="n">PauliNoiseModel</span>
+</pre></div>
+</div>
+</div>
+<p>Now we create a code:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">code</span> <span class="o">=</span> <span class="n">RepetitionCodeCircuit</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we define a decoder that runs on our code. This may take a while, as the the decoding graph is quite expensive to compute.</p>
+<p>Note that we pass in the logical value our circuit is encoding, as the node generation for a given measurement outcome uses this to generate the last round of syndromes. In a real application this logical would be computed as the majority outcome.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">decoder</span> <span class="o">=</span> <span class="n">UnionFindDecoder</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">logical</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Next we are going to define our noise model. This describes what the probabilities for different errors are after different operations. It will be used in the next step to generate the errors.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">=</span> <span class="mf">0.05</span>
+
+<span class="n">noise_model</span> <span class="o">=</span> <span class="n">PauliNoiseModel</span><span class="p">()</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">add_operation</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;ix&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;xi&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;xx&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">add_operation</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">add_operation</span><span class="p">(</span><span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">add_operation</span><span class="p">(</span><span class="s2">&quot;measure&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">add_operation</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">set_error_probability</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">set_error_probability</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">set_error_probability</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">set_error_probability</span><span class="p">(</span><span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">noise_model</span><span class="o">.</span><span class="n">set_error_probability</span><span class="p">(</span><span class="s2">&quot;measure&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now we will use a very handy class: FaultEnumerator.</p>
+<p>This class is responsible of adding single error events to our circuit, which our decoder will try to find and correct for.</p>
+<p>We pass in the circuit in our code encoding a logical <span class="math notranslate nohighlight">\(0\)</span>, as this what we prepared our decoder for and the noise model we prepared earlier.</p>
+<p>When using the fault enumerator class, we normally use it in a circumstance, where we want to iterate over all possible single error events, but in this demonstration we only want one, so we are going to pick a random entry.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fault_enumerator</span> <span class="o">=</span> <span class="n">FaultEnumerator</span><span class="p">(</span><span class="n">circ</span><span class="o">=</span><span class="n">code</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">],</span> <span class="n">model</span><span class="o">=</span><span class="n">noise_model</span><span class="p">)</span>
+
+<span class="n">index</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">outcome</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">fault_enumerator</span><span class="o">.</span><span class="n">generate</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<p>We can now pass this outcome (which includes the syndrome measurement rounds) to our decoder for decoding, after converting it to a string:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">outcome</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">outcome</span><span class="p">])</span>
+
+<span class="n">corrected_outcome</span> <span class="o">=</span> <span class="n">decoder</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">outcome</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We get a list of integers describing the final state of our code qubits. We can now check what our logical outcome is, which is computed by looking at the parity of the logical qubits in the code.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">logical_outcome</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">corrected_outcome</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">css_z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">%</span> <span class="mi">2</span>
+
+<span class="k">assert</span> <span class="n">logical_outcome</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final outcome: &quot;</span><span class="p">,</span> <span class="n">logical_outcome</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="../how_tos/index.html" class="btn btn-neutral float-right" title="Qiskit QEC How-to guides" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="QEC_Framework_IEEE_2022.html" class="btn btn-neutral" title="Qiskit QEC Software Framework" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">Using the Union Find decoder in qiskit_qec</a></li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

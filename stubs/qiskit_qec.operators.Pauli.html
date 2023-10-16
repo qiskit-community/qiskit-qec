@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Pauli &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/operators.html">Operators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.operators</span></code>)</a> &gt;</li>
+        
+      <li>Pauli</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="pauli">
+<h1>Pauli<a class="headerlink" href="#pauli" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Pauli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.base_pauli.BasePauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePauli</span></code></a></p>
+<p><cite>Pauli</cite> inherits from <cite>BasePauli</cite></p>
+<p>Pauli Init</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>str</em>) – Still in progress</p></li>
+<li><p><strong>x</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
+<li><p><strong>z</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
+<li><p><strong>phase_exponent</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
+<li><p><strong>stype</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “numpy”.</p></li>
+<li><p><strong>label</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
+<li><p><strong>input_qubit_order</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “right-to-left”.</p></li>
+<li><p><strong>tuple_prder</strong> (<em>optional</em>) – Defaults to ‘zx’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – Something went wrong.</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.adjoint">
+<span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.adjoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.adjoint" title="Link to this definition">¶</a></dt>
+<dd><p>Return the adjoint of the Operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.pauli.Pauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pauli</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.all_commutes">
+<span class="sig-name descname"><span class="pre">all_commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.all_commutes" title="Link to this definition">¶</a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.BasePauli"><em>BasePauli</em></a>) – _description_</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.anticommutes">
+<span class="sig-name descname"><span class="pre">anticommutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.anticommutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.anticommutes" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if other Pauli anticommutes with self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – another Pauli operator.</p></li>
+<li><p><strong>qargs</strong> (<em>list</em>) – qubits to apply dot product on (default: None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if Pauli’s anticommute, False if they commute.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.append_paulis">
+<span class="sig-name descname"><span class="pre">append_paulis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paulis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pauli_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.append_paulis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.append_paulis" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Append pauli at the end.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>append_paulis</cite> is deprecated and will be removed no earlier than          3 months after the release date. Use <cite>Pauli.expand</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paulis</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – the to-be-inserted or appended pauli</p></li>
+<li><p><strong>pauli_labels</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – the to-be-inserted or appended pauli label</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.commutes">
+<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.commutes" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if the Pauli commutes with other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a><em> or </em><a class="reference internal" href="qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList" title="qiskit_qec.operators.PauliList"><em>PauliList</em></a>) – another Pauli operator.</p></li>
+<li><p><strong>qargs</strong> (<em>list</em>) – qubits to apply dot product on (default: None).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if Pauli’s commute, False if they anti-commute.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.compose">
+<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.compose" title="Link to this definition">¶</a></dt>
+<dd><p>Return the operator composition with another Pauli.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – a Pauli object.</p></li>
+<li><p><strong>qargs</strong> (<em>list</em><em> or </em><em>None</em>) – Optional, qubits to apply dot product
+on (default: None).</p></li>
+<li><p><strong>front</strong> (<em>bool</em>) – If True compose using right operator multiplication,
+instead of left multiplication [default: False].</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True update in-place (default: False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The composed Pauli.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if other cannot be converted to an operator, or has
+    incompatible dimensions for specified subsystems.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Composition (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>) by default is defined as <cite>left</cite> matrix multiplication for
+matrix operators, while <a class="reference internal" href="#qiskit_qec.operators.Pauli.dot" title="qiskit_qec.operators.Pauli.dot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dot()</span></code></a> is defined as <cite>right</cite> matrix
+multiplication. That is that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">&amp;</span> <span class="pre">B</span> <span class="pre">==</span> <span class="pre">A.compose(B)</span></code> is equivalent to
+<code class="docutils literal notranslate"><span class="pre">B.dot(A)</span></code> when <code class="docutils literal notranslate"><span class="pre">A</span></code> and <code class="docutils literal notranslate"><span class="pre">B</span></code> are of the same type.</p>
+<p>Setting the <code class="docutils literal notranslate"><span class="pre">front=True</span></code> kwarg changes this to <cite>right</cite> matrix
+multiplication and is equivalent to the <a class="reference internal" href="#qiskit_qec.operators.Pauli.dot" title="qiskit_qec.operators.Pauli.dot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dot()</span></code></a> method
+<code class="docutils literal notranslate"><span class="pre">A.dot(B)</span> <span class="pre">==</span> <span class="pre">A.compose(B,</span> <span class="pre">front=True)</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.conjugate">
+<span class="sig-name descname"><span class="pre">conjugate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.conjugate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.conjugate" title="Link to this definition">¶</a></dt>
+<dd><p>Return the conjugate of each Pauli in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inplace</strong> (<em>boolean</em>) – If True will modify inplace. Default: False,</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a new {cls} which has phases conjugates (if replace=False) or will change
+the phase of the clasing instance if replace=True</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>{cls}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Make a deep copy of current operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.base_pauli.BasePauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePauli</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Return a Pauli with qubits deleted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubits</strong> (<em>int</em><em> or </em><em>list</em>) – qubits to delete from Pauli.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the resulting Pauli with the specified qubits removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if ind is out of bounds for the array size or
+    number of qubits.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.delete_qubits">
+<span class="sig-name descname"><span class="pre">delete_qubits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.delete_qubits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.delete_qubits" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Delete pauli at the indices.</p>
+<p>This function is deprecated. Equivalent functionality can be obtained
+using the <a class="reference internal" href="#qiskit_qec.operators.Pauli.delete" title="qiskit_qec.operators.Pauli.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code></a> method.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>append_paulis</cite> is deprecated and will be removed no earlier than          3 months after the release date. For equivalent functionality          use <cite>Pauli.delete</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>indices</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – the indices of to-be-deleted paulis</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.dot">
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.dot" title="Link to this definition">¶</a></dt>
+<dd><p>Return the right multiplied operator self * other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – an operator object.</p></li>
+<li><p><strong>qargs</strong> (<em>list</em><em> or </em><em>None</em>) – Optional, qubits to apply dot product
+on (default: None).</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – If True update in-place (default: False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The operator self * other.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.equiv">
+<span class="sig-name descname"><span class="pre">equiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.equiv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.equiv" title="Link to this definition">¶</a></dt>
+<dd><p>Return True if Pauli’s are equivalent up to group phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – an operator object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Pauli’s are equivalent up to group phase.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.evolve" title="Link to this definition">¶</a></dt>
+<dd><p>Heisenberg picture evolution of a Pauli by a Clifford.</p>
+<p>This returns the Pauli <span class="math notranslate nohighlight">\(P^\prime = C^\dagger.P.C\)</span>.</p>
+<p>By choosing the parameter frame=’s’, this function returns the Schrödinger evolution of the Pauli
+<span class="math notranslate nohighlight">\(P^\prime = C.P.C^\dagger\)</span>. This option yields a faster calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a><em> or </em><em>Clifford</em><em> or </em><em>QuantumCircuit</em>) – The Clifford operator to evolve by.</p></li>
+<li><p><strong>qargs</strong> (<em>list</em>) – a list of qubits to apply the Clifford to.</p></li>
+<li><p><strong>frame</strong> (<em>string</em>) – ‘h’ for Heisenberg or ‘s’ for Schrödinger framework.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the Pauli <span class="math notranslate nohighlight">\(C^\dagger.P.C\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if the Clifford number of qubits and qargs don’t match.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.expand">
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.expand" title="Link to this definition">¶</a></dt>
+<dd><p>Return the reverse-order tensor product with another Pauli.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – a Pauli object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the tensor product <span class="math notranslate nohighlight">\(b \otimes a\)</span>, where <span class="math notranslate nohighlight">\(a\)</span></dt><dd><p>is the current Pauli, and <span class="math notranslate nohighlight">\(b\)</span> is the other Pauli.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.from_label">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.from_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.from_label" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Construct a Pauli from a string label.</p>
+<p>This function is deprecated use <code class="docutils literal notranslate"><span class="pre">Pauli(label)</span></code> instead.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>from_label</cite> is deprecated and will be removed no earlier than          3 months after the release date. Use Pauli(label) instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – Pauli string label.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the constructed Pauli.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>QiskitError</strong> – If the input list is empty or contains invalid</p></li>
+<li><p><strong>Pauli strings.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.input_dims">
+<span class="sig-name descname"><span class="pre">input_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.input_dims" title="Link to this definition">¶</a></dt>
+<dd><p>Return tuple of input dimension for specified subsystems.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a Pauli at specific qubit value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>qubits</strong> (<em>int</em><em> or </em><em>list</em>) – qubits index to insert at.</p></li>
+<li><p><strong>value</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – value to insert.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the resulting Pauli with the entries inserted.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if the insertion qubits are invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.insert_paulis">
+<span class="sig-name descname"><span class="pre">insert_paulis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paulis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pauli_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.insert_paulis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.insert_paulis" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Insert or append pauli to the targeted indices.</p>
+<p>This function is deprecated. Similar functionality can be obtained
+using the <a class="reference internal" href="#qiskit_qec.operators.Pauli.insert" title="qiskit_qec.operators.Pauli.insert"><code class="xref py py-meth docutils literal notranslate"><span class="pre">insert()</span></code></a> method.</p>
+<p>If indices is None, it means append at the end.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>insert_paulis</cite> is deprecated and will be removed no earlier than          3 months after the release date. For similar functionality use          <cite>Pauli.insert</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – the qubit indices to be inserted</p></li>
+<li><p><strong>paulis</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – the to-be-inserted or appended pauli</p></li>
+<li><p><strong>pauli_labels</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – the to-be-inserted or appended pauli label</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>the indices refers to the location of original paulis,
+e.g. if indices = [0, 2], pauli_labels = [‘Z’, ‘I’] and original pauli = ‘ZYXI’
+the pauli will be updated to ZY’I’XI’Z’
+‘Z’ and ‘I’ are inserted before the qubit at 0 and 2.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>QiskitError</strong> – provide both <cite>paulis</cite> and <cite>pauli_labels</cite> at the same time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.instrs2symplectic">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instrs2symplectic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.instrs2symplectic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.instrs2symplectic" title="Link to this definition">¶</a></dt>
+<dd><p>Convert a Pauli circuit to BasePauli data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.inverse">
+<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.inverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.inverse" title="Link to this definition">¶</a></dt>
+<dd><p>Return the inverse of the Pauli.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.pauli.Pauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pauli</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.kron">
+<span class="sig-name descname"><span class="pre">kron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.kron"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.kron" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Kronecker product of two paulis.</p>
+<p>This function is deprecated. Use <a class="reference internal" href="#qiskit_qec.operators.Pauli.expand" title="qiskit_qec.operators.Pauli.expand"><code class="xref py py-meth docutils literal notranslate"><span class="pre">expand()</span></code></a> instead.</p>
+<p>Order is $P_2 (other) otimes P_1 (self)$</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>kron</cite> is deprecated and will be removed no earlier than         3 months after the release date of Qiskit Terra 0.17.0.         Use <cite>expand</cite> instead, but note this does not change         the operator in-place.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – P2</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.output_dims">
+<span class="sig-name descname"><span class="pre">output_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.output_dims" title="Link to this definition">¶</a></dt>
+<dd><p>Return tuple of output dimension for specified subsystems.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.pauli_single">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pauli_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pauli_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.pauli_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.pauli_single" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Generate single qubit pauli at index with pauli_label with length num_qubits.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>pauli_single</cite> is deprecated and will be removed no earlier than          3 months after the release date.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_qubits</strong> (<em>int</em>) – the length of pauli</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – the qubit index to insert the single qubit</p></li>
+<li><p><strong>pauli_label</strong> (<em>str</em>) – pauli</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>single qubit pauli</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.power">
+<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.power" title="Link to this definition">¶</a></dt>
+<dd><p>Return the compose of a operator with itself n times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – the number of times to compose with self (n&gt;0).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the n-times composed operator.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if the input and output dimensions of the operator
+    are not equal, or the power is not a positive integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.random">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.random"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.random" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Return a random Pauli on number of qubits.</p>
+<p>This function is deprecated use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">random_pauli()</span></code> instead.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>random</cite> is deprecated and will be removed no earlier than          3 months after the release date.          Use <cite>qiskit.quantum_info.random_pauli</cite> instead</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_qubits</strong> (<em>int</em>) – the number of qubits</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Optional. To set a random seed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the random pauli</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.reshape">
+<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.reshape" title="Link to this definition">¶</a></dt>
+<dd><p>Return a shallow copy with reshaped input and output subsystem dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dims</strong> (<em>None</em><em> or </em><em>tuple</em>) – new subsystem input dimensions.
+If None the original input dims will be preserved [Default: None].</p></li>
+<li><p><strong>output_dims</strong> (<em>None</em><em> or </em><em>tuple</em>) – new subsystem output dimensions.
+If None the original output dims will be preserved [Default: None].</p></li>
+<li><p><strong>num_qubits</strong> (<em>None</em><em> or </em><em>int</em>) – reshape to an N-qubit operator [Default: None].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>returns self with reshaped input and output dimensions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseOperator</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – if combined size of all subsystem input dimension or
+    subsystem output dimensions is not constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_pauli_encoding">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_pauli_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_pauli_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Set the Pauli encoding</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>optional</em>) – Pauli encoding.</p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.</strong> (<em>Defaults to</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_phase_encoding">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-i'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_phase_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Set the phase encoding</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>optional</em>) – phase encoding.</p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING.</strong> (<em>Defaults to</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_print_phase_encoding">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_print_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_print_phase_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase_encoding</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_qubit_order">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_qubit_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_qubit_order" title="Link to this definition">¶</a></dt>
+<dd><p>Set external qubit order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>qubit_order</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – _description_. Defaults to None.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_syntax">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_syntax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syntax_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Product'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_syntax" title="Link to this definition">¶</a></dt>
+<dd><p>Sets the global input and output format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syntax_code</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – sets the syntax of Pauli tensors. Possible inputs
+are 0 for product syntax, 1 for index syntax and 2
+for latex syntax. Defaults to None.</p></li>
+<li><p><strong>syntax_str</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – sets the syntax of Pauli tensors. Possible inputs are
+Product or Latex, if another input is given
+the syntax is set to Order. Defaults to “Product”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – Unknown syntax: {syntax_code}. See pauli_rep for options.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_tensor_encoding">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_tensor_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_tensor_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Set the external symplectic matrix format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoding</strong> (<em>optional</em>) – Symplectic matrix tensor encoding.</p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING.</strong> (<em>Defaults to</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.set_truncation">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_truncation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.set_truncation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.set_truncation" title="Link to this definition">¶</a></dt>
+<dd><p>Set the max number of Pauli characters to display before truncation/</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>val</strong> (<em>int</em>) – the number of characters.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Truncation will be disabled if the truncation value is set to 0.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.sgn_prod">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sgn_prod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.sgn_prod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.sgn_prod" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Multiply two Paulis and track the phase.</p>
+<p>This function is deprecated. The Pauli class now handles full
+Pauli group multiplication using <a class="reference internal" href="#qiskit_qec.operators.Pauli.compose" title="qiskit_qec.operators.Pauli.compose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compose()</span></code></a> or <a class="reference internal" href="#qiskit_qec.operators.Pauli.dot" title="qiskit_qec.operators.Pauli.dot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dot()</span></code></a>.</p>
+<p>$P_3 = P_1 otimes P_2$: X*Y</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span>sgn_prod is deprecated and will be removed no earlier than          3 months after the release date. Use <cite>dot</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p1</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – pauli 1</p></li>
+<li><p><strong>p2</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – pauli 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the multiplied pauli (without phase)
+complex: the sign of the multiplication, 1, -1, 1j or -1j</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.tensor">
+<span class="sig-name descname"><span class="pre">tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.tensor" title="Link to this definition">¶</a></dt>
+<dd><p>Return the tensor product with another Pauli.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli"><em>Pauli</em></a>) – a Pauli object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the tensor product <span class="math notranslate nohighlight">\(a \otimes b\)</span>, where <span class="math notranslate nohighlight">\(a\)</span></dt><dd><p>is the current Pauli, and <span class="math notranslate nohighlight">\(b\)</span> is the other Pauli.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The tensor product can be obtained using the <code class="docutils literal notranslate"><span class="pre">^</span></code> binary operator.
+Hence <code class="docutils literal notranslate"><span class="pre">a.tensor(b)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">^</span> <span class="pre">b</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.to_cpx_matrix">
+<span class="sig-name descname"><span class="pre">to_cpx_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.to_cpx_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.to_cpx_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.to_instruction">
+<span class="sig-name descname"><span class="pre">to_instruction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.to_instruction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.to_instruction" title="Link to this definition">¶</a></dt>
+<dd><p>Convert to Pauli circuit instruction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.to_label">
+<span class="sig-name descname"><span class="pre">to_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squeeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.Pauli.to_label" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the string representatiojn for a Pauli or Paulis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_pauli_encoding</strong> (<em>optional</em>) – Encoding used to represent phases.
+A value of None will result in complex phases notation. Defaults
+to None which will in turn use BasePauli.EXTERNAL_PAULI_ENCODING.</p></li>
+<li><p><strong>no_phase</strong> (<em>optional</em>) – When set to True, no phase will appear no matter
+what encoding is selected. So the symplectic matrix [1, 1] will produce
+the operator Y in ‘XZY’ encoding but also (XZ) in the ‘XZ’ encoding which
+are different operators if phases are considered. Defaults to False.</p></li>
+<li><p><strong>return_phase</strong> (<em>optional</em>) – If True return the adjusted phase for the coefficient
+of the returned Pauli label. This can be used even if
+<code class="docutils literal notranslate"><span class="pre">full_group=False</span></code>.</p></li>
+<li><p><strong>syntax</strong> (<em>optional</em>) – Syntax of pauli tensor. Values are
+PRODUCT_SYNTAX = 0 and INDEX_SYNTAX=1. Defaults to INDEX_SYNTAX.</p></li>
+<li><p><strong>qubit_order</strong> (<em>optional</em>) – Order in which qubits are read. options aree
+“right-to-left” and “left-to-right”. Defaults to “right-to-left”.</p></li>
+<li><p><strong>index_start</strong> (<em>optional</em>) – Lowest value for index in index syntax tensors.
+Defaults to 0</p></li>
+<li><p><strong>squeeze</strong> (<em>optional</em>) – Squeezes the list of reults to a scalar if the number
+of Paulis is one. Defaults to True.</p></li>
+<li><p><strong>index_str</strong> (<em>optional</em>) – String that get inserted between operator and numbers in
+index format. Default is “”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the Pauli label(string) from the full Pauli group (if <code class="docutils literal notranslate"><span class="pre">no_phase=False</span></code>) or</dt><dd><p>from the unsigned Pauli group (if <code class="docutils literal notranslate"><span class="pre">no_phase=True</span></code>).</p>
+</dd>
+<dt>Tuple[str or List[str], Any or List[Any]]: if <code class="docutils literal notranslate"><span class="pre">return_phase=True</span></code> returns a</dt><dd><p>tuple of the Pauli
+label (from either the full or unsigned Pauli group) and
+the phase <code class="docutils literal notranslate"><span class="pre">q</span></code> for the coefficient <span class="math notranslate nohighlight">\((-i)^(q + x.z)\)</span>
+for the label from the full Pauli group.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.to_matrix">
+<span class="sig-name descname"><span class="pre">to_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.to_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.to_spmatrix">
+<span class="sig-name descname"><span class="pre">to_spmatrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.to_spmatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.to_spmatrix" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED Convert Pauli to a sparse matrix representation (CSR format).</p>
+<p>This function is deprecated. Use <a class="reference internal" href="#qiskit_qec.operators.Pauli.to_matrix" title="qiskit_qec.operators.Pauli.to_matrix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_matrix()</span></code></a> with kwarg
+<code class="docutils literal notranslate"><span class="pre">sparse=True</span></code> instead.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>to_spmatrix</cite> is deprecated and will be removed no earlier than          3 months after the release date. Use <cite>to_matrix(sparse=True)</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a sparse matrix with CSR format that
+represents the pauli.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>scipy.sparse.csr_matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.transpose" title="Link to this definition">¶</a></dt>
+<dd><p>Return the transpose of each Pauli in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.pauli.Pauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pauli</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.update_x">
+<span class="sig-name descname"><span class="pre">update_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.update_x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.update_x" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Update partial or entire x.</p>
+<p>This function is deprecated. Use the setter for <a class="reference internal" href="#qiskit_qec.operators.Pauli.x" title="qiskit_qec.operators.Pauli.x"><code class="xref py py-attr docutils literal notranslate"><span class="pre">x</span></code></a> instead.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>update_z</cite> is deprecated and will be removed no earlier than          3 months after the release date. Use <cite>Pauli.x = val</cite> or          <cite>Pauli.x[indices] = val</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em><em> or </em><em>list</em>) – to-be-updated x</p></li>
+<li><p><strong>indices</strong> (<em>numpy.ndarray</em><em> or </em><em>list</em><em> or </em><em>optional</em>) – to-be-updated qubit indices</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – when updating whole x, the number of qubits must be the same.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.update_z">
+<span class="sig-name descname"><span class="pre">update_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli.update_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli.update_z" title="Link to this definition">¶</a></dt>
+<dd><p>DEPRECATED: Update partial or entire z.</p>
+<p>This function is deprecated. Use the setter for <a class="reference internal" href="#qiskit_qec.operators.Pauli.z" title="qiskit_qec.operators.Pauli.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a> instead.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version unknown: </span><cite>update_z</cite> is deprecated and will be removed no earlier than         3 months after the release date. Use <cite>Pauli.z = val</cite> or         <cite>Pauli.z[indices] = val</cite> instead.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>numpy.ndarray</em><em> or </em><em>list</em>) – to-be-updated z</p></li>
+<li><p><strong>indices</strong> (<em>numpy.ndarray</em><em> or </em><em>list</em><em> or </em><em>optional</em>) – to-be-updated qubit indices</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qiskit_qec.operators.Pauli" title="qiskit_qec.operators.Pauli">Pauli</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>QiskitError</strong> – when updating whole z, the number of qubits must be the same.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.EXTERNAL_PAULI_ENCODING">
+<span class="sig-name descname"><span class="pre">EXTERNAL_PAULI_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-iYZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.EXTERNAL_PAULI_ENCODING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.EXTERNAL_PHASE_ENCODING">
+<span class="sig-name descname"><span class="pre">EXTERNAL_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-i'</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.EXTERNAL_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.EXTERNAL_QUBIT_ORDER">
+<span class="sig-name descname"><span class="pre">EXTERNAL_QUBIT_ORDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right-to-left'</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.EXTERNAL_QUBIT_ORDER" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.EXTERNAL_SYNTAX">
+<span class="sig-name descname"><span class="pre">EXTERNAL_SYNTAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.EXTERNAL_SYNTAX" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.EXTERNAL_TENSOR_ENCODING">
+<span class="sig-name descname"><span class="pre">EXTERNAL_TENSOR_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.EXTERNAL_TENSOR_ENCODING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.PRINT_PHASE_ENCODING">
+<span class="sig-name descname"><span class="pre">PRINT_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.PRINT_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.dim">
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.dim" title="Link to this definition">¶</a></dt>
+<dd><p>Return tuple (input_shape, output_shape).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.name" title="Link to this definition">¶</a></dt>
+<dd><p>Unique string identifier for operation type.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.num_clbits">
+<span class="sig-name descname"><span class="pre">num_clbits</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.num_clbits" title="Link to this definition">¶</a></dt>
+<dd><p>Number of classical bits.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.num_qubits">
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.num_qubits" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of qubits if a N-qubit operator or None otherwise.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.num_y">
+<span class="sig-name descname"><span class="pre">num_y</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.num_y" title="Link to this definition">¶</a></dt>
+<dd><p>Return the number of Y for each operator</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.pauli_encoding">
+<span class="sig-name descname"><span class="pre">pauli_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.pauli_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Pauli format.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.phase">
+<span class="sig-name descname"><span class="pre">phase</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.phase" title="Link to this definition">¶</a></dt>
+<dd><p>Return the complex phase of the Pauli</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.phase_encoding">
+<span class="sig-name descname"><span class="pre">phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.phase_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Return the phase encoding</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.phase_exp">
+<span class="sig-name descname"><span class="pre">phase_exp</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.phase_exp" title="Link to this definition">¶</a></dt>
+<dd><p>Return the group phase exponent for the Pauli.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.pltb_int">
+<span class="sig-name descname"><span class="pre">pltb_int</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{(0,</span> <span class="pre">0):</span> <span class="pre">0,</span> <span class="pre">(0,</span> <span class="pre">1):</span> <span class="pre">2,</span> <span class="pre">(1,</span> <span class="pre">0):</span> <span class="pre">1,</span> <span class="pre">(1,</span> <span class="pre">1):</span> <span class="pre">3}</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.pltb_int" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.pltb_str">
+<span class="sig-name descname"><span class="pre">pltb_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{(0,</span> <span class="pre">0):</span> <span class="pre">'I',</span> <span class="pre">(0,</span> <span class="pre">1):</span> <span class="pre">'Z',</span> <span class="pre">(1,</span> <span class="pre">0):</span> <span class="pre">'X',</span> <span class="pre">(1,</span> <span class="pre">1):</span> <span class="pre">'Y'}</span></em><a class="headerlink" href="#qiskit_qec.operators.Pauli.pltb_str" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.print_phase_encoding">
+<span class="sig-name descname"><span class="pre">print_phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.print_phase_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Prints how the phase will be displayed in when printing.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.qargs">
+<span class="sig-name descname"><span class="pre">qargs</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.qargs" title="Link to this definition">¶</a></dt>
+<dd><p>Return the qargs for the operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.qubit_order">
+<span class="sig-name descname"><span class="pre">qubit_order</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.qubit_order" title="Link to this definition">¶</a></dt>
+<dd><p>Get external qubit order</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.settings">
+<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.settings" title="Link to this definition">¶</a></dt>
+<dd><p>Return settings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.syntax">
+<span class="sig-name descname"><span class="pre">syntax</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.syntax" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the syntax</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.tensor_encoding">
+<span class="sig-name descname"><span class="pre">tensor_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.tensor_encoding" title="Link to this definition">¶</a></dt>
+<dd><p>Return the external symplectic matrix encoding</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.x" title="Link to this definition">¶</a></dt>
+<dd><p>The x vector for the Pauli.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.z">
+<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#qiskit_qec.operators.Pauli.z" title="Link to this definition">¶</a></dt>
+<dd><p>The z vector for the Pauli.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.operators.BasePauli.html" class="btn btn-neutral float-right" title="BasePauli" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.operators.PauliList.html" class="btn btn-neutral" title="PauliList" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">Pauli</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli"><code class="docutils literal notranslate"><span class="pre">Pauli</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.adjoint"><code class="docutils literal notranslate"><span class="pre">Pauli.adjoint()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.all_commutes"><code class="docutils literal notranslate"><span class="pre">Pauli.all_commutes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.anticommutes"><code class="docutils literal notranslate"><span class="pre">Pauli.anticommutes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.append_paulis"><code class="docutils literal notranslate"><span class="pre">Pauli.append_paulis()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.commutes"><code class="docutils literal notranslate"><span class="pre">Pauli.commutes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.compose"><code class="docutils literal notranslate"><span class="pre">Pauli.compose()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.conjugate"><code class="docutils literal notranslate"><span class="pre">Pauli.conjugate()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.copy"><code class="docutils literal notranslate"><span class="pre">Pauli.copy()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.delete"><code class="docutils literal notranslate"><span class="pre">Pauli.delete()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.delete_qubits"><code class="docutils literal notranslate"><span class="pre">Pauli.delete_qubits()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.dot"><code class="docutils literal notranslate"><span class="pre">Pauli.dot()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.equiv"><code class="docutils literal notranslate"><span class="pre">Pauli.equiv()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.evolve"><code class="docutils literal notranslate"><span class="pre">Pauli.evolve()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.expand"><code class="docutils literal notranslate"><span class="pre">Pauli.expand()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.from_label"><code class="docutils literal notranslate"><span class="pre">Pauli.from_label()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.input_dims"><code class="docutils literal notranslate"><span class="pre">Pauli.input_dims()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.insert"><code class="docutils literal notranslate"><span class="pre">Pauli.insert()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.insert_paulis"><code class="docutils literal notranslate"><span class="pre">Pauli.insert_paulis()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.instrs2symplectic"><code class="docutils literal notranslate"><span class="pre">Pauli.instrs2symplectic()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.inverse"><code class="docutils literal notranslate"><span class="pre">Pauli.inverse()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.kron"><code class="docutils literal notranslate"><span class="pre">Pauli.kron()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.output_dims"><code class="docutils literal notranslate"><span class="pre">Pauli.output_dims()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.pauli_single"><code class="docutils literal notranslate"><span class="pre">Pauli.pauli_single()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.power"><code class="docutils literal notranslate"><span class="pre">Pauli.power()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.random"><code class="docutils literal notranslate"><span class="pre">Pauli.random()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.reshape"><code class="docutils literal notranslate"><span class="pre">Pauli.reshape()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_pauli_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.set_pauli_encoding()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_phase_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.set_phase_encoding()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_print_phase_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.set_print_phase_encoding()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_qubit_order"><code class="docutils literal notranslate"><span class="pre">Pauli.set_qubit_order()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_syntax"><code class="docutils literal notranslate"><span class="pre">Pauli.set_syntax()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_tensor_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.set_tensor_encoding()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.set_truncation"><code class="docutils literal notranslate"><span class="pre">Pauli.set_truncation()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.sgn_prod"><code class="docutils literal notranslate"><span class="pre">Pauli.sgn_prod()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.tensor"><code class="docutils literal notranslate"><span class="pre">Pauli.tensor()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.to_cpx_matrix"><code class="docutils literal notranslate"><span class="pre">Pauli.to_cpx_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.to_instruction"><code class="docutils literal notranslate"><span class="pre">Pauli.to_instruction()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.to_label"><code class="docutils literal notranslate"><span class="pre">Pauli.to_label()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.to_matrix"><code class="docutils literal notranslate"><span class="pre">Pauli.to_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.to_spmatrix"><code class="docutils literal notranslate"><span class="pre">Pauli.to_spmatrix()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.transpose"><code class="docutils literal notranslate"><span class="pre">Pauli.transpose()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.update_x"><code class="docutils literal notranslate"><span class="pre">Pauli.update_x()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.update_z"><code class="docutils literal notranslate"><span class="pre">Pauli.update_z()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.EXTERNAL_PAULI_ENCODING"><code class="docutils literal notranslate"><span class="pre">Pauli.EXTERNAL_PAULI_ENCODING</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.EXTERNAL_PHASE_ENCODING"><code class="docutils literal notranslate"><span class="pre">Pauli.EXTERNAL_PHASE_ENCODING</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.EXTERNAL_QUBIT_ORDER"><code class="docutils literal notranslate"><span class="pre">Pauli.EXTERNAL_QUBIT_ORDER</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.EXTERNAL_SYNTAX"><code class="docutils literal notranslate"><span class="pre">Pauli.EXTERNAL_SYNTAX</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.EXTERNAL_TENSOR_ENCODING"><code class="docutils literal notranslate"><span class="pre">Pauli.EXTERNAL_TENSOR_ENCODING</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.PRINT_PHASE_ENCODING"><code class="docutils literal notranslate"><span class="pre">Pauli.PRINT_PHASE_ENCODING</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.dim"><code class="docutils literal notranslate"><span class="pre">Pauli.dim</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.name"><code class="docutils literal notranslate"><span class="pre">Pauli.name</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.num_clbits"><code class="docutils literal notranslate"><span class="pre">Pauli.num_clbits</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.num_qubits"><code class="docutils literal notranslate"><span class="pre">Pauli.num_qubits</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.num_y"><code class="docutils literal notranslate"><span class="pre">Pauli.num_y</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.pauli_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.pauli_encoding</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.phase"><code class="docutils literal notranslate"><span class="pre">Pauli.phase</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.phase_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.phase_encoding</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.phase_exp"><code class="docutils literal notranslate"><span class="pre">Pauli.phase_exp</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.pltb_int"><code class="docutils literal notranslate"><span class="pre">Pauli.pltb_int</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.pltb_str"><code class="docutils literal notranslate"><span class="pre">Pauli.pltb_str</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.print_phase_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.print_phase_encoding</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.qargs"><code class="docutils literal notranslate"><span class="pre">Pauli.qargs</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.qubit_order"><code class="docutils literal notranslate"><span class="pre">Pauli.qubit_order</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.settings"><code class="docutils literal notranslate"><span class="pre">Pauli.settings</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.syntax"><code class="docutils literal notranslate"><span class="pre">Pauli.syntax</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.tensor_encoding"><code class="docutils literal notranslate"><span class="pre">Pauli.tensor_encoding</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.x"><code class="docutils literal notranslate"><span class="pre">Pauli.x</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.Pauli.z"><code class="docutils literal notranslate"><span class="pre">Pauli.z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

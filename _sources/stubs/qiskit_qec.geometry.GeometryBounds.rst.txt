@@ -1,0 +1,23 @@
+﻿GeometryBounds
+==============
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: GeometryBounds
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: GeometryBounds.bounding_box_from_line
+   .. automethod:: GeometryBounds.combine
+   .. automethod:: GeometryBounds.contains
+   .. automethod:: GeometryBounds.copy
+   .. automethod:: GeometryBounds.expand
+   .. automethod:: GeometryBounds.intercepts
+   .. automethod:: GeometryBounds.set_min_max
+
+

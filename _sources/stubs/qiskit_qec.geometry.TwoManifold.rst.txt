@@ -1,0 +1,12 @@
+﻿TwoManifold
+===========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: TwoManifold
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+

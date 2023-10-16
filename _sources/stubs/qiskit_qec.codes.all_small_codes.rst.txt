@@ -1,0 +1,6 @@
+﻿qiskit\_qec.codes.all\_small\_codes
+===================================
+
+.. currentmodule:: qiskit_qec.codes
+
+.. autofunction:: all_small_codes

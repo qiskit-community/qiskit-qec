@@ -1,0 +1,18 @@
+﻿QubitData
+=========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: QubitData
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: QubitData.add_data_array
+   .. automethod:: QubitData.del_data_array
+
+

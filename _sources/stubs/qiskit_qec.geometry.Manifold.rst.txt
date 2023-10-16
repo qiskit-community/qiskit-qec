@@ -1,0 +1,12 @@
+﻿Manifold
+========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Manifold
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+

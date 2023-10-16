@@ -1,0 +1,6 @@
+﻿qiskit\_qec.utils.get\_counts\_via\_stim
+========================================
+
+.. currentmodule:: qiskit_qec.utils
+
+.. autofunction:: get_counts_via_stim

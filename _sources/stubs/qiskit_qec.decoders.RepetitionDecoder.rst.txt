@@ -1,0 +1,24 @@
+﻿RepetitionDecoder
+=================
+
+.. currentmodule:: qiskit_qec.decoders
+
+.. autoclass:: RepetitionDecoder
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: RepetitionDecoder.process
+   .. automethod:: RepetitionDecoder.update_edge_weights
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: AVAILABLE_METHODS
+   .. autoattribute:: METHOD_PYMATCHING
+   .. autoattribute:: METHOD_RETWORKX

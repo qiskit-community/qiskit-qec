@@ -1,0 +1,19 @@
+﻿CodeLibrary
+===========
+
+.. currentmodule:: qiskit_qec.codes
+
+.. autoclass:: CodeLibrary
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: CodeLibrary.data2code
+   .. automethod:: CodeLibrary.in_range
+   .. automethod:: CodeLibrary.search
+
+

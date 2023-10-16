@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.geometry.shape &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.geometry.shape</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.geometry.shape</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2017, 2020</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+<span class="c1"># Part of the QEC framework</span>
+
+<span class="sd">&quot;&quot;&quot;Module for shape&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Real</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">copysign</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">qiskit.exceptions</span> <span class="kn">import</span> <span class="n">QiskitError</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.bounds</span> <span class="kn">import</span> <span class="n">GeometryBounds</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.manifold</span> <span class="kn">import</span> <span class="n">Manifold</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.plane</span> <span class="kn">import</span> <span class="n">Plane</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.model.shell</span> <span class="kn">import</span> <span class="n">Shell</span>
+
+
+<div class="viewcode-block" id="Shape">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape">[docs]</a>
+<span class="k">class</span> <span class="nc">Shape</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is used to store a boundary shape on a given manifold that is used to</span>
+<span class="sd">    select sublattices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init shape</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points (List): points on the shape</span>
+<span class="sd">            lines (List[List], optional): lines on the shape. Defaults to None</span>
+<span class="sd">            indices (List, optional): indices of the shape Defaults to None.</span>
+
+<span class="sd">        Raise:</span>
+<span class="sd">            QiskitError: If &lt;indices&gt; are defined then lines must also be defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="k">if</span> <span class="n">lines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lines</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;If &lt;indices&gt; are defined then lines must also be defined&quot;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_lines</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span>
+        <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounding_box_from_lines</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Shape.bounding_box_from_lines">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.bounding_box_from_lines">[docs]</a>
+    <span class="k">def</span> <span class="nf">bounding_box_from_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate bounding box from lines on the shape&quot;&quot;&quot;</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">finish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">GeometryBounds</span><span class="o">.</span><span class="n">bounding_box_from_line</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">finish</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
+            <span class="n">bounds2</span> <span class="o">=</span> <span class="n">GeometryBounds</span><span class="o">.</span><span class="n">bounding_box_from_line</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">bounds</span> <span class="o">=</span> <span class="n">GeometryBounds</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">bounds2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bounds</span></div>
+
+
+<div class="viewcode-block" id="Shape.create_lines">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.create_lines">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">create_lines</span><span class="p">(</span><span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates Lines from a set of points&quot;&quot;&quot;</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[[</span><span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_points</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">lines</span></div>
+
+
+<div class="viewcode-block" id="Shape.square">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.square">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">square</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">manifold</span><span class="p">:</span> <span class="n">Manifold</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a square (2d) shape on the 2-manifold.</span>
+
+<span class="sd">        The square has one corner placed at the origin (origin must be on the plane). The the</span>
+<span class="sd">        square is defined as the path following heading in the direction &lt;direction&gt; towards the</span>
+<span class="sd">        next corner of length &lt;length&gt;. The proceeding to the next corner and so on.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin ([coordinate]): a coordinate on the plane</span>
+<span class="sd">            direction ([vector]): vector describing the direction of the second corner</span>
+<span class="sd">            scale ([real]): side of square = scale * ||direction||</span>
+<span class="sd">            manifold ([TwoManifold]): 2-manifold</span>
+<span class="sd">            dtype ([dtype], optional): Date type of coordinate entries. Defaults to int.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [Shape]: Shape obj describing a square of length &lt;length&gt; in the manifold &lt;manifold&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span>
+            <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span>
+            <span class="n">scale1</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">scale2</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">manifold</span><span class="o">=</span><span class="n">manifold</span><span class="p">,</span>
+            <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shape.rect">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.rect">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">rect</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">direction</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">scale1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">scale2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">manifold</span><span class="p">:</span> <span class="n">Manifold</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">(),</span>
+        <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Shape&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a rectangle on a manifold</span>
+
+<span class="sd">        A rect has the following lables::</span>
+
+<span class="sd">                      r2</span>
+<span class="sd">                      o</span>
+<span class="sd">                  /       \</span>
+<span class="sd">            r3  o          \</span>
+<span class="sd">                 \          o r1</span>
+<span class="sd">                  \       /</span>
+<span class="sd">                      o</span>
+<span class="sd">                     r0=origin</span>
+<span class="sd">            direction (r0 to r1)</span>
+<span class="sd">            scale1 = scale(r0,r1)</span>
+<span class="sd">            scale2 = scale(r1,r2)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin : Origin (r0) of rectangle. The origin is one of the</span>
+<span class="sd">                corners of the rectangle.</span>
+<span class="sd">            direction: Direction vector from r0 to r1</span>
+<span class="sd">            scale1: how large to scale up (r0,r1) side</span>
+<span class="sd">            scale2: how large to scale up (r1,r2) side</span>
+<span class="sd">            manifold: Manifold that rectangle lives on. Defaults to Plane().</span>
+<span class="sd">            delta (optional): How large to increase the rectangle by. Defaults to 0.</span>
+<span class="sd">            dtype (type, optional): type of entries for definiting points to use.</span>
+<span class="sd">                Defaults to float.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            QiskitError: Rectangle scales must be positive</span>
+<span class="sd">            QiskitError: Origin must be on the surface if the manifold</span>
+<span class="sd">            QiskitError: Manifold not yet supported</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            rect: rectangle of given parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">scale1</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">scale2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rectangle scales must be positive: scale1:</span><span class="si">{</span><span class="n">scale1</span><span class="si">}</span><span class="s2"> scale2:</span><span class="si">{</span><span class="n">scale2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">manifold</span><span class="o">.</span><span class="n">ison</span><span class="p">(</span><span class="n">origin</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2"> must be on the surface if the manifold&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">manifold</span><span class="p">,</span> <span class="n">Plane</span><span class="p">):</span>
+            <span class="n">r0</span> <span class="o">=</span> <span class="n">origin</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">origin</span> <span class="o">+</span> <span class="n">scale1</span> <span class="o">*</span> <span class="n">direction</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">r1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">Plane</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">r1</span> <span class="o">+</span> <span class="n">scale2</span> <span class="o">*</span> <span class="n">direction</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">Plane</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">theta</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+            <span class="n">r3</span> <span class="o">=</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">scale1</span> <span class="o">*</span> <span class="n">direction</span>
+            <span class="n">r3</span> <span class="o">=</span> <span class="n">r3</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+            <span class="c1"># scale up the rectangle to have diagonal lenths + 2 * delta</span>
+            <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">r1</span> <span class="o">+</span> <span class="n">r3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+            <span class="n">r0</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">r0</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">center</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">r1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">center</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">r2</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">center</span>
+            <span class="n">r3</span> <span class="o">=</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">r3</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">center</span>
+
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">r3</span><span class="p">]</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Manifold </span><span class="si">{</span><span class="n">manifold</span><span class="si">}</span><span class="s2"> not yet supported&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_l2distance</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Shape.is_between">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.is_between">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_between</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;is p between a and b: a &lt;= p &lt; =b</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p: point</span>
+<span class="sd">            a: end point</span>
+<span class="sd">            b: end point</span>
+<span class="sd">            strict: is strict comparison. Default is False</span>
+<span class="sd">            epsilon: Will squeeze inequality by epsilon</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True is a is between a and b, False if not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="o">-</span> <span class="n">epsilon</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">b</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">&lt;</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">a</span> <span class="o">-</span> <span class="n">epsilon</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">p</span> <span class="o">==</span> <span class="n">a</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">b</span> <span class="o">-</span> <span class="n">epsilon</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">b</span> <span class="o">+</span> <span class="n">epsilon</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">epsilon</span></div>
+
+
+<div class="viewcode-block" id="Shape.contains">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains">[docs]</a>
+    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">on_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;winding&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            point (_type_): _description_</span>
+<span class="sd">            on_boundary (bool, optional): _description_. Defaults to True.</span>
+<span class="sd">            epsilon (float, optional): _description_. Defaults to 0.01.</span>
+<span class="sd">            method (str, optional): _description_. Defaults to &quot;winding&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;winding&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains_quad_winding_number</span><span class="p">(</span>
+                <span class="n">point</span><span class="p">,</span> <span class="n">on_boundary</span><span class="o">=</span><span class="n">on_boundary</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;raytracing&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains_ray_trace</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">on_boundary</span><span class="o">=</span><span class="n">on_boundary</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown contains method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shape.contains_quad_winding_number">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains_quad_winding_number">[docs]</a>
+    <span class="k">def</span> <span class="nf">contains_quad_winding_number</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">on_boundary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deterine if a point is inside a polygon (PIP Problem)</span>
+
+<span class="sd">        On or near boundary method uses l2 distances and interior method uses</span>
+<span class="sd">        algorithm from Hornmann and Agathos, Computational Geometry 20 (2001) 131-144</span>
+
+<span class="sd">        With optional on_boundary set to False (default) the boundary is not included</span>
+<span class="sd">        on the inside. If on_boundary is False then points positioned on the boundary</span>
+<span class="sd">        may of may not be included. Increase the size of the shape to avoid this problem</span>
+<span class="sd">        or set on_boundary to True. Setting on_boundary to True will be slower as it checks</span>
+<span class="sd">        l2 distances from boundary.</span>
+
+<span class="sd">        Currently only a simple version of the algorithm is implemented. This should be corrected</span>
+<span class="sd">        at a later date or in next version.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            point: Point to check if inside the given shape</span>
+<span class="sd">            on_boundary: Set True to include the boundary. Slow for larger boundaries.</span>
+<span class="sd">                Default is False. Points will be included if with epsilon of the boundary.</span>
+<span class="sd">            epsilon: Value used to indicate if a point is close enough to the boundary to be</span>
+<span class="sd">                included. Default is 0.01</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True is point in on the polygon and False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">on_boundary</span><span class="p">:</span>
+            <span class="c1"># Determine if the given point is within (l2 distance) epsilon of the shape boundary.</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">epsilon</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+                <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">abs</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000000001</span>
+                <span class="p">):</span>  <span class="c1"># It is assumed that the line sigement is not enormous!</span>
+                    <span class="c1"># m = float(&#39;inf&#39;)</span>
+                    <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y0</span> <span class="o">&gt;</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y1</span><span class="p">:</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x0</span>
+                    <span class="n">c0</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x0</span>
+                    <span class="n">c1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x1</span>
+                    <span class="c1"># yp = m * x + c</span>
+                    <span class="n">yp0</span> <span class="o">=</span> <span class="o">-</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c0</span>
+                    <span class="n">yp1</span> <span class="o">=</span> <span class="o">-</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c1</span>
+                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000000001</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">):</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y0</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x0</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x1</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">yp0</span><span class="p">,</span> <span class="n">yp1</span><span class="p">):</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">m</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yp0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yp1</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">end</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">end</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">start</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Determine which quandrant each defining path point is in</span>
+        <span class="n">quadrants</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">line_point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">y</span><span class="p">:</span>
+                <span class="n">quadrants</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">:</span>
+                <span class="n">quadrants</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">:</span>
+                <span class="n">quadrants</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">line_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">:</span>
+                <span class="n">quadrants</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">quadrants</span><span class="p">)</span>
+
+        <span class="c1"># Calculate winding number</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quadrants</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">quadrants</span><span class="p">[(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">quadrants</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">]:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+                <span class="n">val_det</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">])</span>
+                <span class="n">omega</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">+</span> <span class="n">copysign</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">val_det</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">omega</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shape.contains_ray_trace">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.contains_ray_trace">[docs]</a>
+    <span class="k">def</span> <span class="nf">contains_ray_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">on_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if inside the bounded region using an infinite horizontal line from the point</span>
+<span class="sd">        to +infinity</span>
+
+<span class="sd">        This implementation assumes that the path is given by a sequence of</span>
+<span class="sd">        straight lines.</span>
+
+<span class="sd">        A more sophisticated verison is required if the path is otherwise.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            point (point): point to check if in region (including on boundary)</span>
+<span class="sd">            on_boundary (bool): True if boundary to be include in &quot;inside&quot;. Default is True</span>
+<span class="sd">            epsilon (real): Tolerance distance between two points to be equal. Default is 0.001</span>
+
+<span class="sd">        Returns: (bool) Check if inside the bounded region using an infinite</span>
+<span class="sd">                        horizontal line from the point to +infinity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="c1"># First check if point lines on the boundary. Here a point is defined to lie</span>
+        <span class="c1"># on the boundary if dist(p,P)&lt;epsilon where p is the point and P is the path</span>
+        <span class="c1"># of the boundary. When P consists of a collection of line segments then</span>
+        <span class="c1"># dist(p,P) = min dist(p,l) for l in P where l is a line segement of P.</span>
+
+        <span class="k">def</span> <span class="nf">dprint</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">epsilon</span>
+        <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing point [</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing line </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="n">y0</span><span class="p">]</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="p">[</span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="n">y1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000000001</span><span class="p">:</span>  <span class="c1"># It is assumed that the line sigement is not enormous!</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">on_boundary</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y0</span> <span class="o">&gt;</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y1</span><span class="p">:</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x0</span>
+                <span class="n">c0</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x0</span>
+                <span class="n">c1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x1</span>
+                <span class="n">yp</span> <span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span>
+                <span class="n">yp0</span> <span class="o">=</span> <span class="o">-</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c0</span>
+                <span class="n">yp1</span> <span class="o">=</span> <span class="o">-</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c1</span>
+                <span class="k">if</span> <span class="n">on_boundary</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000000001</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">):</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y0</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x0</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x1</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">yp0</span><span class="p">,</span> <span class="n">yp1</span><span class="p">):</span>
+                            <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">m</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yp0</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yp1</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">)))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_l2distance</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.000000001</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m=inf inside count = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000001</span><span class="p">:</span>
+                <span class="k">pass</span>
+                <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m~0 inside count = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.000000001</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">yp</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m&gt;0 inside count = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.000000001</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">yp</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;m&lt;0 inside count = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="p">[</span><span class="n">_</span><span class="p">,</span> <span class="n">y3</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+
+            <span class="c1"># Does ray pass though a vertex</span>
+
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">y1</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span> <span class="ow">or</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+                    <span class="n">dprint</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/\ or \/ vertex count&quot;</span><span class="p">)</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">x1</span><span class="p">:</span>
+                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| vertex count = </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.000001</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">y1</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y3</span><span class="p">)</span> <span class="ow">or</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y3</span><span class="p">):</span>
+                        <span class="n">dprint</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/_\ or \_/ vertex count&quot;</span><span class="p">)</span>
+                        <span class="k">pass</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_between</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">x1</span> <span class="o">&gt;</span> <span class="n">x2</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">):</span>
+                            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">dprint</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/_/ or \_\ vertex count =&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">dprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;d&lt;epsilon = </span><span class="si">{</span><span class="n">d</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epsilon</span><span class="si">}</span><span class="s2"> and count %2 = </span><span class="si">{</span><span class="n">count</span><span class="w"> </span><span class="o">%</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shape.inside">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.inside">[docs]</a>
+    <span class="k">def</span> <span class="nf">inside</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">tiling</span><span class="p">:</span> <span class="n">Shell</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the in-out data for a shape and a tiling</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tiling: Input Tiling (shell)</span>
+<span class="sd">            on_boundary: If True then the in-out data will include those vertices within epsilon of</span>
+<span class="sd">                the boundary. This is more expensive. It is better to use a shape which is slightly</span>
+<span class="sd">                larger. Default is False.</span>
+<span class="sd">            epsilon: Real number use when on_boundary is True. Default is 0.1</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[bool]: vertex -&gt; bool dictionary. True for inside the shape and False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inout</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">tiling</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Shape</span><span class="o">.</span><span class="n">_DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Vertex id: </span><span class="si">{</span><span class="n">vertex</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> of face :</span><span class="si">{</span><span class="n">vertex</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">inout</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">vertex</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">on_boundary</span><span class="o">=</span><span class="n">on_boundary</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inout</span></div>
+</div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

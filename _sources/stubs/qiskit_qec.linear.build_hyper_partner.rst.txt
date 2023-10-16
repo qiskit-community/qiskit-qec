@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.build\_hyper\_partner
+========================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: build_hyper_partner

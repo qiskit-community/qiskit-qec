@@ -1,0 +1,42 @@
+﻿Properties
+==========
+
+.. currentmodule:: qiskit_qec.info
+
+.. autoclass:: Properties
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: AUT_GROUP_SIZE
+   .. autoattribute:: CITATION
+   .. autoattribute:: CODE_TYPES
+   .. autoattribute:: D
+   .. autoattribute:: GAUGE_GROUP
+   .. autoattribute:: HYPERBOLIC_GEN
+   .. autoattribute:: INDEX
+   .. autoattribute:: ISOTROPIC_GEN
+   .. autoattribute:: IS_CSS
+   .. autoattribute:: IS_CSS_KEY
+   .. autoattribute:: IS_DECOMPOSABLE
+   .. autoattribute:: IS_DECOMPOSABLE_KEY
+   .. autoattribute:: IS_DEGENERATE
+   .. autoattribute:: IS_DEGENERATE_KEY
+   .. autoattribute:: IS_GF4LINEAR
+   .. autoattribute:: IS_GF4LINEAR_KEY
+   .. autoattribute:: IS_TRIORTHOGONAL
+   .. autoattribute:: IS_TRIORTHOGONAL_KEY
+   .. autoattribute:: K
+   .. autoattribute:: LOGICAL_OPS
+   .. autoattribute:: N
+   .. autoattribute:: NAME
+   .. autoattribute:: STABILIZER
+   .. autoattribute:: TYPE
+   .. autoattribute:: UUID
+   .. autoattribute:: WEIGHT_ENUMERATOR
+   .. autoattribute:: info

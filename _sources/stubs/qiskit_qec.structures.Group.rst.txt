@@ -1,0 +1,12 @@
+﻿Group
+=====
+
+.. currentmodule:: qiskit_qec.structures
+
+.. autoclass:: Group
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+

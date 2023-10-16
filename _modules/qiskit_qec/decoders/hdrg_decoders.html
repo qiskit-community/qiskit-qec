@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.decoders.hdrg_decoders &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.decoders.hdrg_decoders</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.decoders.hdrg_decoders</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2022.</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+
+<span class="c1"># pylint: disable=invalid-name</span>
+
+<span class="sd">&quot;&quot;&quot;Hard decision renormalization group decoders.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">rustworkx</span> <span class="kn">import</span> <span class="n">PyGraph</span><span class="p">,</span> <span class="n">connected_components</span><span class="p">,</span> <span class="n">distance_matrix</span>
+
+<span class="kn">from</span> <span class="nn">qiskit_qec.circuits.repetition_code</span> <span class="kn">import</span> <span class="n">ArcCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.decoders.decoding_graph</span> <span class="kn">import</span> <span class="n">DecodingGraph</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphEdge</span><span class="p">,</span> <span class="n">DecodingGraphNode</span>
+
+
+<span class="k">class</span> <span class="nc">ClusteringDecoder</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic base class for clustering decoders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">code_circuit</span><span class="p">,</span>
+        <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code_circuit</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;_xbasis&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">_xbasis</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">css_x_logical</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">css_z_logical</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">css_z_logical</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;code_index&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">code_index</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span> <span class="o">=</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span> <span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)}</span>
+
+        <span class="k">if</span> <span class="n">decoding_graph</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span> <span class="o">=</span> <span class="n">decoding_graph</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span> <span class="o">=</span> <span class="n">DecodingGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_corrections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">clusters</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn a set of neutral clusters into corrections.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output string of the code</span>
+<span class="sd">            clusters (dict): Dictionary with the indices of the given node</span>
+<span class="sd">            as keys and an integer specifying their cluster as the corresponding</span>
+<span class="sd">            value.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            corrected_logicals (list): A list of integers that are 0 or 1.</span>
+<span class="sd">        These are the corrected values of the final transversal</span>
+<span class="sd">        measurement, corresponding to the logical operators of</span>
+<span class="sd">        self.measured_logicals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get the list of bulk nodes for each cluster</span>
+        <span class="n">cluster_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="n">cluster_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># get the list of required logicals for each cluster</span>
+        <span class="n">cluster_logicals</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">cluster_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">logical_nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">z_logicals</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">logical_nodes</span><span class="p">]</span>
+            <span class="n">cluster_logicals</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_logicals</span>
+
+        <span class="c1"># get the net effect on each logical</span>
+        <span class="n">net_z_logicals</span> <span class="o">=</span> <span class="p">{</span><span class="n">z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">z_logicals</span> <span class="ow">in</span> <span class="n">cluster_logicals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">z_logicals</span><span class="p">:</span>
+                    <span class="n">net_z_logicals</span><span class="p">[</span><span class="n">z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">z_logical</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">net_z_logicals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">net_z_logicals</span><span class="p">[</span><span class="n">z_logical</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span>
+
+        <span class="n">corrected_z_logicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">:</span>
+            <span class="n">raw_logical</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">[</span><span class="n">z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]]])</span>
+            <span class="n">corrected_logical</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_logical</span> <span class="o">+</span> <span class="n">net_z_logicals</span><span class="p">[</span><span class="n">z_logical</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="n">corrected_z_logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corrected_logical</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">corrected_z_logicals</span>
+
+
+<span class="k">class</span> <span class="nc">BravyiHaahDecoder</span><span class="p">(</span><span class="n">ClusteringDecoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder based on finding connected components within the decoding graph.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">dist_max</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds connected components in the given nodes, for nodes connected by at most the given distance</span>
+<span class="sd">        in the given decoding graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># calculate distance for the graph</span>
+        <span class="n">dg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">dg</span><span class="p">)</span>
+
+        <span class="c1"># create empty `DecodingGraph`</span>
+        <span class="n">cluster_graph</span> <span class="o">=</span> <span class="n">DecodingGraph</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">cg</span> <span class="o">=</span> <span class="n">cluster_graph</span><span class="o">.</span><span class="n">graph</span>
+        <span class="c1"># add all the given nodes to cg</span>
+        <span class="n">d2c</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">c2g</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">d2c</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">c2g</span><span class="p">[</span><span class="n">d2c</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="c1"># add an edge between a pair of the given nodes if their distance is small enough</span>
+        <span class="k">for</span> <span class="n">n0</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n0</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">:</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">[</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_max</span><span class="p">:</span>
+                        <span class="n">cg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d2c</span><span class="p">[</span><span class="n">n0</span><span class="p">],</span> <span class="n">d2c</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="n">dist</span><span class="p">})</span>
+        <span class="c1"># find the connected components of cg</span>
+        <span class="n">con_comps</span> <span class="o">=</span> <span class="n">connected_components</span><span class="p">(</span><span class="n">cg</span><span class="p">)</span>
+
+        <span class="c1"># use these to define clusters</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">con_comp_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">con_comp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">con_comps</span><span class="p">):</span>
+            <span class="n">con_comp_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># check the neutrality of each connected component</span>
+            <span class="n">con_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">cg</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_comp</span><span class="p">]</span>
+            <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">num_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span>
+                <span class="n">con_nodes</span><span class="p">,</span> <span class="n">ignore_extra_boundary</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="c1"># it&#39;s fully neutral if no extra logicals are needed</span>
+            <span class="c1"># and if the error num is less than the max dist</span>
+            <span class="n">fully_neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="n">logicals</span> <span class="o">==</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">num_errors</span><span class="p">:</span>
+                <span class="n">fully_neutral</span> <span class="o">=</span> <span class="n">fully_neutral</span> <span class="ow">and</span> <span class="n">num_errors</span> <span class="o">&lt;</span> <span class="n">dist_max</span>
+
+            <span class="c1"># if a cluster is neutral, all nodes are labelled with c</span>
+            <span class="c1"># otherwise, it gets a None</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_comp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fully_neutral</span><span class="p">:</span>
+                    <span class="n">clusters</span><span class="p">[</span><span class="n">c2g</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> <span class="o">=</span> <span class="n">c</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">clusters</span><span class="p">[</span><span class="n">c2g</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">con_comp_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c2g</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">clusters</span><span class="p">,</span> <span class="n">con_comp_dict</span>
+
+    <span class="k">def</span> <span class="nf">_get_boundary_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">boundary_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">element</span><span class="p">,</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">z_logical</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">element</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">ArcCircuit</span><span class="p">):</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">boundary_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">boundary_nodes</span>
+
+    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            final_clusters (dict): Dictionary with the indices of the given node</span>
+<span class="sd">            as keys and an integer specifying their cluster as the corresponding</span>
+<span class="sd">            value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get indices for nodes and boundary nodes</span>
+        <span class="n">dg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">)</span>
+        <span class="n">bns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dg</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_boundary_nodes</span><span class="p">())</span>
+
+        <span class="n">dist_max</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">final_clusters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">con_comps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">clusterss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">ns</span> <span class="ow">and</span> <span class="n">dist_max</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">d</span><span class="p">:</span>
+            <span class="n">dist_max</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># add boundary nodes to unpaired nodes</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">bns</span><span class="p">)</span>
+
+            <span class="c1"># cluster nodes and contract decoding graph given the current distance</span>
+            <span class="n">clusters</span><span class="p">,</span> <span class="n">con_comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cluster</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">dist_max</span><span class="p">)</span>
+            <span class="c1"># record the clustered and unclustered nodes</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">final_clusters</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">dg</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                        <span class="n">ns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">con_comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">con_comp</span><span class="p">)</span>
+            <span class="n">clusterss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clusters</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_clusters</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process an output string and return corrected final outcomes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output string of the code.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            corrected_logicals (list): A list of integers that are 0 or 1.</span>
+<span class="sd">        These are the corrected values of the final transversal</span>
+<span class="sd">        measurement, corresponding to the logical operators of</span>
+<span class="sd">        self.measured_logicals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># turn string into nodes and cluster</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_corrections</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">clusters</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SpanningForest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spanning forest for the peeling decoder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vertices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BoundaryEdge</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Boundary edge for the boundary of a UnionFindDecoderCluster.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">cluster_vertex</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">neighbour_vertex</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">DecodingGraphEdge</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a reversed version of the boundary edge (cluster and neighbour vertex flipped)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BoundaryEdge</span><span class="p">(</span>
+            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">cluster_vertex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">,</span>
+            <span class="n">neighbour_vertex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_vertex</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">UnionFindDecoderCluster</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cluster for the UnionFindDecoder</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BoundaryEdge</span><span class="p">]</span>
+    <span class="n">atypical_nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">boundary_nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">fully_grown_edges</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">FusionEntry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Entry for the fusion list between the growing and merging of the union find decoder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">u</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">v</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">connecting_edge</span><span class="p">:</span> <span class="n">BoundaryEdge</span>
+
+
+<div class="viewcode-block" id="UnionFindDecoder">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder">[docs]</a>
+<span class="k">class</span> <span class="nc">UnionFindDecoder</span><span class="p">(</span><span class="n">ClusteringDecoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decoder based on growing clusters around syndrome errors to</span>
+<span class="sd">    &quot;convert&quot; them into erasure errors, which can be corrected easily,</span>
+<span class="sd">    by the peeling decoder in case of the surface code, or by checking for</span>
+<span class="sd">    interference with the boundary in case of an abritrary ARC.</span>
+
+<span class="sd">    TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)</span>
+
+<span class="sd">    See arXiv:1709.06218v3 for more details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_peeling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="o">=</span><span class="n">decoding_graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnionFindDecoderCluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_peeling</span> <span class="o">=</span> <span class="n">use_peeling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="UnionFindDecoder.process">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.process">[docs]</a>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process an output string and return corrected final outcomes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output string of the code.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            corrected_z_logicals (list): A list of integers that are 0 or 1.</span>
+<span class="sd">        These are the corrected values of the final transversal</span>
+<span class="sd">        measurement, corresponding to the logical operators of</span>
+<span class="sd">        self.z_logicals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_peeling</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+            <span class="n">highlighted_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># call cluster to do the clustering, but actually use the peeling form</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">highlighted_nodes</span><span class="p">)</span>
+            <span class="n">clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span>
+
+            <span class="c1"># determine the net logical z</span>
+            <span class="n">net_z_logicals</span> <span class="o">=</span> <span class="p">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">z_logical</span><span class="p">):</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">cluster_nodes</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">:</span>
+                <span class="n">erasure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">cluster_nodes</span><span class="p">)</span>
+                <span class="n">flipped_qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peeling</span><span class="p">(</span><span class="n">erasure</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">qubit_to_be_corrected</span> <span class="ow">in</span> <span class="n">flipped_qubits</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="n">net_z_logicals</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">qubit_to_be_corrected</span> <span class="ow">in</span> <span class="n">z_logical</span><span class="p">:</span>
+                            <span class="n">net_z_logicals</span><span class="p">[</span><span class="n">z_logical</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">z_logical</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">net_z_logicals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">net_z_logicals</span><span class="p">[</span><span class="n">z_logical</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span>
+
+            <span class="c1"># apply this to the raw readout</span>
+            <span class="n">corrected_z_logicals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">raw_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2raw_logicals</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">z_logical</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_logicals</span><span class="p">):</span>
+                <span class="n">raw_logical</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_logicals</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">corrected_logical</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw_logical</span> <span class="o">+</span> <span class="n">net_z_logicals</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">z_logical</span><span class="p">)])</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="n">corrected_z_logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corrected_logical</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">corrected_z_logicals</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># turn string into nodes and cluster</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_corrections</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">clusters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="UnionFindDecoder.cluster">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.cluster">[docs]</a>
+    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create clusters using the union-find algorithm.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (List): List of non-typical nodes in the syndrome graph,</span>
+<span class="sd">            of the type produced by `string2nodes`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            clusters (dict): Dictionary with the indices of</span>
+<span class="sd">            the given node as keys and an integer specifying their cluster as the corresponding</span>
+<span class="sd">            value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="n">node_indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnionFindDecoderCluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="n">node_indices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_cluster</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_grow_and_merge_clusters</span><span class="p">()</span>
+
+        <span class="c1"># compile info into standard clusters dict</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># determine which nodes exactly are in the neutral cluster</span>
+            <span class="n">neutral_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)</span>
+            <span class="c1"># put them in the required dict</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neutral_nodes</span><span class="p">:</span>
+                <span class="n">clusters</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="c1"># also compile into form required for peeling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">clusters</span></div>
+
+
+<div class="viewcode-block" id="UnionFindDecoder.find">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.find">[docs]</a>
+    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find() function as described in the paper that returns the root</span>
+<span class="sd">        of the cluster of a node, including path compression.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            u (int): The index of the node in the decoding graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            root (int): The root of the cluster of node u.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">u</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_create_new_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_index</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">node_index</span><span class="p">)</span>
+        <span class="n">boundary_edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbouring_edges</span><span class="p">(</span><span class="n">node_index</span><span class="p">):</span>
+            <span class="n">boundary_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BoundaryEdge</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnionFindDecoderCluster</span><span class="p">(</span>
+            <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_edges</span><span class="p">,</span>
+            <span class="n">fully_grown_edges</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+            <span class="n">atypical_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">])</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span> <span class="k">else</span> <span class="nb">set</span><span class="p">([]),</span>
+            <span class="n">boundary_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">])</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span> <span class="k">else</span> <span class="nb">set</span><span class="p">([]),</span>
+            <span class="n">nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">]),</span>
+            <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_grow_and_merge_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">fusion_edge_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grow_clusters</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_clusters</span><span class="p">(</span><span class="n">fusion_edge_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_grow_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FusionEntry</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grow every &quot;odd&quot; cluster by half an edge.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            fusion_edge_list (List[FusionEntry]): List of edges that connect two</span>
+<span class="sd">            clusters that will be merged in the next step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fusion_edge_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FusionEntry</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+            <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">root</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.5</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">weight</span>
+                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">neighbour_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbour_root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span>
+                        <span class="n">boundary_edges</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">neighbour_neighbour</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbouring_edges</span><span class="p">(</span>
+                            <span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span>
+                        <span class="p">):</span>
+                            <span class="n">boundary_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">BoundaryEdge</span><span class="p">(</span>
+                                    <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">,</span> <span class="n">neighbour_neighbour</span><span class="p">,</span> <span class="n">data</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnionFindDecoderCluster</span><span class="p">(</span>
+                            <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_edges</span><span class="p">,</span>
+                            <span class="n">fully_grown_edges</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+                            <span class="n">atypical_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+                            <span class="n">boundary_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span>
+                            <span class="k">else</span> <span class="nb">set</span><span class="p">([]),</span>
+                            <span class="n">nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]),</span>
+                            <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="n">fusion_entry</span> <span class="o">=</span> <span class="n">FusionEntry</span><span class="p">(</span>
+                        <span class="n">u</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">cluster_vertex</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">,</span> <span class="n">connecting_edge</span><span class="o">=</span><span class="n">edge</span>
+                    <span class="p">)</span>
+                    <span class="n">fusion_edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fusion_entry</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fusion_edge_list</span>
+
+    <span class="k">def</span> <span class="nf">_merge_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fusion_edge_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FusionEntry</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merges the clusters based on the fusion_edge_list computed in _grow_clusters().</span>
+<span class="sd">        Updates the odd_clusters list by recomputing the neutrality of the newly merged clusters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fusion_edge_list (List[FusionEntry]): List of edges that connect two</span>
+<span class="sd">            clusters that was computed in _grow_clusters().</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            new_neutral_cluster_roots (List[int]): List of roots of newly neutral clusters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_neutral_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">fusion_edge_list</span><span class="p">:</span>
+            <span class="n">root_u</span><span class="p">,</span> <span class="n">root_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">u</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">root_u</span> <span class="o">==</span> <span class="n">root_v</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">new_root</span> <span class="o">=</span> <span class="n">root_v</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">root_v</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">root_u</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="n">root_u</span>
+            <span class="n">root_to_update</span> <span class="o">=</span> <span class="n">root_v</span> <span class="k">if</span> <span class="n">new_root</span> <span class="o">==</span> <span class="n">root_u</span> <span class="k">else</span> <span class="n">root_u</span>
+
+            <span class="k">if</span> <span class="n">new_root</span> <span class="ow">in</span> <span class="n">new_neutral_clusters</span> <span class="ow">or</span> <span class="n">root_to_update</span> <span class="ow">in</span> <span class="n">new_neutral_clusters</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">new_root</span><span class="p">]</span>
+            <span class="n">other_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">root_to_update</span><span class="p">)</span>
+
+            <span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+            <span class="c1"># Merge boundaries</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span> <span class="o">+=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">boundary</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="p">)</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">reverse</span><span class="p">())</span>
+
+            <span class="n">cluster</span><span class="o">.</span><span class="n">nodes</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">nodes</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">boundary_nodes</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">size</span>
+
+            <span class="c1"># update odd_cluster_roots</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">]</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
+                    <span class="o">|</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)[:</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="k">else</span> <span class="nb">set</span><span class="p">())</span>
+                <span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">new_root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
+                    <span class="n">new_neutral_clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">new_root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">root_to_update</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">root_to_update</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">root_to_update</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_root</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="UnionFindDecoder.peeling">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.peeling">[docs]</a>
+    <span class="k">def</span> <span class="nf">peeling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">erasure</span><span class="p">:</span> <span class="n">PyGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;</span>
+<span class="sd">        Runs the peeling decoder on the erasure provided.</span>
+<span class="sd">        Assumes that the erasure is one connected component, if not it will run in an</span>
+<span class="sd">        infinite loop in the tree construction.</span>
+<span class="sd">        It works by first producing a spanning forest of the erasure and then</span>
+<span class="sd">        going backwards through the edges of the tree computing the error based on the syndrome.</span>
+<span class="sd">        Based on arXiv:1703.01517.</span>
+
+<span class="sd">        TODO: Extract to a separate decoder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            erasure (PyGraph): subgraph of the syndrome graph that represents the erasure.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            errors (List[int]): List of qubit indices on which Pauli errors occurred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">SpanningForest</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">{},</span> <span class="n">edges</span><span class="o">=</span><span class="p">[])</span>
+
+        <span class="c1"># Construct spanning forest</span>
+        <span class="c1"># Pick starting vertex</span>
+        <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">erasure</span><span class="o">.</span><span class="n">node_indices</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">erasure</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span> <span class="ow">and</span> <span class="n">erasure</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]:</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">vertex</span> <span class="ow">in</span> <span class="n">erasure</span><span class="o">.</span><span class="n">node_indices</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">erasure</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]:</span>
+                    <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">vertex</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># Expand forest |V| - 1 times, constructing it</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">erasure</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">vertices</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">vertices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">erasure</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="n">erasure</span><span class="o">.</span><span class="n">incident_edge_index_map</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">neighbour</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">neighbour</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                        <span class="k">break</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">endpoints</span> <span class="o">=</span> <span class="n">erasure</span><span class="o">.</span><span class="n">get_edge_endpoints_by_index</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="n">pendant_vertex</span> <span class="o">=</span> <span class="n">endpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">endpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="k">else</span> <span class="n">endpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">tree_vertex</span> <span class="o">=</span> <span class="n">endpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">pendant_vertex</span> <span class="o">==</span> <span class="n">endpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="n">endpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">tree</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">tree_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">erasure</span><span class="p">[</span><span class="n">pendant_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]:</span>
+                <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+                <span class="n">erasure</span><span class="p">[</span><span class="n">tree_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">erasure</span><span class="p">[</span><span class="n">tree_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span>
+                    <span class="s2">&quot;syndrome&quot;</span>
+                <span class="p">]</span>
+                <span class="n">erasure</span><span class="p">[</span><span class="n">pendant_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">erasure</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge</span><span class="p">]</span><span class="o">.</span><span class="n">qubits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span> <span class="k">if</span> <span class="n">erasure</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge</span><span class="p">]</span><span class="o">.</span><span class="n">qubits</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="UnionFindDecoder.neighbouring_edges">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges">[docs]</a>
+    <span class="k">def</span> <span class="nf">neighbouring_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">DecodingGraphEdge</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all of the neighbouring edges of a node in the decoding graph.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node_index (int): The index of the node in the graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            neighbouring_edges (List[Tuple[int, int, DecodingGraphEdge]]): List of neighbouring edges</span>
+
+<span class="sd">            In following format::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    index of edge in graph,</span>
+<span class="sd">                    index of neighbour node in graph,</span>
+<span class="sd">                    data payload of the edge</span>
+<span class="sd">                }</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">incident_edge_index_map</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
+<span class="k">class</span> <span class="nc">ClAYGDecoder</span><span class="p">(</span><span class="n">UnionFindDecoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decoder that is very similar to the Union Find decoder, but instead of adding clusters all at once,</span>
+<span class="sd">    adds them separated by syndrome round with a growth and merge phase in between.</span>
+<span class="sd">    Then it just proceeds like the Union Find decoder.</span>
+
+<span class="sd">    FIXME: Use the Union Find infrastructure and just change the self.cluster() method. Problem is that</span>
+<span class="sd">    the peeling decoder needs a modified version the graph with the syndrome nodes marked, which is done</span>
+<span class="sd">    in the process method. For now it is mostly its separate thing, but merging them shouldn&#39;t be</span>
+<span class="sd">    too big of a hassle.</span>
+<span class="sd">    Merge method should also be modified, as boundary clusters are not marked as odd clusters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process an output string and return corrected final outcomes.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output string of the code.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            corrected_z_logicals (list): A list of integers that are 0 or 1.</span>
+<span class="sd">        These are the corrected values of the final transversal</span>
+<span class="sd">        measurement, corresponding to the logical operators of</span>
+<span class="sd">        self.z_logicals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nodes_at_time_zero</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node_indices</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="n">nodes_at_time_zero</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">nodes_at_time_zero</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node_indices</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">string</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">])][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">highlighted_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">highlighted_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">output</span>  <span class="c1"># There&#39;s nothing for us to do here</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster</span><span class="p">(</span><span class="n">highlighted_nodes</span><span class="p">)</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span>
+
+        <span class="n">flattened_highlighted_nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DecodingGraphNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">highlighted_node</span> <span class="ow">in</span> <span class="n">highlighted_nodes</span><span class="p">:</span>
+            <span class="n">highlighted_node</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">flattened_highlighted_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">highlighted_node</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">cluster_nodes</span><span class="p">,</span> <span class="n">cluster_atypical_nodes</span> <span class="ow">in</span> <span class="n">clusters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cluster_nodes</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">erasure_graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster_nodes</span><span class="p">:</span>
+                <span class="n">erasure_graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster_atypical_nodes</span>
+            <span class="n">erasure</span> <span class="o">=</span> <span class="n">erasure_graph</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">cluster_nodes</span><span class="p">)</span>
+            <span class="n">qubits_to_be_corrected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peeling</span><span class="p">(</span><span class="n">erasure</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">qubits_to_be_corrected</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span> <span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            nodes (List): List of non-typical nodes in the syndrome graph,</span>
+<span class="sd">            of the type produced by `string2nodes`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            clusters (dict): Ddictionary with the indices of</span>
+<span class="sd">            the given node as keys and an integer specifying their cluster as the corresponding</span>
+<span class="sd">            value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnionFindDecoderCluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">times</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DecodingGraphNode</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">boundaries</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="n">boundaries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">times</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">time</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># FIXME: I am not sure when the optimal time to add the boundaries is. Maybe the middle?</span>
+        <span class="c1"># for node in boundaries:</span>
+        <span class="n">times</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">boundaries</span><span class="p">)</span>
+
+        <span class="n">neutral_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">time</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">time</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">neutral_clusters</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_neutral_clusters</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_grow_and_merge_clusters</span><span class="p">()</span>
+            <span class="n">neutral_clusters</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_neutral_clusters</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_grow_and_merge_clusters</span><span class="p">()</span>
+
+        <span class="n">neutral_clusters</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_neutral_clusters</span><span class="p">()</span>
+
+        <span class="c1"># compile info into standard clusters dict</span>
+        <span class="n">clusters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">neutral_clusters</span><span class="p">):</span>
+            <span class="c1"># determine which nodes exactly are in the neutral cluster</span>
+            <span class="n">neutral_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)</span>
+            <span class="c1"># put them in the required dict</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neutral_nodes</span><span class="p">:</span>
+                <span class="n">clusters</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="n">neutral_cluster_nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">neutral_clusters</span><span class="p">:</span>
+            <span class="n">neutral_cluster_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">nodes</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="n">neutral_cluster_nodes</span>
+
+        <span class="k">return</span> <span class="n">neutral_cluster_nodes</span>
+
+    <span class="k">def</span> <span class="nf">_add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">node_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+        <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cluster</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+            <span class="c1"># Add the node to the cluster or remove it if it&#39;s already present</span>
+            <span class="k">if</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">:</span>
+                <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_cluster</span><span class="p">(</span><span class="n">node_index</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_collect_neutral_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">neutral_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
+                    <span class="o">|</span> <span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]])</span> <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="k">else</span> <span class="nb">set</span><span class="p">())</span>
+                <span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+                <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">:</span>
+                    <span class="n">neutral_clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_create_new_cluster</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="n">neutral_clusters</span>
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>How-to: Create Codes &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="index.html">Qiskit QEC How-to guides</a> &gt;</li>
+        
+      <li>How-to: Create Codes</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="How-to:-Create-Codes">
+<h1>How-to: Create Codes<a class="headerlink" href="#How-to:-Create-Codes" title="Link to this heading">¶</a></h1>
+<p>The QEC framework does not prescribe any particular way to create codes but it does follow some simple design philosophies and looks to provide a wide range of tools, methods and instructure to make creatings codes easier.</p>
+<section id="Code-Classs">
+<h2>Code Classs<a class="headerlink" href="#Code-Classs" title="Link to this heading">¶</a></h2>
+<p>Within the framework there are very few specific code classes. This is done for two primary reasons. The first is that changes in codes (due to failures or gauge fixing or other) can easy take a code out of a given class wheere class methods not longer work and we want to avoid having to continually check if a code is still within an given class or whether a given operation keeps a code inside the class. Second, since there is no simple code heirachy that could be used the number of code classes
+would be large, overlapping and difficult to manage. Instead the aim is to only use a few classes such as the <code class="docutils literal notranslate"><span class="pre">StabSubSystemCode</span></code> class which deal with stabilizer subsystem codes.</p>
+</section>
+<section id="Code-Factories">
+<h2>Code Factories<a class="headerlink" href="#Code-Factories" title="Link to this heading">¶</a></h2>
+<p>A code factory is a general method of constructing a wide range of codes rather than any specific code, of group of codes. A code factory usually has many different configuration parameters and options. Code factories inherit from the <code class="docutils literal notranslate"><span class="pre">Factory</span></code> class. An example is the <code class="docutils literal notranslate"><span class="pre">TileCodeFactory</span></code> which builds codes based on cutting and gluing regions cut from tiles placed on a lattice.</p>
+</section>
+<section id="Code-Builders">
+<h2>Code Builders<a class="headerlink" href="#Code-Builders" title="Link to this heading">¶</a></h2>
+<p>A code builder is a method of constructing specific codes or groups of codes. Usually, the number of configuration parameters is small the builder is relatively easy to use. Code builders often utilize a specialize configured code factory but may not. For example the code builders <code class="docutils literal notranslate"><span class="pre">TriangularColorCodeBuilder</span></code> and <code class="docutils literal notranslate"><span class="pre">HeavyHexCodeBuilder</span></code> builder classes use the <code class="docutils literal notranslate"><span class="pre">TileCodeFactory</span></code> to build specific codes.</p>
+</section>
+<section id="Code-Library/Database">
+<h2>Code Library/Database<a class="headerlink" href="#Code-Library/Database" title="Link to this heading">¶</a></h2>
+<p>Qiskit-QEC contains a <code class="docutils literal notranslate"><span class="pre">CodeLibrarian</span></code> that manages various <code class="docutils literal notranslate"><span class="pre">CodeLibrary</span></code> instances that store a range of codes and their properties. This code database will eventually be hosted on a separate web server as the number of possible codes (even under local Clifford and permutation equivalance) grows very quickly. This database is meant to be analogous to GAP’s small group database or Sloan’s encyclopedia of integer sequences.</p>
+<section id="Creating-Codes">
+<h3>Creating Codes<a class="headerlink" href="#Creating-Codes" title="Link to this heading">¶</a></h3>
+<p>There are many ways to create codes using the framework. These include</p>
+<ol class="arabic simple">
+<li><p>Creating a symplectic matrix</p></li>
+<li><p>Providing the stabilizer/gauge generators as strings</p></li>
+<li><p>Loading a code via the codebase libraries</p></li>
+<li><p>Configuring and running a TileCodeFactory</p></li>
+<li><p>Configuring and running a specific CodeBuilder</p></li>
+<li><p>Writing a custom code class</p></li>
+</ol>
+</section>
+</section>
+<section id="Creating-a-symplectic-matrix">
+<h2>Creating a symplectic matrix<a class="headerlink" href="#Creating-a-symplectic-matrix" title="Link to this heading">¶</a></h2>
+<p>We first consider creating the 7-qubit Steane/color code:</p>
+<p>TODO: Add image of a 7-qubit Steane code</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.structures.gauge</span> <span class="kn">import</span> <span class="n">GaugeGroup</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli_list</span> <span class="kn">import</span> <span class="n">PauliList</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.codes.stabsubsystemcodes</span> <span class="kn">import</span> <span class="n">StabSubSystemCode</span>
+
+<span class="c1"># Create the 7-qubit Steane/color code</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">generators</span> <span class="o">=</span> <span class="n">PauliList</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+<span class="n">gauge_group</span> <span class="o">=</span> <span class="n">GaugeGroup</span><span class="p">(</span><span class="n">generators</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">StabSubSystemCode</span><span class="p">(</span><span class="n">gauge_group</span><span class="p">)</span>
+<span class="n">code</span><span class="o">.</span><span class="n">generators</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Providing-the-stabilizer/gauge-generators-as-strings">
+<h2>Providing the stabilizer/gauge generators as strings<a class="headerlink" href="#Providing-the-stabilizer/gauge-generators-as-strings" title="Link to this heading">¶</a></h2>
+<p>Codes can also be created by given a set of Pauli genertors described by strings.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The default Pauli/PauliList class reads product sytnax Paulis from right-to-left</span>
+<span class="c1"># So IIXX is the Pauli X0X1</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;IIIXXXX&quot;</span><span class="p">,</span> <span class="s2">&quot;IIIZZZZ&quot;</span><span class="p">,</span> <span class="s2">&quot;IXXXIXI&quot;</span><span class="p">,</span> <span class="s2">&quot;IZZZIZI&quot;</span><span class="p">,</span> <span class="s2">&quot;XIXIIXX&quot;</span><span class="p">,</span> <span class="s2">&quot;ZIZIIZZ&quot;</span><span class="p">])</span>
+<span class="n">gauge_group</span> <span class="o">=</span> <span class="n">GaugeGroup</span><span class="p">(</span><span class="n">generators</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">StabSubSystemCode</span><span class="p">(</span><span class="n">gauge_group</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Strings need not be in product syntax but can be an many forms including index syntax</span>
+<span class="n">generators</span> <span class="o">=</span> <span class="n">PauliList</span><span class="p">([</span><span class="s2">&quot;X0X1X2X3&quot;</span><span class="p">,</span> <span class="s2">&quot;Z0Z1Z2Z3&quot;</span><span class="p">,</span> <span class="s2">&quot;X1X3X4X5&quot;</span><span class="p">,</span> <span class="s2">&quot;Z1Z3Z4Z5&quot;</span><span class="p">,</span> <span class="s2">&quot;X0X1X4X6&quot;</span><span class="p">,</span> <span class="s2">&quot;Z0Z1Z4Z6&quot;</span><span class="p">])</span>
+<span class="n">gauge_group</span> <span class="o">=</span> <span class="n">GaugeGroup</span><span class="p">(</span><span class="n">generators</span><span class="p">)</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">StabSubSystemCode</span><span class="p">(</span><span class="n">gauge_group</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Loading-a-code-via-the-codebase-libraries">
+<h2>Loading a code via the codebase libraries<a class="headerlink" href="#Loading-a-code-via-the-codebase-libraries" title="Link to this heading">¶</a></h2>
+<p>Codes can also be loaded from a code database</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start the CodeLibrarian</span>
+<span class="kn">import</span> <span class="nn">qiskit_qec.codes.codebase</span> <span class="k">as</span> <span class="nn">cb</span>
+
+<span class="c1"># This will set the default output format to index format and read product syntax</span>
+<span class="c1"># Pauli strings from left-to-right</span>
+<span class="kn">import</span> <span class="nn">qiskit_qec.utils.pauli_rep</span> <span class="k">as</span> <span class="nn">pauli_rep</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.operators.base_pauli</span> <span class="kn">import</span> <span class="n">BasePauli</span>
+
+<span class="n">BasePauli</span><span class="o">.</span><span class="n">set_syntax</span><span class="p">(</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">INDEX_SYNTAX</span><span class="p">)</span>
+<span class="n">BasePauli</span><span class="o">.</span><span class="n">set_qubit_order</span><span class="p">(</span><span class="s2">&quot;left-to-right&quot;</span><span class="p">)</span>
+
+<span class="c1"># Load the code with n=5, k=0 and the index = 1 then show its generators</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">small_code</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">code</span><span class="o">.</span><span class="n">gauge_group</span><span class="o">.</span><span class="n">generators</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the code with n=5, k=0 and index=4 but only fetch the information on it</span>
+<span class="n">codes</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">small_code</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">info_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">codes</span><span class="o">.</span><span class="n">info</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[5,0]]-4 of type StabSubSystemCode
+-------------------------------------------------------------------------------
+isotropic_generators : [&#39;Z1Z2&#39;, &#39;Z0Z4&#39;, &#39;Y1Y2X3&#39;, &#39;Z0Z1Z3&#39;, &#39;Y0X3Y4&#39;]
+is_subsystem         : 1
+index                : 4
+code_type            : StabSubSystemCode
+aut_group_size       : 32
+is_triorthogonal     : 0
+is_decomposable      : 0
+weight_enumerator    : [1, 0, 2, 8, 13, 8]
+is_css               : 1
+uuid                 : 33f790cd-ab06-47fb-a2b3-057f38329942
+is_degenerate        : 0
+d                    : 2
+is_gf4linear         : 0
+k                    : 0
+n                    : 5
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load all (1) small codes info with n=5 and k=2 that are not CSS with d=2</span>
+<span class="n">codes</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">all_small_codes</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">is_css</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">info_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">code</span><span class="o">.</span><span class="n">info</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[5,2]]-36 of type StabSubSystemCode
+-------------------------------------------------------------------------------
+isotropic_generators : [&#39;X1Z2Z3&#39;, &#39;Y0Y1X3&#39;, &#39;Z0Z1X2Z4&#39;]
+logical_ops          : [&#39;Z0Z1X3&#39;, &#39;Z2X4&#39;, &#39;Z0Z3&#39;, &#39;Z4&#39;]
+is_subsystem         : 1
+index                : 36
+code_type            : StabSubSystemCode
+aut_group_size       : 8
+is_decomposable      : 0
+weight_enumerator    : [1, 0, 0, 2, 3, 2]
+is_css               : 0
+uuid                 : 712505a9-19ed-4702-ba25-d2270317afaa
+is_degenerate        : 0
+d                    : 1
+is_gf4linear         : 0
+k                    : 2
+n                    : 5
+
+</pre></div></div>
+</div>
+</section>
+<section id="Configuring-and-running-a-TileCodeFactory">
+<h2>Configuring and running a TileCodeFactory<a class="headerlink" href="#Configuring-and-running-a-TileCodeFactory" title="Link to this heading">¶</a></h2>
+<p>The following example shows how to use the TileCodeFactory to build the Steane/color code or more generally the triangular color code. The follow example also shows how to see intermediate results when using a factory.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set distance</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="c1"># Load the appropriate tile: Hexagon Tile</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.tiles.hexagontile</span> <span class="kn">import</span> <span class="n">HexagonTile</span>
+
+<span class="c1"># Load the Shape class to create a triangular cutter</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.shape</span> <span class="kn">import</span> <span class="n">Shape</span>
+
+<span class="c1"># Load the TileCodeFactory</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.codes.codefactory.tilecodefactory</span> <span class="kn">import</span> <span class="n">TileCodeFactory</span>
+
+<span class="c1"># Load the minifold to be tiled</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.plane</span> <span class="kn">import</span> <span class="n">Plane</span>
+
+<span class="c1"># Load the lattive class to tile against</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.geometry.lattice</span> <span class="kn">import</span> <span class="n">Lattice</span>
+
+<span class="c1"># Create a code factory</span>
+<span class="n">triangular_code_factory</span> <span class="o">=</span> <span class="n">TileCodeFactory</span><span class="p">()</span>
+
+<span class="c1">## Set the factory parameters</span>
+
+<span class="c1"># Set the manifold</span>
+<span class="n">manifold</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">()</span>
+
+<span class="c1"># Set the tile and tile parameters</span>
+<span class="n">tile</span> <span class="o">=</span> <span class="n">HexagonTile</span>
+<span class="n">tile_optype</span> <span class="o">=</span> <span class="s2">&quot;dXZ&quot;</span>  <span class="c1"># Choose both X and Z stabilizers for each hexagon (predefined setting)</span>
+
+<span class="c1"># Set the lattice to tile</span>
+<span class="n">lattice</span> <span class="o">=</span> <span class="n">Lattice</span><span class="p">(</span><span class="n">u_vec</span><span class="o">=</span><span class="n">HexagonTile</span><span class="o">.</span><span class="n">u_vec</span><span class="p">,</span> <span class="n">v_vec</span><span class="o">=</span><span class="n">HexagonTile</span><span class="o">.</span><span class="n">v_vec</span><span class="p">)</span>
+
+<span class="c1"># Set the length of the sides of the triangular cutter</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+<span class="c1"># Define the set of points defining the triangle</span>
+<span class="n">points</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">scale</span> <span class="o">*</span> <span class="n">HexagonTile</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">HexagonTile</span><span class="o">.</span><span class="n">r</span><span class="p">],</span> <span class="p">[</span><span class="n">scale</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+
+<span class="c1"># Create the triangular cutter and cutter parameters</span>
+<span class="n">cutter</span> <span class="o">=</span> <span class="n">Shape</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+<span class="n">on_boundary</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Choose to include points on (or very near to) the cutter boundary</span>
+<span class="n">boundary_strategy</span> <span class="o">=</span> <span class="s2">&quot;combine&quot;</span>  <span class="c1"># Choose how to combine separate peices of cut gauge operators</span>
+<span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>  <span class="c1"># Only include weight 4 and 6 operators after cutter from tiling</span>
+
+<span class="c1"># Set to display intermediate views to allow for correction configuration errors</span>
+<span class="n">show_face_colors</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># As each face as two operators (X and Z) use face colors</span>
+<span class="n">show_inside</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Show which qubits are inside the cutter</span>
+<span class="n">lattice_view</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Show the lattice view</span>
+<span class="n">precut_tiling_view</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Show the tiling before cutting</span>
+
+<span class="c1"># Configure the code factory</span>
+<span class="n">triangular_code_factory</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">(</span>
+    <span class="n">manifold</span><span class="o">=</span><span class="n">manifold</span><span class="p">,</span>
+    <span class="n">tile</span><span class="o">=</span><span class="n">tile</span><span class="p">,</span>
+    <span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span>
+    <span class="n">cutter</span><span class="o">=</span><span class="n">cutter</span><span class="p">,</span>
+    <span class="n">on_boundary</span><span class="o">=</span><span class="n">on_boundary</span><span class="p">,</span>
+    <span class="n">boundary_strategy</span><span class="o">=</span><span class="n">boundary_strategy</span><span class="p">,</span>
+    <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span>
+    <span class="n">tile_optype</span><span class="o">=</span><span class="n">tile_optype</span><span class="p">,</span>
+    <span class="n">show_face_colors</span><span class="o">=</span><span class="n">show_face_colors</span><span class="p">,</span>
+    <span class="n">show_inside</span><span class="o">=</span><span class="n">show_inside</span><span class="p">,</span>
+    <span class="n">lattice_view</span><span class="o">=</span><span class="n">lattice_view</span><span class="p">,</span>
+    <span class="n">precut_tiling_view</span><span class="o">=</span><span class="n">precut_tiling_view</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Update the factory is_configure check. This is used since we</span>
+<span class="c1"># directly updated the TileCodeFactory configuration instead of</span>
+<span class="c1"># using the individual TileCodeFactory configuration methods.</span>
+<span class="n">triangular_code_factory</span><span class="o">.</span><span class="n">update_is_configure</span><span class="p">()</span>
+
+<span class="c1"># Create the base triangular color code</span>
+<span class="n">code</span> <span class="o">=</span> <span class="n">triangular_code_factory</span><span class="o">.</span><span class="n">make_code</span><span class="p">()</span>
+
+<span class="c1"># View the code produced, using face colors and who qubit_indexs</span>
+<span class="n">code</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">face_colors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_10_0.png" src="../_images/how_tos_1-how-to-create-codes_10_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_10_1.png" src="../_images/how_tos_1-how-to-create-codes_10_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_10_2.png" src="../_images/how_tos_1-how-to-create-codes_10_2.png" />
+</div>
+</div>
+</section>
+<section id="Configuring-and-running-a-specific-CodeBuilder">
+<h2>Configuring and running a specific CodeBuilder<a class="headerlink" href="#Configuring-and-running-a-specific-CodeBuilder" title="Link to this heading">¶</a></h2>
+<p>The previous approach can be wrapped into a builder class. In this case a triangular code code builder</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.triangular_color_code_builder</span> <span class="kn">import</span> <span class="n">TriangularColorCodeBuilder</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="n">TriangularColorCodeBuilder</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">code</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">face_colors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_12_0.png" src="../_images/how_tos_1-how-to-create-codes_12_0.png" />
+</div>
+</div>
+<p>Another builder is the surface code builder</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.surface_code_builder</span> <span class="kn">import</span> <span class="n">SurfaceCodeBuilder</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="n">SurfaceCodeBuilder</span><span class="p">(</span><span class="n">dx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">code</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">face_colors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xcolor</span><span class="o">=</span><span class="s2">&quot;lightcoral&quot;</span><span class="p">,</span> <span class="n">zcolor</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_14_0.png" src="../_images/how_tos_1-how-to-create-codes_14_0.png" />
+</div>
+</div>
+<p>or the rotated surface code builder.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli</span> <span class="kn">import</span> <span class="n">Pauli</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.rotated_surface_code_builer</span> <span class="kn">import</span> <span class="n">RotatedSurfaceCodeBuilder</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="n">RotatedSurfaceCodeBuilder</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ul_op</span><span class="o">=</span><span class="n">Pauli</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">code</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">face_colors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xcolor</span><span class="o">=</span><span class="s2">&quot;lightcoral&quot;</span><span class="p">,</span> <span class="n">zcolor</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_16_0.png" src="../_images/how_tos_1-how-to-create-codes_16_0.png" />
+</div>
+</div>
+<p>Or the heavy hex code builder.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.heavyhex_code_builder</span> <span class="kn">import</span> <span class="n">HeavyHexCodeBuilder</span>
+
+<span class="n">code</span> <span class="o">=</span> <span class="n">HeavyHexCodeBuilder</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">code</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">face_colors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">xcolor</span><span class="o">=</span><span class="s2">&quot;lightcoral&quot;</span><span class="p">,</span> <span class="n">zcolor</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/how_tos_1-how-to-create-codes_18_0.png" src="../_images/how_tos_1-how-to-create-codes_18_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="2-how-to-work-with-shape-objects.html" class="btn btn-neutral float-right" title="How-to: work with geometry objects" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="index.html" class="btn btn-neutral" title="Qiskit QEC How-to guides" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">How-to: Create Codes</a><ul>
+<li><a class="reference internal" href="#Code-Classs">Code Classs</a></li>
+<li><a class="reference internal" href="#Code-Factories">Code Factories</a></li>
+<li><a class="reference internal" href="#Code-Builders">Code Builders</a></li>
+<li><a class="reference internal" href="#Code-Library/Database">Code Library/Database</a><ul>
+<li><a class="reference internal" href="#Creating-Codes">Creating Codes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Creating-a-symplectic-matrix">Creating a symplectic matrix</a></li>
+<li><a class="reference internal" href="#Providing-the-stabilizer/gauge-generators-as-strings">Providing the stabilizer/gauge generators as strings</a></li>
+<li><a class="reference internal" href="#Loading-a-code-via-the-codebase-libraries">Loading a code via the codebase libraries</a></li>
+<li><a class="reference internal" href="#Configuring-and-running-a-TileCodeFactory">Configuring and running a TileCodeFactory</a></li>
+<li><a class="reference internal" href="#Configuring-and-running-a-specific-CodeBuilder">Configuring and running a specific CodeBuilder</a></li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

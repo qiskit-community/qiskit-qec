@@ -1,0 +1,22 @@
+﻿ShapeObject
+===========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: ShapeObject
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: ShapeObject.add_parent
+   .. automethod:: ShapeObject.create_id
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id

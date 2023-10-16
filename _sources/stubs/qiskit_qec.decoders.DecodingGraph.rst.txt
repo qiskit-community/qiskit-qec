@@ -1,0 +1,25 @@
+﻿DecodingGraph
+=============
+
+.. currentmodule:: qiskit_qec.decoders
+
+.. autoclass:: DecodingGraph
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: DecodingGraph.get_error_probs
+   .. automethod:: DecodingGraph.make_error_graph
+   .. automethod:: DecodingGraph.weight_syndrome_graph
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: AVAILABLE_METHODS
+   .. autoattribute:: METHOD_NAIVE
+   .. autoattribute:: METHOD_SPITZ

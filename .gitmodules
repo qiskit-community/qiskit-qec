@@ -1,3 +1,0 @@
-[submodule "additional_resources/HeavyHex.jl"]
-	path = additional_resources/HeavyHex.jl
-	url = https://github.com/qiskit-community/HeavyHex.jl

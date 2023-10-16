@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.is\_center
+=============================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: is_center

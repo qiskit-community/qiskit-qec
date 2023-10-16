@@ -1,0 +1,17 @@
+﻿Tiling
+======
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Tiling
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Tiling.distance
+
+

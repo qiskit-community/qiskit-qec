@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.create\_lambda\_matrix
+=========================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: create_lambda_matrix

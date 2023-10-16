@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>SurfaceCodeCircuit &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
+        
+          <li><a href="../apidocs/circuits.html">Circuits (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.circuits</span></code>)</a> &gt;</li>
+        
+      <li>SurfaceCodeCircuit</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <section id="surfacecodecircuit">
+<h1>SurfaceCodeCircuit<a class="headerlink" href="#surfacecodecircuit" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SurfaceCodeCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit" title="qiskit_qec.circuits.code_circuit.CodeCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodeCircuit</span></code></a></p>
+<p>Distance d rotated surface code with  T syndrome measurement rounds.</p>
+<p>Creates the circuits corresponding to logical basis states.</p>
+<p>Creates the circuits corresponding to logical basis states encoded
+using a rotated surface code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>int</em>) – Number of code qubits (and hence repetitions) used.</p></li>
+<li><p><strong>T</strong> (<em>int</em>) – Number of rounds of ancilla-assisted syndrome measurement.</p></li>
+<li><p><strong>basis</strong> (<em>str</em>) – Basis used to initialize qubit.</p></li>
+<li><p><strong>resets</strong> (<em>bool</em>) – Whether to include a reset gate after mid-circuit measurements.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Additional information:</dt><dd><p>No measurements are added to the circuit if <cite>T=0</cite>. Otherwise
+<cite>T</cite> rounds are added, followed by measurement of the code
+qubits (corresponding to a logical measurement and final
+syndrome measurement round).</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes">
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extra_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Determines whether a given set of nodes are neutral. If so, also
+determines any additional logical readout qubits that would be
+flipped by the errors creating such a cluster and how many errors
+would be required to make the cluster.
+:type nodes: 
+:param nodes: List of nodes, of the type produced by <cite>string2nodes</cite>.
+:type nodes: list
+:type ignore_extra_boundary: 
+:param ignore_extra_boundary: If <cite>True</cite>, undeeded boundary nodes are
+:type ignore_extra_boundary: bool
+:param ignored.:
+:type minimal: 
+:param minimal: Whether output should only reflect the minimal error
+:type minimal: bool
+:param case.:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Whether the nodes independently correspond to a valid
+set of errors.
+flipped_logical_nodes (list): List of qubits nodes for logical
+operators that are flipped by the errors, that were not included
+in the original nodes.
+num_errors (int): Minimum number of errors required to create nodes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>neutral (bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.get_circuit_list">
+<span class="sig-name descname"><span class="pre">get_circuit_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.get_circuit_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.get_circuit_list" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self.circuit as a list, with
+circuit_list[0] = circuit[‘0’]
+circuit_list[1] = circuit[‘1’]</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>circuit_list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral">
+<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atypical_nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral" title="Link to this definition">¶</a></dt>
+<dd><p>Determines whether or not the cluster is neutral, meaning that one or more
+errors could have caused the set of atypical nodes (syndrome changes) passed
+to the method.
+:type atypical_nodes: 
+:param atypical_nodes:
+:type atypical_nodes: dictionary in the form of the return value of string2nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.readout">
+<span class="sig-name descname"><span class="pre">readout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.readout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.readout" title="Link to this definition">¶</a></dt>
+<dd><p>Readout of all code qubits, which corresponds to a logical measurement
+as well as allowing for a measurement of the syndrome to be inferred.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.string2nodes">
+<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.string2nodes" title="Link to this definition">¶</a></dt>
+<dd><p>Convert output string from circuits into a set of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>string</em>) – Results string to convert.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – Additional keyword arguments. See below:</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>kwargs:</dt><dd><p>logical (str): Logical value whose results are used (‘0’ as default).
+all_logicals (bool): Whether to include logical nodes
+irrespective of value. (False as default).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>List of nodes corresponding to to the non-trivial</dt><dd><p>elements in the string.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Additional information:</dt><dd><p>Strings are read right to left, but lists*
+are read left to right. So, we have some ugly indexing
+code whenever we’re dealing with both strings and lists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals">
+<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals" title="Link to this definition">¶</a></dt>
+<dd><p>Extracts raw logicals from output string.
+:type string: 
+:param string: Results string from which to extract logicals
+:type string: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Raw values for logical operators that correspond to nodes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.syndrome_measurement">
+<span class="sig-name descname"><span class="pre">syndrome_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">final</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.syndrome_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.syndrome_measurement" title="Link to this definition">¶</a></dt>
+<dd><p>Application of a syndrome measurement round.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>final</strong> (<em>bool</em>) – Whether to disregard the reset (if applicable) due to this
+being the final syndrome measurement round.</p></li>
+<li><p><strong>barrier</strong> (<em>bool</em>) – Boolean denoting whether to include a barrier at the end.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.x">
+<span class="sig-name descname"><span class="pre">x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('0',</span> <span class="pre">'1')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.x" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a logical x to the circuits for the given logical values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logs</strong> (<em>list</em><em> or </em><em>tuple</em>) – List or tuple of logical values expressed as
+strings.</p></li>
+<li><p><strong>barrier</strong> (<em>bool</em>) – Boolean denoting whether to include a barrier at
+the end.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.SurfaceCodeCircuit.z">
+<span class="sig-name descname"><span class="pre">z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('0',</span> <span class="pre">'1')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barrier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/surface_code.html#SurfaceCodeCircuit.z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.SurfaceCodeCircuit.z" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a logical z to the circuits for the given logical values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logs</strong> (<em>list</em><em> or </em><em>tuple</em>) – List or tuple of logical values expressed as
+strings.</p></li>
+<li><p><strong>barrier</strong> (<em>bool</em>) – Boolean denoting whether to include a barrier at
+the end.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+      <a href="qiskit_qec.circuits.CSSCodeCircuit.html" class="btn btn-neutral float-right" title="CSSCodeCircuit" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
+    
+    
+      <a href="qiskit_qec.circuits.ArcCircuit.html" class="btn btn-neutral" title="ArcCircuit" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              <ul>
+<li><a class="reference internal" href="#">SurfaceCodeCircuit</a><ul>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit</span></code></a><ul>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.check_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.get_circuit_list"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.get_circuit_list()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.is_cluster_neutral()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.readout"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.readout()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.string2nodes"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.string2nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.string2raw_logicals()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.syndrome_measurement"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.syndrome_measurement()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.x"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.x()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.SurfaceCodeCircuit.z"><code class="docutils literal notranslate"><span class="pre">SurfaceCodeCircuit.z()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+      <script src="../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

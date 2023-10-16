@@ -1,0 +1,12 @@
+﻿QECCode
+=======
+
+.. currentmodule:: qiskit_qec.codes
+
+.. autoclass:: QECCode
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+

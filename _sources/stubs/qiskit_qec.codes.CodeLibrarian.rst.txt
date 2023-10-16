@@ -1,0 +1,22 @@
+﻿CodeLibrarian
+=============
+
+.. currentmodule:: qiskit_qec.codes
+
+.. autoclass:: CodeLibrarian
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: CodeLibrarian.get
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: n_dir_format
+   .. autoattribute:: n_k_codes_file_format

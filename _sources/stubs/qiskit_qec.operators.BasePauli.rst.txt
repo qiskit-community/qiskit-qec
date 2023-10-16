@@ -1,0 +1,59 @@
+﻿BasePauli
+=========
+
+.. currentmodule:: qiskit_qec.operators
+
+.. autoclass:: BasePauli
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: BasePauli.adjoint
+   .. automethod:: BasePauli.all_commutes
+   .. automethod:: BasePauli.commutes
+   .. automethod:: BasePauli.compose
+   .. automethod:: BasePauli.conjugate
+   .. automethod:: BasePauli.copy
+   .. automethod:: BasePauli.dot
+   .. automethod:: BasePauli.evolve
+   .. automethod:: BasePauli.expand
+   .. automethod:: BasePauli.input_dims
+   .. automethod:: BasePauli.output_dims
+   .. automethod:: BasePauli.power
+   .. automethod:: BasePauli.reshape
+   .. automethod:: BasePauli.set_pauli_encoding
+   .. automethod:: BasePauli.set_phase_encoding
+   .. automethod:: BasePauli.set_print_phase_encoding
+   .. automethod:: BasePauli.set_qubit_order
+   .. automethod:: BasePauli.set_syntax
+   .. automethod:: BasePauli.set_tensor_encoding
+   .. automethod:: BasePauli.tensor
+   .. automethod:: BasePauli.to_label
+   .. automethod:: BasePauli.transpose
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: EXTERNAL_PAULI_ENCODING
+   .. autoattribute:: EXTERNAL_PHASE_ENCODING
+   .. autoattribute:: EXTERNAL_QUBIT_ORDER
+   .. autoattribute:: EXTERNAL_SYNTAX
+   .. autoattribute:: EXTERNAL_TENSOR_ENCODING
+   .. autoattribute:: PRINT_PHASE_ENCODING
+   .. autoattribute:: dim
+   .. autoattribute:: num_qubits
+   .. autoattribute:: num_y
+   .. autoattribute:: pauli_encoding
+   .. autoattribute:: phase_encoding
+   .. autoattribute:: print_phase_encoding
+   .. autoattribute:: qargs
+   .. autoattribute:: qubit_order
+   .. autoattribute:: syntax
+   .. autoattribute:: tensor_encoding
+   .. autoattribute:: x
+   .. autoattribute:: z

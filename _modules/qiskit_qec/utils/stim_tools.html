@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+  <html class="no-js" lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>qiskit_qec.utils.stim_tools &mdash; Qiskit QEC 0.0.0 documentation</title>
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" /><script src="../../../_static/js/web-components/top-nav-bar.js"></script>
+
+  <!-- SEGMENT ANALYTICS --></head>
+<body class="pytorch-body">
+  <!-- UNIFIED TOP MENU -->
+  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
+
+   
+
+    <!-- LEFT SIDE BAR -->
+
+    <!-- if translations available, display language dropdown menu -->
+    
+
+    <!-- Menu becomes dropdown in mobile view -->
+    <div class="table-of-contents-link-wrapper">
+      <span>Table of Contents</span>
+      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+    </div>
+
+    <!-- left side bar main content -->
+    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
+    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      <div class="sidebar">
+    <div class="pytorch-left-menu-search">
+        <div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+    </div>
+
+    <!-- render sidebar from the toctree -->
+    
+    
+        <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apidocs/index.html">API References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../discussions/index.html">Discussions</a></li>
+</ul>
+
+    
+
+    <!-- PREVIOUS RELEASES -->
+        
+
+    </div>
+  </div>
+</nav>
+
+<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
+
+
+<!-- STYLING -->
+<script>
+    // indent subheadings under captions
+    expandable_rows = document.getElementsByClassName("caption");
+    var i;
+    for (i = 0; i < expandable_rows.length; i++) {
+        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
+
+        // un-bold subheadings in dropdown
+        var subheadings = expandable_rows[i].nextElementSibling
+        for (j = 0; j < subheadings.children.length; j++) {
+            subheadings.children[j].style.fontWeight = "unset"
+        }
+    }
+
+    // adjust toctree class name to style external links
+    var toc_rows = document.getElementsByClassName("toctree-l1");
+    var i;
+    for (i = 0; i < toc_rows.length; i++) {
+        if (toc_rows[i].children[0].className === "reference external") {
+            toc_rows[i].className = "toctree-l1-external"
+            }
+    }
+
+    // expand and unexpand previous releases dropdown when clicked
+    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
+    for (i = 0; i < release_rows.length; i++) {
+        release_rows[i].addEventListener("click", function() {
+            this.classList.toggle("open");
+            var clicked_subheadings = this.nextElementSibling;
+            if (clicked_subheadings.style.display === "block") {
+            clicked_subheadings.style.display = "none";
+            } else {
+            clicked_subheadings.style.display = "block";
+            }
+        });
+    }
+</script>
+
+    <div class="pytorch-container">
+
+      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
+      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
+        <div class="pytorch-breadcrumbs-wrapper">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="pytorch-breadcrumbs">
+    
+      <li>
+        <a href="../../../index.html">
+            Qiskit QEC  documentation
+        </a> &gt;
+      </li>
+
+        
+          <li><a href="../../index.html">Module code</a> &gt;</li>
+        
+      <li>qiskit_qec.utils.stim_tools</li>
+    
+  </ul>
+</div>
+        </div>
+      </div>
+
+      <!-- MAIN CENTRE CONTENT -->
+      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
+        
+        <div class="pytorch-content-left">
+          <div class="rst-content">
+            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
+             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
+              
+  <h1>Source code for qiskit_qec.utils.stim_tools</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This code is part of Qiskit.</span>
+<span class="c1">#</span>
+<span class="c1"># (C) Copyright IBM 2023.</span>
+<span class="c1">#</span>
+<span class="c1"># This code is licensed under the Apache License, Version 2.0. You may</span>
+<span class="c1"># obtain a copy of this license in the LICENSE.txt file in the root directory</span>
+<span class="c1"># of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.</span>
+<span class="c1">#</span>
+<span class="c1"># Any modifications or derivative works of this code must retain this</span>
+<span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
+<span class="c1"># that they have been altered from the originals.</span>
+
+<span class="c1"># pylint: disable=invalid-name, disable=no-name-in-module</span>
+
+<span class="sd">&quot;&quot;&quot;Tools to use functionality from Stim.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">Circuit</span> <span class="k">as</span> <span class="n">StimCircuit</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DetectorErrorModel</span> <span class="k">as</span> <span class="n">StimDetectorErrorModel</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DemInstruction</span> <span class="k">as</span> <span class="n">StimDemInstruction</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DemTarget</span> <span class="k">as</span> <span class="n">StimDemTarget</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">rustworkx</span> <span class="k">as</span> <span class="nn">rx</span>
+
+<span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer.noise.errors.quantum_error</span> <span class="kn">import</span> <span class="n">QuantumChannelInstruction</span>
+<span class="kn">from</span> <span class="nn">qiskit_aer.noise</span> <span class="kn">import</span> <span class="n">pauli_error</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils.decoding_graph_attributes</span> <span class="kn">import</span> <span class="n">DecodingGraphNode</span><span class="p">,</span> <span class="n">DecodingGraphEdge</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.noise.paulinoisemodel</span> <span class="kn">import</span> <span class="n">PauliNoiseModel</span>
+
+
+<div class="viewcode-block" id="get_stim_circuits">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.get_stim_circuits.html#qiskit_qec.utils.get_stim_circuits">[docs]</a>
+<span class="k">def</span> <span class="nf">get_stim_circuits</span><span class="p">(</span><span class="n">circuit_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts compatible qiskit circuits to stim circuits.</span>
+<span class="sd">       Dictionaries are not complete. For the stim definitions see:</span>
+<span class="sd">       https://github.com/quantumlib/Stim/blob/main/doc/gates.md</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        circuit_dict: Compatible gates are paulis, controlled paulis, h, s,</span>
+<span class="sd">        and sdg, swap, reset, measure and barrier. Compatible noise operators</span>
+<span class="sd">        correspond to a single or two qubit pauli channel.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        stim_circuits, stim_measurement_data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stim_circuits</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">circ_label</span><span class="p">,</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuit_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">StimCircuit</span><span class="p">()</span>
+
+        <span class="n">qiskit_to_stim_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sdg&quot;</span><span class="p">:</span> <span class="s2">&quot;S_DAG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cx&quot;</span><span class="p">:</span> <span class="s2">&quot;CNOT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cy&quot;</span><span class="p">:</span> <span class="s2">&quot;CY&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cz&quot;</span><span class="p">:</span> <span class="s2">&quot;CZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;swap&quot;</span><span class="p">:</span> <span class="s2">&quot;SWAP&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reset&quot;</span><span class="p">:</span> <span class="s2">&quot;R&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;measure&quot;</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;barrier&quot;</span><span class="p">:</span> <span class="s2">&quot;TICK&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">pauli_error_1_stim_order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+        <span class="n">pauli_error_2_stim_order</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;II&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;IX&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;IY&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;IZ&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;XI&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s2">&quot;XX&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s2">&quot;XY&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+            <span class="s2">&quot;XZ&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="s2">&quot;YI&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s2">&quot;YX&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="s2">&quot;YY&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s2">&quot;YZ&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+            <span class="s2">&quot;ZI&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+            <span class="s2">&quot;ZX&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+            <span class="s2">&quot;ZY&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+            <span class="s2">&quot;ZZ&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">measurement_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">register_offset</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">previous_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span> <span class="ow">in</span> <span class="n">circuit</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="n">qargs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">register_offset</span><span class="p">:</span>
+                    <span class="n">register_offset</span><span class="p">[</span><span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_offset</span>
+                    <span class="n">previous_offset</span> <span class="o">+=</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">size</span>
+
+            <span class="n">qubit_indices</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span> <span class="o">+</span> <span class="n">register_offset</span><span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">))</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">QuantumChannelInstruction</span><span class="p">):</span>
+                <span class="n">qerror</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">_quantum_error</span>
+                <span class="n">pauli_errors_types</span> <span class="o">=</span> <span class="n">qerror</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;instructions&quot;</span><span class="p">]</span>
+                <span class="n">pauli_probs</span> <span class="o">=</span> <span class="n">qerror</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;probabilities&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">pauli_errors_types</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pauli_error_1_stim_order</span><span class="p">:</span>
+                    <span class="n">probs</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">pind</span><span class="p">,</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pauli_errors_types</span><span class="p">):</span>
+                        <span class="n">probs</span><span class="p">[</span><span class="n">pauli_error_1_stim_order</span><span class="p">[</span><span class="n">ptype</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">pauli_probs</span><span class="p">[</span><span class="n">pind</span><span class="p">]</span>
+                    <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;PAULI_CHANNEL_1&quot;</span><span class="p">,</span> <span class="n">qubit_indices</span><span class="p">,</span> <span class="n">probs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="k">elif</span> <span class="n">pauli_errors_types</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pauli_error_2_stim_order</span><span class="p">:</span>
+                    <span class="c1"># here the name is always &#39;pauli&#39; and the params gives the Pauli type</span>
+                    <span class="n">probs</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">pind</span><span class="p">,</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pauli_errors_types</span><span class="p">):</span>
+                        <span class="n">probs</span><span class="p">[</span><span class="n">pauli_error_2_stim_order</span><span class="p">[</span><span class="n">ptype</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">pauli_probs</span><span class="p">[</span><span class="n">pind</span><span class="p">]</span>
+                    <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;PAULI_CHANNEL_2&quot;</span><span class="p">,</span> <span class="n">qubit_indices</span><span class="p">,</span> <span class="n">probs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected operations: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">([</span><span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Gates and measurements</span>
+                <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">qiskit_to_stim_dict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># keeping track of measurement indices in stim</span>
+                        <span class="n">measurement_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span> <span class="o">+</span> <span class="n">register_offset</span><span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                <span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">qiskit_to_stim_dict</span><span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;TICK&quot;</span><span class="p">:</span>  <span class="c1"># barrier</span>
+                        <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;TICK&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># gates/measurements acting on qubits</span>
+                        <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qiskit_to_stim_dict</span><span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">qubit_indices</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected operations: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">([</span><span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span><span class="p">]))</span>
+
+        <span class="n">stim_circuits</span><span class="p">[</span><span class="n">circ_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">stim_circuit</span>
+        <span class="n">stim_measurement_data</span><span class="p">[</span><span class="n">circ_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">measurement_data</span>
+    <span class="k">return</span> <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">stim_measurement_data</span></div>
+
+
+
+<div class="viewcode-block" id="get_counts_via_stim">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.get_counts_via_stim.html#qiskit_qec.utils.get_counts_via_stim">[docs]</a>
+<span class="k">def</span> <span class="nf">get_counts_via_stim</span><span class="p">(</span>
+    <span class="n">circuits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">],</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">,</span> <span class="n">noise_model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a qiskit compatible dictionary of measurement outcomes</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        circuits: Qiskit circuit compatible with `get_stim_circuits` or list thereof.</span>
+<span class="sd">        shots: Number of samples to be generated.</span>
+<span class="sd">        noise_model: Pauli noise model for any additional noise to be applied.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        counts: Counts dictionary in standard Qiskit form or list thereof.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">noise_model</span><span class="p">:</span>
+        <span class="n">circuits</span> <span class="o">=</span> <span class="n">noisify_circuit</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">noise_model</span><span class="p">)</span>
+
+    <span class="n">single_circuit</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">single_circuit</span><span class="p">:</span>
+        <span class="n">circuits</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="p">]</span>
+
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
+        <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="n">get_stim_circuits</span><span class="p">({</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="n">circuit</span><span class="p">})</span>
+        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">measurement_data</span> <span class="o">=</span> <span class="n">stim_measurement_data</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="n">stim_samples</span> <span class="o">=</span> <span class="n">stim_circuit</span><span class="o">.</span><span class="n">compile_sampler</span><span class="p">()</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span>
+        <span class="n">qiskit_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">stim_sample</span> <span class="ow">in</span> <span class="n">stim_samples</span><span class="p">:</span>
+            <span class="n">prev_reg</span> <span class="o">=</span> <span class="n">measurement_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">qiskit_count</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">meas</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">reg</span> <span class="o">=</span> <span class="n">meas</span>
+                <span class="k">if</span> <span class="n">reg</span> <span class="o">!=</span> <span class="n">prev_reg</span><span class="p">:</span>
+                    <span class="n">qiskit_count</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+                <span class="n">qiskit_count</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">stim_sample</span><span class="p">[</span><span class="o">-</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+                <span class="n">prev_reg</span> <span class="o">=</span> <span class="n">reg</span>
+            <span class="k">if</span> <span class="n">qiskit_count</span> <span class="ow">in</span> <span class="n">qiskit_counts</span><span class="p">:</span>
+                <span class="n">qiskit_counts</span><span class="p">[</span><span class="n">qiskit_count</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">qiskit_counts</span><span class="p">[</span><span class="n">qiskit_count</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qiskit_counts</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">single_circuit</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">counts</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">detector_error_model_to_rx_graph</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">StimDetectorErrorModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a stim error model into a RustworkX graph.</span>
+<span class="sd">    It assumes that the stim circuit does not contain repeat blocks.</span>
+<span class="sd">    Later on repeat blocks should be handled to make this function compatible with</span>
+<span class="sd">    user-defined stim circuits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">(</span><span class="n">multigraph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">index_to_DecodingGraphNode</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;detector&quot;</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">())</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">qubits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">qubit_ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">qubit_ind</span> <span class="ow">in</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">)</span>
+                <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="n">trivial_boundary_node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">trivial_boundary_node</span><span class="p">)</span>
+    <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">]</span> <span class="o">=</span> <span class="n">trivial_boundary_node</span>
+
+    <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">frame_changes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">hyperedge</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">dets</span> <span class="o">=</span> <span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Error with more than 2 symptoms can&#39;t become an edge or boundary edge: </span><span class="si">{</span><span class="n">dets</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">edge_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">edge_data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge_ind</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span>
+            <span class="n">old_p</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;error_probability&quot;</span><span class="p">]</span>
+            <span class="n">old_frame_changes</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;fault_ids&quot;</span><span class="p">]</span>
+            <span class="c1"># If frame changes differ, the code has distance 2; just keep whichever was first.</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_frame_changes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">):</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">old_p</span><span class="p">)</span> <span class="o">+</span> <span class="n">old_p</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">p</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">qubits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
+                    <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">qubits</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span>
+                <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span>
+                <span class="n">weight</span><span class="o">=</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">),</span>
+                <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;fault_ids&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">),</span> <span class="s2">&quot;error_probability&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">)</span>
+            <span class="n">hyperedge</span><span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">edge</span>
+
+    <span class="n">hyperedges</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">StimDemInstruction</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+                <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">frames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">t</span><span class="p">:</span> <span class="n">StimDemTarget</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">hyperedge</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_relative_detector_id</span><span class="p">():</span>
+                        <span class="n">dets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_logical_observable_id</span><span class="p">():</span>
+                        <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_separator</span><span class="p">():</span>
+                        <span class="c1"># Treat each component of a decomposed error as an independent error.</span>
+                        <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
+                        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">dets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># Handle last component.</span>
+                <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">hyperedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;detector&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;logical_observable&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">hyperedges</span>
+
+
+<div class="viewcode-block" id="noisify_circuit">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.noisify_circuit.html#qiskit_qec.utils.noisify_circuit">[docs]</a>
+<span class="k">def</span> <span class="nf">noisify_circuit</span><span class="p">(</span><span class="n">circuits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">],</span> <span class="n">noise_model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Inserts error operations into a circuit according to a pauli noise model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        circuits: Circuit or list thereof to which noise is added.</span>
+<span class="sd">        noise_model: Pauli noise model used to define types of errors to add to circuit.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        noisy_circuits: Corresponding circuit or list thereof.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">single_circuit</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">single_circuit</span><span class="p">:</span>
+        <span class="n">circuits</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="p">]</span>
+
+    <span class="c1"># create pauli errors for all errors in noise model</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pauli</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">noise</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pauli</span> <span class="o">=</span> <span class="n">pauli</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pauli_error</span><span class="p">([(</span><span class="n">pauli</span><span class="p">,</span> <span class="n">prob</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;I&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pauli</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">prob</span><span class="p">)]))</span>
+
+    <span class="n">noisy_circuits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">qc</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
+        <span class="n">noisy_qc</span> <span class="o">=</span> <span class="n">QuantumCircuit</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">qreg</span> <span class="ow">in</span> <span class="n">qc</span><span class="o">.</span><span class="n">qregs</span><span class="p">:</span>
+            <span class="n">noisy_qc</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="n">qreg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">creg</span> <span class="ow">in</span> <span class="n">qc</span><span class="o">.</span><span class="n">cregs</span><span class="p">:</span>
+            <span class="n">noisy_qc</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="n">creg</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gate</span> <span class="ow">in</span> <span class="n">qc</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">gate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">qubits</span> <span class="o">=</span> <span class="n">gate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">pre_error</span> <span class="o">=</span> <span class="n">g</span> <span class="o">==</span> <span class="s2">&quot;reset&quot;</span>
+            <span class="c1"># add gate if it needs to go before the error</span>
+            <span class="k">if</span> <span class="n">pre_error</span><span class="p">:</span>
+                <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">)</span>
+            <span class="c1"># then the error</span>
+            <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">error_op</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]:</span>
+                    <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_op</span><span class="p">,</span> <span class="n">qubits</span><span class="p">)</span>
+            <span class="c1"># add gate if it needs to go after the error</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pre_error</span><span class="p">:</span>
+                <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">)</span>
+
+        <span class="n">noisy_circuits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">noisy_qc</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">single_circuit</span><span class="p">:</span>
+        <span class="n">noisy_circuits</span> <span class="o">=</span> <span class="n">noisy_circuits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">noisy_circuits</span></div>
+
+</pre></div>
+
+             </article>
+            </div>
+            <footer>
+<!-- USER FEEDBACK -->
+  
+
+  <!-- NEXT/PREVIOUS BUTTONS -->
+  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+    
+    
+  </div>
+
+  <div role="contentinfo">
+    <p>
+    <!-- SHOW QISKIT COPYRIGHT TEXT -->
+        &copy; Copyright 2022, Qiskit Development Team.
+
+    <!-- SHOW DATE PAGE LAST UPDATED -->
+      Last updated on 2023/10/16.
+
+    </p>
+  </div>
+
+<!-- SHOW 'MADE WITH SPHINX' TEXT -->
+    
+      <div>
+        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+      </div>
+     
+<br>
+</footer>
+
+<script>
+  function clicked(ctaType) {
+    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
+    window.trackCta(`Helpful - ${ctaType}`);
+  }
+</script>
+
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
+        <div class="pytorch-content-right" id="pytorch-content-right">
+          <div class="pytorch-right-menu" id="pytorch-right-menu">
+            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
+              
+            </div>
+          </div>
+        </div>
+      </section>
+    </div> 
+
+  <!-- MOBILE MENU FOR SIDEBAR -->
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/documentation_options.js?v=7026087e"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <!-- enable language dropdown menu expand -->
+  <script type="text/javascript">
+    jQuery(function () {
+        SphinxRtdTheme.Navigation.enable(true);
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      mobileMenu.bind();
+      mobileTOC.bind();
+      sideMenus.bind();
+      scrollToAnchor.bind();
+      highlightNavigation.bind();
+      mainMenuDropdown.bind();
+      filterTags.bind();
+
+      // Add class to links that have code blocks, since we cannot create links in code blocks
+      $("article.pytorch-article a span.pre").each(function(e) {
+        $(this).closest("a").addClass("has-code");
+      });
+    })
+  </script>
+
+</body>
+</html>

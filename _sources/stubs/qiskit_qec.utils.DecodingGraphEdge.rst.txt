@@ -1,0 +1,23 @@
+﻿DecodingGraphEdge
+=================
+
+.. currentmodule:: qiskit_qec.utils
+
+.. autoclass:: DecodingGraphEdge
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: DecodingGraphEdge.get
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: qubits
+   .. autoattribute:: weight
+   .. autoattribute:: properties

@@ -1,0 +1,12 @@
+﻿TileFactory
+===========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: TileFactory
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+

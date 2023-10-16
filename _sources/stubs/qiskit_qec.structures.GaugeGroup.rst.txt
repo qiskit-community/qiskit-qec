@@ -1,0 +1,18 @@
+﻿GaugeGroup
+==========
+
+.. currentmodule:: qiskit_qec.structures
+
+.. autoclass:: GaugeGroup
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: k
+   .. autoattribute:: n
+   .. autoattribute:: num_gen

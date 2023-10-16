@@ -1,0 +1,33 @@
+﻿OctaSquareTile
+==============
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: OctaSquareTile
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: OctaSquareTile.draw
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: c8
+   .. autoattribute:: face_colors
+   .. autoattribute:: faces_wf_components
+   .. autoattribute:: num_faces
+   .. autoattribute:: num_qubits
+   .. autoattribute:: s8
+   .. autoattribute:: size
+   .. autoattribute:: u_vec
+   .. autoattribute:: v_vec
+   .. autoattribute:: wf_coordinates
+   .. autoattribute:: wf_loop_indicator
+   .. autoattribute:: wf_operator_dict
+   .. autoattribute:: wf_q_indices

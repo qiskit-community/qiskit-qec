@@ -1,0 +1,33 @@
+﻿HexagonTile
+===========
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: HexagonTile
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: HexagonTile.draw
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: face_colors
+   .. autoattribute:: faces_wf_components
+   .. autoattribute:: h
+   .. autoattribute:: num_faces
+   .. autoattribute:: num_qubits
+   .. autoattribute:: r
+   .. autoattribute:: size
+   .. autoattribute:: u_vec
+   .. autoattribute:: v_vec
+   .. autoattribute:: wf_coordinates
+   .. autoattribute:: wf_loop_indicator
+   .. autoattribute:: wf_operator_dict
+   .. autoattribute:: wf_q_indices

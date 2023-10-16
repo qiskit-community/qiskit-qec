@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.all\_commute
+===============================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: all_commute

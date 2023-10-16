@@ -1,0 +1,22 @@
+﻿StabSubSystemCode
+=================
+
+.. currentmodule:: qiskit_qec.codes
+
+.. autoclass:: StabSubSystemCode
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: StabSubSystemCode.draw
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: generators
+   .. autoattribute:: n

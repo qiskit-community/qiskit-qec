@@ -1,0 +1,6 @@
+﻿qiskit\_qec.linear.is\_symplectic\_vector\_form
+===============================================
+
+.. currentmodule:: qiskit_qec.linear
+
+.. autofunction:: is_symplectic_vector_form

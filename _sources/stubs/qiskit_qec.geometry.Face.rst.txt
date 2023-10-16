@@ -1,0 +1,22 @@
+﻿Face
+====
+
+.. currentmodule:: qiskit_qec.geometry
+
+.. autoclass:: Face
+   :no-members:
+   :show-inheritance:
+   :no-inherited-members:
+   :no-special-members:
+
+   .. rubric:: Methods
+
+
+   .. automethod:: Face.add_parent
+   .. automethod:: Face.create_id
+
+
+
+   .. rubric:: Attributes
+
+   .. autoattribute:: last_id
