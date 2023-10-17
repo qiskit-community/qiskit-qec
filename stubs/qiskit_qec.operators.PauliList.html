@@ -1,149 +1,340 @@
-<!DOCTYPE html>
-  <html class="no-js" lang="en" >
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Pauli" href="qiskit_qec.operators.Pauli.html" /><link rel="prev" title="Operators (qiskit_qec.operators)" href="../apidocs/operators.html" />
 
-  <title>PauliList &mdash; Qiskit QEC 0.0.0 documentation</title>
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" /><script src="../_static/js/web-components/top-nav-bar.js"></script>
-
-  <!-- SEGMENT ANALYTICS --></head>
-<body class="pytorch-body">
-  <!-- UNIFIED TOP MENU -->
-  <qiskit-ui-shell variant="hide-account"></qiskit-ui-shell>
-
-   
-
-    <!-- LEFT SIDE BAR -->
-
-    <!-- if translations available, display language dropdown menu -->
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.08.19 -->
+        <title>PauliList - Qiskit QEC 0.0.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-sphinx-theme.css?v=fe84956c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/qiskit-ecosystem.css?v=745c5aa7" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    
     
 
-    <!-- Menu becomes dropdown in mobile view -->
-    <div class="table-of-contents-link-wrapper">
-      <span>Table of Contents</span>
-      <a href="#" class="toggle-table-of-contents" data-behavior="toggle-table-of-contents"></a>
+
+<style>
+  body {
+    --color-code-background: #ffffff;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="../_static/js/web-components/top-nav-bar.js"></script></head>
+  <body>
+    
+    <script>document.body.dataset.theme = "light";</script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <path d="M28,4H4A2,2,0,0,0,2,6V26a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM4,6H20V26H4ZM28,26H22V6h6Z"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <defs><style>.cls-1{fill:none;}</style></defs>
+      <rect x="4" y="6" width="24" height="2"/>
+      <rect x="4" y="24" width="24" height="2"/>
+      <rect x="4" y="12" width="24" height="2"/>
+      <rect x="4" y="18" width="24" height="2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg version="1.1" id="icon" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+         viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve"><polygon points="22,16 12,26 10.6,24.6 19.2,16 10.6,7.4 12,6 " stroke="currentColor"/>
+      <rect id="_x3C_Transparent_Rectangle_x3E_" fill="none" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-new-tab" viewBox="0 0 32 32">
+    <svg id="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <defs>
+        <style>
+          .cls-1 {
+            fill: none;
+          }
+        </style>
+      </defs>
+      <path fill="#6929C4" d="M26,28H6a2.0027,2.0027,0,0,1-2-2V6A2.0027,2.0027,0,0,1,6,4H16V6H6V26H26V16h2V26A2.0027,2.0027,0,0,1,26,28Z"/>
+      <polygon fill="#6929C4" points="20 2 20 4 26.586 4 18 12.586 19.414 14 28 5.414 28 12 30 12 30 2 20 2"/>
+      <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
     </div>
-
-    <!-- left side bar main content -->
-    <nav data-toggle="wy-nav-shift" class="pytorch-left-menu" id="pytorch-left-menu">
-    <div class="pytorch-menu pytorch-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-      <div class="sidebar">
-    <div class="pytorch-left-menu-search">
-        <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search Qiskit QEC Docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Qiskit QEC 0.0.0</div></a>
     </div>
-
-    <!-- render sidebar from the toctree -->
-    
-    
-        <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../apidocs/index.html">API References</a></li>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-brand">
+  <a href="https://www.qiskit.org/ecosystem">
+    <div class="sidebar-logo-container">
+      <img class="sidebar-logo" src="../_static/images/ecosystem-logo.svg" alt="Qiskit Ecosystem logo"/>
+    </div>
+  </a>
+  
+  <span class="sidebar-brand-text">Qiskit QEC 0.0.0</span>
+</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how_tos/1-how-to-create-codes.html">How-to: Create Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how_tos/2-how-to-work-with-shape-objects.html">How-to: work with geometry objects</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../apidocs/index.html">API References</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of API References</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../apidocs/analysis.html">Analysis (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.analysis</span></code>)</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/circuits.html">Circuits (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.circuits</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of Circuits (qiskit_qec.circuits)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.circuits.CodeCircuit.html">CodeCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.circuits.RepetitionCodeCircuit.html">RepetitionCodeCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.circuits.ArcCircuit.html">ArcCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.circuits.SurfaceCodeCircuit.html">SurfaceCodeCircuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.circuits.CSSCodeCircuit.html">CSSCodeCircuit</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/codes.html">Codes (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.codes</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Codes (qiskit_qec.codes)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.QECCode.html">QECCode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.StabSubSystemCode.html">StabSubSystemCode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.CodeLibrary.html">CodeLibrary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.CodeLibrarian.html">CodeLibrarian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.small_code.html">qiskit_qec.codes.small_code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.codes.all_small_codes.html">qiskit_qec.codes.all_small_codes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/geometry.html">Geometry (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.geometry</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of Geometry (qiskit_qec.geometry)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.GeometryBounds.html">GeometryBounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Lattice.html">Lattice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Manifold.html">Manifold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Plane.html">Plane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Shape.html">Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.TwoManifold.html">TwoManifold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Edge.html">Edge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Face.html">Face</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.QubitCount.html">QubitCount</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.QubitData.html">QubitData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.ShapeObject.html">ShapeObject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Shell.html">Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Vertex.html">Vertex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.WireFrame.html">WireFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Tile.html">Tile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.CheckerBoardTile.html">CheckerBoardTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.DiagonalBarTile.html">DiagonalBarTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.DiagonalHourGlassTile.html">DiagonalHourGlassTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.HexagonTile.html">HexagonTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.OctaSquareTile.html">OctaSquareTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.SquareDiamondTile.html">SquareDiamondTile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.Tiling.html">Tiling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.geometry.TileFactory.html">TileFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/info.html">Info (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.info</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of Info (qiskit_qec.info)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.info.Properties.html">Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/linear.html">Linear (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.linear</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of Linear (qiskit_qec.linear)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.create_lambda_matrix.html">qiskit_qec.linear.create_lambda_matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.augment_mat.html">qiskit_qec.linear.augment_mat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.rref.html">qiskit_qec.linear.rref</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.rank.html">qiskit_qec.linear.rank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.rref_complete.html">qiskit_qec.linear.rref_complete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.all_commute.html">qiskit_qec.linear.all_commute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.symplectic_product.html">qiskit_qec.linear.symplectic_product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.make_commute_hyper.html">qiskit_qec.linear.make_commute_hyper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.locate_hyper_partner.html">qiskit_qec.linear.locate_hyper_partner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.build_hyper_partner.html">qiskit_qec.linear.build_hyper_partner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.symplectic_gram_schmidt.html">qiskit_qec.linear.symplectic_gram_schmidt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_symplectic_matrix_form.html">qiskit_qec.linear.is_symplectic_matrix_form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_symplectic_vector_form.html">qiskit_qec.linear.is_symplectic_vector_form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_symplectic_form.html">qiskit_qec.linear.is_symplectic_form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_hyper_form.html">qiskit_qec.linear.is_hyper_form</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_center.html">qiskit_qec.linear.is_center</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_same_span.html">qiskit_qec.linear.is_same_span</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.linear.is_stabilizer_group.html">qiskit_qec.linear.is_stabilizer_group</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../apidocs/operators.html">Operators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.operators</span></code>)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of Operators (qiskit_qec.operators)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">PauliList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.operators.Pauli.html">Pauli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.operators.BasePauli.html">BasePauli</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/structures.html">Structures (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.structures</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of Structures (qiskit_qec.structures)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.structures.Group.html">Group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.structures.GaugeGroup.html">GaugeGroup</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/utils.html">Utils (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.utils</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of Utils (qiskit_qec.utils)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.indexer.html">qiskit_qec.utils.indexer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.pauli_rep.html">qiskit_qec.utils.pauli_rep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.visualizations.html">qiskit_qec.utils.visualizations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.get_counts_via_stim.html">qiskit_qec.utils.get_counts_via_stim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.get_stim_circuits.html">qiskit_qec.utils.get_stim_circuits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.noisify_circuit.html">qiskit_qec.utils.noisify_circuit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.DecodingGraphNode.html">DecodingGraphNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.utils.DecodingGraphEdge.html">DecodingGraphEdge</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../discussions/index.html">Discussions</a></li>
 </ul>
 
-    
-
-    <!-- PREVIOUS RELEASES -->
-        
-
-    </div>
-  </div>
-</nav>
-
-<!-- OPTIONAL EXPANDABLE FUNCTIONALITY -->
-
-
-<!-- STYLING -->
-<script>
-    // indent subheadings under captions
-    expandable_rows = document.getElementsByClassName("caption");
-    var i;
-    for (i = 0; i < expandable_rows.length; i++) {
-        expandable_rows[i].nextElementSibling.style.marginLeft = "1rem"
-
-        // un-bold subheadings in dropdown
-        var subheadings = expandable_rows[i].nextElementSibling
-        for (j = 0; j < subheadings.children.length; j++) {
-            subheadings.children[j].style.fontWeight = "unset"
-        }
-    }
-
-    // adjust toctree class name to style external links
-    var toc_rows = document.getElementsByClassName("toctree-l1");
-    var i;
-    for (i = 0; i < toc_rows.length; i++) {
-        if (toc_rows[i].children[0].className === "reference external") {
-            toc_rows[i].className = "toctree-l1-external"
-            }
-    }
-
-    // expand and unexpand previous releases dropdown when clicked
-    var release_rows = document.getElementsByClassName("sidebar-l1-expandable");
-    for (i = 0; i < release_rows.length; i++) {
-        release_rows[i].addEventListener("click", function() {
-            this.classList.toggle("open");
-            var clicked_subheadings = this.nextElementSibling;
-            if (clicked_subheadings.style.display === "block") {
-            clicked_subheadings.style.display = "none";
-            } else {
-            clicked_subheadings.style.display = "block";
-            }
-        });
-    }
-</script>
-
-    <div class="pytorch-container">
-
-      <!-- BREADCRUMB MINI MENU BELOW TOP NAV BAR -->
-      <div class="pytorch-page-level-bar" id="pytorch-page-level-bar">
-        <div class="pytorch-breadcrumbs-wrapper">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="pytorch-breadcrumbs">
-    
-      <li>
-        <a href="../index.html">
-            Qiskit QEC  documentation
-        </a> &gt;
-      </li>
-
-        
-          <li><a href="../apidocs/index.html">Qiskit QEC API Reference</a> &gt;</li>
-        
-          <li><a href="../apidocs/operators.html">Operators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.operators</span></code>)</a> &gt;</li>
-        
-      <li>PauliList</li>
-    
-  </ul>
-</div>
-        </div>
+</div></div>
       </div>
-
-      <!-- MAIN CENTRE CONTENT -->
-      <section data-toggle="wy-nav-shift" id="pytorch-content-wrap" class="pytorch-content-wrap">
-        
-        <div class="pytorch-content-left">
-          <div class="rst-content">
-            <div role="main" class="main-content" itemscope="itemscope" itemtype="http://schema.org/Article">
-             <article itemprop="articleBody" id="pytorch-article" class="pytorch-article">
-              
-  <section id="paulilist">
-<h1>PauliList<a class="headerlink" href="#paulilist" title="Link to this heading">¶</a></h1>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="paulilist">
+<h1>PauliList<a class="headerlink" href="#paulilist" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PauliList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PauliList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.base_pauli.BasePauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePauli</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">LinearMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GroupMixin</span></code></p>
 <p><cite>PauliList</cite> inherits from <cite>BasePauli</cite></p>
 <p>Inits a PauliList</p>
@@ -162,13 +353,13 @@
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.adjoint">
-<span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.adjoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.adjoint" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.adjoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.adjoint" title="Link to this definition">#</a></dt>
 <dd><p>Return the adjoint of each Pauli in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.all_commutes">
-<span class="sig-name descname"><span class="pre">all_commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.all_commutes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">all_commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.all_commutes" title="Link to this definition">#</a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -185,7 +376,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.anticommutes">
-<span class="sig-name descname"><span class="pre">anticommutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.anticommutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.anticommutes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">anticommutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.anticommutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.anticommutes" title="Link to this definition">#</a></dt>
 <dd><p>Return True if other Pauli that anticommutes with other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -205,7 +396,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.anticommutes_with_all">
-<span class="sig-name descname"><span class="pre">anticommutes_with_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.anticommutes_with_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.anticommutes_with_all" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">anticommutes_with_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.anticommutes_with_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.anticommutes_with_all" title="Link to this definition">#</a></dt>
 <dd><p>Return indexes of rows that commute other.</p>
 <p>If other is a multi-row Pauli list the returned vector indexes rows
 of the current PauliList that anti-commute with <em>all</em> Pauli’s in other.
@@ -225,7 +416,7 @@ If no rows satisfy the condition the returned array will be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.argsort">
-<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.argsort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.argsort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.argsort" title="Link to this definition">#</a></dt>
 <dd><p>Return indices for sorting the rows of the table.</p>
 <p>The default sort method is lexicographic sorting by qubit number.
 By using the <cite>weight</cite> kwarg the output can additionally be sorted
@@ -250,7 +441,7 @@ all Pauli’s of a given weight are still ordered lexicographically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.commutes">
-<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.commutes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.commutes" title="Link to this definition">#</a></dt>
 <dd><p>Return True for each Pauli that commutes with other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -270,7 +461,7 @@ all Pauli’s of a given weight are still ordered lexicographically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.commutes_with_all">
-<span class="sig-name descname"><span class="pre">commutes_with_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.commutes_with_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.commutes_with_all" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">commutes_with_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.commutes_with_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.commutes_with_all" title="Link to this definition">#</a></dt>
 <dd><p>Return indexes of rows that commute other.</p>
 <p>If other is a multi-row Pauli list the returned vector indexes rows
 of the current PauliList that commute with <em>all</em> Pauli’s in other.
@@ -290,7 +481,7 @@ If no rows satisfy the condition the returned array will be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.compose" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.compose" title="Link to this definition">#</a></dt>
 <dd><p>Return the composition self∘other for each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -318,13 +509,13 @@ If no rows satisfy the condition the returned array will be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.conjugate">
-<span class="sig-name descname"><span class="pre">conjugate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.conjugate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.conjugate" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">conjugate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.conjugate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.conjugate" title="Link to this definition">#</a></dt>
 <dd><p>Return the conjugate of each Pauli in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.copy" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.copy" title="Link to this definition">#</a></dt>
 <dd><p>Make a deep copy of current operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -335,7 +526,7 @@ If no rows satisfy the condition the returned array will be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.delete" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.delete" title="Link to this definition">#</a></dt>
 <dd><p>Return a copy with Pauli rows deleted from table.</p>
 <p>When deleting qubits the qubit index is the same as the
 column index of the underlying <code class="xref py py-attr docutils literal notranslate"><span class="pre">X</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Z</span></code> arrays.</p>
@@ -363,7 +554,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.dot">
-<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.dot" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.dot" title="Link to this definition">#</a></dt>
 <dd><p>Return the composition other∘self for each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -390,7 +581,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.evolve">
-<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.evolve" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.evolve" title="Link to this definition">#</a></dt>
 <dd><p>Evolve the Pauli by a Clifford.</p>
 <p>This returns the Pauli <span class="math notranslate nohighlight">\(P^\prime = C.P.C^\dagger\)</span>.</p>
 <p>By choosing the parameter frame=’s’, this function returns the Schrödinger evolution of the Pauli
@@ -417,7 +608,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.expand">
-<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.expand" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.expand" title="Link to this definition">#</a></dt>
 <dd><p>Return the expand product of each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -439,7 +630,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.from_symplectic">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_symplectic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.from_symplectic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.from_symplectic" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_symplectic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.from_symplectic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.from_symplectic" title="Link to this definition">#</a></dt>
 <dd><p>Construct a PauliList from a symplectic data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -465,7 +656,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.getaslist">
-<span class="sig-name descname"><span class="pre">getaslist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.getaslist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.getaslist" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">getaslist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.getaslist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.getaslist" title="Link to this definition">#</a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -479,7 +670,7 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.group_qubit_wise_commuting">
-<span class="sig-name descname"><span class="pre">group_qubit_wise_commuting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.group_qubit_wise_commuting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.group_qubit_wise_commuting" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">group_qubit_wise_commuting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.group_qubit_wise_commuting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.group_qubit_wise_commuting" title="Link to this definition">#</a></dt>
 <dd><p>Partition a PauliList into sets of mutually qubit-wise commuting Pauli strings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -493,13 +684,13 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.input_dims">
-<span class="sig-name descname"><span class="pre">input_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.input_dims" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">input_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.input_dims" title="Link to this definition">#</a></dt>
 <dd><p>Return tuple of input dimension for specified subsystems.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.insert">
-<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.insert" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.insert" title="Link to this definition">#</a></dt>
 <dd><p>Insert Pauli’s into the table.</p>
 <p>When inserting qubits the qubit index is the same as the
 column index of the underlying <code class="xref py py-attr docutils literal notranslate"><span class="pre">X</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">Z</span></code> arrays.</p>
@@ -527,13 +718,13 @@ Pauli rows (Default: False).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.inverse">
-<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.inverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.inverse" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inverse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.inverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.inverse" title="Link to this definition">#</a></dt>
 <dd><p>Return the inverse of each Pauli in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.label_iter">
-<span class="sig-name descname"><span class="pre">label_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.label_iter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">label_iter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.label_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.label_iter" title="Link to this definition">#</a></dt>
 <dd><p>Return a label representation iterator.</p>
 <p>This is a lazy iterator that converts each row into the string
 label only as it is used. To convert the entire table to labels use
@@ -550,7 +741,7 @@ the <a class="reference internal" href="#qiskit_qec.operators.PauliList.to_label
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.matrix_iter">
-<span class="sig-name descname"><span class="pre">matrix_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.matrix_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.matrix_iter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">matrix_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.matrix_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.matrix_iter" title="Link to this definition">#</a></dt>
 <dd><p>Return a matrix representation iterator.</p>
 <p>This is a lazy iterator that converts each row into the Pauli matrix
 representation only as it is used. To convert the entire table to
@@ -572,13 +763,13 @@ otherwise return Numpy array matrices
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.output_dims">
-<span class="sig-name descname"><span class="pre">output_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.output_dims" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">output_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.output_dims" title="Link to this definition">#</a></dt>
 <dd><p>Return tuple of output dimension for specified subsystems.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.power">
-<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.power" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.power" title="Link to this definition">#</a></dt>
 <dd><p>Return the compose of a operator with itself n times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -599,7 +790,7 @@ otherwise return Numpy array matrices
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.reshape">
-<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.reshape" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.reshape" title="Link to this definition">#</a></dt>
 <dd><p>Return a shallow copy with reshaped input and output subsystem dimensions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -626,7 +817,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_pauli_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_pauli_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_pauli_encoding" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_pauli_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_pauli_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Set the Pauli encoding</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -640,7 +831,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_phase_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-i'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_phase_encoding" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-i'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_phase_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Set the phase encoding</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -654,7 +845,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_print_phase_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_print_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_print_phase_encoding" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_print_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_print_phase_encoding" title="Link to this definition">#</a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -668,7 +859,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_qubit_order">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_qubit_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_qubit_order" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_qubit_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_qubit_order" title="Link to this definition">#</a></dt>
 <dd><p>Set external qubit order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -682,7 +873,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_syntax">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_syntax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syntax_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Product'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_syntax" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_syntax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syntax_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Product'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_syntax" title="Link to this definition">#</a></dt>
 <dd><p>Sets the global input and output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -703,7 +894,7 @@ the syntax is set to Order. Defaults to “Product”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_tensor_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_tensor_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_tensor_encoding" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_tensor_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YZX'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_tensor_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Set the external symplectic matrix format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -717,7 +908,7 @@ the syntax is set to Order. Defaults to “Product”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.sort" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.sort" title="Link to this definition">#</a></dt>
 <dd><p>Sort the rows of the table.</p>
 <p>The default sort method is lexicographic sorting by qubit number.
 By using the <cite>weight</cite> kwarg the output can additionally be sorted
@@ -768,7 +959,7 @@ all Pauli’s of a given weight are still ordered lexicographically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.tensor">
-<span class="sig-name descname"><span class="pre">tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.tensor" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.tensor" title="Link to this definition">#</a></dt>
 <dd><p>Return the tensor product with each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -790,7 +981,7 @@ all Pauli’s of a given weight are still ordered lexicographically.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.to_label">
-<span class="sig-name descname"><span class="pre">to_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squeeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_label" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squeeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_label" title="Link to this definition">#</a></dt>
 <dd><p>Returns the string representatiojn for a Pauli or Paulis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -837,13 +1028,14 @@ for the label from the full Pauli group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.to_labels">
-<span class="sig-name descname"><span class="pre">to_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.to_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_labels" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.to_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_labels" title="Link to this definition">#</a></dt>
 <dd><p>Convert a PauliList to a list Pauli string labels.</p>
 <p>For large PauliLists converting using the <code class="docutils literal notranslate"><span class="pre">array=True</span></code>
 kwarg will be more efficient since it allocates memory for
 the full Numpy array of labels in advance.</p>
+<div class="table-wrapper docutils container" id="id1">
 <table class="docutils align-default" id="id1">
-<caption><span class="caption-number">Table 1 </span><span class="caption-text">Pauli Representations</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<caption><span class="caption-number">Table 1 </span><span class="caption-text">Pauli Representations</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Label</p></th>
 <th class="head"><p>Symplectic</p></th>
@@ -869,6 +1061,7 @@ the full Numpy array of labels in advance.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>array</strong> (<em>bool</em>) – return a Numpy array if True, otherwise
@@ -885,13 +1078,14 @@ return a list (Default: False).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.to_matrix">
-<span class="sig-name descname"><span class="pre">to_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_matrix" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.to_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.to_matrix" title="Link to this definition">#</a></dt>
 <dd><p>Convert to a list or array of Pauli matrices.</p>
 <p>For large PauliLists converting using the <code class="docutils literal notranslate"><span class="pre">array=True</span></code>
 kwarg will be more efficient since it allocates memory a full
 rank-3 Numpy array of matrices in advance.</p>
+<div class="table-wrapper docutils container" id="id2">
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-number">Table 2 </span><span class="caption-text">Pauli Representations</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Pauli Representations</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Label</p></th>
 <th class="head"><p>Symplectic</p></th>
@@ -917,6 +1111,7 @@ rank-3 Numpy array of matrices in advance.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -939,13 +1134,13 @@ array: A dense rank-3 array of Pauli matrices if <cite>array=True</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.transpose">
-<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.transpose" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.transpose" title="Link to this definition">#</a></dt>
 <dd><p>Return the transpose of each Pauli in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.unique">
-<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.unique" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.unique" title="Link to this definition">#</a></dt>
 <dd><p>Return unique Paulis from the table.</p>
 <p><strong>Example</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit.quantum_info.operators</span> <span class="kn">import</span> <span class="n">PauliList</span>
@@ -989,67 +1184,67 @@ original array. Only provided if <code class="docutils literal notranslate"><spa
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.EXTERNAL_PAULI_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_PAULI_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-iYZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_PAULI_ENCODING" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_PAULI_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-iYZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_PAULI_ENCODING" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.EXTERNAL_PHASE_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-i'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-i'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_PHASE_ENCODING" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.EXTERNAL_QUBIT_ORDER">
-<span class="sig-name descname"><span class="pre">EXTERNAL_QUBIT_ORDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right-to-left'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_QUBIT_ORDER" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_QUBIT_ORDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right-to-left'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_QUBIT_ORDER" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.EXTERNAL_SYNTAX">
-<span class="sig-name descname"><span class="pre">EXTERNAL_SYNTAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_SYNTAX" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_SYNTAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_SYNTAX" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.EXTERNAL_TENSOR_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_TENSOR_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_TENSOR_ENCODING" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_TENSOR_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.EXTERNAL_TENSOR_ENCODING" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.PRINT_PHASE_ENCODING">
-<span class="sig-name descname"><span class="pre">PRINT_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.PRINT_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">PRINT_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qiskit_qec.operators.PauliList.PRINT_PHASE_ENCODING" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.dim">
-<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.dim" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.dim" title="Link to this definition">#</a></dt>
 <dd><p>Return tuple (input_shape, output_shape).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.num_paulis">
-<span class="sig-name descname"><span class="pre">num_paulis</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_paulis" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_paulis</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_paulis" title="Link to this definition">#</a></dt>
 <dd><p>Returns the number of Pauli’s in List</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.num_qubits">
-<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_qubits" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_qubits" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of qubits if a N-qubit operator or None otherwise.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.num_y">
-<span class="sig-name descname"><span class="pre">num_y</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_y" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">num_y</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.num_y" title="Link to this definition">#</a></dt>
 <dd><p>Return the number of Y for each operator</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.pauli_encoding">
-<span class="sig-name descname"><span class="pre">pauli_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.pauli_encoding" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pauli_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.pauli_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Pauli format.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.phase">
-<span class="sig-name descname"><span class="pre">phase</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">phase</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase" title="Link to this definition">#</a></dt>
 <dd><p>Return the phase vector of the PauliList.</p>
 <p>Note: This is different from the quantum_info phase property which
 instead returns the phase_exp</p>
@@ -1057,67 +1252,67 @@ instead returns the phase_exp</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.phase_encoding">
-<span class="sig-name descname"><span class="pre">phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase_encoding" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Return the phase encoding</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.phase_exp">
-<span class="sig-name descname"><span class="pre">phase_exp</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase_exp" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">phase_exp</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.phase_exp" title="Link to this definition">#</a></dt>
 <dd><p>Return the phase exponent vector of the PauliList</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.print_phase_encoding">
-<span class="sig-name descname"><span class="pre">print_phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.print_phase_encoding" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">print_phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.print_phase_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Prints how the phase will be displayed in when printing.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.qargs">
-<span class="sig-name descname"><span class="pre">qargs</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.qargs" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">qargs</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.qargs" title="Link to this definition">#</a></dt>
 <dd><p>Return the qargs for the operator.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.qubit_order">
-<span class="sig-name descname"><span class="pre">qubit_order</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.qubit_order" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">qubit_order</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.qubit_order" title="Link to this definition">#</a></dt>
 <dd><p>Get external qubit order</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.settings">
-<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.settings" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">settings</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.settings" title="Link to this definition">#</a></dt>
 <dd><p>Return settings.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.shape" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.shape" title="Link to this definition">#</a></dt>
 <dd><p>The full shape of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">array()</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.size">
-<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.size" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.size" title="Link to this definition">#</a></dt>
 <dd><p>The number of Pauli rows in the table.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.syntax">
-<span class="sig-name descname"><span class="pre">syntax</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.syntax" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">syntax</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.syntax" title="Link to this definition">#</a></dt>
 <dd><p>Returns the syntax</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.tensor_encoding">
-<span class="sig-name descname"><span class="pre">tensor_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.tensor_encoding" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tensor_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.tensor_encoding" title="Link to this definition">#</a></dt>
 <dd><p>Return the external symplectic matrix encoding</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.x" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.x" title="Link to this definition">#</a></dt>
 <dd><p>Returns the X part of symplectic representation as a 2d matrix.</p>
 <p>Note: The Pauli class over writes this method to return
 a 1d array instead of a 2d array. Use the self._x method
@@ -1139,7 +1334,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.z">
-<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.z" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#qiskit_qec.operators.PauliList.z" title="Link to this definition">#</a></dt>
 <dd><p>The z array for the symplectic representation.</p>
 </dd></dl>
 
@@ -1147,58 +1342,61 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 
 </section>
 
-
-             </article>
-            </div>
-            <footer>
-<!-- USER FEEDBACK -->
-  
-
-  <!-- NEXT/PREVIOUS BUTTONS -->
-  <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-    
-      <a href="qiskit_qec.operators.Pauli.html" class="btn btn-neutral float-right" title="Pauli" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-purple.svg" class="next-page"></a>
-    
-    
-      <a href="../apidocs/operators.html" class="btn btn-neutral" title="Operators (qiskit_qec.operators)" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-purple.svg" class="previous-page"> Previous</a>
-    
-  </div>
-
-  <div role="contentinfo">
-    <p>
-    <!-- SHOW QISKIT COPYRIGHT TEXT -->
-        &copy; Copyright 2022, Qiskit Development Team.
-
-    <!-- SHOW DATE PAGE LAST UPDATED -->
-      Last updated on 2023/10/16.
-
-    </p>
-  </div>
-
-<!-- SHOW 'MADE WITH SPHINX' TEXT -->
-    
-      <div>
-        Built with <a href="http://sphinx-doc.org/">Sphinx</a> using <a href="https://github.com/Qiskit/qiskit_sphinx_theme">Qiskit Sphinx Theme </a> (based on <a href="https://github.com/pytorch/pytorch_sphinx_theme"> PyTorch Sphinx Theme</a>).
+        </article>
       </div>
-     
-<br>
-</footer>
-
-<script>
-  function clicked(ctaType) {
-    document.getElementById('was-helpful-thank-you').style.visibility = 'visible';
-    window.trackCta(`Helpful - ${ctaType}`);
-  }
-</script>
-
+      <footer>
+        <div class="related-pages">
+          <a class="next-page" href="qiskit_qec.operators.Pauli.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Pauli</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../apidocs/operators.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Operators (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.operators</span></code>)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Qiskit Development Team
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            <div class="last-updated">
+              Last updated on 2023/10/17</div>
+          </div>
+          <div class="right-details">
+            
           </div>
         </div>
-
-        <!-- RIGHT SIDE AUTOSUMMARY MENU -->
-        <div class="pytorch-content-right" id="pytorch-content-right">
-          <div class="pytorch-right-menu" id="pytorch-right-menu">
-            <div class="pytorch-side-scroll" id="pytorch-side-scroll-right">
-              <ul>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
 <li><a class="reference internal" href="#">PauliList</a><ul>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList"><code class="docutils literal notranslate"><span class="pre">PauliList</span></code></a><ul>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.adjoint"><code class="docutils literal notranslate"><span class="pre">PauliList.adjoint()</span></code></a></li>
@@ -1269,47 +1467,21 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 </li>
 </ul>
 
-            </div>
           </div>
         </div>
-      </section>
-    </div> 
-
-  <!-- MOBILE MENU FOR SIDEBAR -->
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-      <script src="../_static/documentation_options.js?v=7026087e"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-  <!-- enable language dropdown menu expand -->
-  <script type="text/javascript">
-    jQuery(function () {
-        SphinxRtdTheme.Navigation.enable(true);
-    });
-  </script>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      mobileMenu.bind();
-      mobileTOC.bind();
-      sideMenus.bind();
-      scrollToAnchor.bind();
-      highlightNavigation.bind();
-      mainMenuDropdown.bind();
-      filterTags.bind();
-
-      // Add class to links that have code blocks, since we cannot create links in code blocks
-      $("article.pytorch-article a span.pre").each(function(e) {
-        $(this).closest("a").addClass("has-code");
-      });
-    })
-  </script>
-
-</body>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
 </html>
