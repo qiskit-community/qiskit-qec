@@ -29,12 +29,12 @@ class CircuitModelMatchingDecoder(ABC):
     def __init__(
         self,
         n: int,
-        css_x_gauge_ops: List[Tuple[int]],
-        css_x_stabilizer_ops: List[Tuple[int]],
-        css_x_boundary: List[int],
-        css_z_gauge_ops: List[Tuple[int]],
-        css_z_stabilizer_ops: List[Tuple[int]],
-        css_z_boundary: List[int],
+        x_gauge_ops: List[Tuple[int]],
+        x_stabilizer_ops: List[Tuple[int]],
+        x_boundary: List[int],
+        z_gauge_ops: List[Tuple[int]],
+        z_stabilizer_ops: List[Tuple[int]],
+        z_boundary: List[int],
         circuit: QuantumCircuit,
         model: PauliNoiseModel,
         basis: str,
@@ -52,12 +52,12 @@ class CircuitModelMatchingDecoder(ABC):
         and do repeated Pauli measurements.
 
         n : block size of quantum code
-        css_x_gauge_ops : list of supports of X gauge operators
-        css_x_stabilizer_ops : list of supports of X stabilizers
-        css_x_boundary : list of qubits along the X-type boundary
-        css_z_gauge_ops : list of supports of Z gauge operators
-        css_z_stabilizer_ops : list of supports of Z stabilizers
-        css_x_boundary : list of qubits along the Z-type boundary
+        x_gauge_ops : list of supports of X gauge operators
+        x_stabilizer_ops : list of supports of X stabilizers
+        x_boundary : list of qubits along the X-type boundary
+        z_gauge_ops : list of supports of Z gauge operators
+        z_stabilizer_ops : list of supports of Z stabilizers
+        x_boundary : list of qubits along the Z-type boundary
         circuit : entire quantum circuit to build the decoding graph
         model : noise for operations in the circuit
         basis : initializaton and measurement basis ("x" or "z")
@@ -68,12 +68,12 @@ class CircuitModelMatchingDecoder(ABC):
         annotate : for rustworkx method, compute self.matcher.annotated_graph
         """
         self.n = n
-        self.css_x_gauge_ops = css_x_gauge_ops
-        self.css_x_stabilizer_ops = css_x_stabilizer_ops
-        self.css_x_boundary = css_x_boundary
-        self.css_z_gauge_ops = css_z_gauge_ops
-        self.css_z_stabilizer_ops = css_z_stabilizer_ops
-        self.css_z_boundary = css_z_boundary
+        self.x_gauge_ops = x_gauge_ops
+        self.x_stabilizer_ops = x_stabilizer_ops
+        self.x_boundary = x_boundary
+        self.z_gauge_ops = z_gauge_ops
+        self.z_stabilizer_ops = z_stabilizer_ops
+        self.z_boundary = z_boundary
         self.model = model
         self.blocks = blocks
 
@@ -97,8 +97,8 @@ class CircuitModelMatchingDecoder(ABC):
         else:
             self.matcher = RustworkxMatcher(annotate)
 
-        self.z_gauge_products = temp_gauge_products(self.css_z_stabilizer_ops, self.css_z_gauge_ops)
-        self.x_gauge_products = temp_gauge_products(self.css_x_stabilizer_ops, self.css_x_gauge_ops)
+        self.z_gauge_products = temp_gauge_products(self.z_stabilizer_ops, self.z_gauge_ops)
+        self.x_gauge_products = temp_gauge_products(self.x_stabilizer_ops, self.x_gauge_ops)
 
         if decoding_graph:
             (
@@ -109,12 +109,12 @@ class CircuitModelMatchingDecoder(ABC):
             ) = self._process_graph(decoding_graph.graph, blocks, round_schedule, basis)
         else:
             dg = CSSDecodingGraph(
-                css_x_gauge_ops,
-                css_x_stabilizer_ops,
-                css_x_boundary,
-                css_z_gauge_ops,
-                css_z_stabilizer_ops,
-                css_z_boundary,
+                x_gauge_ops,
+                x_stabilizer_ops,
+                x_boundary,
+                z_gauge_ops,
+                z_stabilizer_ops,
+                z_boundary,
                 blocks,
                 round_schedule,
                 basis,
@@ -139,13 +139,13 @@ class CircuitModelMatchingDecoder(ABC):
         if not self.uniform:
             fe = FaultEnumerator(circuit, order=1, method="propagator", model=self.model)
             self.event_map = self._enumerate_events(
-                self.css_x_gauge_ops,
-                self.css_x_stabilizer_ops,
-                self.css_x_boundary,
+                self.x_gauge_ops,
+                self.x_stabilizer_ops,
+                self.x_boundary,
                 self.x_gauge_products,
-                self.css_z_gauge_ops,
-                self.css_z_stabilizer_ops,
-                self.css_z_boundary,
+                self.z_gauge_ops,
+                self.z_stabilizer_ops,
+                self.z_boundary,
                 self.z_gauge_products,
                 self.blocks,
                 self.round_schedule,
@@ -353,13 +353,13 @@ class CircuitModelMatchingDecoder(ABC):
 
     def _enumerate_events(
         self,
-        css_x_gauge_ops: List[Tuple[int]],
-        css_x_stabilizer_ops: List[Tuple[int]],
-        css_x_boundary: List[int],
+        x_gauge_ops: List[Tuple[int]],
+        x_stabilizer_ops: List[Tuple[int]],
+        x_boundary: List[int],
         x_gauge_products: List[int],
-        css_z_gauge_ops: List[Tuple[int]],
-        css_z_stabilizer_ops: List[Tuple[int]],
-        css_z_boundary: List[int],
+        z_gauge_ops: List[Tuple[int]],
+        z_stabilizer_ops: List[Tuple[int]],
+        z_boundary: List[int],
         z_gauge_products: List[int],
         blocks: int,
         round_schedule: str,
@@ -384,13 +384,13 @@ class CircuitModelMatchingDecoder(ABC):
         the edge between v0 and v1 is highlighted.
 
         Args:
-            css_x_gauge_ops: x gauge ops
-            css_x_stabilizer_ops: x stabilizer ops
-            css_x_boundary: x boundary
+            x_gauge_ops: x gauge ops
+            x_stabilizer_ops: x stabilizer ops
+            x_boundary: x boundary
             x_gauge_products: x gauge products
-            css_z_gauge_ops: z gauge ops
-            css_z_stabilizer_ops: z stabilizer ops
-            css_z_boundary: z boundary
+            z_gauge_ops: z gauge ops
+            z_stabilizer_ops: z stabilizer ops
+            z_boundary: z boundary
             z_gauge_products: z gauge products
             blocks: blocks
             round_schedule:
@@ -421,13 +421,13 @@ class CircuitModelMatchingDecoder(ABC):
             # Note that this only depends on the stabilizers at each
             # time and does not require an explicit decoding graph
             gauge_outcomes, highlighted = self._highlighted_vertices(
-                css_x_gauge_ops,
-                css_x_stabilizer_ops,
-                css_x_boundary,
+                x_gauge_ops,
+                x_stabilizer_ops,
+                x_boundary,
                 x_gauge_products,
-                css_z_gauge_ops,
-                css_z_stabilizer_ops,
-                css_z_boundary,
+                z_gauge_ops,
+                z_stabilizer_ops,
+                z_boundary,
                 z_gauge_products,
                 basis,
                 layer_types,
@@ -447,9 +447,9 @@ class CircuitModelMatchingDecoder(ABC):
                 v0 = highlighted[0]
                 v1 = highlighted[1]
                 if basis == "z":
-                    boundary = css_z_boundary
+                    boundary = z_boundary
                 elif basis == "x":
-                    boundary = css_x_boundary
+                    boundary = x_boundary
                 # Is the special boundary vertex highlighted?
                 if v1 == (0, tuple(boundary[0])):
                     # Replace it with an adjacent vertex
@@ -529,13 +529,13 @@ class CircuitModelMatchingDecoder(ABC):
         )
 
         gauge_outcomes, highlighted = self._highlighted_vertices(
-            self.css_x_gauge_ops,
-            self.css_x_stabilizer_ops,
-            self.css_x_boundary,
+            self.x_gauge_ops,
+            self.x_stabilizer_ops,
+            self.x_boundary,
             self.x_gauge_products,
-            self.css_z_gauge_ops,
-            self.css_z_stabilizer_ops,
-            self.css_z_boundary,
+            self.z_gauge_ops,
+            self.z_stabilizer_ops,
+            self.z_boundary,
             self.z_gauge_products,
             self.basis,
             self.layer_types,
@@ -555,9 +555,9 @@ class CircuitModelMatchingDecoder(ABC):
                 corrected_outcomes[i] = (corrected_outcomes[i] + 1) % 2
         logging.info("process: corrected_outcomes = %s", corrected_outcomes)
         if self.basis == "z":
-            test = temp_syndrome(corrected_outcomes, self.css_z_stabilizer_ops)
+            test = temp_syndrome(corrected_outcomes, self.z_stabilizer_ops)
         elif self.basis == "x":
-            test = temp_syndrome(corrected_outcomes, self.css_x_stabilizer_ops)
+            test = temp_syndrome(corrected_outcomes, self.x_stabilizer_ops)
         logging.debug("process: test syndrome = %s", test)
         if sum(test) != 0:
             raise QiskitQECError("decoder failure: syndrome should be trivial!")
@@ -565,13 +565,13 @@ class CircuitModelMatchingDecoder(ABC):
 
     @staticmethod
     def _highlighted_vertices(
-        css_x_gauge_ops: List[Tuple[int]],
-        css_x_stabilizer_ops: List[Tuple[int]],
-        css_x_boundary: List[int],
+        x_gauge_ops: List[Tuple[int]],
+        x_stabilizer_ops: List[Tuple[int]],
+        x_boundary: List[int],
         x_gauge_products: List[int],
-        css_z_gauge_ops: List[Tuple[int]],
-        css_z_stabilizer_ops: List[Tuple[int]],
-        css_z_boundary: List[int],
+        z_gauge_ops: List[Tuple[int]],
+        z_stabilizer_ops: List[Tuple[int]],
+        z_boundary: List[int],
         z_gauge_products: List[int],
         basis: str,
         layer_types: List[str],
@@ -585,15 +585,15 @@ class CircuitModelMatchingDecoder(ABC):
         """
         if basis == "z":
             gauge_outcomes = z_gauge_outcomes
-            gauges = css_z_gauge_ops
-            stabilizers = css_z_stabilizer_ops
-            boundary = css_z_boundary
+            gauges = z_gauge_ops
+            stabilizers = z_stabilizer_ops
+            boundary = z_boundary
             gauge_products = z_gauge_products
         elif basis == "x":
             gauge_outcomes = x_gauge_outcomes
-            gauges = css_x_gauge_ops
-            stabilizers = css_x_stabilizer_ops
-            boundary = css_x_boundary
+            gauges = x_gauge_ops
+            stabilizers = x_stabilizer_ops
+            boundary = x_boundary
             gauge_products = x_gauge_products
         final_gauges = []
         for supp in gauges:
