@@ -63,7 +63,7 @@ class CSSCodeCircuit(CodeCircuit):
         Examples:
             The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code
             >>> from qiskit_qec.codes.hhc import HHC
-            >>> from qiskit_qec.circuits.css_code import CSSCodeCircuit
+            >>> from qiskit_qec.circuits.code import CSSCodeCircuit
             >>> code = CSSCodeCircuit(HHC(3),T=3,basis='x',noise_model=(0.01,0.01),round_schedule='xz')
             >>> code.circuit['0']
 

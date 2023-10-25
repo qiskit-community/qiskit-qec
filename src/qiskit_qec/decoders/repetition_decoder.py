@@ -31,12 +31,12 @@ class RepetitionDecoder(CircuitModelMatchingDecoder):
         dg = DecodingGraph(code_circuit)
         super().__init__(
             code_circuit.n,
-            code_circuit.css_x_gauge_ops,
-            code_circuit.css_x_stabilizer_ops,
-            code_circuit.css_x_boundary,
-            code_circuit.css_z_gauge_ops,
-            code_circuit.css_z_stabilizer_ops,
-            code_circuit.css_z_boundary,
+            code_circuit.x_gauge_ops,
+            code_circuit.x_stabilizer_ops,
+            code_circuit.x_boundary,
+            code_circuit.z_gauge_ops,
+            code_circuit.z_stabilizer_ops,
+            code_circuit.z_boundary,
             code_circuit.circuit[logical],
             model,
             code_circuit.basis,

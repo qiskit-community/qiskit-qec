@@ -42,11 +42,11 @@ class ClusteringDecoder(ABC):
 
         if hasattr(self.code, "_xbasis"):
             if self.code._xbasis:
-                self.measured_logicals = self.code.css_x_logical
+                self.measured_logicals = self.code.x_logical
             else:
-                self.measured_logicals = self.code.css_z_logical
+                self.measured_logicals = self.code.z_logical
         else:
-            self.measured_logicals = self.code.css_z_logical
+            self.measured_logicals = self.code.z_logical
         if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
         else:

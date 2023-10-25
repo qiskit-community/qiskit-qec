@@ -51,7 +51,7 @@ modindex_common_prefix = ["qiskit_qec."]
 html_theme = "qiskit-ecosystem"
 html_title = f"{project} {release}"
 html_last_updated_fmt = "%Y/%m/%d"
-html_css_files = ["gallery.css"]
+html_files = ["gallery.css"]
 html_static_path = ["_static"]
 
 # autodoc/autosummary options
