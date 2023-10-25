@@ -65,14 +65,14 @@ class SurfaceCodeCircuit(CodeCircuit):
         self._logicals["z"].append([self.d**2 - 1 - j for j in range(self.d)])
 
         # set info needed for css codes
-        self.x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
-        self.x_stabilizer_ops = self.x_gauge_ops
-        self.x_logical = [self._logicals["x"][0]]
-        self.x_boundary = [self._logicals["x"][0] + self._logicals["x"][1]]
-        self.z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
-        self.z_stabilizer_ops = self.z_gauge_ops
-        self.z_logical = [self._logicals["z"][0]]
-        self.z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
+        self.css_x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
+        self.css_x_stabilizer_ops = self.css_x_gauge_ops
+        self.css_x_logical = [self._logicals["x"][0]]
+        self.css_x_boundary = [self._logicals["x"][0] + self._logicals["x"][1]]
+        self.css_z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
+        self.css_z_stabilizer_ops = self.css_z_gauge_ops
+        self.css_z_logical = [self._logicals["z"][0]]
+        self.css_z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
         self.round_schedule = self.basis
         self.blocks = T
 
@@ -409,9 +409,9 @@ class SurfaceCodeCircuit(CodeCircuit):
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
                         if self.basis == "x":
-                            qubits = self.x_stabilizer_ops[qec_index]
+                            qubits = self.css_x_stabilizer_ops[qec_index]
                         else:
-                            qubits = self.z_stabilizer_ops[qec_index]
+                            qubits = self.css_z_stabilizer_ops[qec_index]
                         node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes

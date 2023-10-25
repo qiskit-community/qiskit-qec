@@ -17,12 +17,12 @@ class HHCDecoder(CircuitModelMatchingDecoder):
     def __init__(
         self,
         n: int,
-        x_gauge_ops: List[Tuple[int]],
-        x_stabilizer_ops: List[Tuple[int]],
-        x_boundary: List[int],
-        z_gauge_ops: List[Tuple[int]],
-        z_stabilizer_ops: List[Tuple[int]],
-        z_boundary: List[int],
+        css_x_gauge_ops: List[Tuple[int]],
+        css_x_stabilizer_ops: List[Tuple[int]],
+        css_x_boundary: List[int],
+        css_z_gauge_ops: List[Tuple[int]],
+        css_z_stabilizer_ops: List[Tuple[int]],
+        css_z_boundary: List[int],
         circuit: QuantumCircuit,
         model: PauliNoiseModel,
         basis: str,
@@ -44,17 +44,17 @@ class HHCDecoder(CircuitModelMatchingDecoder):
         for step in self.round_schedule:
             if step == "z":
                 # need to include 2 flags per z-gauge outcome
-                self.bits_per_round += 3 * len(z_gauge_ops)
+                self.bits_per_round += 3 * len(css_z_gauge_ops)
             elif step == "x":
-                self.bits_per_round += len(x_gauge_ops)
+                self.bits_per_round += len(css_x_gauge_ops)
         super().__init__(
             n,
-            x_gauge_ops,
-            x_stabilizer_ops,
-            x_boundary,
-            z_gauge_ops,
-            z_stabilizer_ops,
-            z_boundary,
+            css_x_gauge_ops,
+            css_x_stabilizer_ops,
+            css_x_boundary,
+            css_z_gauge_ops,
+            css_z_stabilizer_ops,
+            css_z_boundary,
             circuit,
             model,
             basis,
@@ -90,38 +90,38 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                             r * self.bits_per_round
                             + bits_into_round : r * self.bits_per_round
                             + bits_into_round
-                            + len(self.z_gauge_ops)
+                            + len(self.css_z_gauge_ops)
                         ]
                     )
-                    bits_into_round += len(self.z_gauge_ops)
+                    bits_into_round += len(self.css_z_gauge_ops)
                     left_flag_outcomes.append(
                         outcome[
                             r * self.bits_per_round
                             + bits_into_round : r * self.bits_per_round
                             + bits_into_round
-                            + len(self.z_gauge_ops)
+                            + len(self.css_z_gauge_ops)
                         ]
                     )
-                    bits_into_round += len(self.z_gauge_ops)
+                    bits_into_round += len(self.css_z_gauge_ops)
                     right_flag_outcomes.append(
                         outcome[
                             r * self.bits_per_round
                             + bits_into_round : r * self.bits_per_round
                             + bits_into_round
-                            + len(self.z_gauge_ops)
+                            + len(self.css_z_gauge_ops)
                         ]
                     )
-                    bits_into_round += len(self.z_gauge_ops)
+                    bits_into_round += len(self.css_z_gauge_ops)
                 if rs == "x":
                     x_gauge_outcomes.append(
                         outcome[
                             r * self.bits_per_round
                             + bits_into_round : r * self.bits_per_round
                             + bits_into_round
-                            + len(self.x_gauge_ops)
+                            + len(self.css_x_gauge_ops)
                         ]
                     )
-                    bits_into_round += len(self.x_gauge_ops)
+                    bits_into_round += len(self.css_x_gauge_ops)
         final_outcomes = outcome[-self.n :]
         # Process the flags
         logging.debug("left_flag_outcomes = %s", left_flag_outcomes)
@@ -168,7 +168,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
             for rs in round_schedule:
                 if rs == "z":
                     # Examine the left/right flags and update frame
-                    for j, zg in enumerate(self.z_gauge_ops):
+                    for j, zg in enumerate(self.css_z_gauge_ops):
                         # Only consider weight 4 operators
                         if len(zg) == 4:
                             if (
@@ -190,7 +190,7 @@ class HHCDecoder(CircuitModelMatchingDecoder):
                     zidx += 1
                 if rs == "x":
                     # Update the X gauge syndromes
-                    syn = temp_syndrome(frame, self.x_gauge_ops)
+                    syn = temp_syndrome(frame, self.css_x_gauge_ops)
                     logging.debug("frame syndrome, cycle %d -> %s", xidx, syn)
                     block = x_gauge_outcomes[xidx]
                     block = list(u ^ v for u, v in zip(block, syn))

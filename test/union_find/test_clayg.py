@@ -133,7 +133,7 @@ class ClAYGDecoderTest(unittest.TestCase):
         # now run them all and check it works
         for code in codes:
             decoder = ClAYGDecoder(code)
-            z_logicals = code.z_logical[0]
+            z_logicals = code.css_z_logical[0]
 
             logical_errors = 0
             min_flips_for_logical = code.d

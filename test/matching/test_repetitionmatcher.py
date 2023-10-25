@@ -31,11 +31,11 @@ class TestRepetitionCircuitMatcher(unittest.TestCase):
 
         # 3-bit, 2 round repetition code
         self.code_circuit = RepetitionCodeCircuit(3, 2)
-        self.z_logical = self.code_circuit.z_logical
+        self.z_logical = self.code_circuit.css_z_logical
 
         # 5-bit, 2 round repetition code
         self.code_circuit_5 = RepetitionCodeCircuit(5, 2)
-        self.z_logical_5 = self.code_circuit.z_logical
+        self.z_logical_5 = self.code_circuit.css_z_logical
 
     def test_no_errors(self, method="rustworkx"):
         """Test the case with no errors using rustworkx."""

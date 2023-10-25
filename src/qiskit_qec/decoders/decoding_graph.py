@@ -359,22 +359,22 @@ class CSSDecodingGraph:
 
     def __init__(
         self,
-        x_gauge_ops: List[Tuple[int]],
-        x_stabilizer_ops: List[Tuple[int]],
-        x_boundary: List[Tuple[int]],
-        z_gauge_ops: List[Tuple[int]],
-        z_stabilizer_ops: List[Tuple[int]],
-        z_boundary: List[Tuple[int]],
+        css_x_gauge_ops: List[Tuple[int]],
+        css_x_stabilizer_ops: List[Tuple[int]],
+        css_x_boundary: List[Tuple[int]],
+        css_z_gauge_ops: List[Tuple[int]],
+        css_z_stabilizer_ops: List[Tuple[int]],
+        css_z_boundary: List[Tuple[int]],
         blocks: int,
         round_schedule: str,
         basis: str,
     ):
-        self.x_gauge_ops = x_gauge_ops
-        self.x_stabilizer_ops = x_stabilizer_ops
-        self.x_boundary = x_boundary
-        self.z_gauge_ops = z_gauge_ops
-        self.z_stabilizer_ops = z_stabilizer_ops
-        self.z_boundary = z_boundary
+        self.css_x_gauge_ops = css_x_gauge_ops
+        self.css_x_stabilizer_ops = css_x_stabilizer_ops
+        self.css_x_boundary = css_x_boundary
+        self.css_z_gauge_ops = css_z_gauge_ops
+        self.css_z_stabilizer_ops = css_z_stabilizer_ops
+        self.css_z_boundary = css_z_boundary
         self.blocks = blocks
         self.round_schedule = round_schedule
         self.basis = basis
@@ -425,13 +425,13 @@ class CSSDecodingGraph:
         stabilizers = []
         boundary = []
         if self.basis == "z":
-            gauges = self.z_gauge_ops
-            stabilizers = self.z_stabilizer_ops
-            boundary = self.z_boundary
+            gauges = self.css_z_gauge_ops
+            stabilizers = self.css_z_stabilizer_ops
+            boundary = self.css_z_boundary
         elif self.basis == "x":
-            gauges = self.x_gauge_ops
-            stabilizers = self.x_stabilizer_ops
-            boundary = self.x_boundary
+            gauges = self.css_x_gauge_ops
+            stabilizers = self.css_x_stabilizer_ops
+            boundary = self.css_x_boundary
 
         # Construct the decoding graph
         idx = 0  # vertex index counter

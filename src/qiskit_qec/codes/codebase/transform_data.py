@@ -70,11 +70,11 @@ file_name_template = os.path.join(
 
 OLD_GROUPSIZE_2 = "group_size_2"
 OLD_GROUPSIZE_1 = "group_size_1"
-OLD_CSS_FORM = "form"
+OLD_CSS_FORM = "css_form"
 OLD_GF4_LINEAR_FORM = "gf4linear_form"
 OLD_LOW_WEIGHT_FORM = "low_weight_form"
 OLD_GOTTESMAN_FORM = "gottesman_form"
-OLD_CSS_LOGICALS = "logicals"
+OLD_CSS_LOGICALS = "css_logicals"
 OLD_GF4_LINEAR_LOGICALS = "gf4linear_logicals"
 OLD_LOGICALS = "logicals"
 OLD_STABILIZER = "stabilizer"
