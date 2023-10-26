@@ -27,6 +27,7 @@ from qiskit_qec.utils.stim_tools import (
     string2nodes_with_detectors,
 )
 
+
 class StimCodeCircuit(CodeCircuit):
     """
     Prepares a CodeCircuit class based on the supplied stim circuit.
@@ -98,34 +99,24 @@ class StimCodeCircuit(CodeCircuit):
                         if inst_name == "QUBIT_COORDS":
                             m = 1
                         elif inst_name in single_qubit_gate_dict.keys():
-                            qubits = [
-                                target.value for target in instruction.targets_copy()
-                            ]
+                            qubits = [target.value for target in instruction.targets_copy()]
                             for q in qubits:
-                                self.qc.append(
-                                    single_qubit_gate_dict[inst_name], qargs=[q]
-                                )
+                                self.qc.append(single_qubit_gate_dict[inst_name], qargs=[q])
                         elif inst_name in two_qubit_gate_dict.keys():
                             stim_targets = instruction.targets_copy()
                             for t1, t2 in zip(stim_targets[::2], stim_targets[1::2]):
                                 if t1.is_qubit_target:
                                     q1, q2 = t1.value, t2.value
-                                    self.qc.append(
-                                        two_qubit_gate_dict[inst_name], qargs=[q1, q2]
-                                    )
+                                    self.qc.append(two_qubit_gate_dict[inst_name], qargs=[q1, q2])
                                 elif t1.is_measurement_record_target:
                                     c1, q2 = t1.value, t2.value
-                                    inst_name = inst_name[
-                                        1:
-                                    ]  # remove the C from CX,CY,CZ
+                                    inst_name = inst_name[1:]  # remove the C from CX,CY,CZ
                                     self.qc.append(
                                         single_qubit_gate_dict[inst_name], qargs=[q2]
                                     ).c_if(c1, 1)
 
                         elif inst_name == "M":
-                            qubits = [
-                                target.value for target in instruction.targets_copy()
-                            ]
+                            qubits = [target.value for target in instruction.targets_copy()]
                             invert_result = [
                                 target.is_inverted_result_target
                                 for target in instruction.targets_copy()
@@ -148,9 +139,7 @@ class StimCodeCircuit(CodeCircuit):
                                 )
                             creg = ClassicalRegister(len(qubits), name=cl_reg_name)
                             self.qc.add_register(creg)
-                            flip_qubits = [
-                                q for q, inv in zip(qubits, invert_result) if inv
-                            ]
+                            flip_qubits = [q for q, inv in zip(qubits, invert_result) if inv]
                             if flip_qubits != []:
                                 self.qc.x(flip_qubits)
                             self.qc.measure(qubits, creg)
@@ -160,9 +149,7 @@ class StimCodeCircuit(CodeCircuit):
                                 self.qc.x(flip_qubits)
                             meas_count += 1
                         elif inst_name == "R":
-                            qubits = [
-                                target.value for target in instruction.targets_copy()
-                            ]
+                            qubits = [target.value for target in instruction.targets_copy()]
                             self.qc.reset(qubits)
 
                         elif inst_name == "TICK" and barriers:
@@ -172,10 +159,7 @@ class StimCodeCircuit(CodeCircuit):
                             meas_targets = [t.value for t in instruction.targets_copy()]
                             self.detectors.append(
                                 {
-                                    "clbits": [
-                                        self.measurement_data[ind]
-                                        for ind in meas_targets
-                                    ],
+                                    "clbits": [self.measurement_data[ind] for ind in meas_targets],
                                     "time": [],
                                     "qubits": [],
                                     "stim_coords": instruction.gate_args_copy(),
@@ -184,12 +168,7 @@ class StimCodeCircuit(CodeCircuit):
                         elif inst_name == "OBSERVABLE_INCLUDE":
                             meas_targets = [t.value for t in instruction.targets_copy()]
                             self.logicals.append(
-                                {
-                                    "clbits": [
-                                        self.measurement_data[ind]
-                                        for ind in meas_targets
-                                    ]
-                                }
+                                {"clbits": [self.measurement_data[ind] for ind in meas_targets]}
                             )
 
         rep_block_count = 0
@@ -209,8 +188,7 @@ class StimCodeCircuit(CodeCircuit):
             [clbit_dict[clbit] for clbit in det["clbits"]] for det in self.detectors
         ]
         self.det_ref_values = [
-            sum(noiseless_measurements[meas_list]) % 2
-            for meas_list in detector_meas_indices
+            sum(noiseless_measurements[meas_list]) % 2 for meas_list in detector_meas_indices
         ]
 
         # further code parameters
@@ -419,8 +397,7 @@ class StimCodeCircuit(CodeCircuit):
                             target_list
                         ):  # avoiding overlaps that result from stim broadcating
                             target_list = [
-                                target_list[i : i + 2]
-                                for i in range(0, len(target_list), 2)
+                                target_list[i : i + 2] for i in range(0, len(target_list), 2)
                             ]
                         else:
                             target_list = [target_list]
@@ -429,17 +406,13 @@ class StimCodeCircuit(CodeCircuit):
                                 if len(qubit_ind) == 2:
                                     qubit_list = [
                                         target_pair[q_ind].value
-                                        for target_pair in zip(
-                                            targets[::2], targets[1::2]
-                                        )
+                                        for target_pair in zip(targets[::2], targets[1::2])
                                         for q_ind in qubit_ind
                                     ]
                                 else:
                                     qubit_list = [
                                         target_pair[qubit_ind[0]].value
-                                        for target_pair in zip(
-                                            targets[::2], targets[1::2]
-                                        )
+                                        for target_pair in zip(targets[::2], targets[1::2])
                                     ]
 
                                 if gate == "M":
@@ -449,9 +422,7 @@ class StimCodeCircuit(CodeCircuit):
                                             + target_pair[1].is_inverted_result_target
                                         )
                                         % 2
-                                        for target_pair in zip(
-                                            targets[::2], targets[1::2]
-                                        )
+                                        for target_pair in zip(targets[::2], targets[1::2])
                                     ]
                                     for i, inv in enumerate(inv_list):
                                         if inv:
@@ -465,8 +436,7 @@ class StimCodeCircuit(CodeCircuit):
                             qubit_list = [target.value for target in target_list]
                             if gate == "M":
                                 inv_list = [
-                                    target.is_inverted_result_target
-                                    for target in target_list
+                                    target.is_inverted_result_target for target in target_list
                                 ]
                                 for i, inv in enumerate(inv_list):
                                     if inv:
@@ -579,7 +549,7 @@ class StimCodeCircuit(CodeCircuit):
             logicals=self.logicals,
             clbits=self.qc.clbits,
             det_ref_values=self.det_ref_values,
-            **kwargs
+            **kwargs,
         )
         return nodes
 
@@ -587,9 +557,7 @@ class StimCodeCircuit(CodeCircuit):
         e = self.stim_circuit.detector_error_model(
             decompose_errors=True, approximate_disjoint_errors=True
         )
-        graph, hyperedges = detector_error_model_to_rx_graph(
-            e, detectors=self.detectors
-        )
+        graph, hyperedges = detector_error_model_to_rx_graph(e, detectors=self.detectors)
         return graph, hyperedges
 
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):

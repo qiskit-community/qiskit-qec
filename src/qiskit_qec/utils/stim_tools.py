@@ -135,8 +135,7 @@ def get_stim_circuits(
                     prevc_offset += bit._register.size
 
             qubit_indices = [
-                qargs[i]._index + qreg_offset[qargs[i]._register.name]
-                for i in range(len(qargs))
+                qargs[i]._index + qreg_offset[qargs[i]._register.name] for i in range(len(qargs))
             ]
 
             if isinstance(inst, QuantumChannelInstruction):
@@ -146,29 +145,21 @@ def get_stim_circuits(
                 if pauli_errors_types[0][0]["name"] in pauli_error_1_stim_order:
                     probs = 4 * [0.0]
                     for pind, ptype in enumerate(pauli_errors_types):
-                        probs[pauli_error_1_stim_order[ptype[0]["name"]]] = pauli_probs[
-                            pind
-                        ]
+                        probs[pauli_error_1_stim_order[ptype[0]["name"]]] = pauli_probs[pind]
                     stim_circuit.append("PAULI_CHANNEL_1", qubit_indices, probs[1:])
                 elif pauli_errors_types[0][0]["params"][0] in pauli_error_2_stim_order:
                     # here the name is always 'pauli' and the params gives the Pauli type
                     probs = 16 * [0.0]
                     for pind, ptype in enumerate(pauli_errors_types):
-                        probs[
-                            pauli_error_2_stim_order[ptype[0]["params"][0]]
-                        ] = pauli_probs[pind]
+                        probs[pauli_error_2_stim_order[ptype[0]["params"][0]]] = pauli_probs[pind]
                     stim_circuit.append("PAULI_CHANNEL_2", qubit_indices, probs[1:])
                 else:
-                    raise Exception(
-                        "Unexpected operations: " + str([inst, qargs, cargs])
-                    )
+                    raise Exception("Unexpected operations: " + str([inst, qargs, cargs]))
             else:
                 # Gates and measurements
                 if inst.name in qiskit_to_stim_dict:
                     if len(cargs) > 0:  # keeping track of measurement indices in stim
-                        measurement_data.append(
-                            [cargs[0]._register.name, cargs[0]._index]
-                        )
+                        measurement_data.append([cargs[0]._register.name, cargs[0]._index])
 
                     if qiskit_to_stim_dict[inst.name] == "TICK":  # barrier
                         stim_circuit.append("TICK")
@@ -194,27 +185,19 @@ def get_stim_circuits(
                                 )
                         else:
                             raise Exception(
-                                "Classically controlled "
-                                + inst.name
-                                + " gate is not supported"
+                                "Classically controlled " + inst.name + " gate is not supported"
                             )
                     else:  # gates/measurements acting on qubits
-                        stim_circuit.append(
-                            qiskit_to_stim_dict[inst.name], qubit_indices
-                        )
+                        stim_circuit.append(qiskit_to_stim_dict[inst.name], qubit_indices)
                 else:
-                    raise Exception(
-                        "Unexpected operations: " + str([inst, qargs, cargs])
-                    )
+                    raise Exception("Unexpected operations: " + str([inst, qargs, cargs]))
 
         if detectors != [[]]:
             for det in detectors:
                 stim_record_targets = []
                 for reg, ind in det["clbits"]:
                     stim_record_targets.append(
-                        StimTarget_rec(
-                            measurement_data.index([reg, ind]) - len(measurement_data)
-                        )
+                        StimTarget_rec(measurement_data.index([reg, ind]) - len(measurement_data))
                     )
                 if det["time"] != []:
                     stim_circuit.append(
@@ -227,9 +210,7 @@ def get_stim_circuits(
                 stim_record_targets = []
                 for reg, ind in log["clbits"]:
                     stim_record_targets.append(
-                        StimTarget_rec(
-                            measurement_data.index([reg, ind]) - len(measurement_data)
-                        )
+                        StimTarget_rec(measurement_data.index([reg, ind]) - len(measurement_data))
                     )
                 stim_circuit.append("OBSERVABLE_INCLUDE", stim_record_targets, log_ind)
 
@@ -381,14 +362,10 @@ def detector_error_model_to_rx_graph(
 
     index_to_DecodingGraphNode = {}
 
-    def skip_error(
-        p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict
-    ):
+    def skip_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
         pass
 
-    def handle_error(
-        p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict
-    ):
+    def handle_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
         if p == 0:
             return
         if len(dets) == 0:
@@ -443,9 +420,7 @@ def detector_error_model_to_rx_graph(
         hyperedges=hyperedges,
     )
 
-    trivial_boundary_node = DecodingGraphNode(
-        index=model.num_detectors, time=0, is_boundary=True
-    )
+    trivial_boundary_node = DecodingGraphNode(index=model.num_detectors, time=0, is_boundary=True)
     g.add_node(trivial_boundary_node)
     index_to_DecodingGraphNode[model.num_detectors] = trivial_boundary_node
 
@@ -489,10 +464,7 @@ def string2nodes_with_detectors(
 
     # if all_logical:
 
-    clbit_dict = {
-        (clbit._register.name, clbit._index): clind
-        for clind, clbit in enumerate(clbits)
-    }
+    clbit_dict = {(clbit._register.name, clbit._index): clind for clind, clbit in enumerate(clbits)}
 
     if isinstance(det_ref_values, int):
         det_ref_values = [det_ref_values] * len(detectors)
@@ -502,9 +474,7 @@ def string2nodes_with_detectors(
         det = det.copy()
         outcomes = [clbit_dict[clbit_key] for clbit_key in det.pop("clbits")]
         if sum(output_bits[outcomes]) % 2 != det_ref_values[ind]:
-            node = DecodingGraphNode(
-                time=det.pop("time"), qubits=det.pop("qubits"), index=ind
-            )
+            node = DecodingGraphNode(time=det.pop("time"), qubits=det.pop("qubits"), index=ind)
             node.properties = det
             nodes.append(node)
 
@@ -527,9 +497,7 @@ def string2nodes_with_detectors(
     return nodes
 
 
-def noisify_circuit(
-    circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel
-):
+def noisify_circuit(circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel):
     """
     Inserts error operations into a circuit according to a pauli noise model.
     Handles idling errors in the form of custom gates "idle_#" which are assumed to

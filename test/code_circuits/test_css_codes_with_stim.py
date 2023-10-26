@@ -21,6 +21,7 @@ from qiskit_qec.circuits.css_code import CSSCodeCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils.stim_tools import get_stim_circuits
 
+
 class TestCircuitMatcher(unittest.TestCase):
     """Test for the CSSCodeCircuit class for Heavy-HEX code with pymatching"""
 
@@ -39,7 +40,9 @@ class TestCircuitMatcher(unittest.TestCase):
             graph = DecodingGraph(css_code).graph
             m = pymatching.Matching(graph)
             detectors, logicals = css_code.stim_detectors()
-            stim_circuit = get_stim_circuits(css_code.noisy_circuit["0"], detectors=detectors, logicals=logicals)[0][0]
+            stim_circuit = get_stim_circuits(
+                css_code.noisy_circuit["0"], detectors=detectors, logicals=logicals
+            )[0][0]
             stim_sampler = stim_circuit.compile_detector_sampler()
             num_correct = 0
             stim_samples = stim_sampler.sample(num_shots, append_observables=True)

@@ -141,10 +141,7 @@ class CSSCodeCircuit(CodeCircuit):
             stabilizers = [[], []]
             logicals = [[], []]
 
-            for (
-                raw_ops,
-                ops,
-            ) in zip(
+            for (raw_ops, ops,) in zip(
                 [raw_gauges, raw_stabilizers, raw_logicals],
                 [gauges, stabilizers, logicals],
             ):
@@ -152,9 +149,7 @@ class CSSCodeCircuit(CodeCircuit):
                     op = str(op)
                     for j, pauli in enumerate(["X", "Z"]):
                         if (op.count(pauli) + op.count("I")) == self.code.n:
-                            ops[j].append(
-                                [k for k, p in enumerate(op[::-1]) if p == pauli]
-                            )
+                            ops[j].append([k for k, p in enumerate(op[::-1]) if p == pauli])
                 is_css = is_css and (len(ops[0]) + len(ops[1])) == len(raw_ops)
 
             # extra stabilizers: the product of all others
@@ -268,7 +263,7 @@ class CSSCodeCircuit(CodeCircuit):
             logicals=self.logicals,
             clbits=self.circuit["0"].clbits,
             det_ref_values=0,
-            **kwargs
+            **kwargs,
         )
         return nodes
 
