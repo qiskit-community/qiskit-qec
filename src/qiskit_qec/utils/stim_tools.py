@@ -480,6 +480,10 @@ def string2nodes_with_detectors(
             all_logicals (bool): Whether to include logical nodes
             irrespective of value. (False as default).
     """
+    all_logicals = kwargs.get("all_logicals")
+    logical = kwargs.get("logical")
+    if logical is None:
+        logical = "0"
 
     output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
 
@@ -502,40 +506,7 @@ def string2nodes_with_detectors(
             node.properties = det
             nodes.append(node)
 
-    log_nodes = string2rawlogicals_with_detectors(string=string,
-                                                  logicals=logicals,
-                                                  clbits=clbits,
-                                                  start_ind=len(detectors),
-                                                  **kwargs
-                                                  )
-
-    for node in log_nodes:
-        nodes.append(node)
-
-    return nodes
-
-def string2rawlogicals_with_detectors(
-    string: str,
-    logicals: List[Dict],
-    clbits: QuantumCircuit.clbits,
-    start_ind: int = 0,
-    **kwargs,
-):
-
-    all_logicals = kwargs.get("all_logicals")
-    logical = kwargs.get("logical")
-    if logical is None:
-        logical = "0"
-
-    output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
-
-    clbit_dict = {
-        (clbit._register.name, clbit._index): clind
-        for clind, clbit in enumerate(clbits)
-    }
-
-    nodes = []
-    for index, logical_op in enumerate(logicals, start=start_ind):
+    for index, logical_op in enumerate(logicals, start=len(detectors)):
         logical_out = 0
         for q in logical_op["clbits"]:
             qind = clbit_dict[q]
@@ -551,6 +522,37 @@ def string2rawlogicals_with_detectors(
             nodes.append(node)
 
     return nodes
+
+def string2logical_meas(
+    string: str,
+    outcomes_in_logical: List[Dict],
+    clbits: QuantumCircuit.clbits,
+):
+    """
+    Args:
+        string (string): Results string from qiskit circuit
+        outcomes_in_logical: 
+        clbits: classical bits of the qiskit circuit, needed to identify 
+        measurements in the output string
+    """
+
+    output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
+
+    clbit_dict = {
+        (clbit._register.name, clbit._index): clind
+        for clind, clbit in enumerate(clbits)
+    }
+
+    log_outs = []
+    for logical_op in outcomes_in_logical:
+        logical_out = 0
+        for q in logical_op["clbits"]:
+            qind = clbit_dict[q]
+            logical_out += output_bits[qind]
+        logical_out = logical_out % 2
+        log_outs.append(logical_out)
+    
+    return log_outs
 
 def noisify_circuit(
     circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel
