@@ -25,6 +25,7 @@ from stim import Circuit as StimCircuit
 from qiskit_qec.utils.stim_tools import (
     detector_error_model_to_rx_graph,
     string2nodes_with_detectors,
+    string2logical_meas,
 )
 
 
@@ -553,6 +554,17 @@ class StimCodeCircuit(CodeCircuit):
         )
         return nodes
 
+    def string2raw_logicals(self,string):
+        """
+        Converts output string into a list of logical measurement outcomes
+        Logicals are the logical measurements produced by self.stim_detectors()
+        """
+        _,self.logicals = self.stim_detectors()
+        
+        log_outs = string2logical_meas(string, self.logicals,self.circuit.clbits)
+
+        return log_outs
+    
     def _make_syndrome_graph(self):
         e = self.stim_circuit.detector_error_model(
             decompose_errors=True, approximate_disjoint_errors=True
