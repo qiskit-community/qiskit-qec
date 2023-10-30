@@ -268,17 +268,16 @@ class CSSCodeCircuit(CodeCircuit):
         )
         return nodes
 
-    def string2raw_logicals(self,string):
+    def string2raw_logicals(self, string):
         """
         Converts output string into a list of logical measurement outcomes
         Logicals are the logical measurements produced by self.stim_detectors()
         """
-        _,self.logicals = self.stim_detectors()
-        
-        log_outs = string2logical_meas(string, self.logicals,self.circuit["0"].clbits)
+        _, self.logicals = self.stim_detectors()
 
+        log_outs = string2logical_meas(string, self.logicals, self.circuit["0"].clbits)
         return log_outs
-    
+
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         raise NotImplementedError
 
