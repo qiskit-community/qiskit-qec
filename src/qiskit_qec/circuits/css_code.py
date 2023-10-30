@@ -24,6 +24,7 @@ from qiskit_qec.utils.stim_tools import (
     get_stim_circuits,
     detector_error_model_to_rx_graph,
     string2nodes_with_detectors,
+    string2logical_meas,
 )
 from qiskit_qec.codes import StabSubSystemCode
 from qiskit_qec.operators.pauli_list import PauliList
@@ -267,6 +268,17 @@ class CSSCodeCircuit(CodeCircuit):
         )
         return nodes
 
+    def string2raw_logicals(self,string):
+        """
+        Converts output string into a list of logical measurement outcomes
+        Logicals are the logical measurements produced by self.stim_detectors()
+        """
+        _,self.logicals = self.stim_detectors()
+        
+        log_outs = string2logical_meas(string, self.logicals,self.circuit["0"].clbits)
+
+        return log_outs
+    
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         raise NotImplementedError
 
