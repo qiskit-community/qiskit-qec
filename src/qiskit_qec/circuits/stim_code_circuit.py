@@ -14,8 +14,6 @@
 
  # pylint: disable=invalid-name, disable=no-name-in-module
 
- """Generates code circuits classes for Stim circuits."""
-
 import warnings
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
