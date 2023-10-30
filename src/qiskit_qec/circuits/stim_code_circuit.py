@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
- # This code is part of Qiskit.
- #
- # (C) Copyright IBM 2023.
- #
- # This code is licensed under the Apache License, Version 2.0. You may
- # obtain a copy of this license in the LICENSE.txt file in the root directory
- # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
- #
- # Any modifications or derivative works of this code must retain this
- # copyright notice, and modified files need to carry a notice indicating
- # that they have been altered from the originals.
+# This code is part of Qiskit.
+#
+# (C) Copyright IBM 2023.
+#
+# This code is licensed under the Apache License, Version 2.0. You may
+# obtain a copy of this license in the LICENSE.txt file in the root directory
+# of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# Any modifications or derivative works of this code must retain this
+# copyright notice, and modified files need to carry a notice indicating
+# that they have been altered from the originals.
 
- # pylint: disable=invalid-name, disable=no-name-in-module
+# pylint: disable=invalid-name, disable=no-name-in-module
 
 import warnings
 
@@ -193,7 +193,6 @@ class StimCodeCircuit(CodeCircuit):
         _helper(self.decomp_stim_circuit, 1)
 
         self.circuit = self.qc
-
 
         # if a set of measurement comparisons is deterministically 1 in the absence of errors,
         # the set of syndromes is compared to that
@@ -570,17 +569,17 @@ class StimCodeCircuit(CodeCircuit):
         )
         return nodes
 
-    def string2raw_logicals(self,string):
+    def string2raw_logicals(self, string):
         """
         Converts output string into a list of logical measurement outcomes
         Logicals are the logical measurements produced by self.stim_detectors()
         """
-        _,self.logicals = self.stim_detectors()
-        
-        log_outs = string2logical_meas(string, self.logicals,self.circuit.clbits)
+        _, self.logicals = self.stim_detectors()
+
+        log_outs = string2logical_meas(string, self.logicals, self.circuit.clbits)
 
         return log_outs
-    
+
     def _make_syndrome_graph(self):
         e = self.stim_circuit.detector_error_model(
             decompose_errors=True, approximate_disjoint_errors=True
