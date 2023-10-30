@@ -12,7 +12,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name, disable=no-name-in-module
+# pylint: disable=invalid-name, disable=no-name-in-module, disable=unused-argument
 
 """Tools to use functionality from Stim."""
 from typing import Union, List, Dict, Callable
@@ -39,8 +39,8 @@ from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 
 def get_stim_circuits(
     circuit: Union[QuantumCircuit, List],
-    detectors: Union[List[Dict], List[List]] = [[]],
-    logicals: Union[List[Dict], List[List]] = [[]],
+    detectors: List[Dict] = None,
+    logicals: List[Dict] = None,
 ):
     """Converts compatible qiskit circuits to stim circuits.
        Dictionaries are not complete. For the stim definitions see:
@@ -61,6 +61,12 @@ def get_stim_circuits(
     Returns:
         stim_circuits, stim_measurement_data
     """
+
+    if detectors is None:
+        detectors = [{}]
+    if logicals is None:
+        logicals = [{}]
+
     if len(detectors) > 0 and isinstance(detectors[0], List):
         detectors = [{"clbits": det, "qubits": [], "time": 0} for det in detectors]
 
@@ -135,8 +141,7 @@ def get_stim_circuits(
                     prevc_offset += bit._register.size
 
             qubit_indices = [
-                qargs[i]._index + qreg_offset[qargs[i]._register.name]
-                for i in range(len(qargs))
+                qargs[i]._index + qreg_offset[qargs[i]._register.name] for i in range(len(qargs))
             ]
 
             if isinstance(inst, QuantumChannelInstruction):
@@ -146,33 +151,25 @@ def get_stim_circuits(
                 if pauli_errors_types[0][0]["name"] in pauli_error_1_stim_order:
                     probs = 4 * [0.0]
                     for pind, ptype in enumerate(pauli_errors_types):
-                        probs[pauli_error_1_stim_order[ptype[0]["name"]]] = pauli_probs[
-                            pind
-                        ]
+                        probs[pauli_error_1_stim_order[ptype[0]["name"]]] = pauli_probs[pind]
                     stim_circuit.append("PAULI_CHANNEL_1", qubit_indices, probs[1:])
                 elif pauli_errors_types[0][0]["params"][0] in pauli_error_2_stim_order:
                     # here the name is always 'pauli' and the params gives the Pauli type
                     probs = 16 * [0.0]
                     for pind, ptype in enumerate(pauli_errors_types):
-                        probs[
-                            pauli_error_2_stim_order[ptype[0]["params"][0]]
-                        ] = pauli_probs[pind]
+                        probs[pauli_error_2_stim_order[ptype[0]["params"][0]]] = pauli_probs[pind]
                     stim_circuit.append("PAULI_CHANNEL_2", qubit_indices, probs[1:])
                 else:
-                    raise Exception(
-                        "Unexpected operations: " + str([inst, qargs, cargs])
-                    )
+                    raise Exception("Unexpected operations: " + str([inst, qargs, cargs]))
             else:
                 # Gates and measurements
                 if inst.name in qiskit_to_stim_dict:
                     if len(cargs) > 0:  # keeping track of measurement indices in stim
-                        measurement_data.append(
-                            [cargs[0]._register.name, cargs[0]._index]
-                        )
+                        measurement_data.append([cargs[0]._register.name, cargs[0]._index])
 
                     if qiskit_to_stim_dict[inst.name] == "TICK":  # barrier
                         stim_circuit.append("TICK")
-                    elif inst.condition != None:  # handle c_ifs
+                    elif inst.condition is not None:  # handle c_ifs
                         if inst.name in "xyz":
                             if inst.condition[1] == 1:
                                 clbit = inst.condition[0]
@@ -194,27 +191,19 @@ def get_stim_circuits(
                                 )
                         else:
                             raise Exception(
-                                "Classically controlled "
-                                + inst.name
-                                + " gate is not supported"
+                                "Classically controlled " + inst.name + " gate is not supported"
                             )
                     else:  # gates/measurements acting on qubits
-                        stim_circuit.append(
-                            qiskit_to_stim_dict[inst.name], qubit_indices
-                        )
+                        stim_circuit.append(qiskit_to_stim_dict[inst.name], qubit_indices)
                 else:
-                    raise Exception(
-                        "Unexpected operations: " + str([inst, qargs, cargs])
-                    )
+                    raise Exception("Unexpected operations: " + str([inst, qargs, cargs]))
 
-        if detectors != [[]]:
+        if detectors != [{}]:
             for det in detectors:
                 stim_record_targets = []
                 for reg, ind in det["clbits"]:
                     stim_record_targets.append(
-                        StimTarget_rec(
-                            measurement_data.index([reg, ind]) - len(measurement_data)
-                        )
+                        StimTarget_rec(measurement_data.index([reg, ind]) - len(measurement_data))
                     )
                 if det["time"] != []:
                     stim_circuit.append(
@@ -222,14 +211,12 @@ def get_stim_circuits(
                     )
                 else:
                     stim_circuit.append("DETECTOR", stim_record_targets, [])
-        if logicals != [[]]:
+        if logicals != [{}]:
             for log_ind, log in enumerate(logicals):
                 stim_record_targets = []
                 for reg, ind in log["clbits"]:
                     stim_record_targets.append(
-                        StimTarget_rec(
-                            measurement_data.index([reg, ind]) - len(measurement_data)
-                        )
+                        StimTarget_rec(measurement_data.index([reg, ind]) - len(measurement_data))
                     )
                 stim_circuit.append("OBSERVABLE_INCLUDE", stim_record_targets, log_ind)
 
@@ -247,7 +234,7 @@ def get_counts_via_stim(
     """Returns a qiskit compatible dictionary of measurement outcomes
 
     Args:
-        circuit: Qiskit circuit compatible with `get_stim_circuits` or list thereof.
+        circuits: Qiskit circuit compatible with `get_stim_circuits` or list thereof.
         shots: Number of samples to be generated.
         noise_model: Pauli noise model for any additional noise to be applied.
 
@@ -365,7 +352,7 @@ def iter_flatten_model(
 
 
 def detector_error_model_to_rx_graph(
-    model: StimDetectorErrorModel, detectors: List[Dict] = [{}]
+    model: StimDetectorErrorModel, detectors: List[Dict] = None
 ) -> rx.PyGraph:
     """Convert a stim error model into a RustworkX graph.
     It assumes that the stim circuit does not contain repeat blocks.
@@ -373,22 +360,21 @@ def detector_error_model_to_rx_graph(
     user-defined stim circuits.
 
     Args:
-        detector_qubits_time: if specified, supply a list of qubits with a time
+        detectors:
         coordinate included as the last element for every detector in the stim detector error model
     """
+
+    if detectors is None:
+        detectors = [{}]
 
     g = rx.PyGraph(multigraph=False)
 
     index_to_DecodingGraphNode = {}
 
-    def skip_error(
-        p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict
-    ):
+    def skip_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
         pass
 
-    def handle_error(
-        p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict
-    ):
+    def handle_error(p: float, dets: List[int], frame_changes: List[int], hyperedge: Dict):
         if p == 0:
             return
         if len(dets) == 0:
@@ -443,9 +429,7 @@ def detector_error_model_to_rx_graph(
         hyperedges=hyperedges,
     )
 
-    trivial_boundary_node = DecodingGraphNode(
-        index=model.num_detectors, time=0, is_boundary=True
-    )
+    trivial_boundary_node = DecodingGraphNode(index=model.num_detectors, time=0, is_boundary=True)
     g.add_node(trivial_boundary_node)
     index_to_DecodingGraphNode[model.num_detectors] = trivial_boundary_node
 
@@ -474,23 +458,19 @@ def string2nodes_with_detectors(
     Args:
         string (string): Results string to convert.
         detectors:
+        logicals:
+        clbits:
+        det_ref_values:
 
         kwargs (dict): Any additional keyword arguments.
             logical (str): Logical value whose results are used ('0' as default).
             all_logicals (bool): Whether to include logical nodes
             irrespective of value. (False as default).
     """
-    all_logicals = kwargs.get("all_logicals")
-    logical = kwargs.get("logical")
-    if logical is None:
-        logical = "0"
 
     output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
 
-    clbit_dict = {
-        (clbit._register.name, clbit._index): clind
-        for clind, clbit in enumerate(clbits)
-    }
+    clbit_dict = {(clbit._register.name, clbit._index): clind for clind, clbit in enumerate(clbits)}
 
     if isinstance(det_ref_values, int):
         det_ref_values = [det_ref_values] * len(detectors)
@@ -500,13 +480,42 @@ def string2nodes_with_detectors(
         det = det.copy()
         outcomes = [clbit_dict[clbit_key] for clbit_key in det.pop("clbits")]
         if sum(output_bits[outcomes]) % 2 != det_ref_values[ind]:
-            node = DecodingGraphNode(
-                time=det.pop("time"), qubits=det.pop("qubits"), index=ind
-            )
+            node = DecodingGraphNode(time=det.pop("time"), qubits=det.pop("qubits"), index=ind)
             node.properties = det
             nodes.append(node)
 
-    for index, logical_op in enumerate(logicals, start=len(detectors)):
+    log_nodes = string2rawlogicals_with_detectors(
+        string=string, logicals=logicals, clbits=clbits, start_ind=len(detectors), **kwargs
+    )
+
+    for node in log_nodes:
+        nodes.append(node)
+
+    return nodes
+
+
+def string2rawlogicals_with_detectors(
+    string: str,
+    logicals: List[Dict],
+    clbits: QuantumCircuit.clbits,
+    start_ind: int = 0,
+    **kwargs,
+):
+    """
+    Convert output string from circuits into raw logical values.
+    """
+
+    all_logicals = kwargs.get("all_logicals")
+    logical = kwargs.get("logical")
+    if logical is None:
+        logical = "0"
+
+    output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
+
+    clbit_dict = {(clbit._register.name, clbit._index): clind for clind, clbit in enumerate(clbits)}
+
+    nodes = []
+    for index, logical_op in enumerate(logicals, start=start_ind):
         logical_out = 0
         for q in logical_op["clbits"]:
             qind = clbit_dict[q]
@@ -553,6 +562,7 @@ def string2logical_meas(
         log_outs.append(logical_out)
     
     return log_outs
+
 
 def noisify_circuit(
     circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel
