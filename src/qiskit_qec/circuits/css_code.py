@@ -128,7 +128,7 @@ class CSSCodeCircuit(CodeCircuit):
                     if set(stabilizer).intersection(set(gauge)) == set(gauge):
                         gauges.append(g)
                 self._gauges4stabilizers[j].append(gauges)
-    self.detectors, self.logicals = self.stim_detectors()
+        self.detectors, self.logicals = self.stim_detectors()
 
     def _get_code_properties(self):
         if isinstance(self.code, StabSubSystemCode):
