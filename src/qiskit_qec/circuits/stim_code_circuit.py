@@ -1,3 +1,21 @@
+# -*- coding: utf-8 -*-
+
+ # This code is part of Qiskit.
+ #
+ # (C) Copyright IBM 2023.
+ #
+ # This code is licensed under the Apache License, Version 2.0. You may
+ # obtain a copy of this license in the LICENSE.txt file in the root directory
+ # of this source tree or at http://www.apache.org/licenses/LICENSE-2.0.
+ #
+ # Any modifications or derivative works of this code must retain this
+ # copyright notice, and modified files need to carry a notice indicating
+ # that they have been altered from the originals.
+
+ # pylint: disable=invalid-name, disable=no-name-in-module
+
+ """Generates code circuits classes for Stim circuits."""
+
 import warnings
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
@@ -16,12 +34,10 @@ from qiskit.circuit.library.standard_gates import (
     SwapGate,
 )
 
-from qiskit_qec.circuits.code_circuit import CodeCircuit
-
 from stim import CircuitInstruction, CircuitRepeatBlock, target_inv
-
 from stim import Circuit as StimCircuit
 
+from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils.stim_tools import (
     detector_error_model_to_rx_graph,
     string2nodes_with_detectors,
@@ -45,7 +61,8 @@ class StimCodeCircuit(CodeCircuit):
             barriers (optional): whether to include barriers (coeersponding to stim TICK instructions)
                 in the qiskit circuits. Default is True
         Examples:
-            Prepare and measure a Bell-state, checking the parity with a measurement comparison (DETECTOR)
+            Prepare and measure a Bell-state, checking the parity with a measurement
+            comparison (DETECTOR)
             >>> from qiskit_qec.circuits.stim_code_circuit import StimCodeCircuit
             >>> stim_ex1 = stim.Circuit('''
             >>>     H 0
@@ -99,11 +116,11 @@ class StimCodeCircuit(CodeCircuit):
                         inst_name = instruction.name
                         if inst_name == "QUBIT_COORDS":
                             m = 1
-                        elif inst_name in single_qubit_gate_dict.keys():
+                        elif inst_name in single_qubit_gate_dict:
                             qubits = [target.value for target in instruction.targets_copy()]
                             for q in qubits:
                                 self.qc.append(single_qubit_gate_dict[inst_name], qargs=[q])
-                        elif inst_name in two_qubit_gate_dict.keys():
+                        elif inst_name in two_qubit_gate_dict:
                             stim_targets = instruction.targets_copy()
                             for t1, t2 in zip(stim_targets[::2], stim_targets[1::2]):
                                 if t1.is_qubit_target:
@@ -179,7 +196,9 @@ class StimCodeCircuit(CodeCircuit):
 
         self.circuit = self.qc
 
-        # if a set of measurement comparisons is deterministically 1 in the absence of errors, the set of syndromes is compared to that
+
+        # if a set of measurement comparisons is deterministically 1 in the absence of errors,
+        # the set of syndromes is compared to that
         noiseless_measurements = self.decomp_stim_circuit.compile_sampler().sample(1)[0]
         clbit_dict = {
             (clbit._register.name, clbit._index): clind
@@ -199,8 +218,6 @@ class StimCodeCircuit(CodeCircuit):
             self.d = 0
         self.n = stim_circuit.num_qubits
         # the number of rounds is not necessarily well-defined (Floquet codes etc.)
-
-        return None
 
     def decompose_stim_circuit(self, stim_circuit):
         """
@@ -451,20 +468,20 @@ class StimCodeCircuit(CodeCircuit):
                 elif instruction.name == "MPP":
                     decomposed_stim_circuit += self.MPP_circuit(instruction)
                 elif instruction.name == "MPAD":
-                    """
-                    MPAD does affect the stim measurement sample output, but not the detector sample.
-                    This is due to the fact that detectors are sensitive to changes wrt. the perfect output,
-                    R 0
-                    MPAD 1
-                    M 0
-                    DETECTOR rec[-1] rec[-2]
-                    The above example results in a deterministinc detector samples False, not True!
-
-                    MPAD can have an effect on measurements, when a CX is controlled on an MPAD bit...
-                    but what is the point of that anyway?
-                    """
+                    # MPAD does affect the stim measurement sample output, but not the detector sample.
+                    # This is due to the fact that detectors are sensitive to changes
+                    # wrt the perfect output,
+                    # R 0
+                    # MPAD 1
+                    # M 0
+                    # DETECTOR rec[-1] rec[-2]
+                    # The above example results in a deterministinc detector samples False, not True!
+                    #
+                    # MPAD can have an effect on measurements, when a CX is controlled on an MPAD bit...
+                    # but what is the point of that anyway?
                     warnings.warn(
-                        "The circuit contains MPAD instructions that are ignored in the conversion. This can affect the measurement outcomes, but not the detectors."
+                        "The circuit contains MPAD instructions that are ignored in the conversion."
+                        "This can affect the measurement outcomes, but not the detectors."
                     )
                     pass
                 elif instruction.name in stim_error_list:
@@ -486,6 +503,7 @@ class StimCodeCircuit(CodeCircuit):
         return decomposed_stim_circuit
 
     def MPP_circuit(self, stim_instruction):
+        """Handle MPP measurements."""
         MPP_stim_circuit = StimCircuit()
         arg = stim_instruction.gate_args_copy()
 
