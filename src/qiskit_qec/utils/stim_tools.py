@@ -532,6 +532,7 @@ def string2rawlogicals_with_detectors(
 
     return nodes
 
+
 def string2logical_meas(
     string: str,
     outcomes_in_logical: List[Dict],
@@ -540,17 +541,14 @@ def string2logical_meas(
     """
     Args:
         string (string): Results string from qiskit circuit
-        outcomes_in_logical: 
-        clbits: classical bits of the qiskit circuit, needed to identify 
+        outcomes_in_logical: the detector-style logical outcome
+        clbits: classical bits of the qiskit circuit, needed to identify
         measurements in the output string
     """
 
     output_bits = np.array([int(char) for char in string.replace(" ", "")[::-1]])
 
-    clbit_dict = {
-        (clbit._register.name, clbit._index): clind
-        for clind, clbit in enumerate(clbits)
-    }
+    clbit_dict = {(clbit._register.name, clbit._index): clind for clind, clbit in enumerate(clbits)}
 
     log_outs = []
     for logical_op in outcomes_in_logical:
@@ -560,13 +558,11 @@ def string2logical_meas(
             logical_out += output_bits[qind]
         logical_out = logical_out % 2
         log_outs.append(logical_out)
-    
+
     return log_outs
 
 
-def noisify_circuit(
-    circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel
-):
+def noisify_circuit(circuits: Union[List, QuantumCircuit], noise_model: PauliNoiseModel):
     """
     Inserts error operations into a circuit according to a pauli noise model.
     Handles idling errors in the form of custom gates "idle_#" which are assumed to
