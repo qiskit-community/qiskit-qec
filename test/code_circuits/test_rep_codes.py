@@ -555,7 +555,7 @@ class TestDecoding(unittest.TestCase):
                 for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
-                        error_num = string.split(" ")[0].count("0")
+                        error_num = string.split(" ", maxsplit=1)[0].count("0")
                         if error_num < min_error_num:
                             min_error_num = error_num
                             min_error_string = string
