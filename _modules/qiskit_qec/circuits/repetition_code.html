@@ -699,7 +699,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: Raw values for logical operators that correspond to nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">_separate_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_string</span><span class="p">(</span><span class="n">string</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="RepetitionCodeCircuit.check_nodes">
@@ -2019,7 +2019,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/10/30</div>
+              Last updated on 2023/11/06</div>
           </div>
           <div class="right-details">
             
