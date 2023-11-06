@@ -538,7 +538,7 @@ class TestDecoding(unittest.TestCase):
         # now run them all and check it works
         for c, code in enumerate(codes):
             decoding_graph = DecodingGraph(code)
-            if c == 3 and Decoder is UnionFindDecoder:
+            if c >= 0 and Decoder is UnionFindDecoder:
                 decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
             else:
                 decoder = Decoder(code, decoding_graph=decoding_graph)
@@ -555,7 +555,7 @@ class TestDecoding(unittest.TestCase):
                 for j, z_logical in enumerate(decoder.measured_logicals):
                     error = corrected_z_logicals[j] != 1
                     if error:
-                        error_num = string.count("0")
+                        error_num = string.split(" ", maxsplit=1)[0].count("0")
                         if error_num < min_error_num:
                             min_error_num = error_num
                             min_error_string = string

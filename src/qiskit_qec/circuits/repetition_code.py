@@ -349,7 +349,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         Returns:
             list: Raw values for logical operators that correspond to nodes.
         """
-        return _separate_string(self._process_string(string))[0]
+        return string.split(" ", maxsplit=1)[0][-1]
 
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
