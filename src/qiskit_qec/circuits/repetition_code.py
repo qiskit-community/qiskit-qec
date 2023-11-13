@@ -20,6 +20,8 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 import rustworkx as rx
+import networkx as nx
+
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
@@ -628,7 +630,10 @@ class ArcCircuit(CodeCircuit):
         link_graph = self._get_link_graph()
         lg_edges = set(link_graph.edge_list())
         lg_nodes = link_graph.nodes()
-        cycles = rx.cycle_basis(link_graph)
+        ng = nx.Graph()
+        for n0, n1 in link_graph.edge_list():
+            ng.add_edge(n0, n1)
+        cycles = nx.minimum_cycle_basis(ng)
         cycle_dict = {(lg_nodes[edge[0]], lg_nodes[edge[1]]): list(edge) for edge in lg_edges}
         for cycle in cycles:
             edges = []
