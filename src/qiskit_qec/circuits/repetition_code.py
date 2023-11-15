@@ -1156,12 +1156,6 @@ class ArcCircuit(CodeCircuit):
         determines any additional logical readout qubits that would be
         flipped by the errors creating such a cluster and how many errors
         would be required to make the cluster.
-
-        Note that, in the case of
-            `ignore_extra_boundary==minimal==True`
-        neutrality depends only on the lack of frustrated cycles. No information
-        regarding boundary nodes or error number is returned.
-
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
             ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
@@ -1201,11 +1195,8 @@ class ArcCircuit(CodeCircuit):
                 parities[c] = parity % 2
             frust = any(parities)
 
-            # for ignore_extra_boundary==True, minimal==False, we don't care about the
-            # logical nodes, so no need to do the colouring
-            # if frust==True, no colouring is possible, so also no need
-            ignore_boundary = (ignore_extra_boundary == (not minimal) == True) or frust
-            if ignore_boundary:
+            # if frust==True, no colouring is possible, so no need to do it
+            if frust:
                 # neutral if not frustrated
                 neutral = not frust
                 # empty because ignored
@@ -1221,11 +1212,13 @@ class ArcCircuit(CodeCircuit):
                 for edge in [tuple(node.qubits) for node in bulk_nodes]:
                     for c in self.cycle_dict[edge]:
                         ns_to_do = ns_to_do.union(self.cycles[c])
-                # start with one of these
+                # if this gives us qubits to start with, we start with one
                 if ns_to_do:
                     n = ns_to_do.pop()
                 else:
-                    n = 0
+                    # otherwise we commit to covering them all
+                    ns_to_do = set(range(len(link_graph.nodes())))
+                    n = ns_to_do.pop()
                 node_color = {n: 0}
                 recently_colored = node_color.copy()
                 base_neutral = True
