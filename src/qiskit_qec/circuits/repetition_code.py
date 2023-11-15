@@ -809,11 +809,9 @@ class ArcCircuit(CodeCircuit):
         # use degree 1 code qubits for logical z readouts
         graph = self._get_coupling_graph()
         z_logicals = []
-        self.leafless = True
         for n, node in enumerate(graph.nodes()):
             if graph.degree(n) == 1:
                 z_logicals.append(node)
-                self.leafless = False
         # if there are none, just use the first
         if not z_logicals:
             z_logicals = [min(self.code_index.keys())]
@@ -1187,13 +1185,16 @@ class ArcCircuit(CodeCircuit):
         if bulk_nodes:
 
             # check whether there are frustrated plaquettes
-            parities = [0] * len(self.cycles)
+            parities = {}
             for node in bulk_nodes:
                 for c in self.cycle_dict[tuple(node.qubits)]:
-                    parities[c] += 1
-            for c, parity in enumerate(parities):
+                    if c in parities:
+                        parities[c] += 1
+                    else:
+                        parities[c] = 1
+            for c, parity in parities.items():
                 parities[c] = parity % 2
-            frust = any(parities)
+            frust = any(parities.values())
 
             # if frust==True, no colouring is possible, so no need to do it
             if frust:
@@ -1350,16 +1351,8 @@ class ArcCircuit(CodeCircuit):
         Args:
             atypical_nodes: dictionary in the form of the return value of string2nodes
         """
-        if self.leafless:
-            # for a leafless graph, we can just base the decision on frustration
-            # we force this by setting ignore_extra_boundary=True and minimal=False
-            neutral, _, _ = self.check_nodes(
-                atypical_nodes, ignore_extra_boundary=True, minimal=False
-            )
-            return neutral
-        else:
-            neutral, logicals, _ = self.check_nodes(atypical_nodes)
-            return neutral and not logicals
+        neutral, logicals, _ = self.check_nodes(atypical_nodes)
+        return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
