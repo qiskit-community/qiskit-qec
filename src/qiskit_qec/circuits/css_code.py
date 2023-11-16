@@ -186,6 +186,13 @@ class CSSCodeCircuit(CodeCircuit):
         self.css_x_logical = self.logical_x
         self.css_z_logical = self.logical_z
 
+    def measured_logicals(self):
+        if self.basis == "x":
+            measured_logicals = self.logical_x
+        else:
+            measured_logicals = self.logical_z
+        return measured_logicals
+
     def _prepare_initial_state(self, qc, qregs, state):
         if state[0] == "1":
             if self.basis == "z":

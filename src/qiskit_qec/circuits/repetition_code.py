@@ -241,6 +241,9 @@ class RepetitionCodeCircuit(CodeCircuit):
             self.circuit[log].add_register(self.code_bit)
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
+    def measured_logicals(self):
+        return [[0]]
+
     def _process_string(self, string):
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
@@ -349,7 +352,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         Returns:
             list: Raw values for logical operators that correspond to nodes.
         """
-        return _separate_string(self._process_string(string))[0]
+        return string.split(" ", maxsplit=1)[0][-1]
 
     def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
         """
@@ -963,6 +966,9 @@ class ArcCircuit(CodeCircuit):
                 # otherwise, code qubits are already prepped
             qc.add_register(self.code_bit)
             qc.measure(self.code_qubit, self.code_bit)
+
+    def measured_logicals(self):
+        return [[self.z_logicals[0]]]
 
     def _process_string(self, string):
         # logical readout taken from assigned qubits

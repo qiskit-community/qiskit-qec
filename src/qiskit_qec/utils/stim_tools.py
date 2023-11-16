@@ -16,7 +16,7 @@
 
 """Tools to use functionality from Stim."""
 from typing import Union, List, Dict, Callable
-from math import log
+from math import log as loga
 from stim import Circuit as StimCircuit
 from stim import DetectorErrorModel as StimDetectorErrorModel
 from stim import DemInstruction as StimDemInstruction
@@ -404,7 +404,7 @@ def detector_error_model_to_rx_graph(
             )
             edge = DecodingGraphEdge(
                 qubits=qubits,
-                weight=log((1 - p) / p),
+                weight=loga((1 - p) / p),
                 properties={"fault_ids": set(frame_changes), "error_probability": p},
             )
             g.add_edge(dets[0], dets[1], edge)
@@ -457,10 +457,17 @@ def string2nodes_with_detectors(
     `DecodingGraph`.
     Args:
         string (string): Results string to convert.
-        detectors:
-        logicals:
-        clbits:
-        det_ref_values:
+        detectors: A list of measurement comparisons. A measurement comparison
+                (detector) is either a list of measurements given by a the name and index
+                of the classical bit or a list of dictionaries, with a mandatory clbits
+                key containing the classical bits. A dictionary can contain keys like
+                'qubits', 'time', 'basis' etc.
+        logicals: A list of logical measurements. A logical measurement is a
+                list of classical bits whose total parity is the logical eigenvalue.
+                Again it can be a list of dictionaries.
+        clbits: classical bits of the qiskit circuit, needed to identify
+                measurements in the output string
+        det_ref_values: Reference value for the detector outcomes, 0 by default
 
         kwargs (dict): Any additional keyword arguments.
             logical (str): Logical value whose results are used ('0' as default).

@@ -12,8 +12,9 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-# pylint: disable=invalid-name, disable=no-name-in-module
+# pylint: disable=invalid-name, disable=no-name-in-module, disable=no-member
 
+"""Generates CodeCircuits from stim circuits"""
 import warnings
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
@@ -112,9 +113,7 @@ class StimCodeCircuit(CodeCircuit):
                         rep_block_count += 1
                     elif isinstance(instruction, CircuitInstruction):
                         inst_name = instruction.name
-                        if inst_name == "QUBIT_COORDS":
-                            m = 1
-                        elif inst_name in single_qubit_gate_dict:
+                        if inst_name in single_qubit_gate_dict:
                             qubits = [target.value for target in instruction.targets_copy()]
                             for q in qubits:
                                 self.qc.append(single_qubit_gate_dict[inst_name], qargs=[q])
@@ -211,7 +210,7 @@ class StimCodeCircuit(CodeCircuit):
         # further code parameters
         try:
             self.d = len(self.stim_circuit.shortest_graphlike_error())  # code distance
-        except:
+        except ValueError:
             self.d = 0
         self.n = stim_circuit.num_qubits
         # the number of rounds is not necessarily well-defined (Floquet codes etc.)
