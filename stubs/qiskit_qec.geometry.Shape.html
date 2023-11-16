@@ -395,10 +395,10 @@ at a later date or in next version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>point</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Point to check if inside the given shape</p></li>
-<li><p><strong>on_boundary</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Set True to include the boundary. Slow for larger boundaries.
+<li><p><strong>point</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span>) – Point to check if inside the given shape</p></li>
+<li><p><strong>on_boundary</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Set True to include the boundary. Slow for larger boundaries.
 Default is False. Points will be included if with epsilon of the boundary.</p></li>
-<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Value used to indicate if a point is close enough to the boundary to be
+<li><p><strong>epsilon</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Value used to indicate if a point is close enough to the boundary to be
 included. Default is 0.01</p></li>
 </ul>
 </dd>
@@ -447,11 +447,11 @@ straight lines.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tiling</strong> (<a class="reference internal" href="qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.model.shell.Shell"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shell</span></code></a>) – Input Tiling (shell)</p></li>
-<li><p><strong>on_boundary</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True then the in-out data will include those vertices within epsilon of
+<li><p><strong>tiling</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell" title="qiskit_qec.geometry.model.shell.Shell"><code class="xref py py-class docutils literal notranslate"><span class="pre">Shell</span></code></a></span>) – Input Tiling (shell)</p></li>
+<li><p><strong>on_boundary</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If True then the in-out data will include those vertices within epsilon of
 the boundary. This is more expensive. It is better to use a shape which is slightly
 larger. Default is False.</p></li>
-<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Real number use when on_boundary is True. Default is 0.1</p></li>
+<li><p><strong>epsilon</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code></span>) – Real number use when on_boundary is True. Default is 0.1</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -470,11 +470,11 @@ larger. Default is False.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>p</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – point</p></li>
-<li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – end point</p></li>
-<li><p><strong>b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – end point</p></li>
-<li><p><strong>strict</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – is strict comparison. Default is False</p></li>
-<li><p><strong>epsilon</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code>) – Will squeeze inequality by epsilon</p></li>
+<li><p><strong>p</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code></span>) – point</p></li>
+<li><p><strong>a</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code></span>) – end point</p></li>
+<li><p><strong>b</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code></span>) – end point</p></li>
+<li><p><strong>strict</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – is strict comparison. Default is False</p></li>
+<li><p><strong>epsilon</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Real</span></code></span>) – Will squeeze inequality by epsilon</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -507,12 +507,12 @@ larger. Default is False.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>origin</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Origin (r0) of rectangle. The origin is one of the
+<li><p><strong>origin</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span>) – Origin (r0) of rectangle. The origin is one of the
 corners of the rectangle.</p></li>
-<li><p><strong>direction</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]) – Direction vector from r0 to r1</p></li>
-<li><p><strong>scale1</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – how large to scale up (r0,r1) side</p></li>
-<li><p><strong>scale2</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – how large to scale up (r1,r2) side</p></li>
-<li><p><strong>manifold</strong> (<a class="reference internal" href="qiskit_qec.geometry.Manifold.html#qiskit_qec.geometry.Manifold" title="qiskit_qec.geometry.manifold.Manifold"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manifold</span></code></a>) – Manifold that rectangle lives on. Defaults to Plane().</p></li>
+<li><p><strong>direction</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span>) – Direction vector from r0 to r1</p></li>
+<li><p><strong>scale1</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – how large to scale up (r0,r1) side</p></li>
+<li><p><strong>scale2</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – how large to scale up (r1,r2) side</p></li>
+<li><p><strong>manifold</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qiskit_qec.geometry.Manifold.html#qiskit_qec.geometry.Manifold" title="qiskit_qec.geometry.manifold.Manifold"><code class="xref py py-class docutils literal notranslate"><span class="pre">Manifold</span></code></a></span>) – Manifold that rectangle lives on. Defaults to Plane().</p></li>
 <li><p><strong>delta</strong> (<em>optional</em>) – How large to increase the rectangle by. Defaults to 0.</p></li>
 <li><p><strong>dtype</strong> (<em>type</em><em>, </em><em>optional</em>) – type of entries for definiting points to use.
 Defaults to float.</p></li>
@@ -598,7 +598,7 @@ next corner of length &lt;length&gt;. The proceeding to the next corner and so o
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/06</div>
+              Last updated on 2023/11/16</div>
           </div>
           <div class="right-details">
             

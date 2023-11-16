@@ -351,6 +351,8 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">rustworkx</span> <span class="k">as</span> <span class="nn">rx</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">ClassicalRegister</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">QuantumRegister</span><span class="p">,</span> <span class="n">transpile</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">XGate</span><span class="p">,</span> <span class="n">RZGate</span>
 <span class="kn">from</span> <span class="nn">qiskit.transpiler</span> <span class="kn">import</span> <span class="n">PassManager</span><span class="p">,</span> <span class="n">InstructionDurations</span>
@@ -988,23 +990,22 @@
 <span class="sd">        set of qubits around adjacent cycles is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_link_graph</span><span class="p">()</span>
-        <span class="n">lg_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span>
-        <span class="n">lg_nodes</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
-        <span class="n">cycles</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">cycle_basis</span><span class="p">(</span><span class="n">link_graph</span><span class="p">)</span>
-        <span class="n">cycle_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]):</span> <span class="nb">list</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">lg_edges</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="n">cycles</span><span class="p">:</span>
-            <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cl</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycle</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cl</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">cycle</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">cycle</span><span class="p">[(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">cl</span><span class="p">]),</span> <span class="p">(</span><span class="n">cycle</span><span class="p">[(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">cl</span><span class="p">],</span> <span class="n">cycle</span><span class="p">[</span><span class="n">j</span><span class="p">])]:</span>
-                    <span class="k">if</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">lg_edges</span><span class="p">:</span>
-                        <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
-            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
-                <span class="n">cycle_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cycle</span>
-        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">cycle_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">cycle_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span> <span class="o">=</span> <span class="n">cycle_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_link_graph</span><span class="p">()</span>
+        <span class="n">lg_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span>
+        <span class="n">lg_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+        <span class="n">ng</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+            <span class="n">ng</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span>
+        <span class="c1"># express the cycles in terms of the ns of the link graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycles</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">minimum_cycle_basis</span><span class="p">(</span><span class="n">ng</span><span class="p">)</span>
+        <span class="c1"># and for each pair of data qubits, list the cycles it is a part of</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]):</span> <span class="nb">set</span><span class="p">()</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">lg_edges</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">cycle</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">n0</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">),</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n0</span><span class="p">)]:</span>
+                        <span class="k">if</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">lg_edges</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">lg_nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_coloring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1175,7 +1176,7 @@
             <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">z_logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="c1"># if there are none, just use the first</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">z_logicals</span><span class="p">:</span>  <span class="c1"># z_logicals == []</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">z_logicals</span><span class="p">:</span>
             <span class="n">z_logicals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span> <span class="o">=</span> <span class="n">z_logicals</span>
 
@@ -1556,126 +1557,151 @@
 
         <span class="c1"># see whether the bulk nodes are neutral</span>
         <span class="k">if</span> <span class="n">bulk_nodes</span><span class="p">:</span>
-            <span class="c1"># bicolor the nodes of the link graph, such that node edges connect unlike edges</span>
-            <span class="n">link_qubits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">)</span>
-            <span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_link_graph</span><span class="p">()</span>
-            <span class="c1"># all the qubits around cycles of the node edges have to be covered</span>
-            <span class="n">ns_to_do</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">]:</span>
-                <span class="n">ns_to_do</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">])</span>
-            <span class="c1"># start with one of these</span>
-            <span class="k">if</span> <span class="n">ns_to_do</span><span class="p">:</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">node_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-            <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">node_color</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-            <span class="n">base_neutral</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="c1"># count the number of nodes for each colour throughout</span>
-            <span class="n">num_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="n">last_num</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
-            <span class="n">fully_converged</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">last_converged</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">while</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
-                <span class="c1"># go through all nodes coloured in the last pass</span>
-                <span class="n">newly_colored</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">recently_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="c1"># look at all the code qubits that are neighbours</span>
-                    <span class="n">incident_es</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">incident_edges</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">incident_es</span><span class="p">:</span>
-                        <span class="n">edge</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
-                        <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="n">n0</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
-                            <span class="n">nn</span> <span class="o">=</span> <span class="n">n1</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">nn</span> <span class="o">=</span> <span class="n">n0</span>
-                        <span class="c1"># see if the edge corresponds to one of the given nodes</span>
-                        <span class="n">dc</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">link_qubits</span>
-                        <span class="c1"># if the neighbour is not yet coloured, colour it</span>
-                        <span class="c1"># different color if edge is given node, same otherwise</span>
-                        <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_color</span><span class="p">:</span>
-                            <span class="n">new_c</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
-                            <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="p">:</span>
-                                <span class="n">newly_colored</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_c</span>
-                                <span class="n">num_nodes</span><span class="p">[</span><span class="n">new_c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="c1"># if it is coloured, check the colour is correct</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">base_neutral</span> <span class="o">=</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">nn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
-                    <span class="k">if</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">ns_to_do</span><span class="p">:</span>
-                        <span class="n">ns_to_do</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nn</span><span class="p">)</span>
-                <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="c1"># process is converged once one colour has stoppped growing</span>
-                <span class="c1"># once ns_to_do is empty</span>
-                <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ns_to_do</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">fully_converged</span> <span class="o">=</span> <span class="n">converged</span> <span class="ow">and</span> <span class="n">last_converged</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
-                    <span class="n">last_num</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="n">last_converged</span> <span class="o">=</span> <span class="n">converged</span>
-            <span class="c1"># see how many qubits are in the converged colour, and determine the min colour</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
-                    <span class="n">conv_color</span> <span class="o">=</span> <span class="n">c</span>
-            <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">min_color</span> <span class="o">=</span> <span class="n">conv_color</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">min_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
-            <span class="c1"># calculate the number of nodes for the other</span>
-            <span class="n">num_nodes</span><span class="p">[(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span>
-            <span class="c1"># get the set of min nodes</span>
-            <span class="n">min_ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node_color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">min_color</span><span class="p">:</span>
-                    <span class="n">min_ns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
-            <span class="c1"># see which qubits for logical zs are needed</span>
-            <span class="n">flipped_logicals_all</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
-            <span class="k">if</span> <span class="n">base_neutral</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">:</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
-                    <span class="n">dc</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">min_ns</span>
-                    <span class="n">flipped_logicals_all</span><span class="p">[(</span><span class="n">min_color</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="c1"># check whether there are frustrated plaquettes</span>
+            <span class="n">parities</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)]:</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">parities</span><span class="p">:</span>
+                        <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">parity</span> <span class="ow">in</span> <span class="n">parities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">parity</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="n">frust</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">parities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-            <span class="c1"># list the colours with the max error one first</span>
-            <span class="c1"># (unless we do min only)</span>
-            <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">minimal</span><span class="p">:</span>
-                <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">min_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_color</span><span class="p">)</span>
-
-            <span class="c1"># see what happens for both colours</span>
-            <span class="c1"># if neutral for maximal, it&#39;s neutral</span>
-            <span class="c1"># otherwise, it is whatever it is for the minimal</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">:</span>
-                <span class="n">neutral</span> <span class="o">=</span> <span class="n">base_neutral</span>
-                <span class="n">num_errors</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
-                <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
-
-                <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
-                <span class="c1"># (unless this is ignored)</span>
-                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
-                    <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
-                    <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-                <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
-
+            <span class="c1"># if frust==True, no colouring is possible, so no need to do it</span>
+            <span class="k">if</span> <span class="n">frust</span><span class="p">:</span>
+                <span class="c1"># neutral if not frustrated</span>
+                <span class="n">neutral</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">frust</span>
+                <span class="c1"># empty because ignored</span>
                 <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
-                    <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                        <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_logical</span><span class="p">],</span>
-                        <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_logical</span><span class="p">),</span>
+                <span class="c1"># None because not counted</span>
+                <span class="n">num_errors</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># bicolor the nodes of the link graph, such that node edges connect unlike edges</span>
+                <span class="n">link_qubits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">)</span>
+                <span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span>
+                <span class="c1"># all the qubits around cycles of the node edges have to be covered</span>
+                <span class="n">ns_to_do</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]:</span>
+                        <span class="n">ns_to_do</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+                <span class="c1"># if this gives us qubits to start with, we start with one</span>
+                <span class="k">if</span> <span class="n">ns_to_do</span><span class="p">:</span>
+                    <span class="n">n</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># otherwise we commit to covering them all</span>
+                    <span class="n">ns_to_do</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())))</span>
+                    <span class="n">n</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                <span class="n">node_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+                <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">node_color</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">base_neutral</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># count the number of nodes for each colour throughout</span>
+                <span class="n">num_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">last_num</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+                <span class="n">fully_converged</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">last_converged</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">while</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
+                    <span class="c1"># go through all nodes coloured in the last pass</span>
+                    <span class="n">newly_colored</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">recently_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1"># look at all the code qubits that are neighbours</span>
+                        <span class="n">incident_es</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">incident_edges</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">incident_es</span><span class="p">:</span>
+                            <span class="n">edge</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
+                            <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">n0</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
+                                <span class="n">nn</span> <span class="o">=</span> <span class="n">n1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">nn</span> <span class="o">=</span> <span class="n">n0</span>
+                            <span class="c1"># see if the edge corresponds to one of the given nodes</span>
+                            <span class="n">dc</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">link_qubits</span>
+                            <span class="c1"># if the neighbour is not yet coloured, colour it</span>
+                            <span class="c1"># different color if edge is given node, same otherwise</span>
+                            <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_color</span><span class="p">:</span>
+                                <span class="n">new_c</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+                                <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="p">:</span>
+                                    <span class="n">newly_colored</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_c</span>
+                                    <span class="n">num_nodes</span><span class="p">[</span><span class="n">new_c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="c1"># if it is coloured, check the colour is correct</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">base_neutral</span> <span class="o">=</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">nn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="k">if</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">ns_to_do</span><span class="p">:</span>
+                            <span class="n">ns_to_do</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nn</span><span class="p">)</span>
+                    <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="c1"># process is converged once one colour has stoppped growing</span>
+                    <span class="c1"># once ns_to_do is empty</span>
+                    <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ns_to_do</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">fully_converged</span> <span class="o">=</span> <span class="n">converged</span> <span class="ow">and</span> <span class="n">last_converged</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
+                        <span class="n">last_num</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                        <span class="n">last_converged</span> <span class="o">=</span> <span class="n">converged</span>
+                <span class="c1"># see how many qubits are in the converged colour, and determine the min colour</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
+                        <span class="n">conv_color</span> <span class="o">=</span> <span class="n">c</span>
+                <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">min_color</span> <span class="o">=</span> <span class="n">conv_color</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">min_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="c1"># calculate the number of nodes for the other</span>
+                <span class="n">num_nodes</span><span class="p">[(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span>
+                <span class="c1"># get the set of min nodes</span>
+                <span class="n">min_ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node_color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">min_color</span><span class="p">:</span>
+                        <span class="n">min_ns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flipped_logical_nodes</span><span class="p">:</span>
-                    <span class="k">break</span>
+                <span class="c1"># see which qubits for logical zs are needed</span>
+                <span class="n">flipped_logicals_all</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
+                <span class="k">if</span> <span class="n">base_neutral</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">:</span>
+                        <span class="n">n</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+                        <span class="n">dc</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">min_ns</span>
+                        <span class="n">flipped_logicals_all</span><span class="p">[(</span><span class="n">min_color</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+                <span class="c1"># list the colours with the max error one first</span>
+                <span class="c1"># (unless we do min only)</span>
+                <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">minimal</span><span class="p">:</span>
+                    <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">min_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_color</span><span class="p">)</span>
+
+                <span class="c1"># see what happens for both colours</span>
+                <span class="c1"># if neutral for maximal, it&#39;s neutral</span>
+                <span class="c1"># otherwise, it is whatever it is for the minimal</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">:</span>
+                    <span class="n">neutral</span> <span class="o">=</span> <span class="n">base_neutral</span>
+                    <span class="n">num_errors</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                    <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+                    <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
+                    <span class="c1"># (unless this is ignored)</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
+                        <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                    <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
+
+                    <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
+                        <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                            <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_logical</span><span class="p">],</span>
+                            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_logical</span><span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flipped_logical_nodes</span><span class="p">:</span>
+                        <span class="k">break</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># without bulk nodes, neutral only if no boundary nodes are given</span>
@@ -2019,7 +2045,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/06</div>
+              Last updated on 2023/11/16</div>
           </div>
           <div class="right-details">
             
