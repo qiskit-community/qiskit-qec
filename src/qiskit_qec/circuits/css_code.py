@@ -48,15 +48,15 @@ class CSSCodeCircuit(CodeCircuit):
         """
         Args:
             code: A CSS code class which is either
-                a) StabSubSystemCode
-                b) a class with the following methods:
-                    'x_gauges' (as a list of list of qubit indices),
-                    'z_gauges',
-                    'x_stabilizers',
-                    'z_stabilizers',
-                    'logical_x',
-                    'logical_z',
-                    'n' (number of qubits),
+            a) StabSubSystemCode
+            b) a class with the following methods:
+                'x_gauges' (as a list of list of qubit indices),
+                'z_gauges',
+                'x_stabilizers',
+                'z_stabilizers',
+                'logical_x',
+                'logical_z',
+                'n' (number of qubits),
             T: Number of syndrome measurement rounds
             basis: basis for encoding ('x' or 'z')
             round_schedule: Order in which to measureme gauge operators ('zx' or 'xz')
@@ -64,6 +64,7 @@ class CSSCodeCircuit(CodeCircuit):
             If a tuple, a pnenomological noise model is used with the entries being
             probabity of depolarizing noise on code qubits between rounds and
             probability of measurement errors, respectively.
+
         Examples:
             The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code
             >>> from qiskit_qec.codes.hhc import HHC
@@ -255,14 +256,16 @@ class CSSCodeCircuit(CodeCircuit):
         """
         Convert output string from circuits into a set of nodes for
         `DecodingGraph`.
+
         Args:
             string (string): Results string to convert.
             kwargs (dict): Any additional keyword arguments.
                 logical (str): Logical value whose results are used ('0' as default).
                 all_logicals (bool): Whether to include logical nodes
                 irrespective of value. (False as default).
+
         Returns:
-            a list of 'DecodingGraphNode()'-s corresponding to the triggered detectors
+            nodes: a list of 'DecodingGraphNode()'s corresponding to the triggered detectors
         """
 
         nodes = string2nodes_with_detectors(
@@ -280,6 +283,7 @@ class CSSCodeCircuit(CodeCircuit):
         Converts output string into a list of logical measurement outcomes
         Logicals are the logical measurements produced by self.stim_detectors()
         """
+
         _, self.logicals = self.stim_detectors()
 
         log_outs = string2logical_meas(string, self.logicals, self.circuit["0"].clbits)
@@ -293,15 +297,17 @@ class CSSCodeCircuit(CodeCircuit):
 
     def stim_detectors(self):
         """
+        Constructs detectors and logicals required for stim.
+
         Returns:
-            detectors (list[dict]) are dictionaries containing
-                a) 'clbits', the classical bits (register, index) included in the measurement comparisons
-                b) 'qubits', the qubits (list of indices) participating in the stabilizer measurements
-                c) 'time', measurement round (int) of the earlier measurements in the detector
-                d) 'basis', the pauli basis ('x' or 'z') of the stabilizers
-            logicals (list[dict]) are dictionaries containing
-                a) 'clbits', the classical bits (register, index) included in the logical measurement
-                b) 'basis', the pauli basis ('x' or 'z') of the logical
+            detectors (list[dict]): dictionaries containing
+            a) 'clbits', the classical bits (register, index) included in the measurement comparisons
+            b) 'qubits', the qubits (list of indices) participating in the stabilizer measurements
+            c) 'time', measurement round (int) of the earlier measurements in the detector
+            d) 'basis', the pauli basis ('x' or 'z') of the stabilizers
+            logicals (list[dict]): dictionaries containing
+            a) 'clbits', the classical bits (register, index) included in the logical measurement
+            b) 'basis', the pauli basis ('x' or 'z') of the logical
         """
 
         detectors = []
