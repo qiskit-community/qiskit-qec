@@ -316,6 +316,13 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         return syndrome_changes
 
+    def measured_logicals(self):
+        if self.basis == "x":
+            measured_logicals = self.css_x_logical
+        else:
+            measured_logicals = self.css_z_logical
+        return measured_logicals
+
     def string2raw_logicals(self, string):
         """
         Extracts raw logicals from output string.

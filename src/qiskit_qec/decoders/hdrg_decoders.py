@@ -40,13 +40,8 @@ class ClusteringDecoder(ABC):
     ):
         self.code = code_circuit
 
-        if hasattr(self.code, "_xbasis"):
-            if self.code._xbasis:
-                self.measured_logicals = self.code.css_x_logical
-            else:
-                self.measured_logicals = self.code.css_z_logical
-        else:
-            self.measured_logicals = self.code.css_z_logical
+        self.measured_logicals = self.code.measured_logicals()
+
         if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
         else:

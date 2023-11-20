@@ -19,6 +19,7 @@ import pymatching
 from qiskit_qec.codes.hhc import HHC
 from qiskit_qec.circuits.css_code import CSSCodeCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.utils.stim_tools import get_stim_circuits
 
 
 class TestCircuitMatcher(unittest.TestCase):
@@ -38,7 +39,10 @@ class TestCircuitMatcher(unittest.TestCase):
             css_code = CSSCodeCircuit(code, T=d, basis="x", noise_model=(error_rate, error_rate))
             graph = DecodingGraph(css_code).graph
             m = pymatching.Matching(graph)
-            stim_circuit = css_code.stim_circuit_with_detectors()["0"]
+            detectors, logicals = css_code.stim_detectors()
+            stim_circuit = get_stim_circuits(
+                css_code.noisy_circuit["0"], detectors=detectors, logicals=logicals
+            )[0][0]
             stim_sampler = stim_circuit.compile_detector_sampler()
             num_correct = 0
             stim_samples = stim_sampler.sample(num_shots, append_observables=True)

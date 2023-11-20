@@ -34,3 +34,4 @@ from .code_circuit import CodeCircuit
 from .repetition_code import RepetitionCodeCircuit, ArcCircuit
 from .surface_code import SurfaceCodeCircuit
 from .css_code import CSSCodeCircuit
+from .stim_code_circuit import StimCodeCircuit
