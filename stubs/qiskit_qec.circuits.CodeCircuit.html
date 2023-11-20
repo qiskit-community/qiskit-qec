@@ -406,6 +406,13 @@ of nodes for which the even/odd assessment is valid.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.CodeCircuit.measured_logicals">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">measured_logicals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/code_circuit.html#CodeCircuit.measured_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CodeCircuit.measured_logicals" title="Link to this definition">#</a></dt>
+<dd><p>Returns a list of logical operators, each expressed as a list of qubits for which
+the parity of the final readouts corresponds to the raw logical readout.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CodeCircuit.string2nodes">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/code_circuit.html#CodeCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CodeCircuit.string2nodes" title="Link to this definition">#</a></dt>
 <dd><p>Convert output string from circuits into a set of nodes for
@@ -456,7 +463,7 @@ of nodes for which the even/odd assessment is valid.
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             
@@ -481,6 +488,7 @@ of nodes for which the even/odd assessment is valid.
 <li><a class="reference internal" href="#qiskit_qec.circuits.CodeCircuit"><code class="docutils literal notranslate"><span class="pre">CodeCircuit</span></code></a><ul>
 <li><a class="reference internal" href="#qiskit_qec.circuits.CodeCircuit.check_nodes"><code class="docutils literal notranslate"><span class="pre">CodeCircuit.check_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.CodeCircuit.is_cluster_neutral"><code class="docutils literal notranslate"><span class="pre">CodeCircuit.is_cluster_neutral()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.CodeCircuit.measured_logicals"><code class="docutils literal notranslate"><span class="pre">CodeCircuit.measured_logicals()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.CodeCircuit.string2nodes"><code class="docutils literal notranslate"><span class="pre">CodeCircuit.string2nodes()</span></code></a></li>
 </ul>
 </li>

@@ -14,7 +14,9 @@
 
    .. automethod:: CSSCodeCircuit.check_nodes
    .. automethod:: CSSCodeCircuit.is_cluster_neutral
-   .. automethod:: CSSCodeCircuit.stim_circuit_with_detectors
+   .. automethod:: CSSCodeCircuit.measured_logicals
+   .. automethod:: CSSCodeCircuit.stim_detectors
    .. automethod:: CSSCodeCircuit.string2nodes
+   .. automethod:: CSSCodeCircuit.string2raw_logicals
 
 

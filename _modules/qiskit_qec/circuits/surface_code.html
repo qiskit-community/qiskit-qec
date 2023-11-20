@@ -664,6 +664,16 @@
 
         <span class="k">return</span> <span class="n">syndrome_changes</span>
 
+<div class="viewcode-block" id="SurfaceCodeCircuit.measured_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.measured_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span>
+        <span class="k">return</span> <span class="n">measured_logicals</span></div>
+
+
 <div class="viewcode-block" id="SurfaceCodeCircuit.string2raw_logicals">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.string2raw_logicals">[docs]</a>
     <span class="k">def</span> <span class="nf">string2raw_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
@@ -887,7 +897,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             

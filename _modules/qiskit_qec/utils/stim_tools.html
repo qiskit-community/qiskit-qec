@@ -343,15 +343,17 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="c1"># pylint: disable=invalid-name, disable=no-name-in-module</span>
+<span class="c1"># pylint: disable=invalid-name, disable=no-name-in-module, disable=unused-argument</span>
 
 <span class="sd">&quot;&quot;&quot;Tools to use functionality from Stim.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log</span> <span class="k">as</span> <span class="n">loga</span>
 <span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">Circuit</span> <span class="k">as</span> <span class="n">StimCircuit</span>
 <span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DetectorErrorModel</span> <span class="k">as</span> <span class="n">StimDetectorErrorModel</span>
 <span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DemInstruction</span> <span class="k">as</span> <span class="n">StimDemInstruction</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DemRepeatBlock</span> <span class="k">as</span> <span class="n">StimDemRepeatBlock</span>
 <span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">DemTarget</span> <span class="k">as</span> <span class="n">StimDemTarget</span>
+<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">target_rec</span> <span class="k">as</span> <span class="n">StimTarget_rec</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">rustworkx</span> <span class="k">as</span> <span class="nn">rx</span>
@@ -359,28 +361,57 @@
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit_aer.noise.errors.quantum_error</span> <span class="kn">import</span> <span class="n">QuantumChannelInstruction</span>
 <span class="kn">from</span> <span class="nn">qiskit_aer.noise</span> <span class="kn">import</span> <span class="n">pauli_error</span>
-<span class="kn">from</span> <span class="nn">qiskit_qec.utils.decoding_graph_attributes</span> <span class="kn">import</span> <span class="n">DecodingGraphNode</span><span class="p">,</span> <span class="n">DecodingGraphEdge</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils.decoding_graph_attributes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DecodingGraphNode</span><span class="p">,</span>
+    <span class="n">DecodingGraphEdge</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.noise.paulinoisemodel</span> <span class="kn">import</span> <span class="n">PauliNoiseModel</span>
 
 
 <div class="viewcode-block" id="get_stim_circuits">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.get_stim_circuits.html#qiskit_qec.utils.get_stim_circuits">[docs]</a>
-<span class="k">def</span> <span class="nf">get_stim_circuits</span><span class="p">(</span><span class="n">circuit_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">get_stim_circuits</span><span class="p">(</span>
+    <span class="n">circuit</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span>
+    <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">logicals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts compatible qiskit circuits to stim circuits.</span>
 <span class="sd">       Dictionaries are not complete. For the stim definitions see:</span>
 <span class="sd">       https://github.com/quantumlib/Stim/blob/main/doc/gates.md</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        circuit_dict: Compatible gates are paulis, controlled paulis, h, s,</span>
+<span class="sd">        circuit: Compatible gates are Paulis, controlled Paulis, h, s,</span>
 <span class="sd">        and sdg, swap, reset, measure and barrier. Compatible noise operators</span>
 <span class="sd">        correspond to a single or two qubit pauli channel.</span>
+<span class="sd">        detectors: A list of measurement comparisons. A measurement comparison</span>
+<span class="sd">        (detector) is either a list of measurements given by a the name and index</span>
+<span class="sd">        of the classical bit or a list of dictionaries, with a mandatory clbits</span>
+<span class="sd">        key containing the classical bits. A dictionary can contain keys like</span>
+<span class="sd">        &#39;qubits&#39;, &#39;time&#39;, &#39;basis&#39; etc.</span>
+<span class="sd">        logicals: A list of logical measurements. A logical measurement is a</span>
+<span class="sd">        list of classical bits whose total parity is the logical eigenvalue.</span>
+<span class="sd">        Again it can be a list of dictionaries.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        stim_circuits, stim_measurement_data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">stim_circuits</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">circ_label</span><span class="p">,</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuit_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+    <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="p">[{}]</span>
+    <span class="k">if</span> <span class="n">logicals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logicals</span> <span class="o">=</span> <span class="p">[{}]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">detectors</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">List</span><span class="p">):</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="n">det</span><span class="p">,</span> <span class="s2">&quot;qubits&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span> <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">logicals</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logicals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">List</span><span class="p">):</span>
+        <span class="n">logicals</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="n">log</span><span class="p">}</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logicals</span><span class="p">]</span>
+
+    <span class="n">stim_circuits</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">):</span>
+        <span class="n">circuit</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuit</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">circ</span> <span class="ow">in</span> <span class="n">circuit</span><span class="p">:</span>
         <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">StimCircuit</span><span class="p">()</span>
 
         <span class="n">qiskit_to_stim_dict</span> <span class="o">=</span> <span class="p">{</span>
@@ -391,7 +422,7 @@
             <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span>
             <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span>
             <span class="s2">&quot;sdg&quot;</span><span class="p">:</span> <span class="s2">&quot;S_DAG&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cx&quot;</span><span class="p">:</span> <span class="s2">&quot;CNOT&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cx&quot;</span><span class="p">:</span> <span class="s2">&quot;CX&quot;</span><span class="p">,</span>
             <span class="s2">&quot;cy&quot;</span><span class="p">:</span> <span class="s2">&quot;CY&quot;</span><span class="p">,</span>
             <span class="s2">&quot;cz&quot;</span><span class="p">:</span> <span class="s2">&quot;CZ&quot;</span><span class="p">,</span>
             <span class="s2">&quot;swap&quot;</span><span class="p">:</span> <span class="s2">&quot;SWAP&quot;</span><span class="p">,</span>
@@ -399,7 +430,16 @@
             <span class="s2">&quot;measure&quot;</span><span class="p">:</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span>
             <span class="s2">&quot;barrier&quot;</span><span class="p">:</span> <span class="s2">&quot;TICK&quot;</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">pauli_error_1_stim_order</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+        <span class="n">pauli_error_1_stim_order</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="n">pauli_error_2_stim_order</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;II&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s2">&quot;IX&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -420,17 +460,22 @@
         <span class="p">}</span>
 
         <span class="n">measurement_data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">register_offset</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">previous_offset</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span> <span class="ow">in</span> <span class="n">circuit</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+        <span class="n">qreg_offset</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">creg_offset</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">prevq_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">prevc_offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span> <span class="ow">in</span> <span class="n">circ</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="n">qargs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">register_offset</span><span class="p">:</span>
-                    <span class="n">register_offset</span><span class="p">[</span><span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_offset</span>
-                    <span class="n">previous_offset</span> <span class="o">+=</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">size</span>
+                <span class="k">if</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qreg_offset</span><span class="p">:</span>
+                    <span class="n">qreg_offset</span><span class="p">[</span><span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prevq_offset</span>
+                    <span class="n">prevq_offset</span> <span class="o">+=</span> <span class="n">qubit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">cargs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">creg_offset</span><span class="p">:</span>
+                    <span class="n">creg_offset</span><span class="p">[</span><span class="n">bit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prevc_offset</span>
+                    <span class="n">prevc_offset</span> <span class="o">+=</span> <span class="n">bit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">size</span>
 
             <span class="n">qubit_indices</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span> <span class="o">+</span> <span class="n">register_offset</span><span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">))</span>
+                <span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span> <span class="o">+</span> <span class="n">qreg_offset</span><span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">qargs</span><span class="p">))</span>
             <span class="p">]</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="n">QuantumChannelInstruction</span><span class="p">):</span>
@@ -454,21 +499,64 @@
                 <span class="c1"># Gates and measurements</span>
                 <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">qiskit_to_stim_dict</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># keeping track of measurement indices in stim</span>
-                        <span class="n">measurement_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="p">[</span>
-                                <span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span> <span class="o">+</span> <span class="n">register_offset</span><span class="p">[</span><span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
-                                <span class="n">qargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                            <span class="p">]</span>
-                        <span class="p">)</span>
+                        <span class="n">measurement_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">_index</span><span class="p">])</span>
+
                     <span class="k">if</span> <span class="n">qiskit_to_stim_dict</span><span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;TICK&quot;</span><span class="p">:</span>  <span class="c1"># barrier</span>
                         <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;TICK&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">inst</span><span class="o">.</span><span class="n">condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># handle c_ifs</span>
+                        <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="s2">&quot;xyz&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">condition</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="n">clbit</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">condition</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="n">qiskit_to_stim_dict</span><span class="p">[</span><span class="s2">&quot;c&quot;</span> <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                                    <span class="p">[</span>
+                                        <span class="n">StimTarget_rec</span><span class="p">(</span>
+                                            <span class="n">measurement_data</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
+                                                <span class="p">[</span><span class="n">clbit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">clbit</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span>
+                                            <span class="p">)</span>
+                                            <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">)</span>
+                                        <span class="p">),</span>
+                                        <span class="n">qubit_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="p">],</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                                    <span class="s2">&quot;Classically controlled gate must be conditioned on bit value 1&quot;</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                                <span class="s2">&quot;Classically controlled &quot;</span> <span class="o">+</span> <span class="n">inst</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; gate is not supported&quot;</span>
+                            <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>  <span class="c1"># gates/measurements acting on qubits</span>
                         <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qiskit_to_stim_dict</span><span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">qubit_indices</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected operations: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">([</span><span class="n">inst</span><span class="p">,</span> <span class="n">qargs</span><span class="p">,</span> <span class="n">cargs</span><span class="p">]))</span>
 
-        <span class="n">stim_circuits</span><span class="p">[</span><span class="n">circ_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">stim_circuit</span>
-        <span class="n">stim_measurement_data</span><span class="p">[</span><span class="n">circ_label</span><span class="p">]</span> <span class="o">=</span> <span class="n">measurement_data</span>
+        <span class="k">if</span> <span class="n">detectors</span> <span class="o">!=</span> <span class="p">[{}]:</span>
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+                <span class="n">stim_record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">reg</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]:</span>
+                    <span class="n">stim_record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">measurement_data</span><span class="o">.</span><span class="n">index</span><span class="p">([</span><span class="n">reg</span><span class="p">,</span> <span class="n">ind</span><span class="p">])</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[]:</span>
+                    <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">stim_record_targets</span><span class="p">,</span> <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]]</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">stim_record_targets</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">logicals</span> <span class="o">!=</span> <span class="p">[{}]:</span>
+            <span class="k">for</span> <span class="n">log_ind</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logicals</span><span class="p">):</span>
+                <span class="n">stim_record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">reg</span><span class="p">,</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]:</span>
+                    <span class="n">stim_record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">measurement_data</span><span class="o">.</span><span class="n">index</span><span class="p">([</span><span class="n">reg</span><span class="p">,</span> <span class="n">ind</span><span class="p">])</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="n">stim_circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;OBSERVABLE_INCLUDE&quot;</span><span class="p">,</span> <span class="n">stim_record_targets</span><span class="p">,</span> <span class="n">log_ind</span><span class="p">)</span>
+
+        <span class="n">stim_circuits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stim_circuit</span><span class="p">)</span>
+        <span class="n">stim_measurement_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">stim_measurement_data</span></div>
 
 
@@ -476,7 +564,9 @@
 <div class="viewcode-block" id="get_counts_via_stim">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.get_counts_via_stim.html#qiskit_qec.utils.get_counts_via_stim">[docs]</a>
 <span class="k">def</span> <span class="nf">get_counts_via_stim</span><span class="p">(</span>
-    <span class="n">circuits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">],</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">,</span> <span class="n">noise_model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">circuits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">],</span>
+    <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4000</span><span class="p">,</span>
+    <span class="n">noise_model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a qiskit compatible dictionary of measurement outcomes</span>
 
@@ -498,17 +588,17 @@
 
     <span class="n">counts</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
-        <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="n">get_stim_circuits</span><span class="p">({</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="n">circuit</span><span class="p">})</span>
-        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
-        <span class="n">measurement_data</span> <span class="o">=</span> <span class="n">stim_measurement_data</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">stim_measurement_data</span> <span class="o">=</span> <span class="n">get_stim_circuits</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">stim_circuits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">measurement_data</span> <span class="o">=</span> <span class="n">stim_measurement_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">stim_samples</span> <span class="o">=</span> <span class="n">stim_circuit</span><span class="o">.</span><span class="n">compile_sampler</span><span class="p">()</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span>
         <span class="n">qiskit_counts</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">stim_sample</span> <span class="ow">in</span> <span class="n">stim_samples</span><span class="p">:</span>
-            <span class="n">prev_reg</span> <span class="o">=</span> <span class="n">measurement_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">prev_reg</span> <span class="o">=</span> <span class="n">measurement_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">qiskit_count</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">meas</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">measurement_data</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">reg</span> <span class="o">=</span> <span class="n">meas</span>
+                <span class="n">reg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">meas</span>
                 <span class="k">if</span> <span class="n">reg</span> <span class="o">!=</span> <span class="n">prev_reg</span><span class="p">:</span>
                     <span class="n">qiskit_count</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
                 <span class="n">qiskit_count</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">stim_sample</span><span class="p">[</span><span class="o">-</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
@@ -526,30 +616,101 @@
 
 
 
-<span class="k">def</span> <span class="nf">detector_error_model_to_rx_graph</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">StimDetectorErrorModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">iter_flatten_model</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">StimDetectorErrorModel</span><span class="p">,</span>
+    <span class="n">handle_error</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">handle_detector_coords</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">hyperedges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function have been copied from the built-in method of</span>
+<span class="sd">    stim: stim.Circuit.generated(&quot;surface_code:rotated_memory_z&quot;,...)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">det_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_helper</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">StimDetectorErrorModel</span><span class="p">,</span> <span class="n">reps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">nonlocal</span> <span class="n">det_offset</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">reps</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">StimDemRepeatBlock</span><span class="p">):</span>
+                    <span class="n">_helper</span><span class="p">(</span><span class="n">instruction</span><span class="o">.</span><span class="n">body_copy</span><span class="p">(),</span> <span class="n">instruction</span><span class="o">.</span><span class="n">repeat_count</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">StimDemInstruction</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
+                        <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">frames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">t</span><span class="p">:</span> <span class="n">StimDemTarget</span>
+                        <span class="n">p</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">hyperedge</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_relative_detector_id</span><span class="p">():</span>
+                                <span class="n">dets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="n">det_offset</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_logical_observable_id</span><span class="p">():</span>
+                                <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_separator</span><span class="p">():</span>
+                                <span class="c1"># Treat each component of a decomposed error as an independent error.</span>
+                                <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
+                                <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+                                <span class="n">dets</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="c1"># Handle last component.</span>
+                        <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">hyperedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;shift_detectors&quot;</span><span class="p">:</span>
+                        <span class="n">det_offset</span> <span class="o">+=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;detector&quot;</span><span class="p">:</span>
+                        <span class="n">t</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">det_ind</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="n">det_offset</span>
+                        <span class="k">if</span> <span class="n">detectors</span> <span class="o">==</span> <span class="p">[{}]:</span>
+                            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">())</span>
+                            <span class="n">time</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">qubits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">qubit_ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">qubit_ind</span> <span class="ow">in</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                            <span class="n">det</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">det</span> <span class="o">=</span> <span class="n">detectors</span><span class="p">[</span><span class="n">det_ind</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                            <span class="n">time</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+                            <span class="n">qubits</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;qubits&quot;</span><span class="p">)</span>
+                            <span class="k">del</span> <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
+                            <span class="n">handle_detector_coords</span><span class="p">(</span>
+                                <span class="n">detector_index</span><span class="o">=</span><span class="n">det_ind</span><span class="p">,</span>
+                                <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+                                <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span>
+                                <span class="n">det_props</span><span class="o">=</span><span class="n">det</span><span class="p">,</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;logical_observable&quot;</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="n">_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">detector_error_model_to_rx_graph</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">StimDetectorErrorModel</span><span class="p">,</span> <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a stim error model into a RustworkX graph.</span>
 <span class="sd">    It assumes that the stim circuit does not contain repeat blocks.</span>
 <span class="sd">    Later on repeat blocks should be handled to make this function compatible with</span>
 <span class="sd">    user-defined stim circuits.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        detectors:</span>
+<span class="sd">        coordinate included as the last element for every detector in the stim detector error model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="p">[{}]</span>
 
     <span class="n">g</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">(</span><span class="n">multigraph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">index_to_DecodingGraphNode</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;detector&quot;</span><span class="p">:</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">())</span>
-            <span class="n">time</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">qubits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">qubit_ind</span><span class="p">)</span> <span class="k">for</span> <span class="n">qubit_ind</span> <span class="ow">in</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">)</span>
-                <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
-                <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-
-    <span class="n">trivial_boundary_node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">trivial_boundary_node</span><span class="p">)</span>
-    <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">]</span> <span class="o">=</span> <span class="n">trivial_boundary_node</span>
+    <span class="k">def</span> <span class="nf">skip_error</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">frame_changes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">hyperedge</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">frame_changes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">hyperedge</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -581,46 +742,169 @@
             <span class="p">)</span>
             <span class="n">edge</span> <span class="o">=</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span>
                 <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span>
-                <span class="n">weight</span><span class="o">=</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">),</span>
+                <span class="n">weight</span><span class="o">=</span><span class="n">loga</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">),</span>
                 <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;fault_ids&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">),</span> <span class="s2">&quot;error_probability&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">},</span>
             <span class="p">)</span>
             <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">)</span>
             <span class="n">hyperedge</span><span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">edge</span>
 
+    <span class="k">def</span> <span class="nf">skip_detector_coords</span><span class="p">(</span><span class="n">detector_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="n">det_props</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">handle_detector_coords</span><span class="p">(</span><span class="n">detector_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="n">det_props</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">detector_index</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="n">det_props</span>
+        <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">detector_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
     <span class="n">hyperedges</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">StimDemInstruction</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span>
-                <span class="n">dets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">frames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">t</span><span class="p">:</span> <span class="n">StimDemTarget</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">args_copy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">hyperedge</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">instruction</span><span class="o">.</span><span class="n">targets_copy</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_relative_detector_id</span><span class="p">():</span>
-                        <span class="n">dets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_logical_observable_id</span><span class="p">():</span>
-                        <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_separator</span><span class="p">():</span>
-                        <span class="c1"># Treat each component of a decomposed error as an independent error.</span>
-                        <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
-                        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
-                        <span class="n">dets</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="c1"># Handle last component.</span>
-                <span class="n">handle_error</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dets</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">hyperedge</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">hyperedges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hyperedge</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;detector&quot;</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">instruction</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;logical_observable&quot;</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+    <span class="n">iter_flatten_model</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">handle_error</span><span class="o">=</span><span class="n">skip_error</span><span class="p">,</span>
+        <span class="n">handle_detector_coords</span><span class="o">=</span><span class="n">handle_detector_coords</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span>
+        <span class="n">hyperedges</span><span class="o">=</span><span class="n">hyperedges</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">trivial_boundary_node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">trivial_boundary_node</span><span class="p">)</span>
+    <span class="n">index_to_DecodingGraphNode</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">num_detectors</span><span class="p">]</span> <span class="o">=</span> <span class="n">trivial_boundary_node</span>
+
+    <span class="n">iter_flatten_model</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">,</span>
+        <span class="n">handle_error</span><span class="o">=</span><span class="n">handle_error</span><span class="p">,</span>
+        <span class="n">handle_detector_coords</span><span class="o">=</span><span class="n">skip_detector_coords</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span>
+        <span class="n">hyperedges</span><span class="o">=</span><span class="n">hyperedges</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">hyperedges</span>
+
+
+<span class="k">def</span> <span class="nf">string2nodes_with_detectors</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">logicals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">clbits</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="o">.</span><span class="n">clbits</span><span class="p">,</span>
+    <span class="n">det_ref_values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert output string from circuits into a set of nodes for</span>
+<span class="sd">    `DecodingGraph`.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        string (string): Results string to convert.</span>
+<span class="sd">        detectors: A list of measurement comparisons. A measurement comparison</span>
+<span class="sd">                (detector) is either a list of measurements given by a the name and index</span>
+<span class="sd">                of the classical bit or a list of dictionaries, with a mandatory clbits</span>
+<span class="sd">                key containing the classical bits. A dictionary can contain keys like</span>
+<span class="sd">                &#39;qubits&#39;, &#39;time&#39;, &#39;basis&#39; etc.</span>
+<span class="sd">        logicals: A list of logical measurements. A logical measurement is a</span>
+<span class="sd">                list of classical bits whose total parity is the logical eigenvalue.</span>
+<span class="sd">                Again it can be a list of dictionaries.</span>
+<span class="sd">        clbits: classical bits of the qiskit circuit, needed to identify</span>
+<span class="sd">                measurements in the output string</span>
+<span class="sd">        det_ref_values: Reference value for the detector outcomes, 0 by default</span>
+
+<span class="sd">        kwargs (dict): Any additional keyword arguments.</span>
+<span class="sd">            logical (str): Logical value whose results are used (&#39;0&#39; as default).</span>
+<span class="sd">            all_logicals (bool): Whether to include logical nodes</span>
+<span class="sd">            irrespective of value. (False as default).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">clbit_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">clbit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">clbit</span><span class="o">.</span><span class="n">_index</span><span class="p">):</span> <span class="n">clind</span> <span class="k">for</span> <span class="n">clind</span><span class="p">,</span> <span class="n">clbit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clbits</span><span class="p">)}</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">det_ref_values</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">det_ref_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">det_ref_values</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">detectors</span><span class="p">)</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">detectors</span><span class="p">):</span>
+        <span class="n">det</span> <span class="o">=</span> <span class="n">det</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">outcomes</span> <span class="o">=</span> <span class="p">[</span><span class="n">clbit_dict</span><span class="p">[</span><span class="n">clbit_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">clbit_key</span> <span class="ow">in</span> <span class="n">det</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;clbits&quot;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">output_bits</span><span class="p">[</span><span class="n">outcomes</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="n">det_ref_values</span><span class="p">[</span><span class="n">ind</span><span class="p">]:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">),</span> <span class="n">qubits</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;qubits&quot;</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">ind</span><span class="p">)</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="n">det</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="n">log_nodes</span> <span class="o">=</span> <span class="n">string2rawlogicals_with_detectors</span><span class="p">(</span>
+        <span class="n">string</span><span class="o">=</span><span class="n">string</span><span class="p">,</span> <span class="n">logicals</span><span class="o">=</span><span class="n">logicals</span><span class="p">,</span> <span class="n">clbits</span><span class="o">=</span><span class="n">clbits</span><span class="p">,</span> <span class="n">start_ind</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">detectors</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">log_nodes</span><span class="p">:</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span>
+
+
+<span class="k">def</span> <span class="nf">string2rawlogicals_with_detectors</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">logicals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">clbits</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="o">.</span><span class="n">clbits</span><span class="p">,</span>
+    <span class="n">start_ind</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert output string from circuits into raw logical values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">all_logicals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all_logicals&quot;</span><span class="p">)</span>
+    <span class="n">logical</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logical</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logical</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+    <span class="n">output_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">clbit_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">clbit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">clbit</span><span class="o">.</span><span class="n">_index</span><span class="p">):</span> <span class="n">clind</span> <span class="k">for</span> <span class="n">clind</span><span class="p">,</span> <span class="n">clbit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clbits</span><span class="p">)}</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">logical_op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logicals</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start_ind</span><span class="p">):</span>
+        <span class="n">logical_out</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">logical_op</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]:</span>
+            <span class="n">qind</span> <span class="o">=</span> <span class="n">clbit_dict</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="n">logical_out</span> <span class="o">+=</span> <span class="n">output_bits</span><span class="p">[</span><span class="n">qind</span><span class="p">]</span>
+        <span class="n">logical_out</span> <span class="o">=</span> <span class="n">logical_out</span> <span class="o">%</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">logical_out</span><span class="p">)</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">qubits</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span>
+
+
+<span class="k">def</span> <span class="nf">string2logical_meas</span><span class="p">(</span>
+    <span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">outcomes_in_logical</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">clbits</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="o">.</span><span class="n">clbits</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        string (string): Results string from qiskit circuit</span>
+<span class="sd">        outcomes_in_logical: the detector-style logical outcome</span>
+<span class="sd">        clbits: classical bits of the qiskit circuit, needed to identify</span>
+<span class="sd">        measurements in the output string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">output_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">clbit_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">clbit</span><span class="o">.</span><span class="n">_register</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">clbit</span><span class="o">.</span><span class="n">_index</span><span class="p">):</span> <span class="n">clind</span> <span class="k">for</span> <span class="n">clind</span><span class="p">,</span> <span class="n">clbit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">clbits</span><span class="p">)}</span>
+
+    <span class="n">log_outs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">logical_op</span> <span class="ow">in</span> <span class="n">outcomes_in_logical</span><span class="p">:</span>
+        <span class="n">logical_out</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">logical_op</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]:</span>
+            <span class="n">qind</span> <span class="o">=</span> <span class="n">clbit_dict</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+            <span class="n">logical_out</span> <span class="o">+=</span> <span class="n">output_bits</span><span class="p">[</span><span class="n">qind</span><span class="p">]</span>
+        <span class="n">logical_out</span> <span class="o">=</span> <span class="n">logical_out</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">log_outs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logical_out</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">log_outs</span>
 
 
 <div class="viewcode-block" id="noisify_circuit">
@@ -628,6 +912,11 @@
 <span class="k">def</span> <span class="nf">noisify_circuit</span><span class="p">(</span><span class="n">circuits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">],</span> <span class="n">noise_model</span><span class="p">:</span> <span class="n">PauliNoiseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inserts error operations into a circuit according to a pauli noise model.</span>
+<span class="sd">    Handles idling errors in the form of custom gates &quot;idle_#&quot; which are assumed to</span>
+<span class="sd">    encode the identity gate only.</span>
+<span class="sd">    qc = QuantumCircuit(1, name=&#39;idle_1&#39;)</span>
+<span class="sd">    qc.i(0)</span>
+<span class="sd">    idle_1 = qc.to_instruction()</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        circuits: Circuit or list thereof to which noise is added.</span>
@@ -644,10 +933,9 @@
     <span class="c1"># create pauli errors for all errors in noise model</span>
     <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">pauli</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">noise</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">pauli</span> <span class="o">=</span> <span class="n">pauli</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-            <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pauli_error</span><span class="p">([(</span><span class="n">pauli</span><span class="p">,</span> <span class="n">prob</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;I&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">pauli</span><span class="p">),</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">prob</span><span class="p">)]))</span>
+        <span class="n">paulis</span> <span class="o">=</span> <span class="p">[</span><span class="n">pauli</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">pauli</span> <span class="ow">in</span> <span class="n">noise</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">noise</span><span class="p">[</span><span class="s2">&quot;chan&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="n">pauli_error</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">paulis</span><span class="p">,</span> <span class="n">probs</span><span class="p">)))</span>
 
     <span class="n">noisy_circuits</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">qc</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
@@ -666,11 +954,11 @@
                 <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">)</span>
             <span class="c1"># then the error</span>
             <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">error_op</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">]:</span>
-                    <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error_op</span><span class="p">,</span> <span class="n">qubits</span><span class="p">)</span>
+                <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="n">g</span><span class="p">],</span> <span class="n">qubits</span><span class="p">)</span>
             <span class="c1"># add gate if it needs to go after the error</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">pre_error</span><span class="p">:</span>
-                <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;idle_&quot;</span><span class="p">):</span>
+                    <span class="n">noisy_qc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">)</span>
 
         <span class="n">noisy_circuits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">noisy_qc</span><span class="p">)</span>
 
@@ -696,7 +984,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             

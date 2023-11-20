@@ -588,6 +588,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="RepetitionCodeCircuit.measured_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.measured_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]]</span></div>
+
+
     <span class="k">def</span> <span class="nf">_process_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="c1"># logical readout taken from</span>
         <span class="n">measured_log</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
@@ -1328,6 +1334,12 @@
             <span class="n">qc</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span>
             <span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ArcCircuit.measured_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.measured_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span></div>
+
+
     <span class="k">def</span> <span class="nf">_process_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="c1"># logical readout taken from assigned qubits</span>
         <span class="n">measured_log</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -2045,7 +2057,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             

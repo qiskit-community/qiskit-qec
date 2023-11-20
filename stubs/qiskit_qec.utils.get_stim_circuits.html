@@ -334,7 +334,7 @@
 <h1>qiskit_qec.utils.get_stim_circuits<a class="headerlink" href="#qiskit-qec-utils-get-stim-circuits" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="qiskit_qec.utils.get_stim_circuits">
-<span class="sig-name descname"><span class="pre">get_stim_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/stim_tools.html#get_stim_circuits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.get_stim_circuits" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_stim_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logicals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/stim_tools.html#get_stim_circuits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.get_stim_circuits" title="Link to this definition">#</a></dt>
 <dd><dl class="simple">
 <dt>Converts compatible qiskit circuits to stim circuits.</dt><dd><p>Dictionaries are not complete. For the stim definitions see:
 <a class="reference external" href="https://github.com/quantumlib/Stim/blob/main/doc/gates.md">https://github.com/quantumlib/Stim/blob/main/doc/gates.md</a></p>
@@ -343,12 +343,23 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>circuit_dict</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumCircuit</span></code>]</span>) – Compatible gates are paulis, controlled paulis, h, s,</p></li>
+<li><p><strong>circuit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumCircuit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]</span>) – Compatible gates are Paulis, controlled Paulis, h, s,</p></li>
 <li><p><strong>sdg</strong> (<em>and</em>) – </p></li>
 <li><p><strong>swap</strong> – </p></li>
 <li><p><strong>reset</strong> – </p></li>
 <li><p><strong>operators</strong> (<em>measure and barrier. Compatible noise</em>) – </p></li>
 <li><p><strong>channel.</strong> (<em>correspond to a single</em><em> or </em><em>two qubit pauli</em>) – </p></li>
+<li><p><strong>detectors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]</span>) – A list of measurement comparisons. A measurement comparison</p></li>
+<li><p><strong>index</strong> (<em>(</em><em>detector</em><em>) </em><em>is either a list</em><em> of </em><em>measurements given by a the name and</em>) – </p></li>
+<li><p><strong>dictionaries</strong> (<em>of the classical bit</em><em> or </em><em>a list of</em>) – </p></li>
+<li><p><strong>clbits</strong> (<em>with a mandatory</em>) – </p></li>
+<li><p><strong>like</strong> (<em>key containing the classical bits. A dictionary can contain keys</em>) – </p></li>
+<li><p><strong>'qubits'</strong> – </p></li>
+<li><p><strong>'time'</strong> – </p></li>
+<li><p><strong>etc.</strong> (<em>'basis'</em>) – </p></li>
+<li><p><strong>logicals</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]</span>) – A list of logical measurements. A logical measurement is a</p></li>
+<li><p><strong>eigenvalue.</strong> (<em>list</em><em> of </em><em>classical bits whose total parity is the logical</em>) – </p></li>
+<li><p><strong>dictionaries.</strong> (<em>Again it can be a list of</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -393,7 +404,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             

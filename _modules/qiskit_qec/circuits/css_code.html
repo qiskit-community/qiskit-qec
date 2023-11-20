@@ -330,6 +330,7 @@
         <article role="main">
           <h1>Source code for qiskit_qec.circuits.css_code</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
 <span class="c1"># This code is part of Qiskit.</span>
 <span class="c1">#</span>
 <span class="c1"># (C) Copyright IBM 2019.</span>
@@ -342,21 +343,19 @@
 <span class="c1"># copyright notice, and modified files need to carry a notice indicating</span>
 <span class="c1"># that they have been altered from the originals.</span>
 
-<span class="sd">&quot;&quot;&quot;Class that manage circuits for CSS codes.&quot;&quot;&quot;</span>
-<span class="c1"># pylint: disable=invalid-name</span>
+<span class="c1"># pylint: disable=invalid-name, disable=no-name-in-module</span>
+
+<span class="sd">&quot;&quot;&quot;Generates circuits for CSS codes.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">QuantumRegister</span><span class="p">,</span> <span class="n">ClassicalRegister</span>
 <span class="kn">from</span> <span class="nn">qiskit_aer.noise</span> <span class="kn">import</span> <span class="n">depolarizing_error</span><span class="p">,</span> <span class="n">pauli_error</span>
 
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">Circuit</span> <span class="k">as</span> <span class="n">StimCircuit</span>
-<span class="kn">from</span> <span class="nn">stim</span> <span class="kn">import</span> <span class="n">target_rec</span> <span class="k">as</span> <span class="n">StimTarget_rec</span>
-
-<span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphNode</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.circuits.code_circuit</span> <span class="kn">import</span> <span class="n">CodeCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.utils.stim_tools</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">noisify_circuit</span><span class="p">,</span>
     <span class="n">get_stim_circuits</span><span class="p">,</span>
     <span class="n">detector_error_model_to_rx_graph</span><span class="p">,</span>
+    <span class="n">string2nodes_with_detectors</span><span class="p">,</span>
+    <span class="n">string2logical_meas</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.codes</span> <span class="kn">import</span> <span class="n">StabSubSystemCode</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli_list</span> <span class="kn">import</span> <span class="n">PauliList</span>
@@ -367,31 +366,37 @@
 <div class="viewcode-block" id="CSSCodeCircuit">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit">[docs]</a>
 <span class="k">class</span> <span class="nc">CSSCodeCircuit</span><span class="p">(</span><span class="n">CodeCircuit</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;CodeCircuit class for generic CSS codes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CodeCircuit class for generic CSS codes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zx&quot;</span><span class="p">,</span> <span class="n">noise_model</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">code</span><span class="p">,</span>
+        <span class="n">T</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">basis</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+        <span class="n">round_schedule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zx&quot;</span><span class="p">,</span>
+        <span class="n">noise_model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;CSSCodeCircuit init method</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            code: A CSS code class which is either</span>
-<span class="sd">                    a) StabSubSystemCode</span>
-<span class="sd">                    b) a class with the following methods:</span>
-<span class="sd">                    &#39;x_gauges&#39; (as a list of list of qubit indices),</span>
-<span class="sd">                    &#39;z_gauges&#39;,</span>
-<span class="sd">                    &#39;x_stabilizers&#39;,</span>
-<span class="sd">                    &#39;z_stabilizers&#39;,</span>
-<span class="sd">                    &#39;logical_x&#39;,</span>
-<span class="sd">                    &#39;logical_z&#39;,</span>
-<span class="sd">                    &#39;n&#39; (number of qubits),</span>
+<span class="sd">            a) StabSubSystemCode</span>
+<span class="sd">            b) a class with the following methods:</span>
+<span class="sd">                &#39;x_gauges&#39; (as a list of list of qubit indices),</span>
+<span class="sd">                &#39;z_gauges&#39;,</span>
+<span class="sd">                &#39;x_stabilizers&#39;,</span>
+<span class="sd">                &#39;z_stabilizers&#39;,</span>
+<span class="sd">                &#39;logical_x&#39;,</span>
+<span class="sd">                &#39;logical_z&#39;,</span>
+<span class="sd">                &#39;n&#39; (number of qubits),</span>
 <span class="sd">            T: Number of syndrome measurement rounds</span>
 <span class="sd">            basis: basis for encoding (&#39;x&#39; or &#39;z&#39;)</span>
 <span class="sd">            round_schedule: Order in which to measureme gauge operators (&#39;zx&#39; or &#39;xz&#39;)</span>
 <span class="sd">            noise_model: Pauli noise model used in the construction of noisy circuits.</span>
-<span class="sd">                If a tuple, a pnenomological noise model is used with the entries being</span>
-<span class="sd">                probabity of depolarizing noise on code qubits between rounds and</span>
-<span class="sd">                probability of measurement errors, respectively.</span>
+<span class="sd">            If a tuple, a pnenomological noise model is used with the entries being</span>
+<span class="sd">            probabity of depolarizing noise on code qubits between rounds and</span>
+<span class="sd">            probability of measurement errors, respectively.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            The QuantumCircuit of a memory experiment for the distance-3 HeavyHEX code</span>
@@ -399,8 +404,8 @@
 <span class="sd">            &gt;&gt;&gt; from qiskit_qec.circuits.css_code import CSSCodeCircuit</span>
 <span class="sd">            &gt;&gt;&gt; code = CSSCodeCircuit(HHC(3),T=3,basis=&#39;x&#39;,noise_model=(0.01,0.01),round_schedule=&#39;xz&#39;)</span>
 <span class="sd">            &gt;&gt;&gt; code.circuit[&#39;0&#39;]</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
@@ -457,6 +462,7 @@
                     <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">stabilizer</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">gauge</span><span class="p">))</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">gauge</span><span class="p">):</span>
                         <span class="n">gauges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gauges</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_detectors</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_code_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">StabSubSystemCode</span><span class="p">):</span>
@@ -471,10 +477,10 @@
             <span class="n">stabilizers</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
             <span class="n">logicals</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
 
-            <span class="k">for</span> <span class="p">(</span>
-                <span class="n">raw_ops</span><span class="p">,</span>
-                <span class="n">ops</span><span class="p">,</span>
-            <span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">raw_gauges</span><span class="p">,</span> <span class="n">raw_stabilizers</span><span class="p">,</span> <span class="n">raw_logicals</span><span class="p">],</span> <span class="p">[</span><span class="n">gauges</span><span class="p">,</span> <span class="n">stabilizers</span><span class="p">,</span> <span class="n">logicals</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">raw_ops</span><span class="p">,</span> <span class="n">ops</span><span class="p">,)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">raw_gauges</span><span class="p">,</span> <span class="n">raw_stabilizers</span><span class="p">,</span> <span class="n">raw_logicals</span><span class="p">],</span>
+                <span class="p">[</span><span class="n">gauges</span><span class="p">,</span> <span class="n">stabilizers</span><span class="p">,</span> <span class="n">logicals</span><span class="p">],</span>
+            <span class="p">):</span>
                 <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">raw_ops</span><span class="p">:</span>
                     <span class="n">op</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">pauli</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]):</span>
@@ -510,6 +516,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">z_stabilizers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">z_stabilizers</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">logical_x</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">logical_z</span>
+        <span class="c1"># for the unionfind decoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span>
+
+<div class="viewcode-block" id="CSSCodeCircuit.measured_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.measured_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span>
+        <span class="k">return</span> <span class="n">measured_logicals</span></div>
+
 
     <span class="k">def</span> <span class="nf">_prepare_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qc</span><span class="p">,</span> <span class="n">qregs</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
@@ -582,98 +601,34 @@
 <span class="sd">                logical (str): Logical value whose results are used (&#39;0&#39; as default).</span>
 <span class="sd">                all_logicals (bool): Whether to include logical nodes</span>
 <span class="sd">                irrespective of value. (False as default).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            nodes: a list of &#39;DecodingGraphNode()&#39;s corresponding to the triggered detectors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">all_logicals</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;all_logicals&quot;</span><span class="p">)</span>
-        <span class="n">logical</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">logical</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logical</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
-
-        <span class="n">output</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">gauge_outs</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
-            <span class="n">gauge_outs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">output</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)]][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="n">gauge_outs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">output</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">)]][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="n">final_outs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">output</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-
-        <span class="n">stabilizer_outs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">stabilizer_outs</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
-                <span class="n">round_outs</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
-                    <span class="n">out</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gs</span><span class="p">:</span>
-                        <span class="n">out</span> <span class="o">+=</span> <span class="n">gauge_outs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="n">g</span><span class="p">]</span>
-                    <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">%</span> <span class="mi">2</span>
-                    <span class="n">round_outs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-                <span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">round_outs</span><span class="p">)</span>
-
-        <span class="n">bases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>
-        <span class="n">j</span> <span class="o">=</span> <span class="n">bases</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">)</span>
-        <span class="n">final_gauges</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">gauge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">gauge</span><span class="p">:</span>
-                <span class="n">out</span> <span class="o">+=</span> <span class="n">final_outs</span><span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">%</span> <span class="mi">2</span>
-            <span class="n">final_gauges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-        <span class="n">final_stabilizers</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">gs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">gs</span><span class="p">:</span>
-                <span class="n">out</span> <span class="o">+=</span> <span class="n">final_gauges</span><span class="p">[</span><span class="n">g</span><span class="p">]</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">%</span> <span class="mi">2</span>
-            <span class="n">final_stabilizers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-        <span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_stabilizers</span><span class="p">)</span>
-
-        <span class="n">stabilizer_changes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">stabilizer_changes</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="p">(</span><span class="n">bases</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">)):</span>
-                <span class="n">stabilizer_changes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">])):</span>
-                    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">==</span> <span class="n">bases</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">):</span>
-                        <span class="n">stabilizer_changes</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="n">e</span><span class="p">])</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">stabilizer_changes</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="p">(</span><span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">+</span> <span class="n">stabilizer_outs</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">e</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span>
-                        <span class="p">)</span>
-
-        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">round_changes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">stabilizer_changes</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
-                <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">change</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">round_changes</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">change</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">e</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
-                        <span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bases</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
-            <span class="n">logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span>
-
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">logical_op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logicals</span><span class="p">):</span>
-            <span class="n">logical_out</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">logical_op</span><span class="p">:</span>
-                <span class="n">logical_out</span> <span class="o">+=</span> <span class="n">final_outs</span><span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">logical_out</span> <span class="o">=</span> <span class="n">logical_out</span> <span class="o">%</span> <span class="mi">2</span>
-
-            <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">logical_out</span><span class="p">)</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                    <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">qubits</span><span class="o">=</span><span class="n">logical</span><span class="p">,</span>
-                    <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span>
-                <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">string2nodes_with_detectors</span><span class="p">(</span>
+            <span class="n">string</span><span class="o">=</span><span class="n">string</span><span class="p">,</span>
+            <span class="n">detectors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">,</span>
+            <span class="n">logicals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logicals</span><span class="p">,</span>
+            <span class="n">clbits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">clbits</span><span class="p">,</span>
+            <span class="n">det_ref_values</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="CSSCodeCircuit.string2raw_logicals">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.string2raw_logicals">[docs]</a>
+    <span class="k">def</span> <span class="nf">string2raw_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts output string into a list of logical measurement outcomes</span>
+<span class="sd">        Logicals are the logical measurements produced by self.stim_detectors()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_detectors</span><span class="p">()</span>
+
+        <span class="n">log_outs</span> <span class="o">=</span> <span class="n">string2logical_meas</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logicals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">clbits</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_outs</span></div>
 
 
 <div class="viewcode-block" id="CSSCodeCircuit.check_nodes">
@@ -688,150 +643,121 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="CSSCodeCircuit.stim_circuit_with_detectors">
-<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.stim_circuit_with_detectors">[docs]</a>
-    <span class="k">def</span> <span class="nf">stim_circuit_with_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the qiskit circuits into stim ciruits and add detectors.</span>
-<span class="sd">        This is required for the stim-based construction of the DecodingGraph.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">stim_circuits</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_stim_circuits</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">noisy_circuit</span><span class="p">)</span>
-        <span class="n">measurements_per_cycle</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_gauges</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_gauges</span><span class="p">)</span>
+<div class="viewcode-block" id="CSSCodeCircuit.stim_detectors">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.stim_detectors">[docs]</a>
+    <span class="k">def</span> <span class="nf">stim_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs detectors and logicals required for stim.</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
-            <span class="n">measurement_round_offset</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_gauges</span><span class="p">)]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">measurement_round_offset</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_gauges</span><span class="p">),</span> <span class="mi">0</span><span class="p">]</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            detectors (list[dict]): dictionaries containing</span>
+<span class="sd">            a) &#39;clbits&#39;, the classical bits (register, index) included in the measurement comparisons</span>
+<span class="sd">            b) &#39;qubits&#39;, the qubits (list of indices) participating in the stabilizer measurements</span>
+<span class="sd">            c) &#39;time&#39;, measurement round (int) of the earlier measurements in the detector</span>
+<span class="sd">            d) &#39;basis&#39;, the pauli basis (&#39;x&#39; or &#39;z&#39;) of the stabilizers</span>
+<span class="sd">            logicals (list[dict]): dictionaries containing</span>
+<span class="sd">            a) &#39;clbits&#39;, the classical bits (register, index) included in the logical measurement</span>
+<span class="sd">            b) &#39;basis&#39;, the pauli basis (&#39;x&#39; or &#39;z&#39;) of the logical</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">detectors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">logicals</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1">## 0th round of measurements</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">reg</span> <span class="o">=</span> <span class="s2">&quot;round_0_x_bits&quot;</span>
             <span class="k">for</span> <span class="n">stabind</span><span class="p">,</span> <span class="n">stabilizer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_stabilizers</span><span class="p">):</span>
-                <span class="n">record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[]}</span>
                 <span class="k">for</span> <span class="n">gauge_ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">stabind</span><span class="p">]:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">StimTarget_rec</span><span class="p">(</span>
-                            <span class="n">measurement_round_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                            <span class="o">+</span> <span class="n">gauge_ind</span>
-                            <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="n">qubits_and_time</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">qubits_and_time</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+                <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">reg</span> <span class="o">=</span> <span class="s2">&quot;round_0_z_bits&quot;</span>
             <span class="k">for</span> <span class="n">stabind</span><span class="p">,</span> <span class="n">stabilizer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_stabilizers</span><span class="p">):</span>
-                <span class="n">record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[]}</span>
                 <span class="k">for</span> <span class="n">gauge_ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">stabind</span><span class="p">]:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">StimTarget_rec</span><span class="p">(</span>
-                            <span class="n">measurement_round_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="o">+</span> <span class="n">gauge_ind</span>
-                            <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="n">qubits_and_time</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">qubits_and_time</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
+                <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
 
         <span class="c1"># adding first x and then z stabilizer comparisons</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">circuit</span> <span class="o">=</span> <span class="n">StimCircuit</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]):</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
                 <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
             <span class="p">):</span>  <span class="c1"># compare stabilizer measurements with previous in each round</span>
+                <span class="n">reg_prev</span> <span class="o">=</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">basis</span> <span class="o">+</span> <span class="s2">&quot;_bits&quot;</span>
+                <span class="n">reg_t</span> <span class="o">=</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">basis</span> <span class="o">+</span> <span class="s2">&quot;_bits&quot;</span>
                 <span class="k">for</span> <span class="n">gind</span><span class="p">,</span> <span class="n">gs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
-                    <span class="n">record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[]}</span>
                     <span class="k">for</span> <span class="n">gauge_ind</span> <span class="ow">in</span> <span class="n">gs</span><span class="p">:</span>
-                        <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">StimTarget_rec</span><span class="p">(</span>
-                                <span class="n">t</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span>
-                                <span class="o">+</span> <span class="n">measurement_round_offset</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                                <span class="o">+</span> <span class="n">gauge_ind</span>
-                                <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                        <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">StimTarget_rec</span><span class="p">(</span>
-                                <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span>
-                                <span class="o">+</span> <span class="n">measurement_round_offset</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                                <span class="o">+</span> <span class="n">gauge_ind</span>
-                                <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="n">measurements_per_cycle</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
-                            <span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="n">qubits_and_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">gind</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="n">qubits_and_time</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">t</span><span class="p">])</span>
-                    <span class="n">circuit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">circuit</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">circuit</span>
+                        <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_t</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                        <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_prev</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stabilizers</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">gind</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">basis</span>
+                    <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
 
         <span class="c1">## final measurements</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">reg_prev</span> <span class="o">=</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_x_bits&quot;</span>
+            <span class="n">reg_T</span> <span class="o">=</span> <span class="s2">&quot;final_readout&quot;</span>
             <span class="k">for</span> <span class="n">stabind</span><span class="p">,</span> <span class="n">stabilizer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_stabilizers</span><span class="p">):</span>
-                <span class="n">record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[]}</span>
                 <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">stabilizer</span><span class="p">:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_T</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">gauge_ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">stabind</span><span class="p">]:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">StimTarget_rec</span><span class="p">(</span>
-                            <span class="n">measurement_round_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                            <span class="o">+</span> <span class="n">gauge_ind</span>
-                            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span>
-                            <span class="o">-</span> <span class="n">measurements_per_cycle</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="n">qubits_and_time</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">qubits_and_time</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;OBSERVABLE_INCLUDE&quot;</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                <span class="mi">0</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;OBSERVABLE_INCLUDE&quot;</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_prev</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+                <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+            <span class="n">logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">reg_T</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                    <span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">reg_prev</span> <span class="o">=</span> <span class="s2">&quot;round_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_z_bits&quot;</span>
+            <span class="n">reg_T</span> <span class="o">=</span> <span class="s2">&quot;final_readout&quot;</span>
             <span class="k">for</span> <span class="n">stabind</span><span class="p">,</span> <span class="n">stabilizer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_stabilizers</span><span class="p">):</span>
-                <span class="n">record_targets</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">det</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[]}</span>
                 <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">stabilizer</span><span class="p">:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">))</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_T</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">gauge_ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gauges4stabilizers</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">stabind</span><span class="p">]:</span>
-                    <span class="n">record_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">StimTarget_rec</span><span class="p">(</span>
-                            <span class="n">measurement_round_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="o">+</span> <span class="n">gauge_ind</span>
-                            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span>
-                            <span class="o">-</span> <span class="n">measurements_per_cycle</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="n">qubits_and_time</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">qubits_and_time</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">])</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-                <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;DETECTOR&quot;</span><span class="p">,</span> <span class="n">record_targets</span><span class="p">,</span> <span class="n">qubits_and_time</span><span class="p">)</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;OBSERVABLE_INCLUDE&quot;</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                <span class="mi">0</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">stim_circuits</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;OBSERVABLE_INCLUDE&quot;</span><span class="p">,</span>
-                <span class="p">[</span><span class="n">StimTarget_rec</span><span class="p">(</span><span class="n">q</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-                <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">det</span><span class="p">[</span><span class="s2">&quot;clbits&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">reg_prev</span><span class="p">,</span> <span class="n">gauge_ind</span><span class="p">))</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stabilizer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">det</span><span class="p">[</span><span class="s2">&quot;basis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+                <span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">det</span><span class="p">)</span>
+            <span class="n">logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;clbits&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">reg_T</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
+                    <span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">stim_circuits</span></div>
+        <span class="k">return</span> <span class="n">detectors</span><span class="p">,</span> <span class="n">logicals</span></div>
 
 
     <span class="k">def</span> <span class="nf">_make_syndrome_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_circuit_with_detectors</span><span class="p">()[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used by the DecodingGraph class to build the decoding graph and the obtain hyperedges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">detectors</span><span class="p">,</span> <span class="n">logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stim_detectors</span><span class="p">()</span>
+        <span class="n">stim_circuit</span> <span class="o">=</span> <span class="n">get_stim_circuits</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">noisy_circuit</span><span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">],</span> <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span> <span class="n">logicals</span><span class="o">=</span><span class="n">logicals</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">e</span> <span class="o">=</span> <span class="n">stim_circuit</span><span class="o">.</span><span class="n">detector_error_model</span><span class="p">(</span>
             <span class="n">decompose_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">approximate_disjoint_errors</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
-        <span class="n">graph</span><span class="p">,</span> <span class="n">hyperedges</span> <span class="o">=</span> <span class="n">detector_error_model_to_rx_graph</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">hyperedges</span> <span class="o">=</span> <span class="n">detector_error_model_to_rx_graph</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">graph</span><span class="p">,</span> <span class="n">hyperedges</span></div>
 
 </pre></div>
@@ -851,7 +777,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             

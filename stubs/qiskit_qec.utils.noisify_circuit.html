@@ -335,7 +335,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="qiskit_qec.utils.noisify_circuit">
 <span class="sig-name descname"><span class="pre">noisify_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/stim_tools.html#noisify_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.noisify_circuit" title="Link to this definition">#</a></dt>
-<dd><p>Inserts error operations into a circuit according to a pauli noise model.</p>
+<dd><p>Inserts error operations into a circuit according to a pauli noise model.
+Handles idling errors in the form of custom gates “idle_#” which are assumed to
+encode the identity gate only.
+qc = QuantumCircuit(1, name=’idle_1’)
+qc.i(0)
+idle_1 = qc.to_instruction()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -388,7 +393,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2023/11/16</div>
+              Last updated on 2023/11/20</div>
           </div>
           <div class="right-details">
             
