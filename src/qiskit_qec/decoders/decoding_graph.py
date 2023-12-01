@@ -66,6 +66,47 @@ class DecodingGraph:
             if node.is_boundary:
                 self._logical_nodes.append(node)
 
+        self.update_attributes()
+
+    def update_attributes(self):
+        """
+        Calculates properties of the graph used by `node_index` and `edge_in_graph`.
+        If `graph` is updated this method should called to update these properties.
+        """
+        self._edge_set = set(self.graph.edge_list())
+        self._node_index = {}
+        for n, node in enumerate(self.graph.nodes()):
+            clean_node = copy.deepcopy(node)
+            clean_node.properties = {}
+            self._node_index[clean_node] = n
+
+    def node_index(self, node):
+        """
+        Given a node of `graph`, returns the corrsponding index.
+
+        Args:
+            node (DecodingGraphNode): Node of the graph.
+
+        Returns:
+            n (int): Index corresponding to the node within the graph.
+        """
+        clean_node = copy.deepcopy(node)
+        clean_node.properties = {}
+        return self._node_index[clean_node]
+
+    def edge_in_graph(self, edge):
+        """
+        Given a pair of node indices for `graph`, determines whether
+        the edge exists within the graph.
+
+        Args:
+            edge (tuple): Pair of node indices for the graph.
+
+        Returns:
+            in_graph (bool): Whether the edge is within the graph.
+        """
+        return edge in self._edge_set
+
     def _make_syndrome_graph(self):
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
             self.graph, self.hyperedges = self.code._make_syndrome_graph()
@@ -170,7 +211,7 @@ class DecodingGraph:
                 error_nodes = set(self.code.string2nodes(string, logical=logical))
 
                 for node0 in error_nodes:
-                    n0 = self.graph.nodes().index(node0)
+                    n0 = self.node_index(node0)
                     av_v[n0] += counts[string]
                     for n1 in neighbours[n0]:
                         node1 = self.graph[n1]
@@ -341,14 +382,64 @@ class DecodingGraph:
                 source = E[source_index]
                 target = E[target_index]
                 if target != source:
-                    ns = self.graph.nodes().index(source)
-                    nt = self.graph.nodes().index(target)
+                    ns = self.node_index(source)
+                    nt = self.node_index(target)
                     distance = distance_matrix[ns][nt]
                     if np.isfinite(distance):
                         qubits = list(set(source.qubits).intersection(target.qubits))
                         distance = int(distance)
                         E.add_edge(source_index, target_index, DecodingGraphEdge(qubits, distance))
         return E
+
+    def clean_measurements(self, nodes: List):
+        """
+        Removes pairs of nodes that obviously correspond to measurement errors
+        from a list of nodes.
+
+        Args:
+            nodes: A list of nodes.
+        Returns:
+            nodes: The input list of nodes, with pairs removed if they obviously
+            correspond to a measurement error.
+
+        """
+
+        # order the nodes by where and when
+        node_pos = {}
+        for node in nodes:
+            if not node.is_boundary:
+                if node.index not in node_pos:
+                    node_pos[node.index] = {}
+                node_pos[node.index][node.time] = self.node_index(node)
+        # find pairs corresponding to time-like edges
+        all_pairs = set()
+        for node_times in node_pos.values():
+            ts = list(node_times.keys())
+            ts.sort()
+            for j in range(len(ts) - 1):
+                if ts[j + 1] - ts[j] <= 2:
+                    n0 = node_times[ts[j]]
+                    n1 = node_times[ts[j + 1]]
+                    if self.edge_in_graph((n0, n1)) or self.edge_in_graph((n1, n0)):
+                        all_pairs.add((n0, n1))
+        # filter out those that share nodes
+        all_nodes = set()
+        common_nodes = set()
+        for pair in all_pairs:
+            for n in pair:
+                if n in all_nodes:
+                    common_nodes.add(n)
+                all_nodes.add(n)
+        paired_ns = set()
+        for pair in all_pairs:
+            if pair[0] not in common_nodes:
+                if pair[1] not in common_nodes:
+                    for n in pair:
+                        paired_ns.add(n)
+        # return the nodes that were not paired
+        ns = set(self.node_index(node) for node in nodes)
+        unpaired_ns = ns.difference(paired_ns)
+        return [self.graph.nodes()[n] for n in unpaired_ns]
 
 
 class CSSDecodingGraph:
