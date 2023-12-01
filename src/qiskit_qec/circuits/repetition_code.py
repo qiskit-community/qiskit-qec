@@ -634,6 +634,8 @@ class ArcCircuit(CodeCircuit):
         self.degree = {}
         for n, q in enumerate(self.link_graph.nodes()):
             self.degree[q] = self.link_graph.degree(n)
+        degrees = list(self.degree.values())
+        self._linear = degrees.count(1) == 2 and degrees.count(2) == len(degrees) - 2
         lg_edges = set(self.link_graph.edge_list())
         lg_nodes = self.link_graph.nodes()
         ng = nx.Graph()
@@ -1360,8 +1362,11 @@ class ArcCircuit(CodeCircuit):
         Args:
             atypical_nodes: dictionary in the form of the return value of string2nodes
         """
-        neutral, logicals, _ = self.check_nodes(atypical_nodes)
-        return neutral and not logicals
+        if self._linear:
+            return not bool(len(atypical_nodes) % 2)
+        else:
+            neutral, logicals, _ = self.check_nodes(atypical_nodes)
+            return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
