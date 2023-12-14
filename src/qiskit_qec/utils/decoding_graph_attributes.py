@@ -29,6 +29,7 @@ class DecodingGraphNode:
 
     Attributes:
      - is_boundary (bool): whether or not the node is a boundary node.
+     - is_logical (bool): whether or not the node is a logical node.
      - time (int): what syndrome node the node corrsponds to. Doesn't
         need to be set if it's a boundary node.
      - qubits (List[int]): List of indices which are stabilized by
@@ -38,13 +39,20 @@ class DecodingGraphNode:
         Are not considered when comparing nodes.
     """
 
-    def __init__(self, index: int, qubits: List[int] = None, is_boundary=False, time=None) -> None:
-        if not is_boundary and time is None:
+    def __init__(
+            self,
+            index: int,
+            qubits: List[int] = None,
+            is_boundary = False,
+            is_logical = False,
+            time=None) -> None:
+        if (not is_boundary or not is_logical) and time is None:
             raise QiskitQECError(
-                "DecodingGraph node must either have a time or be a boundary node."
+                "DecodingGraph node must either have a time or be a boundary or logical node."
             )
 
         self.is_boundary: bool = is_boundary
+        self.is_logical: bool = is_logical
         self.time: Optional[int] = time if not is_boundary else None
         self.qubits: List[int] = qubits if qubits else []
         self.index: int = index
