@@ -139,7 +139,7 @@ class TestRepCodes(unittest.TestCase):
                 "00001",
                 [
                     DecodingGraphNode(
-                        is_boundary=True,
+                        is_logical=True,
                         qubits=[0],
                         index=0,
                     ),
@@ -243,7 +243,7 @@ class TestARCCodes(unittest.TestCase):
                 string = "".join([str(c) for c in output[::-1]])
                 nodes = code.string2nodes(string)
                 # check that it doesn't extend over more than two rounds
-                ts = [node.time for node in nodes if not node.is_boundary]
+                ts = [node.time for node in nodes if not node.is_logical]
                 if ts:
                     minimal = minimal and (max(ts) - min(ts)) <= 1
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
@@ -262,7 +262,7 @@ class TestARCCodes(unittest.TestCase):
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
-                    if not node.is_boundary:
+                    if not node.is_logical:
                         for logical in flipped_logicals:
                             self.assertTrue(
                                 logical in node.qubits,
@@ -360,7 +360,7 @@ class TestARCCodes(unittest.TestCase):
                         nodes = [
                             node
                             for node in code.string2nodes(string)
-                            if "conjugate" not in node.properties and not node.is_boundary
+                            if "conjugate" not in node.properties and not node.is_logical
                         ]
                         # require at most two (or three for the trivalent vertex or neighbouring aux)
                         self.assertTrue(

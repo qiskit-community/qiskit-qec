@@ -329,7 +329,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     bqubits = [self.css_x_logical[i]]
                 else:
                     bqubits = [self.css_z_logical[i]]
-                bnode = DecodingGraphNode(is_boundary=True, qubits=bqubits, index=bqec_index)
+                bnode = DecodingGraphNode(is_logical=True, qubits=bqubits, index=bqec_index)
                 nodes.append(bnode)
 
         # bulk nodes
@@ -380,14 +380,14 @@ class RepetitionCodeCircuit(CodeCircuit):
         # see which qubits for logical zs are given and collect bulk nodes
         given_logicals = []
         for node in nodes:
-            if node.is_boundary:
+            if node.is_logical:
                 given_logicals += node.qubits
         given_logicals = set(given_logicals)
 
         # bicolour code qubits according to the domain walls
         walls = []
         for node in nodes:
-            if not node.is_boundary:
+            if not node.is_logical:
                 walls.append(node.qubits[1])
         walls.sort()
         c = 0
@@ -441,7 +441,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                     elem = self.css_z_boundary.index(qubits)
                 else:
                     elem = self.css_x_boundary.index(qubits)
-                node = DecodingGraphNode(is_boundary=True, qubits=qubits, index=elem)
+                node = DecodingGraphNode(is_logical=True, qubits=qubits, index=elem)
                 flipped_logical_nodes.append(node)
 
             if neutral and not flipped_logical_nodes:
@@ -1096,8 +1096,8 @@ class ArcCircuit(CodeCircuit):
                     if (syn_type == 0 and (all_logicals or element != self.logical)) or (
                         syn_type != 0 and element == "1"
                     ):
-                        is_boundary = syn_type == 0
-                        if is_boundary:
+                        is_logical = syn_type == 0
+                        if is_logical:
                             elem_num = syn_round
                             syn_round = 0
                             code_qubits = [self.z_logicals[elem_num]]
@@ -1110,8 +1110,8 @@ class ArcCircuit(CodeCircuit):
                         if not tau:
                             tau = 0
                         node = DecodingGraphNode(
-                            is_boundary=is_boundary,
-                            time=syn_round if not is_boundary else None,
+                            is_logical=is_logical,
+                            time=syn_round if not is_logical else None,
                             qubits=code_qubits,
                             index=elem_num,
                         )
@@ -1181,7 +1181,7 @@ class ArcCircuit(CodeCircuit):
         given_logicals = []
         bulk_nodes = []
         for node in nodes:
-            if node.is_boundary:
+            if node.is_logical:
                 given_logicals += node.qubits
             else:
                 bulk_nodes.append(node)
@@ -1326,7 +1326,7 @@ class ArcCircuit(CodeCircuit):
                     flipped_logical_nodes = []
                     for flipped_logical in flipped_logicals:
                         node = DecodingGraphNode(
-                            is_boundary=True,
+                            is_logical=True,
                             qubits=[flipped_logical],
                             index=self.z_logicals.index(flipped_logical),
                         )
@@ -1444,7 +1444,7 @@ class ArcCircuit(CodeCircuit):
         )
         nodes: List[DecodingGraphNode] = []
         for node in self.string2nodes(string, all_logicals=True):
-            if not node.is_boundary:
+            if not node.is_logical:
                 for t in range(self.T + 1):
                     new_node = deepcopy(node)
                     new_node.time = t
@@ -1463,7 +1463,7 @@ class ArcCircuit(CodeCircuit):
                     dt = abs((node1.time or 0) - (node0.time or 0))
                     adj = set(node0.qubits).intersection(set(node1.qubits))
                     if adj:
-                        if (node0.is_boundary ^ node1.is_boundary) or dt <= 1:
+                        if (node0.is_logical ^ node1.is_logical) or dt <= 1:
                             edges.append((n0, n1))
                         elif not self.resets:
                             if node0.qubits == node1.qubits and dt == 2:
@@ -1477,7 +1477,7 @@ class ArcCircuit(CodeCircuit):
             source = nodes[n0]
             target = nodes[n1]
             qubits = []
-            if not (source.is_boundary and target.is_boundary):
+            if not (source.is_logical and target.is_logical):
                 qubits = list(set(source.qubits).intersection(target.qubits))
             if source.time != target.time and len(qubits) > 1:
                 qubits = []
@@ -1545,9 +1545,9 @@ class ArcCircuit(CodeCircuit):
         else:
             error_probs = {}
             for n0, n1 in graph.edge_list():
-                if nodes[n0].is_boundary:
+                if nodes[n0].is_logical:
                     edge = (n1, n1)
-                elif nodes[n1].is_boundary:
+                elif nodes[n1].is_logical:
                     edge = (n0, n0)
                 else:
                     edge = (n0, n1)

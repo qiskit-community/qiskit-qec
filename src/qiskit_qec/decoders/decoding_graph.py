@@ -63,7 +63,7 @@ class DecodingGraph:
 
         self._logical_nodes = []
         for node in self.graph.nodes():
-            if node.is_boundary:
+            if node.is_logical:
                 self._logical_nodes.append(node)
 
     def _make_syndrome_graph(self):
@@ -101,15 +101,15 @@ class DecodingGraph:
                                 n0 = graph.nodes().index(source)
                                 n1 = graph.nodes().index(target)
                                 qubits = []
-                                if not (source.is_boundary and target.is_boundary):
+                                if not (source.is_logical and target.is_logical):
                                     qubits = list(set(source.qubits).intersection(target.qubits))
                                     if not qubits:
                                         continue
                                 if (
                                     source.time != target.time
                                     and len(qubits) > 1
-                                    and not source.is_boundary
-                                    and not target.is_boundary
+                                    and not source.is_logical
+                                    and not target.is_logical
                                 ):
                                     qubits = []
                                 edge = DecodingGraphEdge(qubits, 1)
@@ -191,9 +191,9 @@ class DecodingGraph:
             boundary = []
             error_probs = {}
             for n0, n1 in self.graph.edge_list():
-                if self.graph[n0].is_boundary:
+                if self.graph[n0].is_logical:
                     boundary.append(n1)
-                elif self.graph[n1].is_boundary:
+                elif self.graph[n1].is_logical:
                     boundary.append(n0)
                 else:
                     if (1 - 2 * av_xor[n0, n1]) != 0:
@@ -248,9 +248,9 @@ class DecodingGraph:
                 else:
                     ratio = np.nan
                 p = ratio / (1 + ratio)
-                if self.graph[n0].is_boundary and not self.graph[n1].is_boundary:
+                if self.graph[n0].is_logical and not self.graph[n1].is_logical:
                     edge = (n1, n1)
-                elif not self.graph[n0].is_boundary and self.graph[n1].is_boundary:
+                elif not self.graph[n0].is_logical and self.graph[n1].is_logical:
                     edge = (n0, n0)
                 else:
                     edge = (n0, n1)
@@ -281,7 +281,7 @@ class DecodingGraph:
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
-            if node.is_boundary:
+            if node.is_logical:
                 boundary_nodes.append(n)
 
         for edge in self.graph.edge_list():
@@ -453,8 +453,8 @@ class CSSDecodingGraph:
                 node_layer.append(idx)
                 idx += 1
             for index, supp in enumerate(boundary):
-                # Add optional is_boundary property for pymatching
-                node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
+                # Add optional is_logical property for pymatching
+                node = DecodingGraphNode(is_logical=True, qubits=supp, index=index)
                 node.properties["highlighted"] = False
                 graph.add_node(node)
                 logging.debug("boundary %d t=%d %s", idx, time, supp)
@@ -670,7 +670,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     if target != source or (len(nodes) == 1):
                         n0 = graph.nodes().index(source)
                         n1 = graph.nodes().index(target)
-                        if not (source.is_boundary and target.is_boundary):
+                        if not (source.is_logical and target.is_logical):
                             qubits = list(set(source.qubits).intersection(target.qubits))
                         if source.time != target.time and len(qubits) > 1:
                             qubits = []

@@ -403,7 +403,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
                 node = DecodingGraphNode(
-                    is_boundary=True,
+                    is_logical=True,
                     qubits=self._logicals[self.basis][-bqec_index - 1],
                     index=1 - bqec_index,
                 )
@@ -444,9 +444,9 @@ class SurfaceCodeCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
-        bulk_nodes = [node for node in nodes if not node.is_boundary]
-        boundary_nodes = [node for node in nodes if node.is_boundary]
-        given_logicals = set(node.index for node in boundary_nodes)
+        bulk_nodes = [node for node in nodes if not node.is_logical]
+        logical_nodes = [node for node in nodes if node.is_logical]
+        given_logicals = set(node.index for node in logical_nodes)
 
         if self.basis == "z":
             coords = self._zplaq_coords
@@ -454,7 +454,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             coords = self._xplaq_coords
 
         if (len(bulk_nodes) % 2) == 0:
-            if (len(boundary_nodes) % 2) == 0 or ignore_extra_boundary:
+            if (len(logical_nodes) % 2) == 0 or ignore_extra_boundary:
                 neutral = True
                 flipped_logicals = set()
                 # estimate num_errors from size
@@ -501,7 +501,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         flipped_logical_nodes = []
         for elem in flipped_logicals:
             node = DecodingGraphNode(
-                is_boundary=True, qubits=self._logicals[self.basis][elem], index=elem
+                is_logical=True, qubits=self._logicals[self.basis][elem], index=elem
             )
             flipped_logical_nodes.append(node)
 
