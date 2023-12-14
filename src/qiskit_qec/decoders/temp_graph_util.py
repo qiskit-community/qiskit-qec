@@ -1,10 +1,7 @@
 """Temporary module with methods for graphs."""
 import json
-import os
 import networkx as nx
 import rustworkx as rx
-
-from qiskit_qec.utils.decoding_graph_attributes import DecodingGraphEdge, DecodingGraphNode
 
 
 def ret2net(graph: rx.PyGraph):

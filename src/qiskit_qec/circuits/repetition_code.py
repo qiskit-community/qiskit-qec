@@ -316,11 +316,11 @@ class RepetitionCodeCircuit(CodeCircuit):
             logical = "0"
 
         string = self._process_string(string)
-        # [ <boundary>, <syn>, <syn>,...]
+        # [ <logical>, <syn>, <syn>,...]
         separated_string = _separate_string(string)
         nodes = []
 
-        # boundary nodes
+        # logical nodes
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
@@ -356,7 +356,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         return string.split(" ", maxsplit=1)[0][-1]
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -364,7 +364,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -427,7 +427,7 @@ class RepetitionCodeCircuit(CodeCircuit):
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
-            if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+            if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
                 neutral = False
             # otherwise, report only needed logicals that aren't given
             else:
@@ -1154,7 +1154,7 @@ class ArcCircuit(CodeCircuit):
                     flat_nodes.append(flat_node)
         return flat_nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1162,7 +1162,7 @@ class ArcCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -1316,7 +1316,7 @@ class ArcCircuit(CodeCircuit):
 
                     # if unneeded logical zs are given, cluster is not neutral
                     # (unless this is ignored)
-                    if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+                    if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
                         neutral = False
                         flipped_logicals = set()
                     # otherwise, report only needed logicals that aren't given
@@ -1344,7 +1344,7 @@ class ArcCircuit(CodeCircuit):
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
-            if (not ignore_extra_boundary) and given_logicals:
+            if (not ignore_extra_logical) and given_logicals:
                 neutral = False
 
         return neutral, flipped_logical_nodes, num_errors

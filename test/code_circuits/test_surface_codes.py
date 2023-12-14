@@ -156,19 +156,19 @@ class TestSurfaceCodes(unittest.TestCase):
         nodes = [DecodingGraphNode(time=3, qubits=[0, 3], index=0)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [DecodingGraphNode(time=0, qubits=[0, 1, 2], is_logical=True, index=0)],
+            [DecodingGraphNode( qubits=[0, 1, 2], is_logical=True, index=0)],
             1.0,
         )
         # and the other
         nodes = [
-            DecodingGraphNode(time=0, qubits=[8, 7, 6], is_logical=True, index=1),
+            DecodingGraphNode( qubits=[8, 7, 6], is_logical=True, index=1),
             DecodingGraphNode(time=3, qubits=[5, 8], index=3),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1.0)
         nodes = [DecodingGraphNode(time=3, qubits=[5, 8], index=3)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [DecodingGraphNode(time=0, qubits=[8, 7, 6], is_logical=True, index=1)],
+            [DecodingGraphNode( qubits=[8, 7, 6], is_logical=True, index=1)],
             1.0,
         )
         # and in the middle
@@ -212,7 +212,7 @@ class TestSurfaceCodes(unittest.TestCase):
             2.0,
         )
 
-        # wrong boundary
+        # wrong logical
         nodes = [
             DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
             DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_logical=True, index=1),
@@ -222,7 +222,7 @@ class TestSurfaceCodes(unittest.TestCase):
             [DecodingGraphNode(qubits=[0, 1, 2, 3, 4], is_logical=True, index=0)],
             2,
         )
-        # extra boundary
+        # extra logical
         nodes = [
             DecodingGraphNode(time=3, qubits=[7, 12, 8, 13], index=4),
             DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
@@ -235,6 +235,6 @@ class TestSurfaceCodes(unittest.TestCase):
             DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
             DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_logical=True, index=1),
         ]
-        valid = valid and code.check_nodes(nodes, ignore_extra_boundary=True) == (True, [], 1)
+        valid = valid and code.check_nodes(nodes, ignore_extra_logical=True) == (True, [], 1)
 
         self.assertTrue(valid, "A set of nodes did not give the expected outcome for check_nodes.")

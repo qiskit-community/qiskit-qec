@@ -40,20 +40,16 @@ class DecodingGraphNode:
     """
 
     def __init__(
-            self,
-            index: int,
-            qubits: List[int] = None,
-            is_boundary = False,
-            is_logical = False,
-            time=None) -> None:
-        if (not is_boundary or not is_logical) and time is None:
+        self, index: int, qubits: List[int] = None, is_boundary=False, is_logical=False, time=None
+    ) -> None:
+        if not is_boundary and not is_logical and time is None:
             raise QiskitQECError(
                 "DecodingGraph node must either have a time or be a boundary or logical node."
             )
 
         self.is_boundary: bool = is_boundary
         self.is_logical: bool = is_logical
-        self.time: Optional[int] = time if not is_boundary else None
+        self.time: Optional[int] = None if (is_boundary or is_logical) else time
         self.qubits: List[int] = qubits if qubits else []
         self.index: int = index
         self.properties: Dict[str, Any] = {}
@@ -87,8 +83,9 @@ class DecodingGraphNode:
             self.index == rhs.index
             and set(self.qubits) == set(rhs.qubits)
             and self.is_boundary == rhs.is_boundary
+            and self.is_logical == rhs.is_logical
         )
-        if not self.is_boundary:
+        if not (self.is_boundary or self.is_logical):
             result = result and self.time == rhs.time
         return result
 
