@@ -18,7 +18,7 @@
 Graph used as the basis of decoders.
 """
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Set, Optional
 
 from qiskit_qec.exceptions import QiskitQECError
 
@@ -40,7 +40,12 @@ class DecodingGraphNode:
     """
 
     def __init__(
-        self, index: int, qubits: List[int] = None, is_boundary=False, is_logical=False, time=None
+        self,
+        index: int,
+        qubits: List[int] = None,
+        is_boundary=False,
+        is_logical=False,
+        time=None,
     ) -> None:
         if not is_boundary and not is_logical and time is None:
             raise QiskitQECError(
@@ -108,12 +113,14 @@ class DecodingGraphEdge:
     Attributes:
      - qubits (List[int]): List of indices of code qubits that correspond to this edge.
      - weight (float): Weight of the edge.
+     - fault_ids (Set[int]): In the style of pymatching.
      - properties (Dict[str, Any]): Decoder/code specific attributes.
         Are not considered when comparing edges.
     """
 
     qubits: List[int]
     weight: float
+    fault_ids: Set[int] = set()
     properties: Dict[str, Any] = field(default_factory=dict)
 
     def __getitem__(self, key):
