@@ -156,19 +156,19 @@ class TestSurfaceCodes(unittest.TestCase):
         nodes = [DecodingGraphNode(time=3, qubits=[0, 3], index=0)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [DecodingGraphNode( qubits=[0, 1, 2], is_logical=True, index=0)],
+            [DecodingGraphNode(qubits=[0, 1, 2], is_logical=True, index=0)],
             1.0,
         )
         # and the other
         nodes = [
-            DecodingGraphNode( qubits=[8, 7, 6], is_logical=True, index=1),
+            DecodingGraphNode(qubits=[8, 7, 6], is_logical=True, index=1),
             DecodingGraphNode(time=3, qubits=[5, 8], index=3),
         ]
         valid = valid and code.check_nodes(nodes) == (True, [], 1.0)
         nodes = [DecodingGraphNode(time=3, qubits=[5, 8], index=3)]
         valid = valid and code.check_nodes(nodes) == (
             True,
-            [DecodingGraphNode( qubits=[8, 7, 6], is_logical=True, index=1)],
+            [DecodingGraphNode(qubits=[8, 7, 6], is_logical=True, index=1)],
             1.0,
         )
         # and in the middle

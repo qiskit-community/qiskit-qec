@@ -581,6 +581,91 @@ class CSSDecodingGraph:
         self.node_layers = node_layers
         self.graph = graph
 
+    def get_edge_graph(self):
+        """
+        Returns a copy of the graph that uses edges to store information
+        about the effects of errors on logical operators. This is done
+        via the `'fault_ids'` of the edges. Lgical nodes are turned into
+        boundary nodes in such a graph.
+
+        Returns:
+            edge_graph (rx.PyGraph): The edge graph.
+        """
+
+        nodes = self.graph.nodes()
+        # get a list of boundary nodes
+        bns = []
+        for n, node in enumerate(nodes):
+            if node.is_logical:
+                bns.append(n)
+        # find pairs of bulk edges that have overlap with a boundary
+        bedge = {}
+        # and their edges connecting to the boundary, that we'll discard
+        spares = set()
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if not nodes[n0].is_logical and not nodes[n1].is_logical:
+                for n2 in bns:
+                    adj = set(edge.qubits).intersection(set(nodes[n2].qubits))
+                    if adj:
+                        if (n0, n1) not in bedge:
+                            bedge[n0, n1] = {nodes[n2].index}
+                        else:
+                            bedge[n0, n1].add(nodes[n2].index)
+                        for n in (n0, n1):
+                            spares.add((n, n2))
+                            spares.add((n2, n))
+        # find bulk-boundary pairs not covered by the above
+        for (n0, n1) in self.graph.edge_list():
+            n2 = None
+            for n in (n0, n1):
+                if nodes[n].is_logical:
+                    n2 = n
+            if n2 is not None:
+                if (n0, n1) not in spares:
+                    adj = set(nodes[n2].qubits)
+                    for n in (n0, n1):
+                        adj = adj.intersection(set(nodes[n].qubits))
+                    if (n0, n1) not in bedge:
+                        bedge[n0, n1] = {nodes[n2].index}
+                    else:
+                        bedge[n0, n1].add(nodes[n2].index)
+        # make a new graph with fault_ids on boundary edges, and ignoring the spare edges
+        edge_graph = rx.PyGraph(multigraph=False)
+        for node in nodes:
+            edge_graph.add_node(copy.copy(node))
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if (n0, n1) in bedge:
+                edge.fault_ids = bedge[n0, n1]
+                edge_graph.add_edge(n0, n1, edge)
+            elif (n0, n1) not in spares and (n1, n0) not in spares:
+                edge.fault_ids = set()
+                edge_graph.add_edge(n0, n1, edge)
+        # turn logical nodes into boundary nodes
+        for node in edge_graph.nodes():
+            if node.is_logical:
+                node.is_boundary = True
+        return edge_graph
+
+    def get_node_graph(self):
+        """
+        Returns a copy of the graph that uses logical nodes to store information
+        about the effects of errors on logical operators.
+
+        Returns:
+            node_graph (rx.PyGraph): The node graph.
+        """
+        node_graph = self.graph.copy()
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if edge.fault_ids:
+                # is the edge has fault ids, make corresponding logical nodes
+                # and connect them to these edges
+                for index in edge.fault_ids:
+                    node2 = DecodingGraphNode(is_logical=True, index=index)
+                    n2 = node_graph.add_node(node2)
+                    node_graph.add_edge(n0, n2, copy.copy(edge))
+                    node_graph.add_edge(n1, n2, copy.copy(edge))
+        return node_graph
+
 
 def make_syndrome_graph_from_aer(code, shots=1):
     """

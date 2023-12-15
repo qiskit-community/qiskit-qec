@@ -120,7 +120,7 @@ class DecodingGraphEdge:
 
     qubits: List[int]
     weight: float
-    fault_ids: Set[int] = set()
+    fault_ids: Set[int] = field(default_factory=set)
     properties: Dict[str, Any] = field(default_factory=dict)
 
     def __getitem__(self, key):
