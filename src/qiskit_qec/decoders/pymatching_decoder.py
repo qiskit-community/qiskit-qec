@@ -33,20 +33,19 @@ class PyMatching:
         """Setting up the matching object"""
         self.decoding_graph = decoding_graph
         self.graph = decoding_graph.graph
-        self.pymatching = self.matching()
+        self.pymatching = self._matching()
         self.indexer = None
         super().__init__()
 
-    def matching(self) -> Matching:
+    def _matching(self) -> Matching:
         return Matching(self.graph)
 
-    def logical_flips(
-        self, syndrome: Union[List[DecodingGraphNode], List[int]]
-    ) -> List[int]:
+    def logical_flips(self, syndrome: Union[List[DecodingGraphNode], List[int]]) -> List[int]:
         """
         Args:
-            syndromes: a) list of DecodingGraphNode objects returnes by string2nodes, or
-                       b) list of binaries indicating which node is highlighted, e.g., the output of a stim detector sampler
+            syndrome: Either a list of DecodingGraphNode objects returnes by string2nodes,
+            or a list of binaries indicating which node is highlighted, e.g.,
+            the output of a stim detector sampler
         Returns: list of binaries indicating which logical is flipped
         """
         if isinstance(syndrome[0], DecodingGraphNode):
@@ -64,9 +63,7 @@ class PyMatching:
 
         logical_flips = self.logical_flips(nodes)
 
-        corrected_logicals = [
-            (raw + flip) % 2 for raw, flip in zip(raw_logicals, logical_flips)
-        ]
+        corrected_logicals = [(raw + flip) % 2 for raw, flip in zip(raw_logicals, logical_flips)]
 
         return corrected_logicals
 
@@ -75,8 +72,8 @@ class PyMatching:
     ) -> List[DecodingGraphEdge]:
         """
         Args:
-            syndromes: a) list of DecodingGraphNode objects returnes by string2nodes, or
-                       b) list of binaries indicating which node is highlighted
+            syndrome: Either a list of DecodingGraphNode objects returnes by string2nodes,
+            or a list of binaries indicating which node is highlighted.
         Returns: list of DecodingGraphEdge-s included in the matching
         """
         if isinstance(syndrome[0], DecodingGraphNode):
