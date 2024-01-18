@@ -191,7 +191,8 @@ class StimCodeCircuit(CodeCircuit):
         self.decomp_stim_circuit = self.decompose_stim_circuit(self.stim_circuit)
         _helper(self.decomp_stim_circuit, 1)
 
-        self.circuit = self.qc
+        self.circuit = {"": self.qc}
+        self.base = ""
 
         # if a set of measurement comparisons is deterministically 1 in the absence of errors,
         # the set of syndromes is compared to that
