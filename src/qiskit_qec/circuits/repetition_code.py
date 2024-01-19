@@ -631,6 +631,11 @@ class ArcCircuit(CodeCircuit):
         """
 
         self.link_graph = self._get_link_graph()
+        self.degree = {}
+        for n, q in enumerate(self.link_graph.nodes()):
+            self.degree[q] = self.link_graph.degree(n)
+        degrees = list(self.degree.values())
+        self._linear = degrees.count(1) == 2 and degrees.count(2) == len(degrees) - 2
         lg_edges = set(self.link_graph.edge_list())
         lg_nodes = self.link_graph.nodes()
         ng = nx.Graph()
@@ -1357,8 +1362,11 @@ class ArcCircuit(CodeCircuit):
         Args:
             atypical_nodes: dictionary in the form of the return value of string2nodes
         """
-        neutral, logicals, _ = self.check_nodes(atypical_nodes)
-        return neutral and not logicals
+        if self._linear:
+            return not bool(len(atypical_nodes) % 2)
+        else:
+            neutral, logicals, _ = self.check_nodes(atypical_nodes)
+            return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
@@ -1649,3 +1657,64 @@ class ArcCircuit(CodeCircuit):
             return error_coords, sample_coords
         else:
             return error_coords
+
+    def clean_code(self, string):
+        """
+        Given an output string of the code, obvious code qubit errors are identified and their effects
+        are removed.
+
+        Args:
+            string (str): Output string of the code.
+
+        Returns:
+            string (str): Modifed output string of the code.
+        """
+
+        # get the parities for the rounds and turn them into lists of integers
+        # (also turn them the right way around)
+        parities = []
+        for rstring in string.split(" ")[1:]:
+            parities.append([int(p) for p in rstring][::-1])
+        parities = parities[::-1]
+
+        # calculate the final parities from the final readout and add them on
+        final = string.split(" ")[0]
+        final_parities = [0] * self.num_qubits[1]
+        for c0, a, c1 in self.links:
+            final_parities[-self.link_index[a] - 1] = (
+                int(final[-self.code_index[c0] - 1]) + int(final[-self.code_index[c1] - 1])
+            ) % 2
+        parities.append(final_parities[::-1])
+
+        flips = {c: 0 for c in self.code_index}
+        for rparities in parities:
+            # see how many links around each code qubit detect a flip
+            link_count = {c: 0 for c in self.code_index}
+            for c0, a, c1 in self.links:
+                # we'll need to determine whether the as yet uncorrected parity
+                # checks from this round should be flipped, based on results
+                # from previous rounds
+                flip = (flips[c0] + flips[c1]) % 2
+                b = self.link_index[a]
+                for c in [c0, c1]:
+                    link_count[c] += (rparities[b] + flip) % 2
+            # if it's all of them, assume a flip
+            for c in link_count:
+                if link_count[c] == self.degree[c]:
+                    flips[c] = (flips[c] + 1) % 2
+            # modify the parities to remove the effect
+            for c0, a, c1 in self.links:
+                flip = (flips[c0] + flips[c1]) % 2
+                b = self.link_index[a]
+                rparities[b] = (rparities[b] + flip) % 2
+        # turn the results back into a string
+        new_string = ""
+        for rparities in parities[:-1][::-1]:
+            new_string += " " + "".join([str(p) for p in rparities][::-1])
+        final_string = [int(p) for p in string.split(" ", maxsplit=1)[0]]
+        for c, flip in flips.items():
+            b = self.code_index[c]
+            final_string[-b - 1] = (final_string[-b - 1] + flip) % 2
+        final_string = "".join([str(p) for p in final_string])
+
+        return final_string + new_string

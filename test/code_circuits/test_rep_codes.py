@@ -513,15 +513,18 @@ class TestDecoding(unittest.TestCase):
         N = 1000
 
         # first an RCC
-        codes = [RepetitionCode(d, 1)]
+        codes = []
+        codes.append(RepetitionCode(d, 1))
         # then a linear ARC
         links = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)]
         codes.append(ArcCircuit(links, 0, logical="1"))
+        self.assertTrue(codes[-1]._linear, "Linear ARC not recognised as such")
         # then make a bunch of non-linear ARCs
         links_cross = [(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 2)]
         links_cross.append((2 * (d - 2), 2 * (d - 2) + 1, 2 * (int(d / 2))))
         links_cross.append(((2 * (int(d / 2))), 2 * (d - 1), 2 * (d - 1) + 1))
         codes.append(ArcCircuit(links_cross, 0))
+        self.assertTrue(not codes[-1]._linear, "Non-inear ARC not recognised as such")
         # ladder (works for even d)
         half_d = int(d / 2)
         links_ladder = []
