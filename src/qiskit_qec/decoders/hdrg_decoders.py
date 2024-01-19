@@ -169,7 +169,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
         # get indices for nodes and logical nodes
         dg = self.decoding_graph.graph
         ns = set(dg.nodes().index(node) for node in nodes)
-        lns = set(node for node in dg.nodes().index(self.decoding_graph.logical_nodes))
+        lns = set(dg.nodes().index(node) for node in self.decoding_graph.logical_nodes)
 
         dist_max = 0
         final_clusters = {}
