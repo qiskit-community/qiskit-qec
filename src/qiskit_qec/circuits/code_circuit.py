@@ -53,14 +53,6 @@ class CodeCircuit(ABC):
         pass
 
     @abstractmethod
-    def measured_logicals(self):
-        """
-        Returns a list of logical operators, each expressed as a list of qubits for which
-        the parity of the final readouts corresponds to the raw logical readout.
-        """
-        pass
-
-    @abstractmethod
     def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also

@@ -61,10 +61,10 @@ class DecodingGraph:
         else:
             self._make_syndrome_graph()
 
-        self._logical_nodes = []
+        self.logical_nodes = []
         for node in self.graph.nodes():
             if node.is_logical:
-                self._logical_nodes.append(node)
+                self.logical_nodes.append(node)
 
     def _make_syndrome_graph(self):
         if not self.brute and hasattr(self.code, "_make_syndrome_graph"):
@@ -281,7 +281,7 @@ class DecodingGraph:
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
-            if node.is_logical:
+            if node.is_boundary:
                 boundary_nodes.append(n)
 
         for edge in self.graph.edge_list():
@@ -322,7 +322,7 @@ class DecodingGraph:
             nodes = self.code.string2nodes(data, all_logicals=all_logicals)
         else:
             if all_logicals:
-                nodes = list(set(data).union(set(self._logical_nodes)))
+                nodes = list(set(data).union(set(self.logical_nodes)))
             else:
                 nodes = data
         for node in nodes:

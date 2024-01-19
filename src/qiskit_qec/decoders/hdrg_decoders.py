@@ -23,7 +23,6 @@ from typing import Dict, List, Set, Tuple
 
 from rustworkx import PyGraph, connected_components, distance_matrix
 
-from qiskit_qec.circuits.repetition_code import ArcCircuit
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 
@@ -39,8 +38,6 @@ class ClusteringDecoder(ABC):
         decoding_graph: DecodingGraph = None,
     ):
         self.code = code_circuit
-
-        self.measured_logicals = self.code.measured_logicals()
 
         if hasattr(self.code, "code_index"):
             self.code_index = self.code.code_index
@@ -64,8 +61,7 @@ class ClusteringDecoder(ABC):
         Returns:
             corrected_logicals (list): A list of integers that are 0 or 1.
         These are the corrected values of the final transversal
-        measurement, corresponding to the logical operators of
-        self.measured_logicals.
+        measurement, in the same form as given by the code's `string2raw_logicals`.
         """
 
         # get the list of bulk nodes for each cluster
@@ -79,26 +75,22 @@ class ClusteringDecoder(ABC):
         cluster_logicals = {}
         for c, nodes in cluster_nodes.items():
             _, logical_nodes, _ = self.code.check_nodes(nodes, minimal=True)
-            z_logicals = [node.qubits[0] for node in logical_nodes]
-            cluster_logicals[c] = z_logicals
+            log_indexes = [node.index for node in logical_nodes]
+            cluster_logicals[c] = log_indexes
 
         # get the net effect on each logical
-        net_z_logicals = {z_logical[0]: 0 for z_logical in self.measured_logicals}
-        for c, z_logicals in cluster_logicals.items():
-            for z_logical in self.measured_logicals:
-                if z_logical[0] in z_logicals:
-                    net_z_logicals[z_logical[0]] += 1
-        for z_logical, num in net_z_logicals.items():
-            net_z_logicals[z_logical] = num % 2
+        net_logicals = {node.index: 0 for node in self.decoding_graph.logical_nodes}
+        for c, log_indexes in cluster_logicals.items():
+            for log_index in log_indexes:
+                net_logicals[log_index] += 1
+        for log_index, num in net_logicals.items():
+            net_logicals[log_index] = num % 2
 
-        corrected_z_logicals = []
-        string = string.split(" ")[0]
-        for z_logical in self.measured_logicals:
-            raw_logical = int(string[-1 - self.code_index[z_logical[0]]])
-            corrected_logical = (raw_logical + net_z_logicals[z_logical[0]]) % 2
-            corrected_z_logicals.append(corrected_logical)
+        corrected_logicals = self.code.string2raw_logicals(string)
+        for log_index, log_value in enumerate(corrected_logicals):
+            corrected_logicals[log_index] = (net_logicals[log_index] + int(log_value)) % 2
 
-        return corrected_z_logicals
+        return corrected_logicals
 
 
 class BravyiHaahDecoder(ClusteringDecoder):
@@ -163,15 +155,6 @@ class BravyiHaahDecoder(ClusteringDecoder):
 
         return clusters, con_comp_dict
 
-    def _get_boundary_nodes(self):
-        boundary_nodes = []
-        for element, z_logical in enumerate(self.measured_logicals):
-            node = DecodingGraphNode(is_logical=True, qubits=z_logical, index=element)
-            if isinstance(self.code, ArcCircuit):
-                node.properties["link qubit"] = None
-            boundary_nodes.append(node)
-        return boundary_nodes
-
     def cluster(self, nodes):
         """
 
@@ -183,10 +166,10 @@ class BravyiHaahDecoder(ClusteringDecoder):
             value.
         """
 
-        # get indices for nodes and boundary nodes
+        # get indices for nodes and logical nodes
         dg = self.decoding_graph.graph
         ns = set(dg.nodes().index(node) for node in nodes)
-        bns = set(dg.nodes().index(node) for node in self._get_boundary_nodes())
+        lns = set([dg.nodes().index(self.decoding_graph.logical_nodes[0])])
 
         dist_max = 0
         final_clusters = {}
@@ -194,8 +177,8 @@ class BravyiHaahDecoder(ClusteringDecoder):
         clusterss = []
         while ns and dist_max <= self.code.d:
             dist_max += 1
-            # add boundary nodes to unpaired nodes
-            ns = set(ns).union(bns)
+            # add logical nodes to unpaired nodes
+            ns = set(ns).union(lns)
 
             # cluster nodes and contract decoding graph given the current distance
             clusters, con_comp = self._cluster(ns, dist_max)
@@ -221,8 +204,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
         Returns:
             corrected_logicals (list): A list of integers that are 0 or 1.
         These are the corrected values of the final transversal
-        measurement, corresponding to the logical operators of
-        self.measured_logicals.
+        measurement, in the same form as given by the code's `string2raw_logicals`.
         """
 
         # turn string into nodes and cluster
@@ -294,8 +276,8 @@ class UnionFindDecoder(ClusteringDecoder):
     """
     Decoder based on growing clusters around syndrome errors to
     "convert" them into erasure errors, which can be corrected easily,
-    by the peeling decoder in case of the surface code, or by checking for
-    interference with the boundary in case of an abritrary ARC.
+    by the peeling decoder for compatible codes or by the standard HDRG
+    method in general.
 
     TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)
 
@@ -317,10 +299,8 @@ class UnionFindDecoder(ClusteringDecoder):
         Args:
             string (str): Output string of the code.
         Returns:
-            corrected_z_logicals (list): A list of integers that are 0 or 1.
-        These are the corrected values of the final transversal
-        measurement, corresponding to the logical operators of
-        self.z_logicals.
+            corrected_logicals (list): A list of integers that are 0 or 1.
+        These are the corrected values of the final logical measurement.
         """
 
         if self.use_peeling:
@@ -332,7 +312,10 @@ class UnionFindDecoder(ClusteringDecoder):
             clusters = self._clusters4peeling
 
             # determine the net logical z
-            net_z_logicals = {tuple(z_logical): 0 for z_logical in self.measured_logicals}
+            measured_logicals = {}
+            for node in self.decoding_graph.logical_nodes:
+                measured_logicals[node.index] = node.qubits
+            net_z_logicals = {tuple(z_logical): 0 for z_logical in measured_logicals.values()}
             for cluster_nodes, _ in clusters:
                 erasure = self.graph.subgraph(cluster_nodes)
                 flipped_qubits = self.peeling(erasure)
@@ -346,7 +329,7 @@ class UnionFindDecoder(ClusteringDecoder):
             # apply this to the raw readout
             corrected_z_logicals = []
             raw_logicals = self.code.string2raw_logicals(string)
-            for j, z_logical in enumerate(self.measured_logicals):
+            for j, z_logical in measured_logicals.items():
                 raw_logical = int(raw_logicals[j])
                 corrected_logical = (raw_logical + net_z_logicals[tuple(z_logical)]) % 2
                 corrected_z_logicals.append(corrected_logical)
@@ -561,8 +544,6 @@ class UnionFindDecoder(ClusteringDecoder):
         It works by first producing a spanning forest of the erasure and then
         going backwards through the edges of the tree computing the error based on the syndrome.
         Based on arXiv:1703.01517.
-
-        TODO: Extract to a separate decoder.
 
         Args:
             erasure (PyGraph): subgraph of the syndrome graph that represents the erasure.

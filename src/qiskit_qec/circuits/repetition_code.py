@@ -243,9 +243,6 @@ class RepetitionCodeCircuit(CodeCircuit):
             self.circuit[log].add_register(self.code_bit)
             self.circuit[log].measure(self.code_qubit, self.code_bit)
 
-    def measured_logicals(self):
-        return [[0]]
-
     def _process_string(self, string):
         # logical readout taken from
         measured_log = string[0] + " " + string[self.d - 1]
@@ -354,7 +351,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         Returns:
             list: Raw values for logical operators that correspond to nodes.
         """
-        return string.split(" ", maxsplit=1)[0][-1]
+        return [string.split(" ", maxsplit=1)[0][-1]]
 
     def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         """
@@ -968,9 +965,6 @@ class ArcCircuit(CodeCircuit):
             qc.add_register(self.code_bit)
             qc.measure(self.code_qubit, self.code_bit)
 
-    def measured_logicals(self):
-        return [[self.z_logicals[0]]]
-
     def _process_string(self, string):
         # logical readout taken from assigned qubits
         measured_log = ""
@@ -1147,11 +1141,14 @@ class ArcCircuit(CodeCircuit):
                 nodes_per_link[link_qubit] = 1
         flat_nodes = []
         for node in nodes:
-            if nodes_per_link[node.properties["link qubit"]] % 2:
+            if node.is_logical or node.is_boundary:
+                flat_nodes.append(node)
+            elif nodes_per_link[node.properties["link qubit"]] % 2:
                 flat_node = deepcopy(node)
                 flat_node.time = None
                 if flat_node not in flat_nodes:
                     flat_nodes.append(flat_node)
+
         return flat_nodes
 
     def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):

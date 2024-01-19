@@ -542,7 +542,6 @@ class TestDecoding(unittest.TestCase):
                 decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
             else:
                 decoder = Decoder(code, decoding_graph=decoding_graph)
-            errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             min_error_string = ""
             for _ in range(N):
@@ -552,14 +551,14 @@ class TestDecoding(unittest.TestCase):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
-                for j, z_logical in enumerate(decoder.measured_logicals):
-                    error = corrected_z_logicals[j] != 1
-                    if error:
-                        error_num = string.split(" ", maxsplit=1)[0].count("0")
-                        if error_num < min_error_num:
-                            min_error_num = error_num
-                            min_error_string = string
-                    errors[z_logical[0]] += error
+                for node in decoder.decoding_graph.logical_nodes:
+                    if node.index < len(corrected_z_logicals):
+                        error = corrected_z_logicals[node.index] != 1
+                        if error:
+                            error_num = string.split(" ", maxsplit=1)[0].count("0")
+                            if error_num < min_error_num:
+                                min_error_num = error_num
+                                min_error_string = string
             # check that min num errors to cause logical errors >d/3
             self.assertTrue(
                 min_error_num > d / 3,
