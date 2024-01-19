@@ -24,7 +24,7 @@ from typing import Dict, List, Set, Tuple
 from rustworkx import PyGraph, connected_components, distance_matrix
 
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
+from qiskit_qec.utils import DecodingGraphEdge
 
 
 class ClusteringDecoder(ABC):
@@ -633,4 +633,3 @@ class UnionFindDecoder(ClusteringDecoder):
                 self.graph.incident_edge_index_map(node_index)
             ).items()
         ]
-

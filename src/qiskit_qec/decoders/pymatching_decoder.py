@@ -17,11 +17,8 @@
 """PyMatching"""
 from typing import List, Union
 from pymatching import Matching
-from qiskit_qec.decoders.decoding_graph import (
-    DecodingGraphNode,
-    DecodingGraphEdge,
-    DecodingGraph,
-)
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
 class PyMatching:

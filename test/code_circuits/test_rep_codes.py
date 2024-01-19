@@ -138,11 +138,7 @@ class TestRepCodes(unittest.TestCase):
                 (5, 0),
                 "00001",
                 [
-                    DecodingGraphNode(
-                        is_logical=True,
-                        qubits=[0],
-                        index=0,
-                    ),
+                    DecodingGraphNode(is_logical=True, is_boundary=True, qubits=[0], index=0),
                     DecodingGraphNode(
                         time=0,
                         qubits=[0, 1],

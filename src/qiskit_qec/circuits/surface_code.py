@@ -73,7 +73,6 @@ class SurfaceCodeCircuit(CodeCircuit):
         self.z_stabilizer_ops = self.z_gauge_ops
         self.z_logical = [self._logicals["z"][0]]
         self.z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
-        self.basis
 
         # quantum registers
         self._num_xy = int((d**2 - 1) / 2)

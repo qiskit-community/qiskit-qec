@@ -108,9 +108,7 @@ class RepetitionCodeCircuit(CodeCircuit):
             self.readout()
 
         self.gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
-        self.measured_logical = [[0]]
-        self.flip_logical = list(range(self.d))
-        self.boundary = [[0], [self.d - 1]]
+        self.measured_logical = [[0], [self.d - 1]]
         self.basis = "x"
 
         self.resets = resets
@@ -299,9 +297,10 @@ class RepetitionCodeCircuit(CodeCircuit):
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
-                i = [0, -1][bqec_index]
-                bqubits = [self.flip_logical[i]]
-                bnode = DecodingGraphNode(is_logical=True, qubits=bqubits, index=bqec_index)
+                bqubits = self.measured_logical[bqec_index]
+                bnode = DecodingGraphNode(
+                    is_logical=True, is_boundary=True, qubits=bqubits, index=bqec_index
+                )
                 nodes.append(bnode)
 
         # bulk nodes
@@ -406,8 +405,10 @@ class RepetitionCodeCircuit(CodeCircuit):
             flipped_logical_nodes = []
             for flipped_logical in flipped_logicals:
                 qubits = [flipped_logical]
-                elem = self.boundary.index(qubits)
-                node = DecodingGraphNode(is_logical=True, qubits=qubits, index=elem)
+                elem = self.measured_logical.index(qubits)
+                node = DecodingGraphNode(
+                    is_logical=True, is_boundary=True, qubits=qubits, index=elem
+                )
                 flipped_logical_nodes.append(node)
 
             if neutral and not flipped_logical_nodes:

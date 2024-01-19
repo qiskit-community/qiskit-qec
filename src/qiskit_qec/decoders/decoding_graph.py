@@ -18,7 +18,6 @@
 Graph used as the basis of decoders.
 """
 import itertools
-import logging
 import copy
 from typing import List, Tuple, Union
 
@@ -29,7 +28,7 @@ from qiskit_aer import AerSimulator
 
 from qiskit_qec.analysis.faultenumerator import FaultEnumerator
 from qiskit_qec.exceptions import QiskitQECError
-from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
+from qiskit_qec.utils import DecodingGraphEdge
 
 
 class DecodingGraph:
@@ -440,6 +439,7 @@ class DecodingGraph:
         ns = set(self.node_index(node) for node in nodes)
         unpaired_ns = ns.difference(paired_ns)
         return [self.graph.nodes()[n] for n in unpaired_ns]
+
 
 def make_syndrome_graph_from_aer(code, shots=1):
     """
