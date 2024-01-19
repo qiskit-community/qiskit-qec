@@ -183,9 +183,6 @@ class CSSCodeCircuit(CodeCircuit):
             self.z_stabilizers = self.code.z_stabilizers
             self.logical_x = self.code.logical_x
             self.logical_z = self.code.logical_z
-        # for the unionfind decoder
-        self.css_x_logical = self.logical_x
-        self.css_z_logical = self.logical_z
 
     def _prepare_initial_state(self, qc, qregs, state):
         if state[0] == "1":

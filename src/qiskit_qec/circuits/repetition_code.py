@@ -107,33 +107,11 @@ class RepetitionCodeCircuit(CodeCircuit):
             self.syndrome_measurement(final=True)
             self.readout()
 
-        gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
-        measured_logical = [[0]]
-        flip_logical = list(range(self.d))
-        boundary = [[0], [self.d - 1]]
-
-        if xbasis:
-            self.css_x_gauge_ops = gauge_ops
-            self.css_x_stabilizer_ops = gauge_ops
-            self.css_x_logical = measured_logical
-            self.css_x_boundary = boundary
-            self.css_z_gauge_ops = []
-            self.css_z_stabilizer_ops = []
-            self.css_z_logical = flip_logical
-            self.css_z_boundary = []
-            self.basis = "x"
-        else:
-            self.css_x_gauge_ops = []
-            self.css_x_stabilizer_ops = []
-            self.css_x_logical = flip_logical
-            self.css_x_boundary = []
-            self.css_z_gauge_ops = gauge_ops
-            self.css_z_stabilizer_ops = gauge_ops
-            self.css_z_logical = measured_logical
-            self.css_z_boundary = boundary
-            self.basis = "z"
-        self.round_schedule = self.basis
-        self.blocks = T
+        self.gauge_ops = [[j, j + 1] for j in range(self.d - 1)]
+        self.measured_logical = [[0]]
+        self.flip_logical = list(range(self.d))
+        self.boundary = [[0], [self.d - 1]]
+        self.basis = "x"
 
         self.resets = resets
         self.delay = delay
@@ -322,10 +300,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
                 i = [0, -1][bqec_index]
-                if self.basis == "z":
-                    bqubits = [self.css_x_logical[i]]
-                else:
-                    bqubits = [self.css_z_logical[i]]
+                bqubits = [self.flip_logical[i]]
                 bnode = DecodingGraphNode(is_logical=True, qubits=bqubits, index=bqec_index)
                 nodes.append(bnode)
 
@@ -335,10 +310,7 @@ class RepetitionCodeCircuit(CodeCircuit):
                 elements = separated_string[syn_type][syn_round]
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
-                        if self.basis == "z":
-                            qubits = self.css_z_gauge_ops[qec_index]
-                        else:
-                            qubits = self.css_x_gauge_ops[qec_index]
+                        qubits = self.gauge_ops[qec_index]
                         node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes
@@ -434,10 +406,7 @@ class RepetitionCodeCircuit(CodeCircuit):
             flipped_logical_nodes = []
             for flipped_logical in flipped_logicals:
                 qubits = [flipped_logical]
-                if self.basis == "z":
-                    elem = self.css_z_boundary.index(qubits)
-                else:
-                    elem = self.css_x_boundary.index(qubits)
+                elem = self.boundary.index(qubits)
                 node = DecodingGraphNode(is_logical=True, qubits=qubits, index=elem)
                 flipped_logical_nodes.append(node)
 
@@ -821,20 +790,6 @@ class ArcCircuit(CodeCircuit):
         if not z_logicals:
             z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
-
-        # set css attributes for decoder
-        gauge_ops = [[link[0], link[2]] for link in self.links]
-        measured_logical = [[self.z_logicals[0]]]
-        flip_logical = list(range(self.d))
-        boundary = [[logical] for logical in self.z_logicals]
-        self.css_x_gauge_ops = []
-        self.css_x_stabilizer_ops = []
-        self.css_x_logical = flip_logical
-        self.css_x_boundary = []
-        self.css_z_gauge_ops = gauge_ops
-        self.css_z_stabilizer_ops = gauge_ops
-        self.css_z_logical = measured_logical
-        self.css_z_boundary = boundary
 
     def _get_202(self, t):
         """
