@@ -997,6 +997,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_link_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degree</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">degrees</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linear</span> <span class="o">=</span> <span class="n">degrees</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">degrees</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">degrees</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
         <span class="n">lg_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span>
         <span class="n">lg_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
         <span class="n">ng</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
@@ -1740,8 +1745,11 @@
 <span class="sd">        Args:</span>
 <span class="sd">            atypical_nodes: dictionary in the form of the return value of string2nodes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logicals</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logicals</span></div>
 
 
 <div class="viewcode-block" id="ArcCircuit.transpile">
@@ -2038,6 +2046,70 @@
             <span class="k">return</span> <span class="n">error_coords</span><span class="p">,</span> <span class="n">sample_coords</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">error_coords</span></div>
+
+
+<div class="viewcode-block" id="ArcCircuit.clean_code">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.clean_code">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an output string of the code, obvious code qubit errors are identified and their effects</span>
+<span class="sd">        are removed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (str): Output string of the code.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string (str): Modifed output string of the code.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># get the parities for the rounds and turn them into lists of integers</span>
+        <span class="c1"># (also turn them the right way around)</span>
+        <span class="n">parities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">rstring</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">parities</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rstring</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">parities</span> <span class="o">=</span> <span class="n">parities</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># calculate the final parities from the final readout and add them on</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">final_parities</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">c0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">c1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">:</span>
+            <span class="n">final_parities</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">link_index</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">final</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">final</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">parities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_parities</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">flips</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">rparities</span> <span class="ow">in</span> <span class="n">parities</span><span class="p">:</span>
+            <span class="c1"># see how many links around each code qubit detect a flip</span>
+            <span class="n">link_count</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">c0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">c1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">:</span>
+                <span class="c1"># we&#39;ll need to determine whether the as yet uncorrected parity</span>
+                <span class="c1"># checks from this round should be flipped, based on results</span>
+                <span class="c1"># from previous rounds</span>
+                <span class="n">flip</span> <span class="o">=</span> <span class="p">(</span><span class="n">flips</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">+</span> <span class="n">flips</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_index</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c0</span><span class="p">,</span> <span class="n">c1</span><span class="p">]:</span>
+                    <span class="n">link_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">rparities</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+</span> <span class="n">flip</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="c1"># if it&#39;s all of them, assume a flip</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">link_count</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">link_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
+                    <span class="n">flips</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">flips</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="c1"># modify the parities to remove the effect</span>
+            <span class="k">for</span> <span class="n">c0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">c1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">:</span>
+                <span class="n">flip</span> <span class="o">=</span> <span class="p">(</span><span class="n">flips</span><span class="p">[</span><span class="n">c0</span><span class="p">]</span> <span class="o">+</span> <span class="n">flips</span><span class="p">[</span><span class="n">c1</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_index</span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+                <span class="n">rparities</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">rparities</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+</span> <span class="n">flip</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="c1"># turn the results back into a string</span>
+        <span class="n">new_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rparities</span> <span class="ow">in</span> <span class="n">parities</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">new_string</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rparities</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">final_string</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">flip</span> <span class="ow">in</span> <span class="n">flips</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="n">final_string</span><span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">final_string</span><span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">flip</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">final_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">final_string</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">final_string</span> <span class="o">+</span> <span class="n">new_string</span></div>
 </div>
 
 </pre></div>
@@ -2057,7 +2129,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/01/12</div>
+              Last updated on 2024/01/19</div>
           </div>
           <div class="right-details">
             

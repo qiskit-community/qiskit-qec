@@ -460,11 +460,16 @@ Based on arXiv:1703.01517.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.process" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predecoder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.process" title="Link to this definition">#</a></dt>
 <dd><p>Process an output string and return corrected final outcomes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Output string of the code.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – Output string of the code.</p></li>
+<li><p><strong>predecoder</strong> (<em>callable</em>) – Function that takes in and returns</p></li>
+<li><p><strong>nodes</strong> (<em>a list</em><em> of </em><em>nodes. Used to do preprocessing on the</em>) – </p></li>
+<li><p><strong>string.</strong> (<em>corresponding to the input</em>) – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of integers that are 0 or 1.</p>
@@ -516,7 +521,7 @@ self.z_logicals.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/01/12</div>
+              Last updated on 2024/01/19</div>
           </div>
           <div class="right-details">
             

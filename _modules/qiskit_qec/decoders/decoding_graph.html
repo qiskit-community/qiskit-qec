@@ -399,6 +399,56 @@
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DecodingGraph.update_attributes">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.update_attributes">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates properties of the graph used by `node_index` and `edge_in_graph`.</span>
+<span class="sd">        If `graph` is updated this method should called to update these properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="n">clean_node</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">clean_node</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_index</span><span class="p">[</span><span class="n">clean_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="DecodingGraph.node_index">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.node_index">[docs]</a>
+    <span class="k">def</span> <span class="nf">node_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a node of `graph`, returns the corrsponding index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node (DecodingGraphNode): Node of the graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            n (int): Index corresponding to the node within the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean_node</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">clean_node</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_index</span><span class="p">[</span><span class="n">clean_node</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DecodingGraph.edge_in_graph">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.edge_in_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">edge_in_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a pair of node indices for `graph`, determines whether</span>
+<span class="sd">        the edge exists within the graph.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge (tuple): Pair of node indices for the graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            in_graph (bool): Whether the edge is within the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_set</span></div>
+
+
     <span class="k">def</span> <span class="nf">_make_syndrome_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">brute</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;_make_syndrome_graph&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hyperedges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">_make_syndrome_graph</span><span class="p">()</span>
@@ -505,7 +555,7 @@
                 <span class="n">error_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">logical</span><span class="o">=</span><span class="n">logical</span><span class="p">))</span>
 
                 <span class="k">for</span> <span class="n">node0</span> <span class="ow">in</span> <span class="n">error_nodes</span><span class="p">:</span>
-                    <span class="n">n0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node0</span><span class="p">)</span>
+                    <span class="n">n0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">node0</span><span class="p">)</span>
                     <span class="n">av_v</span><span class="p">[</span><span class="n">n0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">counts</span><span class="p">[</span><span class="n">string</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">neighbours</span><span class="p">[</span><span class="n">n0</span><span class="p">]:</span>
                         <span class="n">node1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
@@ -682,14 +732,67 @@
                 <span class="n">source</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">source_index</span><span class="p">]</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">target_index</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">target</span> <span class="o">!=</span> <span class="n">source</span><span class="p">:</span>
-                    <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-                    <span class="n">nt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+                    <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                    <span class="n">nt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
                     <span class="n">distance</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">[</span><span class="n">ns</span><span class="p">][</span><span class="n">nt</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">distance</span><span class="p">):</span>
                         <span class="n">qubits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">qubits</span><span class="p">))</span>
                         <span class="n">distance</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
                         <span class="n">E</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">source_index</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span><span class="n">qubits</span><span class="p">,</span> <span class="n">distance</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">E</span></div>
+
+
+<div class="viewcode-block" id="DecodingGraph.clean_measurements">
+<a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.clean_measurements">[docs]</a>
+    <span class="k">def</span> <span class="nf">clean_measurements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes pairs of nodes that obviously correspond to measurement errors</span>
+<span class="sd">        from a list of nodes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes: A list of nodes.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            nodes: The input list of nodes, with pairs removed if they obviously</span>
+<span class="sd">            correspond to a measurement error.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># order the nodes by where and when</span>
+        <span class="n">node_pos</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_pos</span><span class="p">:</span>
+                    <span class="n">node_pos</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">node_pos</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="c1"># find pairs corresponding to time-like edges</span>
+        <span class="n">all_pairs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node_times</span> <span class="ow">in</span> <span class="n">node_pos</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_times</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ts</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">n0</span> <span class="o">=</span> <span class="n">node_times</span><span class="p">[</span><span class="n">ts</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+                    <span class="n">n1</span> <span class="o">=</span> <span class="n">node_times</span><span class="p">[</span><span class="n">ts</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_in_graph</span><span class="p">((</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">))</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_in_graph</span><span class="p">((</span><span class="n">n1</span><span class="p">,</span> <span class="n">n0</span><span class="p">)):</span>
+                        <span class="n">all_pairs</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">))</span>
+        <span class="c1"># filter out those that share nodes</span>
+        <span class="n">all_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">common_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">all_pairs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+                    <span class="n">common_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="n">all_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">paired_ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">all_pairs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">common_nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">common_nodes</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">:</span>
+                        <span class="n">paired_ns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="c1"># return the nodes that were not paired</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">)</span>
+        <span class="n">unpaired_ns</span> <span class="o">=</span> <span class="n">ns</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">paired_ns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">unpaired_ns</span><span class="p">]</span></div>
 </div>
 
 
@@ -1052,7 +1155,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/01/12</div>
+              Last updated on 2024/01/19</div>
           </div>
           <div class="right-details">
             

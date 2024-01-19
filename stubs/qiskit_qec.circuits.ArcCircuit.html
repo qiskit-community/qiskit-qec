@@ -428,6 +428,24 @@ num_errors (int): Minimum number of errors required to create nodes.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.clean_code">
+<span class="sig-name descname"><span class="pre">clean_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.clean_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.clean_code" title="Link to this definition">#</a></dt>
+<dd><p>Given an output string of the code, obvious code qubit errors are identified and their effects
+are removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Output string of the code.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Modifed output string of the code.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>string (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.flatten_nodes">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.flatten_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes" title="Link to this definition">#</a></dt>
 <dd><p>Removes time information from a set of nodes, and consolidates those on
@@ -628,7 +646,7 @@ with dynamical decoupling added.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/01/12</div>
+              Last updated on 2024/01/19</div>
           </div>
           <div class="right-details">
             
@@ -652,6 +670,7 @@ with dynamical decoupling added.</p>
 <li><a class="reference internal" href="#">ArcCircuit</a><ul>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit"><code class="docutils literal notranslate"><span class="pre">ArcCircuit</span></code></a><ul>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.check_nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.check_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.clean_code"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.clean_code()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.flatten_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.get_error_coords()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.is_cluster_neutral()</span></code></a></li>

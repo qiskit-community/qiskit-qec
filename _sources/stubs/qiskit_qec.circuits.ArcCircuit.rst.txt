@@ -13,6 +13,7 @@
 
 
    .. automethod:: ArcCircuit.check_nodes
+   .. automethod:: ArcCircuit.clean_code
    .. automethod:: ArcCircuit.flatten_nodes
    .. automethod:: ArcCircuit.get_error_coords
    .. automethod:: ArcCircuit.is_cluster_neutral
