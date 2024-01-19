@@ -31,4 +31,4 @@ Decoders module classes and functions
 
 from .decoding_graph import DecodingGraph
 from .pymatching_decoder import PyMatching
-from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder, ClAYGDecoder
+from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder
