@@ -37,8 +37,11 @@ class PyMatching:
             self.decoding_graph = decoding_graph
         else:
             self.decoding_graph = DecodingGraph(self.code)
-        self.graph = self.decoding_graph.get_edge_graph()
-        self.pymatching = self._matching()
+        if self.decoding_graph.logical_nodes:
+            self.graph = self.decoding_graph.get_edge_graph()
+        else:
+            self.graph = self.decoding_graph.graph
+        self.matcher = self._matching()
         self.indexer = None
         super().__init__()
 
@@ -58,7 +61,7 @@ class PyMatching:
             syndrome_as_nodes = syndrome_as_nodes and isinstance(elem, DecodingGraphNode)
         if syndrome_as_nodes:
             syndrome = self.nodes_to_detections(syndrome)
-        return self.pymatching.decode(syndrome)
+        return self.matcher.decode(syndrome)
 
     def process(self, string: str) -> List[int]:
         """
@@ -90,7 +93,7 @@ class PyMatching:
             syndrome = self.nodes_to_detections(syndrome)
         edge_dets = list(self.graph.edge_list())
         edges = self.graph.edges()
-        matched_det_pairs = self.pymatching.decode_to_edges_array(syndrome)
+        matched_det_pairs = self.matcher.decode_to_edges_array(syndrome)
         det_pairs = []
         for pair in matched_det_pairs:
             if pair[1] == -1:
