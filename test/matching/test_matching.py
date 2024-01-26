@@ -30,9 +30,7 @@ from qiskit_qec.utils.stim_tools import get_counts_via_stim
 class TestMatching(unittest.TestCase):
     """Test the PyMatching decoder."""
 
-    def test_repetition_codes(
-        self, code
-    ): 
+    def test_repetition_codes(self, code):
         """
         Test on repetition codes.
         """
@@ -42,9 +40,11 @@ class TestMatching(unittest.TestCase):
         N = 1000
 
         codes = []
-        codes.append(RepetitionCodeCircuit(8,1))
+        codes.append(RepetitionCodeCircuit(8, 1))
         codes.append(ArcCircuit([(2 * j, 2 * j + 1, 2 * (j + 1)) for j in range(d - 1)], 1))
-        codes.append(ArcCircuit([(2 * j, 2 * j + 1, (2 * (j + 1)) % (2*d-2)) for j in range(d - 1)], 1))
+        codes.append(
+            ArcCircuit([(2 * j, 2 * j + 1, (2 * (j + 1)) % (2 * d - 2)) for j in range(d - 1)], 1)
+        )
         for c, code in enumerate(codes):
             matcher = PyMatching(code)
             min_error_num = code.d
@@ -75,11 +75,9 @@ class TestMatching(unittest.TestCase):
                 + min_error_string
                 + ".",
             )
-            print(c,min_error_num,min_error_string)
+            print(c, min_error_num, min_error_string)
 
-    def test_css_codes(
-        self, code
-    ): 
+    def test_css_codes(self, code):
         """
         Test on CSS codes.
         """
@@ -87,26 +85,27 @@ class TestMatching(unittest.TestCase):
         p = 0.01
         N = 1000
 
-        codes = [CSSCodeCircuit(HHC(d),T=1,basis='x',noise_model=(p,p))]
+        codes = [CSSCodeCircuit(HHC(d), T=1, basis="x", noise_model=(p, p))]
         for c, code in enumerate(codes):
             matcher = PyMatching(code)
-            stim_counts = get_counts_via_stim(code.noisy_circuit['1'], N)
+            stim_counts = get_counts_via_stim(code.noisy_circuit["1"], N)
             errors = 0
             for string in stim_counts:
-                    corrected_z_logicals = matcher.process(string)
-                    if corrected_z_logicals:
-                        if corrected_z_logicals[0] != 1:
-                            errors += 1
+                corrected_z_logicals = matcher.process(string)
+                if corrected_z_logicals:
+                    if corrected_z_logicals[0] != 1:
+                        errors += 1
         self.assertTrue(
-            errors/N < p,
+            errors / N < p,
             "Logical error rate of"
-            + str(errors/N)
+            + str(errors / N)
             + " despite p="
             + str(p)
             + " for code "
             + str(c)
             + ".",
         )
+
 
 if __name__ == "__main__":
     unittest.main()
