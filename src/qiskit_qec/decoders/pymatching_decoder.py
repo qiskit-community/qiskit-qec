@@ -26,10 +26,18 @@ class PyMatching:
     Matching decoder using PyMatching.
     """
 
-    def __init__(self, decoding_graph: DecodingGraph):
+    def __init__(
+        self,
+        code_circuit,
+        decoding_graph: DecodingGraph = None,
+    ):
         """Setting up the matching object"""
-        self.decoding_graph = decoding_graph
-        self.graph = decoding_graph.graph
+        self.code = code_circuit
+        if decoding_graph:
+            self.decoding_graph = decoding_graph
+        else:
+            self.decoding_graph = DecodingGraph(self.code)
+        self.graph = self.decoding_graph.get_edge_graph()
         self.pymatching = self._matching()
         self.indexer = None
         super().__init__()
@@ -45,7 +53,10 @@ class PyMatching:
             the output of a stim detector sampler
         Returns: list of binaries indicating which logical is flipped
         """
-        if isinstance(syndrome[0], DecodingGraphNode):
+        syndrome_as_nodes = True
+        for elem in syndrome:
+            syndrome_as_nodes = syndrome_as_nodes and isinstance(elem, DecodingGraphNode)
+        if syndrome_as_nodes:
             syndrome = self.nodes_to_detections(syndrome)
         return self.pymatching.decode(syndrome)
 
@@ -55,12 +66,14 @@ class PyMatching:
         Args: counts string
         Returns: list of corrected logicals (0 or 1)
         """
-        nodes = self.decoding_graph.code.string2nodes(string)
-        raw_logicals = self.decoding_graph.code.string2raw_logicals(string)
+        nodes = self.code.string2nodes(string)
+        raw_logicals = self.code.string2raw_logicals(string)
 
         logical_flips = self.logical_flips(nodes)
 
-        corrected_logicals = [(raw + flip) % 2 for raw, flip in zip(raw_logicals, logical_flips)]
+        corrected_logicals = [
+            (int(raw) + flip) % 2 for raw, flip in zip(raw_logicals, logical_flips)
+        ]
 
         return corrected_logicals
 
