@@ -65,14 +65,21 @@ class DecodingGraphNode:
         elif key in self.properties:
             return self.properties[key]
         else:
-            raise QiskitQECError(
+            return QiskitQECError(
                 "'" + str(key) + "'" + " is not an an attribute or property of the node."
             )
 
-    def get(self, key, _):
-        """A dummy docstring."""
+    def get(self, key, default=None):
+        """Return value for given key."""
         # pylint: disable=unnecessary-dunder-call
-        return self.__getitem__(key)
+        output = self.__getitem__(key)
+        if isinstance(output, QiskitQECError):
+            if default:
+                return default
+            else:
+                raise output
+        else:
+            return output
 
     def __setitem__(self, key, value):
         if key in self.__dict__:
@@ -129,14 +136,21 @@ class DecodingGraphEdge:
         elif key in self.properties:
             return self.properties[key]
         else:
-            raise QiskitQECError(
+            return QiskitQECError(
                 "'" + str(key) + "'" + " is not an an attribute or property of the edge."
             )
 
-    def get(self, key, _):
-        """A dummy docstring."""
+    def get(self, key, default=None):
+        """Return value for given key."""
         # pylint: disable=unnecessary-dunder-call
-        return self.__getitem__(key)
+        value = self.__getitem__(key)
+        if isinstance(value, QiskitQECError):
+            if default is not None:
+                return default
+            else:
+                raise value
+        else:
+            return value
 
     def __setitem__(self, key, value):
         if key in self.__dict__:
