@@ -24,8 +24,6 @@ Decoders module classes and functions
     :toctree: ../stubs/
 
     DecodingGraph
-    CircuitModelMatchingDecoder
-    RepetitionDecoder
     UnionFindDecoder
 """
 
