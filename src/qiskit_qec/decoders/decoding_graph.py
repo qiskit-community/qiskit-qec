@@ -566,7 +566,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
     for j in range(depth):
         gate = qc.data[j][0].name
         qubits = qc.data[j][1]
-        if gate not in ["measure", "reset", "barrier", "cx"]:
+        if gate not in ["measure", "reset", "barrier"] and len(qubits) != 2:
             for error in ["x", "y", "z"]:
                 for qubit in qubits:
                     temp_qc = copy.deepcopy(blank_qc)
@@ -578,7 +578,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     getattr(temp_qc, error)(qubit)
                     temp_qc.data += qc.data[j : depth + 1]
                     error_circuit[temp_qc_name] = temp_qc
-        elif gate == "cx":
+        elif len(qubits) == 2:
             qregs = []
             for qubit in qubits:
                 for qreg in qc.qregs:
@@ -587,7 +587,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
                         break
             for pauli_0 in ["id", "x", "y", "z"]:
                 for pauli_1 in ["id", "x", "y", "z"]:
-                    if not (pauli_0 == pauli_1 and pauli_0 in ["id", "x", "z"]):
+                    if not pauli_0 == pauli_1 == "id":
                         temp_qc = copy.deepcopy(blank_qc)
                         temp_qc_name = (
                             j,
