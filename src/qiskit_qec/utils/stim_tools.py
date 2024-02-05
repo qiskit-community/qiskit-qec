@@ -533,10 +533,14 @@ def string2rawlogicals_with_detectors(
 
         if all_logicals or str(logical_out) != logical:
             node = DecodingGraphNode(
+                is_logical=True,
                 is_boundary=True,
-                qubits=[],
                 index=index,
             )
+            if "qubits" in logical_op:
+                node.qubits = logical_op["qubits"]
+            else:
+                node.qubits = []
             nodes.append(node)
 
     return nodes
