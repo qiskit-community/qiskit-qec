@@ -21,7 +21,7 @@ import unittest
 from random import choices
 
 from qiskit_qec.circuits import ArcCircuit, RepetitionCodeCircuit
-from qiskit_qec.decoders import PyMatching
+from qiskit_qec.decoders import PyMatchingDecoder
 from qiskit_qec.codes.hhc import HHC
 from qiskit_qec.circuits.css_code import CSSCodeCircuit
 from qiskit_qec.utils.stim_tools import get_counts_via_stim
@@ -46,7 +46,7 @@ class TestMatching(unittest.TestCase):
             ArcCircuit([(2 * j, 2 * j + 1, (2 * (j + 1)) % (2 * d - 2)) for j in range(d - 1)], 1)
         )
         for c, code in enumerate(codes):
-            matcher = PyMatching(code)
+            matcher = PyMatchingDecoder(code)
             min_error_num = code.d
             min_error_string = ""
             for _ in range(N):
@@ -87,7 +87,7 @@ class TestMatching(unittest.TestCase):
 
         codes = [CSSCodeCircuit(HHC(d), T=1, basis="x", noise_model=(p, p))]
         for c, code in enumerate(codes):
-            matcher = PyMatching(code)
+            matcher = PyMatchingDecoder(code)
             stim_counts = get_counts_via_stim(code.noisy_circuit["1"], N)
             errors = 0
             for string in stim_counts:

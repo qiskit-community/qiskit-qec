@@ -21,7 +21,7 @@ from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphNode, DecodingGraphEdge
 
 
-class PyMatching:
+class PyMatchingDecoder:
     """
     Matching decoder using PyMatching.
     """
