@@ -589,6 +589,3 @@ class StimCodeCircuit(CodeCircuit):
 
     def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         raise NotImplementedError
-
-    def is_cluster_neutral(self, atypical_nodes):
-        raise NotImplementedError
