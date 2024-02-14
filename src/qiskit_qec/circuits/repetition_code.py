@@ -1143,6 +1143,7 @@ class ArcCircuit(CodeCircuit):
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
+            cpp (bool): Whether to use C++ implementation.
         Returns:
             neutral (bool): Whether the nodes independently correspond to a valid
             set of errors.
@@ -1364,6 +1365,7 @@ class ArcCircuit(CodeCircuit):
         to the method.
         Args:
             atypical_nodes: dictionary in the form of the return value of string2nodes
+            cpp (bool): Whether to use C++ implementation.
         """
         if self._linear:
             return not bool(len(atypical_nodes) % 2)

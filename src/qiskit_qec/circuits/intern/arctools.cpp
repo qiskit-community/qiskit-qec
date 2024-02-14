@@ -1,35 +1,35 @@
-#include arctools.h
+#include "arctools.h"
 
-vector<int> check_nodes(
-    vector<tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
-    map<tuple<int, int>, set<int>> cycle_dict, vector<tuple<int, int>> link_graph, map<int, vector<int>> link_neighbors, vector<int> z_logicals
+std::vector<int> check_nodes(
+    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals
     ) {
     
     // output[0] is neutral (as int), output[1] is num_errors, rest is list of given logicals
-    vector<int> output;
+    std::vector<int> output;
 
-    // we convert to flat nodes, which are a tuple with (q0, q1, boundary)
+    // we convert to flat nodes, which are a std::tuple with (q0, q1, boundary)
     // if we have an even number of corresponding nodes, they cancel
-    map<tuple<int, int, bool>, int> node_counts;
+    std::map<std::tuple<int, int, bool>, int> node_counts;
     for (auto & node : nodes) {
-        node_counts[make_tuple(get<0>(node), get<1>(node), get<3>(node))] = 0;
+        node_counts[std::make_tuple(std::get<0>(node), std::get<1>(node), std::get<3>(node))] = 0;
     }
     for (auto & node : nodes) {
-        node_counts[make_tuple(get<0>(node), get<1>(node), get<3>(node))] ++;
+        node_counts[std::make_tuple(std::get<0>(node), std::get<1>(node), std::get<3>(node))] ++;
     }
-    // make a vector of the net flat nodes
-    vector<tuple<int, int, bool>> flat_nodes;
+    // make a std::vector of the net flat nodes
+    std::vector<std::tuple<int, int, bool>> flat_nodes;
     for (auto & node_count : node_counts) {
         if (node_count.second % 2 == 1) {
             flat_nodes.push_back(node_count.first);
         }
     }
     // see what logicals and bulk nodes are given
-    set<int> given_logicals;
-    set<tuple<int, int, bool>> bulk_nodes;
+    std::set<int> given_logicals;
+    std::set<std::tuple<int, int, bool>> bulk_nodes;
     for (auto & node : flat_nodes) {
-        if (get<2>(node)) {
-            given_logicals.insert(get<0>(node));
+        if (std::get<2>(node)) {
+            given_logicals.insert(std::get<0>(node));
         } else {
             bulk_nodes.insert(node);
         }
@@ -44,13 +44,13 @@ vector<int> check_nodes(
         output.push_back(num_errors);
         // no flipped logicals need to be added
     } else {
-        map<int, int> parities;
+        std::map<int, int> parities;
         // check how many times the bulk nodes turn up in each cycle
         for (int c = 0; c < cycle_dict.size(); c++){
             parities[c] = 0;
         }
         for (auto & node: bulk_nodes) {
-            for (auto & c: cycle_dict[(make_tuple(get<0>(node), get<1>(node)))]){
+            for (auto & c: cycle_dict[(std::make_tuple(std::get<0>(node), std::get<1>(node)))]){
                 parities[c]++;
             }
         }
@@ -70,12 +70,12 @@ vector<int> check_nodes(
             
             // first make a list of the qubits that definitely need to be covered
             // (those in the bulk nodes) and see how often each comes up in the nodes
-            set<int> node_qubits;
-            map<int, int> nq_nums;
+            std::set<int> node_qubits;
+            std::map<int, int> nq_nums;
             for (auto & node: bulk_nodes){
-                vector<int> qs = {
-                    get<0>(node), 
-                    get<1>(node)
+                std::vector<int> qs = {
+                    std::get<0>(node), 
+                    std::get<1>(node)
                 };
                 for (auto & q: qs) {
                     if (node_qubits.insert(q).second){
@@ -95,28 +95,28 @@ vector<int> check_nodes(
                 }
             }
             // start colouring with the most mentioned qubit
-            map<int, bool> color;
+            std::map<int, bool> color;
             color[root] = 0;
-            vector<int> newly_colored = {root};
-            set<int> colored = {root};
+            std::vector<int> newly_colored = {root};
+            std::set<int> colored = {root};
             // stop once all node qubits are coloured and one color has stopped growing
             bool converged = false;
             node_qubits.erase(root);
-            map<bool, int> num_nodes = {
+            std::map<bool, int> num_nodes = {
                 {0, 1},
                 {1, 0}
             };
-            map<bool, int> last_num_nodes = num_nodes;
+            std::map<bool, int> last_num_nodes = num_nodes;
             while (not converged){
                 // for each newly coloured qubit
-                vector<int> very_newly_colored;
+                std::vector<int> very_newly_colored;
                 for (auto & n: newly_colored){
                     // loop through all the neighbours
                     for (auto & nn: link_neighbors[n]){
                         // if they haven't yet been coloured
                         if (colored.find(nn) == colored.end()){
                             // if this pair don't correspond to a bulk node, the new one is the same colour
-                            if ((bulk_nodes.find(make_tuple(n,nn,false)) == bulk_nodes.end()) and (bulk_nodes.find(make_tuple(nn,n,false)) == bulk_nodes.end())){
+                            if ((bulk_nodes.find(std::make_tuple(n,nn,false)) == bulk_nodes.end()) and (bulk_nodes.find(std::make_tuple(nn,n,false)) == bulk_nodes.end())){
                                 color[nn] = color[n];
                             // otherwise, it's the opposite color
                             } else {
@@ -143,13 +143,13 @@ vector<int> check_nodes(
             int min_color = (num_nodes[1] <= num_nodes[0]);
             // list the colours with the max error one first
             // (unless we do min only)
-            vector<int> cs;
+            std::vector<int> cs;
             if (not minimal){
                 cs.push_back((min_color+1)%2);
             }
             cs.push_back(min_color);
             // determine which flipped logicals correspond to which colour
-            vector<set<int>> color_logicals = {{}, {}};
+            std::vector<std::set<int>> color_logicals = {{}, {}};
             for (auto & q: z_logicals){
                 if (color.find(q) == color.end()){
                     color[q] = (conv_color+1)%2;
@@ -158,8 +158,8 @@ vector<int> check_nodes(
             }
             // see if we can find a color for which we have no extra logicals
             // and see what additional logicals are required
-            vector<int> flipped_logicals;
-            vector<int> extra_logicals;
+            std::vector<int> flipped_logicals;
+            std::vector<int> extra_logicals;
             bool done = false;
             int j = 0;
             while (not done){
@@ -199,4 +199,4 @@ vector<int> check_nodes(
     }
 
     return output;
-}
+};
