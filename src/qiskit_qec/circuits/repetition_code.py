@@ -34,6 +34,7 @@ from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 from qiskit_qec.utils.decoding_graph_attributes import _nodes2cpp
 from qiskit_qec.circuits._c_circuits import _c_check_nodes
 
+
 def _separate_string(string):
     separated_string = []
     for syndrome_type_string in string.split("  "):
@@ -1162,8 +1163,8 @@ class ArcCircuit(CodeCircuit):
                 self.cycle_dict,
                 self._cpp_link_graph,
                 self._cpp_link_neighbors,
-                self.z_logicals
-                )
+                self.z_logicals,
+            )
 
             neutral = bool(cpp_output[0])
             num_errors = cpp_output[1]
@@ -1177,7 +1178,7 @@ class ArcCircuit(CodeCircuit):
                 flipped_logical_nodes.append(node)
 
             return neutral, flipped_logical_nodes, num_errors
-    
+
         else:
 
             nodes = self.flatten_nodes(nodes)
@@ -1321,7 +1322,9 @@ class ArcCircuit(CodeCircuit):
 
                         # if unneeded logical zs are given, cluster is not neutral
                         # (unless this is ignored)
-                        if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+                        if (not ignore_extra_logical) and given_logicals.difference(
+                            flipped_logicals
+                        ):
                             neutral = False
                             flipped_logicals = set()
                         # otherwise, report only needed logicals that aren't given
