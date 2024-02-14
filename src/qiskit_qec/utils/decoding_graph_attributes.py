@@ -173,3 +173,23 @@ class DecodingGraphEdge:
 
     def __repr__(self):
         return str(dict(self))
+
+
+def _nodes2cpp(nodes):
+    """
+    Convert a list of nodes to the form required by C++ functions.
+    """
+    # nodes are a tuple with (q0, q1,t, boundary)
+    # if there is no q1 or t, -1 is used
+    cnodes = []
+    for node in nodes:
+        cnode = []
+        cnode += node.qubits
+        cnode += [-1] * (2 - len(node.qubits))
+        if node.time is None:
+            cnode.append(-1)
+        else:
+            cnode.append(node.time)
+        cnode.append(node.is_logical)
+        cnodes.append(tuple(cnode))
+    return cnodes

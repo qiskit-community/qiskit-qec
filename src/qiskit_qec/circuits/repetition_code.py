@@ -31,7 +31,8 @@ from qiskit_ibm_provider.transpiler.passes.scheduling import ALAPScheduleAnalysi
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
-
+from qiskit_qec.utils.decoding_graph_attributes import _nodes2cpp
+from qiskit_qec.circuits._c_circuits import _c_check_nodes
 
 def _separate_string(string):
     separated_string = []
@@ -576,6 +577,8 @@ class ArcCircuit(CodeCircuit):
             self._syndrome_measurement(final=True)
         self._readout()
 
+        self._cpp_link_graph, self._cpp_link_neighbors = self._links2cpp()
+
     def _get_link_graph(self, max_dist=1):
         graph = rx.PyGraph()
         for link in self.links:
@@ -1112,7 +1115,22 @@ class ArcCircuit(CodeCircuit):
 
         return flat_nodes
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def _links2cpp(self):
+        """
+        Convert data about the link graph to the form required by C++ functions.
+        """
+        nodes = self.link_graph.nodes()
+        link_graph = []
+        for edge in self.link_graph.edge_list():
+            link_graph.append((nodes[edge[0]], nodes[edge[1]]))
+        link_neighbors = {}
+        for n, node in enumerate(self.link_graph.nodes()):
+            link_neighbors[node] = []
+            for j in self.link_graph.neighbors(n):
+                link_neighbors[node].append(nodes[j])
+        return link_graph, link_neighbors
+
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False, cpp=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1133,181 +1151,210 @@ class ArcCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
-        nodes = self.flatten_nodes(nodes)
+        if cpp:
 
-        # see which qubits for logical zs are given and collect bulk nodes
-        given_logicals = []
-        bulk_nodes = []
-        for node in nodes:
-            if node.is_logical:
-                given_logicals += node.qubits
-            else:
-                bulk_nodes.append(node)
-        given_logicals = set(given_logicals)
+            nodes = _nodes2cpp(nodes)
 
-        # see whether the bulk nodes are neutral
-        if bulk_nodes:
+            cpp_output = _c_check_nodes(
+                nodes,
+                ignore_extra_logical,
+                minimal,
+                self.cycle_dict,
+                self._cpp_link_graph,
+                self._cpp_link_neighbors,
+                self.z_logicals
+                )
 
-            # check whether there are frustrated plaquettes
-            parities = {}
-            for node in bulk_nodes:
-                for c in self.cycle_dict[tuple(node.qubits)]:
-                    if c in parities:
-                        parities[c] += 1
-                    else:
-                        parities[c] = 1
-            for c, parity in parities.items():
-                parities[c] = parity % 2
-            frust = any(parities.values())
-
-            # if frust==True, no colouring is possible, so no need to do it
-            if frust:
-                # neutral if not frustrated
-                neutral = not frust
-                # empty because ignored
-                flipped_logical_nodes = []
-                # None because not counted
-                num_errors = None
-            else:
-                # bicolor the nodes of the link graph, such that node edges connect unlike edges
-                link_qubits = set(node.properties["link qubit"] for node in nodes)
-                link_graph = self.link_graph
-                # all the qubits around cycles of the node edges have to be covered
-                ns_to_do = set()
-                for edge in [tuple(node.qubits) for node in bulk_nodes]:
-                    for c in self.cycle_dict[edge]:
-                        ns_to_do = ns_to_do.union(self.cycles[c])
-                # if this gives us qubits to start with, we start with one
-                if ns_to_do:
-                    n = ns_to_do.pop()
-                else:
-                    # otherwise we commit to covering them all
-                    ns_to_do = set(range(len(link_graph.nodes())))
-                    n = ns_to_do.pop()
-                node_color = {n: 0}
-                recently_colored = node_color.copy()
-                base_neutral = True
-                # count the number of nodes for each colour throughout
-                num_nodes = [1, 0]
-                last_num = [None, None]
-                fully_converged = False
-                last_converged = False
-                while base_neutral and not fully_converged:
-                    # go through all nodes coloured in the last pass
-                    newly_colored = {}
-                    for n, c in recently_colored.items():
-                        # look at all the code qubits that are neighbours
-                        incident_es = link_graph.incident_edges(n)
-                        for e in incident_es:
-                            edge = link_graph.edges()[e]
-                            n0, n1 = link_graph.edge_list()[e]
-                            if n0 == n:
-                                nn = n1
-                            else:
-                                nn = n0
-                            # see if the edge corresponds to one of the given nodes
-                            dc = edge["link qubit"] in link_qubits
-                            # if the neighbour is not yet coloured, colour it
-                            # different color if edge is given node, same otherwise
-                            if nn not in node_color:
-                                new_c = (c + dc) % 2
-                                if nn not in newly_colored:
-                                    newly_colored[nn] = new_c
-                                    num_nodes[new_c] += 1
-                            # if it is coloured, check the colour is correct
-                            else:
-                                base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
-                    for nn, c in newly_colored.items():
-                        node_color[nn] = c
-                        if nn in ns_to_do:
-                            ns_to_do.remove(nn)
-                    recently_colored = newly_colored.copy()
-                    # process is converged once one colour has stoppped growing
-                    # once ns_to_do is empty
-                    converged = (not ns_to_do) and (
-                        (num_nodes[0] == last_num[0] != 0) or (num_nodes[1] == last_num[1] != 0)
-                    )
-                    fully_converged = converged and last_converged
-                    if not fully_converged:
-                        last_num = num_nodes.copy()
-                        last_converged = converged
-                # see how many qubits are in the converged colour, and determine the min colour
-                for c in range(2):
-                    if num_nodes[c] == last_num[c]:
-                        conv_color = c
-                if num_nodes[conv_color] <= self.d / 2:
-                    min_color = conv_color
-                else:
-                    min_color = (conv_color + 1) % 2
-                # calculate the number of nodes for the other
-                num_nodes[(conv_color + 1) % 2] = link_graph.num_nodes() - num_nodes[conv_color]
-                # get the set of min nodes
-                min_ns = set()
-                for n, c in node_color.items():
-                    if c == min_color:
-                        min_ns.add(n)
-
-                # see which qubits for logical zs are needed
-                flipped_logicals_all = [[], []]
-                if base_neutral:
-                    for qubit in self.z_logicals:
-                        n = link_graph.nodes().index(qubit)
-                        dc = not n in min_ns
-                        flipped_logicals_all[(min_color + dc) % 2].append(qubit)
-                for j in range(2):
-                    flipped_logicals_all[j] = set(flipped_logicals_all[j])
-
-                # list the colours with the max error one first
-                # (unless we do min only)
-                cs = []
-                if not minimal:
-                    cs.append((min_color + 1) % 2)
-                cs.append(min_color)
-
-                # see what happens for both colours
-                # if neutral for maximal, it's neutral
-                # otherwise, it is whatever it is for the minimal
-                for c in cs:
-                    neutral = base_neutral
-                    num_errors = num_nodes[c]
-                    flipped_logicals = flipped_logicals_all[c]
-
-                    # if unneeded logical zs are given, cluster is not neutral
-                    # (unless this is ignored)
-                    if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
-                        neutral = False
-                        flipped_logicals = set()
-                    # otherwise, report only needed logicals that aren't given
-                    else:
-                        flipped_logicals = flipped_logicals.difference(given_logicals)
-
-                    flipped_logical_nodes = []
-                    for flipped_logical in flipped_logicals:
-                        node = DecodingGraphNode(
-                            is_logical=True,
-                            qubits=[flipped_logical],
-                            index=self.z_logicals.index(flipped_logical),
-                        )
-                        flipped_logical_nodes.append(node)
-
-                    if neutral and not flipped_logical_nodes:
-                        break
-
-        else:
-            # without bulk nodes, neutral only if no boundary nodes are given
-            neutral = not bool(given_logicals)
-            # and no flipped logicals
+            neutral = bool(cpp_output[0])
+            num_errors = cpp_output[1]
             flipped_logical_nodes = []
-            num_errors = 0
+            for flipped_logical in cpp_output[2::]:
+                node = DecodingGraphNode(
+                    is_logical=True,
+                    qubits=[flipped_logical],
+                    index=self.z_logicals.index(flipped_logical),
+                )
+                flipped_logical_nodes.append(node)
 
-            # if unneeded logical zs are given, cluster is not neutral
-            # (unless this is ignored)
-            if (not ignore_extra_logical) and given_logicals:
-                neutral = False
+            return neutral, flipped_logical_nodes, num_errors
+    
+        else:
 
-        return neutral, flipped_logical_nodes, num_errors
+            nodes = self.flatten_nodes(nodes)
 
-    def is_cluster_neutral(self, atypical_nodes: dict):
+            # see which qubits for logical zs are given and collect bulk nodes
+            given_logicals = []
+            bulk_nodes = []
+            for node in nodes:
+                if node.is_logical:
+                    given_logicals += node.qubits
+                else:
+                    bulk_nodes.append(node)
+            given_logicals = set(given_logicals)
+
+            # see whether the bulk nodes are neutral
+            if bulk_nodes:
+
+                # check whether there are frustrated plaquettes
+                parities = {}
+                for node in bulk_nodes:
+                    for c in self.cycle_dict[tuple(node.qubits)]:
+                        if c in parities:
+                            parities[c] += 1
+                        else:
+                            parities[c] = 1
+                for c, parity in parities.items():
+                    parities[c] = parity % 2
+                frust = any(parities.values())
+
+                # if frust==True, no colouring is possible, so no need to do it
+                if frust:
+                    # neutral if not frustrated
+                    neutral = not frust
+                    # empty because ignored
+                    flipped_logical_nodes = []
+                    # None because not counted
+                    num_errors = None
+                else:
+                    # bicolor the nodes of the link graph, such that node edges connect unlike edges
+                    link_qubits = set(node.properties["link qubit"] for node in nodes)
+                    link_graph = self.link_graph
+                    # all the qubits around cycles of the node edges have to be covered
+                    ns_to_do = set()
+                    for edge in [tuple(node.qubits) for node in bulk_nodes]:
+                        for c in self.cycle_dict[edge]:
+                            ns_to_do = ns_to_do.union(self.cycles[c])
+                    # if this gives us qubits to start with, we start with one
+                    if ns_to_do:
+                        n = ns_to_do.pop()
+                    else:
+                        # otherwise we commit to covering them all
+                        ns_to_do = set(range(len(link_graph.nodes())))
+                        n = ns_to_do.pop()
+                    node_color = {n: 0}
+                    recently_colored = node_color.copy()
+                    base_neutral = True
+                    # count the number of nodes for each colour throughout
+                    num_nodes = [1, 0]
+                    last_num = [None, None]
+                    fully_converged = False
+                    last_converged = False
+                    while base_neutral and not fully_converged:
+                        # go through all nodes coloured in the last pass
+                        newly_colored = {}
+                        for n, c in recently_colored.items():
+                            # look at all the code qubits that are neighbours
+                            incident_es = link_graph.incident_edges(n)
+                            for e in incident_es:
+                                edge = link_graph.edges()[e]
+                                n0, n1 = link_graph.edge_list()[e]
+                                if n0 == n:
+                                    nn = n1
+                                else:
+                                    nn = n0
+                                # see if the edge corresponds to one of the given nodes
+                                dc = edge["link qubit"] in link_qubits
+                                # if the neighbour is not yet coloured, colour it
+                                # different color if edge is given node, same otherwise
+                                if nn not in node_color:
+                                    new_c = (c + dc) % 2
+                                    if nn not in newly_colored:
+                                        newly_colored[nn] = new_c
+                                        num_nodes[new_c] += 1
+                                # if it is coloured, check the colour is correct
+                                else:
+                                    base_neutral = base_neutral and (node_color[nn] == (c + dc) % 2)
+                        for nn, c in newly_colored.items():
+                            node_color[nn] = c
+                            if nn in ns_to_do:
+                                ns_to_do.remove(nn)
+                        recently_colored = newly_colored.copy()
+                        # process is converged once one colour has stoppped growing
+                        # once ns_to_do is empty
+                        converged = (not ns_to_do) and (
+                            (num_nodes[0] == last_num[0] != 0) or (num_nodes[1] == last_num[1] != 0)
+                        )
+                        fully_converged = converged and last_converged
+                        if not fully_converged:
+                            last_num = num_nodes.copy()
+                            last_converged = converged
+                    # see how many qubits are in the converged colour, and determine the min colour
+                    for c in range(2):
+                        if num_nodes[c] == last_num[c]:
+                            conv_color = c
+                    if num_nodes[conv_color] <= self.d / 2:
+                        min_color = conv_color
+                    else:
+                        min_color = (conv_color + 1) % 2
+                    # calculate the number of nodes for the other
+                    num_nodes[(conv_color + 1) % 2] = link_graph.num_nodes() - num_nodes[conv_color]
+                    # get the set of min nodes
+                    min_ns = set()
+                    for n, c in node_color.items():
+                        if c == min_color:
+                            min_ns.add(n)
+
+                    # see which qubits for logical zs are needed
+                    flipped_logicals_all = [[], []]
+                    if base_neutral:
+                        for qubit in self.z_logicals:
+                            n = link_graph.nodes().index(qubit)
+                            dc = not n in min_ns
+                            flipped_logicals_all[(min_color + dc) % 2].append(qubit)
+                    for j in range(2):
+                        flipped_logicals_all[j] = set(flipped_logicals_all[j])
+
+                    # list the colours with the max error one first
+                    # (unless we do min only)
+                    cs = []
+                    if not minimal:
+                        cs.append((min_color + 1) % 2)
+                    cs.append(min_color)
+
+                    # see what happens for both colours
+                    # if neutral for maximal, it's neutral
+                    # otherwise, it is whatever it is for the minimal
+                    for c in cs:
+                        neutral = base_neutral
+                        num_errors = num_nodes[c]
+                        flipped_logicals = flipped_logicals_all[c]
+
+                        # if unneeded logical zs are given, cluster is not neutral
+                        # (unless this is ignored)
+                        if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+                            neutral = False
+                            flipped_logicals = set()
+                        # otherwise, report only needed logicals that aren't given
+                        else:
+                            flipped_logicals = flipped_logicals.difference(given_logicals)
+
+                        flipped_logical_nodes = []
+                        for flipped_logical in flipped_logicals:
+                            node = DecodingGraphNode(
+                                is_logical=True,
+                                qubits=[flipped_logical],
+                                index=self.z_logicals.index(flipped_logical),
+                            )
+                            flipped_logical_nodes.append(node)
+
+                        if neutral and not flipped_logical_nodes:
+                            break
+
+            else:
+                # without bulk nodes, neutral only if no boundary nodes are given
+                neutral = not bool(given_logicals)
+                # and no flipped logicals
+                flipped_logical_nodes = []
+                num_errors = 0
+
+                # if unneeded logical zs are given, cluster is not neutral
+                # (unless this is ignored)
+                if (not ignore_extra_logical) and given_logicals:
+                    neutral = False
+
+            return neutral, flipped_logical_nodes, num_errors
+
+    def is_cluster_neutral(self, atypical_nodes: dict, cpp=False):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed
@@ -1318,7 +1365,7 @@ class ArcCircuit(CodeCircuit):
         if self._linear:
             return not bool(len(atypical_nodes) % 2)
         else:
-            neutral, logicals, _ = self.check_nodes(atypical_nodes)
+            neutral, logicals, _ = self.check_nodes(atypical_nodes, cpp=cpp)
             return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
