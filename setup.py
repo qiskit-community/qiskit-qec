@@ -178,8 +178,8 @@ setup(
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
     ext_modules=[
+        CMakeExtension("qiskit_qec.circuits._c_circuits"),
         CMakeExtension("qiskit_qec.analysis._c_analysis"),
-        CMakeExtension("qiskit_qec.analysis._c_circuits"),
     ],
     packages=find_packages(
         where="src",
