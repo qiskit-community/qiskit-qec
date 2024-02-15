@@ -8,4 +8,5 @@ PYBIND11_MODULE(_c_circuits, module)
 {
   module.doc() = "qiskit-qec code circuit extensions";
   module.def("_c_check_nodes", &check_nodes, "check_nodes in C++");
+  module.def("_c_is_cluster_neutral", &is_cluster_neutral, "is_cluster_neutral in C++");
 }

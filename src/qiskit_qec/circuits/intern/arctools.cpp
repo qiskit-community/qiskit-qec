@@ -1,5 +1,19 @@
 #include "arctools.h"
 
+bool is_cluster_neutral(
+    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals,
+    bool linear
+    ) {
+    if (linear) {
+        return nodes.size()%2==0;
+    } else {
+        std::vector<int> output = check_nodes(nodes, ignore_extra_logicals, minimal, cycle_dict, link_graph, link_neighbors, z_logicals);
+        return (output[0]==1) and (output.size()==0);
+    }
+
+};
+
 std::vector<int> check_nodes(
     std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
     std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals

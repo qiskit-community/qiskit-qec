@@ -32,7 +32,7 @@ from qiskit_ibm_provider.transpiler.passes.scheduling import ALAPScheduleAnalysi
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
 from qiskit_qec.utils.decoding_graph_attributes import _nodes2cpp
-from qiskit_qec.circuits._c_circuits import _c_check_nodes
+from qiskit_qec.circuits._c_circuits import _c_check_nodes, _c_is_cluster_neutral
 
 
 def _separate_string(string):
@@ -1367,11 +1367,24 @@ class ArcCircuit(CodeCircuit):
             atypical_nodes: dictionary in the form of the return value of string2nodes
             cpp (bool): Whether to use C++ implementation.
         """
-        if self._linear:
-            return not bool(len(atypical_nodes) % 2)
+        if cpp:
+            nodes = _nodes2cpp(nodes)
+            return _c_is_cluster_neutral(
+                nodes,
+                False,
+                False,
+                self.cycle_dict,
+                self._cpp_link_graph,
+                self._cpp_link_neighbors,
+                self.z_logicals,
+                self._linear,
+            )
         else:
-            neutral, logicals, _ = self.check_nodes(atypical_nodes, cpp=cpp)
-            return neutral and not logicals
+            if self._linear:
+                return not bool(len(atypical_nodes) % 2)
+            else:
+                neutral, logicals, _ = self.check_nodes(atypical_nodes)
+                return neutral and not logicals
 
     def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
         """
