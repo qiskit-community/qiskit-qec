@@ -254,7 +254,10 @@ class TestARCCodes(unittest.TestCase):
                 neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
                     neutral and flipped_logicals == [],
-                    "Error: Single error nodes are not neutral: " + string,
+                    "Error: Single error nodes are not neutral for string "
+                    + string
+                    + " which yeilds "
+                    + str(code.check_nodes(nodes)),
                 )
                 # and that the given flipped logical makes sense
                 for node in nodes:
@@ -568,6 +571,9 @@ class TestDecoding(unittest.TestCase):
                 + str(c)
                 + " with "
                 + min_error_string
+                + "."
+                + " Corresponding clusters are "
+                + str(decoder.cluster(code.string2nodes(string, all_logicals=True)))
                 + ".",
             )
 
