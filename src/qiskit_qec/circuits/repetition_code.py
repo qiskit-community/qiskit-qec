@@ -1358,7 +1358,7 @@ class ArcCircuit(CodeCircuit):
 
             return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes: dict, cpp=False):
+    def is_cluster_neutral(self, atypical_nodes: dict, cpp=True):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
         errors could have caused the set of atypical nodes (syndrome changes) passed

@@ -9,7 +9,7 @@ bool is_cluster_neutral(
         return nodes.size()%2==0;
     } else {
         std::vector<int> output = check_nodes(nodes, ignore_extra_logicals, minimal, cycle_dict, link_graph, link_neighbors, z_logicals);
-        return (output[0]==1) and (output.size()==0);
+        return (output[0]==1) and (output.size()==2);
     }
 
 };
