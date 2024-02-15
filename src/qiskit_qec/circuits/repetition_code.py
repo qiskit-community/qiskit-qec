@@ -1131,7 +1131,7 @@ class ArcCircuit(CodeCircuit):
                 link_neighbors[node].append(nodes[j])
         return link_graph, link_neighbors
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False, cpp=False):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False, cpp=True):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1368,7 +1368,7 @@ class ArcCircuit(CodeCircuit):
             cpp (bool): Whether to use C++ implementation.
         """
         if cpp:
-            nodes = _nodes2cpp(nodes)
+            nodes = _nodes2cpp(atypical_nodes)
             return _c_is_cluster_neutral(
                 nodes,
                 False,

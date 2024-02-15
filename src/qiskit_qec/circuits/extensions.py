@@ -9,6 +9,8 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
+# pylint: disable=unused-import
+
 """Code circuit extensions"""
 
 import logging  # for logging!
@@ -18,12 +20,23 @@ logger = logging.getLogger(__name__)
 # Load extensions if available and set appriate indicator flags
 
 try:
-    from qiskit_qec.analysis._c_circuits import _c_check_nodes  # pylint: disable=unused-import
+    from qiskit_qec.analysis._c_circuits import _c_check_nodes
 
-    C_MIN_DISTANCE = True
+    C_CHECK_NODES = True
 except ImportError as import_error:
     logger.exception(  # pylint: disable=logging-fstring-interpolation
         f"from qiskit_qec.analysis._c_circuits import _c_check_nodes \
             failed, raising {import_error}"
     )
-    C_MIN_DISTANCE = False
+    C_CHECK_NODES = False
+
+try:
+    from qiskit_qec.analysis._c_circuits import _c_is_cluster_neutral
+
+    C_IS_CLUSTER_NEUTRAL = True
+except ImportError as import_error:
+    logger.exception(  # pylint: disable=logging-fstring-interpolation
+        f"from qiskit_qec.analysis._c_circuits import _c_is_cluster_neutral \
+            failed, raising {import_error}"
+    )
+    C_IS_CLUSTER_NEUTRAL = False
