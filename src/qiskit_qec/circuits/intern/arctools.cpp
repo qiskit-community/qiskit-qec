@@ -1,4 +1,5 @@
 #include "arctools.h"
+#include <iostream>
 
 bool is_cluster_neutral(
     std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
@@ -172,23 +173,27 @@ std::vector<int> check_nodes(
             }
             // see if we can find a color for which we have no extra logicals
             // and see what additional logicals are required
-            std::vector<int> flipped_logicals;
+            std::set<int> flipped_logicals;
+            std::set<int> flipped_ng_logicals;
             std::vector<int> extra_logicals;
             bool done = false;
             int j = 0;
             while (not done){
                 flipped_logicals = {};
-                // see which logicals for this colour have not been given
+                flipped_ng_logicals = {};
+                // see which logicals for this colour have been flipped
                 for (auto & q: color_logicals[cs[j]]){
+                    flipped_logicals.insert(q);
+                    // and which of those were not given
                     if (given_logicals.find(q) == given_logicals.end()) {
-                        flipped_logicals.push_back(q);
+                        flipped_ng_logicals.insert(q);
                     }
                 }
                 // see which extra logicals are given
                 extra_logicals = {};
                 if (not ignore_extra_logicals) {
-                    for (auto & q: color_logicals[cs[j]]){
-                        if (given_logicals.find(q) == given_logicals.end()) {
+                    for (auto & q: given_logicals){
+                        if ((flipped_logicals.find(q) == flipped_logicals.end())) {
                             extra_logicals.push_back(q);
                         }
                     }
@@ -204,7 +209,7 @@ std::vector<int> check_nodes(
             // construct output
             output.push_back(extra_logicals.size()==0); // neutral
             output.push_back(num_nodes[cs[j]]); // num_errors
-            for (auto & q: flipped_logicals){
+            for (auto & q: flipped_ng_logicals){
                 output.push_back(q);
             }
 
