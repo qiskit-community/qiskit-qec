@@ -579,7 +579,9 @@ class TestDecoding(unittest.TestCase):
                 + ".",
             )
 
-    def test_heavy_hex(self, Decoder):
+    def test_heavy_hex(
+        self, Decoder
+    ):  # NOT run directly by unittest; called by test_graph_constructions
         """Test decoding of heavy hex ARC"""
         links = [
             (0, 1, 2),
