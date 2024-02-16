@@ -395,6 +395,12 @@ class UnionFindDecoder(ClusteringDecoder):
             # put them in the required dict
             for n in neutral_nodes:
                 clusters[n] = c
+        if j == 2 * self.code.d * (self.code.T + 1):
+            print(self.code)
+            print(self.code.T, self.code.d)
+            print(nodes)
+            print(clusters)
+            print()
 
         # also compile into form required for peeling
         self._clusters4peeling = []

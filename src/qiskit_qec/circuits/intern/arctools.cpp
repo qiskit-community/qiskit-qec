@@ -104,7 +104,7 @@ std::vector<int> check_nodes(
             int root;
             int max_num = 0;
             for (auto & nq_num: nq_nums){
-                if (nq_num.second > max_num){
+                if (nq_num.second == max_num){
                     root = nq_num.first;
                     max_num = nq_num.second;
                 }
