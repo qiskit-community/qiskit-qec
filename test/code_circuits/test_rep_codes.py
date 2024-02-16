@@ -250,23 +250,23 @@ class TestARCCodes(unittest.TestCase):
                     minimal,
                     "Error: Single error creates too many nodes",
                 )
+                neutral, flipped_logicals, num = code.check_nodes(nodes)
                 # check that the nodes are neutral
-                neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
                     neutral and flipped_logicals == [],
                     "Error: Single error nodes are not neutral for string "
                     + string
-                    + " which yeilds "
+                    + " which yields "
                     + str(code.check_nodes(nodes)),
                 )
-                # and that the given flipped logical makes sense
-                for node in nodes:
-                    if not node.is_logical:
-                        for logical in flipped_logicals:
-                            self.assertTrue(
-                                logical in node.qubits,
-                                "Error: Single error appears to flip logical is not part of nodes.",
-                            )
+                # and caused by at most a single error
+                self.assertTrue(
+                    num <= 1,
+                    "Error: Nodes seem to be caused by more than one error for "
+                    + string
+                    + " which yields "
+                    + str(code.check_nodes(nodes)),
+                )
 
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""

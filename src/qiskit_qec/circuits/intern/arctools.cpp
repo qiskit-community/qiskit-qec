@@ -159,10 +159,10 @@ std::vector<int> check_nodes(
             // list the colours with the max error one first
             // (unless we do min only)
             std::vector<int> cs;
+            cs.push_back(min_color);
             if (not minimal){
                 cs.push_back((min_color+1)%2);
             }
-            cs.push_back(min_color);
             // determine which flipped logicals correspond to which colour
             std::vector<std::set<int>> color_logicals = {{}, {}};
             for (auto & q: z_logicals){
