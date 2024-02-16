@@ -383,8 +383,9 @@ class UnionFindDecoder(ClusteringDecoder):
             self._create_new_cluster(node_index)
 
         j = 0
-        while self.odd_cluster_roots and j < 2 * self.code.d * self.code.T:
+        while self.odd_cluster_roots and j < 2 * self.code.d * (self.code.T + 1):
             self._grow_and_merge_clusters()
+            j += 1
 
         # compile info into standard clusters dict
         clusters = {}
@@ -394,12 +395,6 @@ class UnionFindDecoder(ClusteringDecoder):
             # put them in the required dict
             for n in neutral_nodes:
                 clusters[n] = c
-        if j == 2 * self.code.d * (self.code.T + 1):
-            print(self.code)
-            print(self.code.T, self.code.d)
-            print(nodes)
-            print(clusters)
-            print()
 
         # also compile into form required for peeling
         self._clusters4peeling = []
