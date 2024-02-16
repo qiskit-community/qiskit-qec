@@ -257,7 +257,9 @@ class TestARCCodes(unittest.TestCase):
                     "Error: Single error nodes are not neutral for string "
                     + string
                     + " which yields "
-                    + str(code.check_nodes(nodes)),
+                    + str(code.check_nodes(nodes))
+                    + " for nodes "
+                    + str(nodes),
                 )
                 # and caused by at most a single error
                 self.assertTrue(
