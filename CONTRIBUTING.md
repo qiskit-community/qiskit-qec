@@ -3,7 +3,7 @@
 First read the overall project contributing guidelines. These are all
 included in the qiskit documentation:
 
-https://qiskit.org/documentation/contributing_to_qiskit.html
+https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md
 
 ## Contributing to QEC
 
@@ -49,9 +49,6 @@ please ensure that:
    If your pull request is adding a new class, function, or module that is
    intended to be user facing ensure that you've also added those to a
    documentation `autosummary` index to include it in the api documentation.
-   For more details you can refer to:
-
-   https://qiskit.org/documentation/contributing_to_qiskit.html#documentation-structure
 
 
 3. If it makes sense for your change that you have added new tests that
@@ -378,7 +375,7 @@ that minor version on pypi. For example, stable/0.8 contains the code for the
 merged to it are bugfixes.
   
 ## Adding deprecation warnings
-The qiskit-qec code is part of Qiskit and, therefore, the [Qiskit Deprecation Policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy) fully applies here. Additionally, qiskit-qec does not allow `DeprecationWarning`s in its testsuite. If you are deprecating code, you should add a test to use the new/non-deprecated method (most of the time based on the existing test of the deprecated method) and alter the existing test to check that the deprecated method still works as expected, [using `assertWarns`](https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertWarns). The `assertWarns` context will silence the deprecation warning while checking that it raises.
+The qiskit-qec code is part of the Qiskit ecosystem. So, it chooses to follow the [Qiskit Deprecation Policy](https://github.com/Qiskit/qiskit/blob/main/DEPRECATION.md). Additionally, qiskit-qec does not allow `DeprecationWarning`s in its testsuite. If you are deprecating code, you should add a test to use the new/non-deprecated method (most of the time based on the existing test of the deprecated method) and alter the existing test to check that the deprecated method still works as expected, [using `assertWarns`](https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertWarns). The `assertWarns` context will silence the deprecation warning while checking that it raises.
 
 For example, if `Obj.method1` is being deprecated in favour of `Obj.method2`, the existing test (or tests) for `method1` might look like this:
 
@@ -402,7 +399,7 @@ def test_method2(self):
    self.assertEqual(result, <expected>)
 ```
 
-`test_method1_deprecated` can be removed after `Obj.method1` is removed (following the [Qiskit Deprecation Policy](https://qiskit.org/documentation/contributing_to_qiskit.html#deprecation-policy)).
+`test_method1_deprecated` can be removed after `Obj.method1` is removed (following the [Qiskit Deprecation Policy](https://github.com/Qiskit/qiskit/blob/main/DEPRECATION.md)).
 
 ## Using dependencies
 
