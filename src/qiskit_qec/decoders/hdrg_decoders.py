@@ -383,7 +383,7 @@ class UnionFindDecoder(ClusteringDecoder):
             self._create_new_cluster(node_index)
 
         j = 0
-        while self.odd_cluster_roots and j < self.d**2:
+        while self.odd_cluster_roots and j < self.d * self.T:
             self._grow_and_merge_clusters()
 
         # compile info into standard clusters dict
