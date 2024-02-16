@@ -10,7 +10,10 @@ from pybind11_tests.factory_constructors import tag
 def test_init_factory_basic():
     """Tests py::init_factory() wrapper around various ways of returning the object"""
 
-    cstats = [ConstructorStats.get(c) for c in [m.TestFactory1, m.TestFactory2, m.TestFactory3]]
+    cstats = [
+        ConstructorStats.get(c)
+        for c in [m.TestFactory1, m.TestFactory2, m.TestFactory3]
+    ]
     cstats[0].alive()  # force gc
     n_inst = ConstructorStats.detail_reg_inst()
 
@@ -42,7 +45,9 @@ def test_init_factory_basic():
     for null_ptr_kind in [tag.null_ptr, tag.null_unique_ptr, tag.null_shared_ptr]:
         with pytest.raises(TypeError) as excinfo:
             m.TestFactory3(null_ptr_kind)
-        assert str(excinfo.value) == "pybind11::init(): factory function returned nullptr"
+        assert (
+            str(excinfo.value) == "pybind11::init(): factory function returned nullptr"
+        )
 
     assert [i.alive() for i in cstats] == [3, 3, 3]
     assert ConstructorStats.detail_reg_inst() == n_inst + 9
@@ -98,7 +103,10 @@ def test_init_factory_signature(msg):
 def test_init_factory_casting():
     """Tests py::init_factory() wrapper with various upcasting and downcasting returns"""
 
-    cstats = [ConstructorStats.get(c) for c in [m.TestFactory3, m.TestFactory4, m.TestFactory5]]
+    cstats = [
+        ConstructorStats.get(c)
+        for c in [m.TestFactory3, m.TestFactory4, m.TestFactory5]
+    ]
     cstats[0].alive()  # force gc
     n_inst = ConstructorStats.detail_reg_inst()
 
@@ -483,9 +491,13 @@ def test_invalid_self():
                 a = m.TestFactory2(tag.pointer, 1)
                 m.TestFactory6.__init__(a, tag.alias, 1)
             elif bad == 3:
-                m.TestFactory6.__init__(NotPybindDerived.__new__(NotPybindDerived), tag.base, 1)
+                m.TestFactory6.__init__(
+                    NotPybindDerived.__new__(NotPybindDerived), tag.base, 1
+                )
             elif bad == 4:
-                m.TestFactory6.__init__(NotPybindDerived.__new__(NotPybindDerived), tag.alias, 1)
+                m.TestFactory6.__init__(
+                    NotPybindDerived.__new__(NotPybindDerived), tag.alias, 1
+                )
 
     for arg in (1, 2):
         with pytest.raises(TypeError) as excinfo:

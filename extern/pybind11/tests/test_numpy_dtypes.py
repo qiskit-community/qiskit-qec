@@ -52,7 +52,10 @@ def packed_dtype_fmt():
 
 def partial_ld_offset():
     return (
-        12 + 4 * (np.dtype("uint64").alignment > 4) + 8 + 8 * (np.dtype("longdouble").alignment > 8)
+        12
+        + 4 * (np.dtype("uint64").alignment > 4)
+        + 8
+        + 8 * (np.dtype("longdouble").alignment > 8)
     )
 
 
@@ -61,7 +64,9 @@ def partial_dtype_fmt():
     partial_ld_off = partial_ld_offset()
     partial_size = partial_ld_off + ld.itemsize
     partial_end_padding = partial_size % np.dtype("uint64").alignment
-    return dt_fmt().format(ld.itemsize, partial_ld_off, partial_size + partial_end_padding)
+    return dt_fmt().format(
+        ld.itemsize, partial_ld_off, partial_size + partial_end_padding
+    )
 
 
 def partial_nested_fmt():
@@ -83,7 +88,9 @@ def assert_equal(actual, expected_data, expected_dtype):
 def test_format_descriptors():
     with pytest.raises(RuntimeError) as excinfo:
         m.get_format_unbound()
-    assert re.match("^NumPy type info missing for .*UnboundStruct.*$", str(excinfo.value))
+    assert re.match(
+        "^NumPy type info missing for .*UnboundStruct.*$", str(excinfo.value)
+    )
 
     ld = np.dtype("longdouble")
     ldbl_fmt = ("4x" if ld.alignment > 4 else "") + ld.char
@@ -165,7 +172,9 @@ def test_dtype(simple_dtype):
         simple_dtype.itemsize,
     ]
 
-    assert m.trailing_padding_dtype() == m.buffer_to_dtype(np.zeros(1, m.trailing_padding_dtype()))
+    assert m.trailing_padding_dtype() == m.buffer_to_dtype(
+        np.zeros(1, m.trailing_padding_dtype())
+    )
 
     expected_chars = "bhilqBHILQefdgFDG?MmO"
     assert m.test_dtype_kind() == list("iiiiiuuuuuffffcccbMmO")
@@ -338,7 +347,10 @@ def test_complex_array():
 
 
 def test_signature(doc):
-    assert doc(m.create_rec_nested) == "create_rec_nested(arg0: int) -> numpy.ndarray[NestedStruct]"
+    assert (
+        doc(m.create_rec_nested)
+        == "create_rec_nested(arg0: int) -> numpy.ndarray[NestedStruct]"
+    )
 
 
 def test_scalar_conversion():

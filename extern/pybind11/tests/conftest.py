@@ -58,7 +58,9 @@ def _split_and_sort(s):
 
 def _make_explanation(a, b):
     """Explanation for a failed assert -- the a and b arguments are List[str]"""
-    return ["--- actual / +++ expected"] + [line.strip("\n") for line in difflib.ndiff(a, b)]
+    return ["--- actual / +++ expected"] + [
+        line.strip("\n") for line in difflib.ndiff(a, b)
+    ]
 
 
 class Output:
@@ -73,7 +75,11 @@ class Output:
 
     def __eq__(self, other):
         # Ignore constructor/destructor output which is prefixed with "###"
-        a = [line for line in self.string.strip().splitlines() if not line.startswith("###")]
+        a = [
+            line
+            for line in self.string.strip().splitlines()
+            if not line.startswith("###")
+        ]
         b = _strip_and_dedent(other).splitlines()
         if a == b:
             return True
