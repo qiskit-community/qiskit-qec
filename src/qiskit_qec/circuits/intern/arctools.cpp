@@ -78,7 +78,7 @@ std::vector<int> check_nodes(
             // if it's frustrated, it's not neutral
             output.push_back(0);
             // number of errors not counted
-            output.push_back(-1);
+            output.push_back(-2);
             // no flipped logicals need to be added
         } else {
             // now we must bicolor the qubits of the link graph, such that node edges connect unlike edges
