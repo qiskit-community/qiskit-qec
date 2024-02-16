@@ -70,7 +70,7 @@ std::vector<int> check_nodes(
             }
         }
         // we get frustration if any of these is odd
-        bool frust = true;
+        bool frust = false;
         for (auto & parity: parities){
             frust = frust || (parity.second % 2 == 1);
         }
