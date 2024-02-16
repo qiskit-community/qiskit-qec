@@ -503,9 +503,7 @@ class TestDecoding(unittest.TestCase):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
 
-    def clustering_decoder_test(
-        self, Decoder
-    ):  # NOT run directly by unittest
+    def clustering_decoder_test(self, Decoder):  # NOT run directly by unittest
         """Test decoding of ARCs and RCCs with clustering decoders"""
 
         # parameters for test
@@ -579,9 +577,7 @@ class TestDecoding(unittest.TestCase):
                 + ".",
             )
 
-    def heavy_hex_test(
-        self, Decoder
-    ):  # NOT run directly by unittest
+    def heavy_hex_test(self, Decoder):  # NOT run directly by unittest
         """Test decoding of heavy hex ARC"""
         links = [
             (0, 1, 2),
