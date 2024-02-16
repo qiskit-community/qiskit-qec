@@ -830,12 +830,12 @@ class TestDecoding(unittest.TestCase):
     def test_bravyi_haah(self):
         """Test decoding of ARCs and RCCs with Bravyi Haah"""
         self.clustering_decoder_test(BravyiHaahDecoder)
-        self.test_heavy_hex(BravyiHaahDecoder)
+        self.heavy_hex_test(BravyiHaahDecoder)
 
     def test_union_find(self):
         """Test decoding of ARCs and RCCs with Union Find"""
         self.clustering_decoder_test(UnionFindDecoder)
-        self.test_heavy_hex(UnionFindDecoder)
+        self.heavy_hex_test(UnionFindDecoder)
 
 
 if __name__ == "__main__":
