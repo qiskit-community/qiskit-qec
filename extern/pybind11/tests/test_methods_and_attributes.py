@@ -6,9 +6,15 @@ import env  # noqa: F401
 from pybind11_tests import ConstructorStats
 from pybind11_tests import methods_and_attributes as m
 
-NO_GETTER_MSG = "unreadable attribute" if sys.version_info < (3, 11) else "object has no getter"
-NO_SETTER_MSG = "can't set attribute" if sys.version_info < (3, 11) else "object has no setter"
-NO_DELETER_MSG = "can't delete attribute" if sys.version_info < (3, 11) else "object has no deleter"
+NO_GETTER_MSG = (
+    "unreadable attribute" if sys.version_info < (3, 11) else "object has no getter"
+)
+NO_SETTER_MSG = (
+    "can't set attribute" if sys.version_info < (3, 11) else "object has no setter"
+)
+NO_DELETER_MSG = (
+    "can't delete attribute" if sys.version_info < (3, 11) else "object has no deleter"
+)
 
 
 def test_methods_and_attributes():
@@ -179,7 +185,8 @@ def test_static_properties():
     del m.TestPropertiesOverride.def_readonly_static
     assert (
         hasattr(m.TestPropertiesOverride, "def_readonly_static")
-        and m.TestPropertiesOverride.def_readonly_static is m.TestProperties.def_readonly_static
+        and m.TestPropertiesOverride.def_readonly_static
+        is m.TestProperties.def_readonly_static
     )
     assert "def_readonly_static" not in m.TestPropertiesOverride.__dict__
     properties_override = m.TestPropertiesOverride()
@@ -209,7 +216,10 @@ def test_metaclass_override():
     assert type(m.MetaclassOverride).__name__ == "type"
 
     assert m.MetaclassOverride.readonly == 1
-    assert type(m.MetaclassOverride.__dict__["readonly"]).__name__ == "pybind11_static_property"
+    assert (
+        type(m.MetaclassOverride.__dict__["readonly"]).__name__
+        == "pybind11_static_property"
+    )
 
     # Regular `type` replaces the property instead of calling `__set__()`
     m.MetaclassOverride.readonly = 2

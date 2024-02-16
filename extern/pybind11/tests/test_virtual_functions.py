@@ -45,7 +45,10 @@ def test_override(capture, msg):
 
     with pytest.raises(RuntimeError) as excinfo:
         m.runExampleVirtVirtual(ex12)
-    assert msg(excinfo.value) == 'Tried to call pure virtual function "ExampleVirt::pure_virtual"'
+    assert (
+        msg(excinfo.value)
+        == 'Tried to call pure virtual function "ExampleVirt::pure_virtual"'
+    )
 
     ex12p = ExtendedExampleVirt(10)
     with capture:
@@ -242,7 +245,10 @@ def test_dispatch_issue(msg):
         def dispatch(self):
             with pytest.raises(RuntimeError) as excinfo:
                 super().dispatch()
-            assert msg(excinfo.value) == 'Tried to call pure virtual function "Base::dispatch"'
+            assert (
+                msg(excinfo.value)
+                == 'Tried to call pure virtual function "Base::dispatch"'
+            )
 
             return m.dispatch_issue_go(PyClass1())
 

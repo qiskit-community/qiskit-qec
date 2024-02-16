@@ -138,7 +138,10 @@ def test_vectorize(capture):
 def test_type_selection():
     assert m.selective_func(np.array([1], dtype=np.int32)) == "Int branch taken."
     assert m.selective_func(np.array([1.0], dtype=np.float32)) == "Float branch taken."
-    assert m.selective_func(np.array([1.0j], dtype=np.complex64)) == "Complex float branch taken."
+    assert (
+        m.selective_func(np.array([1.0j], dtype=np.complex64))
+        == "Complex float branch taken."
+    )
 
 
 def test_docs(doc):
@@ -155,7 +158,10 @@ def test_trivial_broadcasting():
 
     assert vectorized_is_trivial(1, 2, 3) == trivial.c_trivial
     assert vectorized_is_trivial(np.array(1), np.array(2), 3) == trivial.c_trivial
-    assert vectorized_is_trivial(np.array([1, 3]), np.array([2, 4]), 3) == trivial.c_trivial
+    assert (
+        vectorized_is_trivial(np.array([1, 3]), np.array([2, 4]), 3)
+        == trivial.c_trivial
+    )
     assert trivial.c_trivial == vectorized_is_trivial(
         np.array([[1, 3, 5], [7, 9, 11]]), np.array([[2, 4, 6], [8, 10, 12]]), 3
     )

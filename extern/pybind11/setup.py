@@ -16,7 +16,9 @@ from typing import Dict, Iterator, List, Union
 import setuptools.command.sdist
 
 DIR = Path(__file__).parent.absolute()
-VERSION_REGEX = re.compile(r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$", re.MULTILINE)
+VERSION_REGEX = re.compile(
+    r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$", re.MULTILINE
+)
 VERSION_FILE = Path("pybind11/_version.py")
 COMMON_FILE = Path("include/pybind11/detail/common.h")
 
@@ -50,7 +52,9 @@ def build_expected_version_hex(matches: Dict[str, str]) -> str:
 
 global_sdist = os.environ.get("PYBIND11_GLOBAL_SDIST", False)
 
-setup_py = Path("tools/setup_global.py.in" if global_sdist else "tools/setup_main.py.in")
+setup_py = Path(
+    "tools/setup_global.py.in" if global_sdist else "tools/setup_main.py.in"
+)
 extra_cmd = 'cmdclass["sdist"] = SDist\n'
 
 to_src = (
@@ -80,7 +84,9 @@ if version_hex != exp_version_hex:
 
 
 # TODO: use literals & overload (typing extensions or Python 3.8)
-def get_and_replace(filename: Path, binary: bool = False, **opts: str) -> Union[bytes, str]:
+def get_and_replace(
+    filename: Path, binary: bool = False, **opts: str
+) -> Union[bytes, str]:
     if binary:
         contents = filename.read_bytes()
         return string.Template(contents.decode()).substitute(opts).encode()
@@ -125,7 +131,9 @@ with remove_output("pybind11/include", "pybind11/share"):
         ]
         if "CMAKE_ARGS" in os.environ:
             fcommand = [
-                c for c in os.environ["CMAKE_ARGS"].split() if "DCMAKE_INSTALL_PREFIX" not in c
+                c
+                for c in os.environ["CMAKE_ARGS"].split()
+                if "DCMAKE_INSTALL_PREFIX" not in c
             ]
             cmd += fcommand
         subprocess.run(cmd, check=True, cwd=DIR, stdout=sys.stdout, stderr=sys.stderr)

@@ -160,7 +160,9 @@ def test_custom(msg):
     # Can we fall-through to the default handler?
     with pytest.raises(RuntimeError) as excinfo:
         m.throws_logic_error()
-    assert msg(excinfo.value) == "this error should fall through to the standard handler"
+    assert (
+        msg(excinfo.value) == "this error should fall through to the standard handler"
+    )
 
     # OverFlow error translation.
     with pytest.raises(OverflowError) as excinfo:
@@ -308,7 +310,9 @@ class FlakyException(Exception):
         (FlakyException, ("happy",), "FlakyException: FlakyException.__str__"),
     ),
 )
-def test_error_already_set_what_with_happy_exceptions(exc_type, exc_value, expected_what):
+def test_error_already_set_what_with_happy_exceptions(
+    exc_type, exc_value, expected_what
+):
     what, py_err_set_after_what = m.error_already_set_what(exc_type, exc_value)
     assert not py_err_set_after_what
     assert what == expected_what
@@ -333,7 +337,9 @@ def test_flaky_exception_failure_point_init():
 
 
 def test_flaky_exception_failure_point_str():
-    what, py_err_set_after_what = m.error_already_set_what(FlakyException, ("failure_point_str",))
+    what, py_err_set_after_what = m.error_already_set_what(
+        FlakyException, ("failure_point_str",)
+    )
     assert not py_err_set_after_what
     lines = what.splitlines()
     if env.PYPY and len(lines) == 3:

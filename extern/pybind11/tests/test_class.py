@@ -45,7 +45,9 @@ def test_type():
     with pytest.raises(RuntimeError) as execinfo:
         m.check_type(0)
 
-    assert "pybind11::detail::get_type_info: unable to find type info" in str(execinfo.value)
+    assert "pybind11::detail::get_type_info: unable to find type info" in str(
+        execinfo.value
+    )
     assert "Invalid" in str(execinfo.value)
 
     # Currently not supported
@@ -480,4 +482,7 @@ def test_register_duplicate_class():
 
 
 def test_pr4220_tripped_over_this():
-    assert m.Empty0().get_msg() == "This is really only meant to exercise successful compilation."
+    assert (
+        m.Empty0().get_msg()
+        == "This is really only meant to exercise successful compilation."
+    )

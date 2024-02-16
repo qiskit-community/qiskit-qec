@@ -103,17 +103,21 @@ def test_cpp_callable_cleanup():
 def test_cpp_function_roundtrip():
     """Test if passing a function pointer from C++ -> Python -> C++ yields the original pointer"""
 
-    assert m.test_dummy_function(m.dummy_function) == "matches dummy_function: eval(1) = 2"
+    assert (
+        m.test_dummy_function(m.dummy_function) == "matches dummy_function: eval(1) = 2"
+    )
     assert (
         m.test_dummy_function(m.roundtrip(m.dummy_function))
         == "matches dummy_function: eval(1) = 2"
     )
     assert (
-        m.test_dummy_function(m.dummy_function_overloaded) == "matches dummy_function: eval(1) = 2"
+        m.test_dummy_function(m.dummy_function_overloaded)
+        == "matches dummy_function: eval(1) = 2"
     )
     assert m.roundtrip(None, expect_none=True) is None
     assert (
-        m.test_dummy_function(lambda x: x + 2) == "can't convert to function pointer: eval(1) = 3"
+        m.test_dummy_function(lambda x: x + 2)
+        == "can't convert to function pointer: eval(1) = 3"
     )
 
     with pytest.raises(TypeError) as excinfo:
@@ -206,7 +210,9 @@ def test_custom_func():
     assert m.roundtrip(m.custom_function)(4) == 36
 
 
-@pytest.mark.skipif(m.custom_function2 is None, reason="Current PYBIND11_INTERNALS_VERSION too low")
+@pytest.mark.skipif(
+    m.custom_function2 is None, reason="Current PYBIND11_INTERNALS_VERSION too low"
+)
 def test_custom_func2():
     assert m.custom_function2(3) == 27
     assert m.roundtrip(m.custom_function2)(3) == 27
