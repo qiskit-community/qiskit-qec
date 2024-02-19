@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Geometry (qiskit_qec.geometry)" href="../apidocs/geometry.html" /><link rel="prev" title="ThreeBitDecoder" href="qiskit_qec.decoders.ThreeBitDecoder.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Geometry (qiskit_qec.geometry)" href="../apidocs/geometry.html" /><link rel="prev" title="DecodingGraph" href="qiskit_qec.decoders.DecodingGraph.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.08.19 -->
         <title>UnionFindDecoder - Qiskit QEC 0.0.0</title>
@@ -216,9 +216,6 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -338,8 +335,8 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusteringDecoder</span></code></p>
 <p>Decoder based on growing clusters around syndrome errors to
 “convert” them into erasure errors, which can be corrected easily,
-by the peeling decoder in case of the surface code, or by checking for
-interference with the boundary in case of an abritrary ARC.</p>
+by the peeling decoder for compatible codes or by the standard HDRG
+method in general.</p>
 <p>TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)</p>
 <p>See arXiv:1709.06218v3 for more details.</p>
 <p class="rubric">Methods</p>
@@ -404,8 +401,7 @@ of the cluster of a node, including path compression.</p>
 </dd>
 </dl>
 <p>These are the corrected values of the final transversal
-measurement, corresponding to the logical operators of
-self.measured_logicals.</p>
+measurement, in the same form as given by the code’s <cite>string2raw_logicals</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -444,7 +440,6 @@ infinite loop in the tree construction.
 It works by first producing a spanning forest of the erasure and then
 going backwards through the edges of the tree computing the error based on the syndrome.
 Based on arXiv:1703.01517.</p>
-<p>TODO: Extract to a separate decoder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>erasure</strong> (<em>PyGraph</em>) – subgraph of the syndrome graph that represents the erasure.</p>
@@ -475,12 +470,10 @@ Based on arXiv:1703.01517.</p>
 <dd class="field-even"><p>A list of integers that are 0 or 1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>corrected_z_logicals (list)</p>
+<dd class="field-odd"><p>corrected_logicals (list)</p>
 </dd>
 </dl>
-<p>These are the corrected values of the final transversal
-measurement, corresponding to the logical operators of
-self.z_logicals.</p>
+<p>These are the corrected values of the final logical measurement.</p>
 </dd></dl>
 
 </dd></dl>
@@ -500,14 +493,14 @@ self.z_logicals.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="qiskit_qec.decoders.ThreeBitDecoder.html">
+          <a class="prev-page" href="qiskit_qec.decoders.DecodingGraph.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">ThreeBitDecoder</div>
+                <div class="title">DecodingGraph</div>
                 
               </div>
             </a>
@@ -521,7 +514,7 @@ self.z_logicals.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

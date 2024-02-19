@@ -216,9 +216,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -396,7 +393,7 @@ measurement rounds, with the syndrome measurements provided.
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.check_nodes">
-<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extra_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extra_logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">#</a></dt>
 <dd><p>Determines whether a given set of nodes are neutral. If so, also
 determines any additional logical readout qubits that would be
 flipped by the errors creating such a cluster and how many errors
@@ -404,9 +401,9 @@ would be required to make the cluster.
 :type nodes: 
 :param nodes: List of nodes, of the type produced by <cite>string2nodes</cite>.
 :type nodes: list
-:type ignore_extra_boundary: 
-:param ignore_extra_boundary: If <cite>True</cite>, undeeded boundary nodes are
-:type ignore_extra_boundary: bool
+:type ignore_extra_logical: 
+:param ignore_extra_logical: If <cite>True</cite>, undeeded boundary nodes are
+:type ignore_extra_logical: bool
 :param ignored.:
 :type minimal: 
 :param minimal: Whether output should only reflect the minimal error
@@ -509,13 +506,6 @@ errors could have caused the set of atypical nodes (syndrome changes) passed
 to the method.
 :type atypical_nodes: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>
 :param atypical_nodes: dictionary in the form of the return value of string2nodes</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.measured_logicals">
-<span class="sig-name descname"><span class="pre">measured_logicals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.measured_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.measured_logicals" title="Link to this definition">#</a></dt>
-<dd><p>Returns a list of logical operators, each expressed as a list of qubits for which
-the parity of the final readouts corresponds to the raw logical readout.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -646,7 +636,7 @@ with dynamical decoupling added.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             
@@ -674,7 +664,6 @@ with dynamical decoupling added.</p>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.flatten_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.get_error_coords()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.is_cluster_neutral()</span></code></a></li>
-<li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.measured_logicals"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.measured_logicals()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.string2nodes"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.string2nodes()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.string2raw_logicals"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.string2raw_logicals()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.circuits.ArcCircuit.transpile"><code class="docutils literal notranslate"><span class="pre">ArcCircuit.transpile()</span></code></a></li>

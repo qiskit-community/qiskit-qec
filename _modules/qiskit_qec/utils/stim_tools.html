@@ -215,9 +215,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -726,8 +723,8 @@
         <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">edge_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">edge_list</span><span class="p">())</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">edge_data</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge_ind</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span>
+            <span class="n">old_frame_changes</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">edge_ind</span><span class="p">]</span><span class="o">.</span><span class="n">fault_ids</span>
             <span class="n">old_p</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;error_probability&quot;</span><span class="p">]</span>
-            <span class="n">old_frame_changes</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;fault_ids&quot;</span><span class="p">]</span>
             <span class="c1"># If frame changes differ, the code has distance 2; just keep whichever was first.</span>
             <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_frame_changes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">):</span>
                 <span class="n">p</span> <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">old_p</span><span class="p">)</span> <span class="o">+</span> <span class="n">old_p</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span>
@@ -743,7 +740,8 @@
             <span class="n">edge</span> <span class="o">=</span> <span class="n">DecodingGraphEdge</span><span class="p">(</span>
                 <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span>
                 <span class="n">weight</span><span class="o">=</span><span class="n">loga</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="n">p</span><span class="p">),</span>
-                <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;fault_ids&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">),</span> <span class="s2">&quot;error_probability&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">},</span>
+                <span class="n">fault_ids</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">frame_changes</span><span class="p">),</span>
+                <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;error_probability&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">},</span>
             <span class="p">)</span>
             <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">edge</span><span class="p">)</span>
             <span class="n">hyperedge</span><span class="p">[</span><span class="n">dets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dets</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">edge</span>
@@ -869,10 +867,14 @@
 
         <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">logical_out</span><span class="p">)</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">qubits</span><span class="o">=</span><span class="p">[],</span>
                 <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;qubits&quot;</span> <span class="ow">in</span> <span class="n">logical_op</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">qubits</span> <span class="o">=</span> <span class="n">logical_op</span><span class="p">[</span><span class="s2">&quot;qubits&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">qubits</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">nodes</span>
@@ -984,7 +986,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

@@ -215,9 +215,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -516,19 +513,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">z_stabilizers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">z_stabilizers</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">logical_x</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">logical_z</span>
-        <span class="c1"># for the unionfind decoder</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span>
-
-<div class="viewcode-block" id="CSSCodeCircuit.measured_logicals">
-<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.measured_logicals">[docs]</a>
-    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
-            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_x</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">measured_logicals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical_z</span>
-        <span class="k">return</span> <span class="n">measured_logicals</span></div>
-
 
     <span class="k">def</span> <span class="nf">_prepare_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qc</span><span class="p">,</span> <span class="n">qregs</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
@@ -633,7 +617,7 @@
 
 <div class="viewcode-block" id="CSSCodeCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -777,7 +761,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

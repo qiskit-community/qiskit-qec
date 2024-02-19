@@ -20,4 +20,5 @@
 
    .. autoattribute:: qubits
    .. autoattribute:: weight
+   .. autoattribute:: fault_ids
    .. autoattribute:: properties

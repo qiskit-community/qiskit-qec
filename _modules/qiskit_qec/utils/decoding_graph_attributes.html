@@ -215,9 +215,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -349,7 +346,7 @@
 <span class="sd">Graph used as the basis of decoders.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">qiskit_qec.exceptions</span> <span class="kn">import</span> <span class="n">QiskitQECError</span>
 
@@ -362,6 +359,7 @@
 
 <span class="sd">    Attributes:</span>
 <span class="sd">     - is_boundary (bool): whether or not the node is a boundary node.</span>
+<span class="sd">     - is_logical (bool): whether or not the node is a logical node.</span>
 <span class="sd">     - time (int): what syndrome node the node corrsponds to. Doesn&#39;t</span>
 <span class="sd">        need to be set if it&#39;s a boundary node.</span>
 <span class="sd">     - qubits (List[int]): List of indices which are stabilized by</span>
@@ -371,14 +369,22 @@
 <span class="sd">        Are not considered when comparing nodes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">qubits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_boundary</span> <span class="ow">and</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">qubits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">is_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_boundary</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_logical</span> <span class="ow">and</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span>
-                <span class="s2">&quot;DecodingGraph node must either have a time or be a boundary node.&quot;</span>
+                <span class="s2">&quot;DecodingGraph node must either have a time or be a boundary or logical node.&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">is_boundary</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_boundary</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">is_logical</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">is_boundary</span> <span class="ow">or</span> <span class="n">is_logical</span><span class="p">)</span> <span class="k">else</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qubits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">qubits</span> <span class="k">if</span> <span class="n">qubits</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -389,16 +395,23 @@
         <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">QiskitQECError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s2">&quot; is not an an attribute or property of the node.&quot;</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="DecodingGraphNode.get">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.DecodingGraphNode.html#qiskit_qec.utils.DecodingGraphNode.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A dummy docstring.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return value for given key.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=unnecessary-dunder-call</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">QiskitQECError</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">output</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">output</span></div>
 
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -415,8 +428,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">index</span>
             <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">rhs</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_boundary</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">is_boundary</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_logical</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">is_logical</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_boundary</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_logical</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="n">rhs</span><span class="o">.</span><span class="n">time</span>
         <span class="k">return</span> <span class="n">result</span>
 
@@ -442,12 +456,14 @@
 <span class="sd">    Attributes:</span>
 <span class="sd">     - qubits (List[int]): List of indices of code qubits that correspond to this edge.</span>
 <span class="sd">     - weight (float): Weight of the edge.</span>
+<span class="sd">     - fault_ids fault_ids: Union[Set[int],List[int]]: In the style of pymatching.</span>
 <span class="sd">     - properties (Dict[str, Any]): Decoder/code specific attributes.</span>
 <span class="sd">        Are not considered when comparing edges.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">qubits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">fault_ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
     <span class="n">properties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -456,16 +472,23 @@
         <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">QiskitQECError</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">QiskitQECError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="s2">&quot; is not an an attribute or property of the edge.&quot;</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="DecodingGraphEdge.get">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A dummy docstring.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return value for given key.&quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=unnecessary-dunder-call</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">QiskitQECError</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span></div>
 
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -490,6 +513,26 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">_nodes2cpp</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a list of nodes to the form required by C++ functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># nodes are a tuple with (q0, q1,t, boundary)</span>
+    <span class="c1"># if there is no q1 or t, -1 is used</span>
+    <span class="n">cnodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="n">cnode</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cnode</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">qubits</span>
+        <span class="n">cnode</span> <span class="o">+=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">is_logical</span><span class="p">)</span>
+        <span class="n">cnodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">cnode</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">cnodes</span>
 </pre></div>
         </article>
       </div>
@@ -507,7 +550,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

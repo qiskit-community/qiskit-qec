@@ -214,9 +214,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -397,13 +394,7 @@
         <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS">AVAILABLE_METHODS (ArcCircuit attribute)</a>
 
         <ul>
-          <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.AVAILABLE_METHODS">(CircuitModelMatchingDecoder attribute)</a>
-</li>
           <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.AVAILABLE_METHODS">(DecodingGraph attribute)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.AVAILABLE_METHODS">(RepetitionDecoder attribute)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.AVAILABLE_METHODS">(ThreeBitDecoder attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -447,8 +438,6 @@
 </li>
         </ul></li>
         <li><a href="stubs/qiskit_qec.geometry.CheckerBoardTile.html#qiskit_qec.geometry.CheckerBoardTile">CheckerBoardTile (class in qiskit_qec.geometry)</a>
-</li>
-        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder">CircuitModelMatchingDecoder (class in qiskit_qec.decoders)</a>
 </li>
         <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties.CITATION">CITATION (Properties attribute)</a>
 </li>
@@ -728,6 +717,8 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.fault_ids">fault_ids (DecodingGraphEdge attribute)</a>
+</li>
         <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.find">find() (UnionFindDecoder method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.geometry.Lattice.html#qiskit_qec.geometry.Lattice.find_pre_transform_length">find_pre_transform_length() (Lattice method)</a>
@@ -776,9 +767,13 @@
 </li>
         <li><a href="stubs/qiskit_qec.utils.get_counts_via_stim.html#qiskit_qec.utils.get_counts_via_stim">get_counts_via_stim() (in module qiskit_qec.utils)</a>
 </li>
+        <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.get_edge_graph">get_edge_graph() (DecodingGraph method)</a>
+</li>
         <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.get_error_coords">get_error_coords() (ArcCircuit method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.get_error_probs">get_error_probs() (DecodingGraph method)</a>
+</li>
+        <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.get_node_graph">get_node_graph() (DecodingGraph method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.utils.get_stim_circuits.html#qiskit_qec.utils.get_stim_circuits">get_stim_circuits() (in module qiskit_qec.utils)</a>
 </li>
@@ -970,42 +965,12 @@
 </li>
         <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.matrix_iter">matrix_iter() (PauliList method)</a>
 </li>
-        <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.measured_logicals">measured_logicals() (ArcCircuit method)</a>
-
-        <ul>
-          <li><a href="stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.measured_logicals">(CodeCircuit method)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.circuits.CSSCodeCircuit.html#qiskit_qec.circuits.CSSCodeCircuit.measured_logicals">(CSSCodeCircuit method)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.measured_logicals">(RepetitionCodeCircuit method)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.measured_logicals">(SurfaceCodeCircuit method)</a>
-</li>
-        </ul></li>
         <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE">METHOD_NAIVE (ArcCircuit attribute)</a>
 
         <ul>
           <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.METHOD_NAIVE">(DecodingGraph attribute)</a>
 </li>
         </ul></li>
-        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.METHOD_PYMATCHING">METHOD_PYMATCHING (CircuitModelMatchingDecoder attribute)</a>
-
-        <ul>
-          <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.METHOD_PYMATCHING">(RepetitionDecoder attribute)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.METHOD_PYMATCHING">(ThreeBitDecoder attribute)</a>
-</li>
-        </ul></li>
-        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.METHOD_RETWORKX">METHOD_RETWORKX (CircuitModelMatchingDecoder attribute)</a>
-
-        <ul>
-          <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.METHOD_RETWORKX">(RepetitionDecoder attribute)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.METHOD_RETWORKX">(ThreeBitDecoder attribute)</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ">METHOD_SPITZ (ArcCircuit attribute)</a>
 
         <ul>
@@ -1189,12 +1154,12 @@
           <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.phase_exp">(PauliList attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.geometry.Plane.html#qiskit_qec.geometry.Plane">Plane (class in qiskit_qec.geometry)</a>
 </li>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pltb_int">pltb_int (Pauli attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.pltb_str">pltb_str (Pauli attribute)</a>
 </li>
         <li><a href="stubs/qiskit_qec.geometry.Vertex.html#qiskit_qec.geometry.Vertex.position">position (Vertex attribute)</a>
@@ -1219,16 +1184,8 @@
 </li>
         <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.print_phase_encoding">print_phase_encoding (PauliList attribute)</a>
 </li>
-        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.process">process() (CircuitModelMatchingDecoder method)</a>
-
-        <ul>
-          <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.process">(RepetitionDecoder method)</a>
+        <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.process">process() (UnionFindDecoder method)</a>
 </li>
-          <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.process">(ThreeBitDecoder method)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.process">(UnionFindDecoder method)</a>
-</li>
-        </ul></li>
         <li><a href="stubs/qiskit_qec.info.Properties.html#qiskit_qec.info.Properties">Properties (class in qiskit_qec.info)</a>
 </li>
         <li><a href="stubs/qiskit_qec.utils.DecodingGraphEdge.html#qiskit_qec.utils.DecodingGraphEdge.properties">properties (DecodingGraphEdge attribute)</a>
@@ -1388,8 +1345,6 @@
         <li><a href="stubs/qiskit_qec.geometry.Shape.html#qiskit_qec.geometry.Shape.rect">rect() (Shape class method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit">RepetitionCodeCircuit (class in qiskit_qec.circuits)</a>
-</li>
-        <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder">RepetitionDecoder (class in qiskit_qec.decoders)</a>
 </li>
         <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.reshape">reshape() (BasePauli method)</a>
 
@@ -1603,8 +1558,6 @@
           <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.tensor_encoding">(PauliList attribute)</a>
 </li>
         </ul></li>
-        <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder">ThreeBitDecoder (class in qiskit_qec.decoders)</a>
-</li>
         <li><a href="stubs/qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile">Tile (class in qiskit_qec.geometry)</a>
 </li>
         <li><a href="stubs/qiskit_qec.geometry.TileFactory.html#qiskit_qec.geometry.TileFactory">TileFactory (class in qiskit_qec.geometry)</a>
@@ -1615,8 +1568,6 @@
 </li>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_instruction">to_instruction() (Pauli method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli.to_label">to_label() (BasePauli method)</a>
 
         <ul>
@@ -1625,6 +1576,8 @@
           <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.to_label">(PauliList method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.to_labels">to_labels() (PauliList method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.to_matrix">to_matrix() (Pauli method)</a>
@@ -1671,24 +1624,16 @@
           <li><a href="stubs/qiskit_qec.geometry.SquareDiamondTile.html#qiskit_qec.geometry.SquareDiamondTile.u_vec">(SquareDiamondTile attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.geometry.Shell.html#qiskit_qec.geometry.Shell.union">union() (Shell method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder">UnionFindDecoder (class in qiskit_qec.decoders)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="stubs/qiskit_qec.operators.PauliList.html#qiskit_qec.operators.PauliList.unique">unique() (PauliList method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph.update_attributes">update_attributes() (DecodingGraph method)</a>
 </li>
-        <li><a href="stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder.update_edge_weights">update_edge_weights() (CircuitModelMatchingDecoder method)</a>
-
-        <ul>
-          <li><a href="stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder.update_edge_weights">(RepetitionDecoder method)</a>
-</li>
-          <li><a href="stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder.update_edge_weights">(ThreeBitDecoder method)</a>
-</li>
-        </ul></li>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.update_x">update_x() (Pauli method)</a>
 </li>
         <li><a href="stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli.update_z">update_z() (Pauli method)</a>
@@ -1862,7 +1807,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

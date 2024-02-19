@@ -216,9 +216,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -334,7 +331,7 @@
 <h1>DecodingGraphEdge<a class="headerlink" href="#decodinggraphedge" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.utils.DecodingGraphEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DecodingGraphEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/decoding_graph_attributes.html#DecodingGraphEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DecodingGraphEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_ids=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties=&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/decoding_graph_attributes.html#DecodingGraphEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to describe DecodingGraph edges.</p>
 <dl class="py attribute">
@@ -361,6 +358,12 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">-</span> <span class="pre">fault_ids</span> <span class="pre">fault_ids</span></span></dt>
+<dd><p>Union[Set[int],List[int]]: In the style of pymatching.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">-</span> <span class="pre">properties</span></span></dt>
 <dd><p>Decoder/code specific attributes.
 Are not considered when comparing edges.</p>
@@ -374,8 +377,8 @@ Are not considered when comparing edges.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.utils.DecodingGraphEdge.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/decoding_graph_attributes.html#DecodingGraphEdge.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge.get" title="Link to this definition">#</a></dt>
-<dd><p>A dummy docstring.</p>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/decoding_graph_attributes.html#DecodingGraphEdge.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge.get" title="Link to this definition">#</a></dt>
+<dd><p>Return value for given key.</p>
 </dd></dl>
 
 <p class="rubric">Attributes</p>
@@ -387,6 +390,11 @@ Are not considered when comparing edges.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.utils.DecodingGraphEdge.weight">
 <span class="sig-name descname"><span class="pre">weight</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge.weight" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qiskit_qec.utils.DecodingGraphEdge.fault_ids">
+<span class="sig-name descname"><span class="pre">fault_ids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]]</span></em><a class="headerlink" href="#qiskit_qec.utils.DecodingGraphEdge.fault_ids" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -432,7 +440,7 @@ Are not considered when comparing edges.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             
@@ -458,6 +466,7 @@ Are not considered when comparing edges.</p>
 <li><a class="reference internal" href="#qiskit_qec.utils.DecodingGraphEdge.get"><code class="docutils literal notranslate"><span class="pre">DecodingGraphEdge.get()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.utils.DecodingGraphEdge.qubits"><code class="docutils literal notranslate"><span class="pre">DecodingGraphEdge.qubits</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.utils.DecodingGraphEdge.weight"><code class="docutils literal notranslate"><span class="pre">DecodingGraphEdge.weight</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.utils.DecodingGraphEdge.fault_ids"><code class="docutils literal notranslate"><span class="pre">DecodingGraphEdge.fault_ids</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.utils.DecodingGraphEdge.properties"><code class="docutils literal notranslate"><span class="pre">DecodingGraphEdge.properties</span></code></a></li>
 </ul>
 </li>

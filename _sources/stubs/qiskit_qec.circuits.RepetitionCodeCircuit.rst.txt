@@ -15,7 +15,6 @@
    .. automethod:: RepetitionCodeCircuit.check_nodes
    .. automethod:: RepetitionCodeCircuit.get_circuit_list
    .. automethod:: RepetitionCodeCircuit.is_cluster_neutral
-   .. automethod:: RepetitionCodeCircuit.measured_logicals
    .. automethod:: RepetitionCodeCircuit.partition_outcomes
    .. automethod:: RepetitionCodeCircuit.readout
    .. automethod:: RepetitionCodeCircuit.string2nodes

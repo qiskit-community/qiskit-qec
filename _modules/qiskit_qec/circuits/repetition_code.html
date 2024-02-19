@@ -215,9 +215,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -362,6 +359,8 @@
 
 <span class="kn">from</span> <span class="nn">qiskit_qec.circuits.code_circuit</span> <span class="kn">import</span> <span class="n">CodeCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphEdge</span><span class="p">,</span> <span class="n">DecodingGraphNode</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.utils.decoding_graph_attributes</span> <span class="kn">import</span> <span class="n">_nodes2cpp</span>
+<span class="kn">from</span> <span class="nn">qiskit_qec.circuits._c_circuits</span> <span class="kn">import</span> <span class="n">_c_check_nodes</span><span class="p">,</span> <span class="n">_c_is_cluster_neutral</span>
 
 
 <span class="k">def</span> <span class="nf">_separate_string</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -440,33 +439,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">syndrome_measurement</span><span class="p">(</span><span class="n">final</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">readout</span><span class="p">()</span>
 
-        <span class="n">gauge_ops</span> <span class="o">=</span> <span class="p">[[</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
-        <span class="n">measured_logical</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]]</span>
-        <span class="n">flip_logical</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">))</span>
-        <span class="n">boundary</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
-
-        <span class="k">if</span> <span class="n">xbasis</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="n">measured_logical</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span> <span class="o">=</span> <span class="n">boundary</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="n">flip_logical</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="n">flip_logical</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="n">measured_logical</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span> <span class="o">=</span> <span class="n">boundary</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">round_schedule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span> <span class="o">=</span> <span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gauge_ops</span> <span class="o">=</span> <span class="p">[[</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_logical</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">resets</span> <span class="o">=</span> <span class="n">resets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
@@ -588,12 +563,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">log</span><span class="p">]</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RepetitionCodeCircuit.measured_logicals">
-<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.measured_logicals">[docs]</a>
-    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]]</span></div>
-
-
     <span class="k">def</span> <span class="nf">_process_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="c1"># logical readout taken from</span>
         <span class="n">measured_log</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
@@ -666,20 +635,18 @@
             <span class="n">logical</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
 
         <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-        <span class="c1"># [ &lt;boundary&gt;, &lt;syn&gt;, &lt;syn&gt;,...]</span>
+        <span class="c1"># [ &lt;logical&gt;, &lt;syn&gt;, &lt;syn&gt;,...]</span>
         <span class="n">separated_string</span> <span class="o">=</span> <span class="n">_separate_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># boundary nodes</span>
+        <span class="c1"># logical nodes</span>
         <span class="n">boundary</span> <span class="o">=</span> <span class="n">separated_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># [&lt;last_elem&gt;, &lt;init_elem&gt;]</span>
         <span class="k">for</span> <span class="n">bqec_index</span><span class="p">,</span> <span class="n">belement</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">boundary</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="n">belement</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
-                <span class="n">i</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">bqec_index</span><span class="p">]</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
-                    <span class="n">bqubits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">bqubits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
-                <span class="n">bnode</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">bqubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">bqec_index</span><span class="p">)</span>
+                <span class="n">bqubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logical</span><span class="p">[</span><span class="n">bqec_index</span><span class="p">]</span>
+                <span class="n">bnode</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                    <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">bqubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">bqec_index</span>
+                <span class="p">)</span>
                 <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bnode</span><span class="p">)</span>
 
         <span class="c1"># bulk nodes</span>
@@ -688,10 +655,7 @@
                 <span class="n">elements</span> <span class="o">=</span> <span class="n">separated_string</span><span class="p">[</span><span class="n">syn_type</span><span class="p">][</span><span class="n">syn_round</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">qec_index</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
                     <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
-                            <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span><span class="p">[</span><span class="n">qec_index</span><span class="p">]</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span><span class="p">[</span><span class="n">qec_index</span><span class="p">]</span>
+                        <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gauge_ops</span><span class="p">[</span><span class="n">qec_index</span><span class="p">]</span>
                         <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">syn_round</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">qec_index</span><span class="p">)</span>
                         <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span></div>
@@ -707,12 +671,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list: Raw values for logical operators that correspond to nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span></div>
 
 
 <div class="viewcode-block" id="RepetitionCodeCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -720,7 +684,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are</span>
+<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -736,14 +700,14 @@
         <span class="c1"># see which qubits for logical zs are given and collect bulk nodes</span>
         <span class="n">given_logicals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span>
                 <span class="n">given_logicals</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">qubits</span>
         <span class="n">given_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
 
         <span class="c1"># bicolour code qubits according to the domain walls</span>
         <span class="n">walls</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span>
                 <span class="n">walls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">walls</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
@@ -783,7 +747,7 @@
 
             <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
             <span class="c1"># (unless this is ignored)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_logical</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
                 <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
             <span class="k">else</span><span class="p">:</span>
@@ -793,11 +757,10 @@
             <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
                 <span class="n">qubits</span> <span class="o">=</span> <span class="p">[</span><span class="n">flipped_logical</span><span class="p">]</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
-                    <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubits</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubits</span><span class="p">)</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span><span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">elem</span><span class="p">)</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_logical</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubits</span><span class="p">)</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                    <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">elem</span>
+                <span class="p">)</span>
                 <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flipped_logical_nodes</span><span class="p">:</span>
@@ -974,6 +937,8 @@
         <span class="k">if</span> <span class="n">T</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_syndrome_measurement</span><span class="p">(</span><span class="n">final</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_readout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_graph</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_links2cpp</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_link_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_dist</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">PyGraph</span><span class="p">()</span>
@@ -1191,20 +1156,6 @@
             <span class="n">z_logicals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span> <span class="o">=</span> <span class="n">z_logicals</span>
 
-        <span class="c1"># set css attributes for decoder</span>
-        <span class="n">gauge_ops</span> <span class="o">=</span> <span class="p">[[</span><span class="n">link</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">link</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">]</span>
-        <span class="n">measured_logical</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
-        <span class="n">flip_logical</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">))</span>
-        <span class="n">boundary</span> <span class="o">=</span> <span class="p">[[</span><span class="n">logical</span><span class="p">]</span> <span class="k">for</span> <span class="n">logical</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_gauge_ops</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_stabilizer_ops</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_logical</span> <span class="o">=</span> <span class="n">flip_logical</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_x_boundary</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_gauge_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_stabilizer_ops</span> <span class="o">=</span> <span class="n">gauge_ops</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_logical</span> <span class="o">=</span> <span class="n">measured_logical</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">css_z_boundary</span> <span class="o">=</span> <span class="n">boundary</span>
-
     <span class="k">def</span> <span class="nf">_get_202</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the position within a 202 sequence for the current measurement round:</span>
@@ -1339,12 +1290,6 @@
             <span class="n">qc</span><span class="o">.</span><span class="n">add_register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span>
             <span class="n">qc</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">code_bit</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ArcCircuit.measured_logicals">
-<a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.measured_logicals">[docs]</a>
-    <span class="k">def</span> <span class="nf">measured_logicals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span></div>
-
-
     <span class="k">def</span> <span class="nf">_process_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
         <span class="c1"># logical readout taken from assigned qubits</span>
         <span class="n">measured_log</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -1475,8 +1420,8 @@
                     <span class="k">if</span> <span class="p">(</span><span class="n">syn_type</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">all_logicals</span> <span class="ow">or</span> <span class="n">element</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logical</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span>
                         <span class="n">syn_type</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">element</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span>
                     <span class="p">):</span>
-                        <span class="n">is_boundary</span> <span class="o">=</span> <span class="n">syn_type</span> <span class="o">==</span> <span class="mi">0</span>
-                        <span class="k">if</span> <span class="n">is_boundary</span><span class="p">:</span>
+                        <span class="n">is_logical</span> <span class="o">=</span> <span class="n">syn_type</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="k">if</span> <span class="n">is_logical</span><span class="p">:</span>
                             <span class="n">elem_num</span> <span class="o">=</span> <span class="n">syn_round</span>
                             <span class="n">syn_round</span> <span class="o">=</span> <span class="mi">0</span>
                             <span class="n">code_qubits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">[</span><span class="n">elem_num</span><span class="p">]]</span>
@@ -1489,8 +1434,8 @@
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">tau</span><span class="p">:</span>
                             <span class="n">tau</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                            <span class="n">is_boundary</span><span class="o">=</span><span class="n">is_boundary</span><span class="p">,</span>
-                            <span class="n">time</span><span class="o">=</span><span class="n">syn_round</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_boundary</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">is_logical</span><span class="o">=</span><span class="n">is_logical</span><span class="p">,</span>
+                            <span class="n">time</span><span class="o">=</span><span class="n">syn_round</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_logical</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                             <span class="n">qubits</span><span class="o">=</span><span class="n">code_qubits</span><span class="p">,</span>
                             <span class="n">index</span><span class="o">=</span><span class="n">elem_num</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -1529,17 +1474,35 @@
                 <span class="n">nodes_per_link</span><span class="p">[</span><span class="n">link_qubit</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">flat_nodes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">nodes_per_link</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span> <span class="ow">or</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="n">flat_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nodes_per_link</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">flat_node</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                 <span class="n">flat_node</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">flat_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">flat_nodes</span><span class="p">:</span>
                     <span class="n">flat_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flat_node</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">flat_nodes</span></div>
 
 
+    <span class="k">def</span> <span class="nf">_links2cpp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert data about the link graph to the form required by C++ functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+        <span class="n">link_graph</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
+            <span class="n">link_graph</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">nodes</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
+        <span class="n">link_neighbors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+            <span class="n">link_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">link_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">link_graph</span><span class="p">,</span> <span class="n">link_neighbors</span>
+
 <div class="viewcode-block" id="ArcCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_boundary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -1547,7 +1510,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are</span>
+<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -1560,177 +1523,28 @@
 <span class="sd">            num_errors (int): Minimum number of errors required to create nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">_nodes2cpp</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
 
-        <span class="c1"># see which qubits for logical zs are given and collect bulk nodes</span>
-        <span class="n">given_logicals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">bulk_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
-                <span class="n">given_logicals</span> <span class="o">+=</span> <span class="n">node</span><span class="o">.</span><span class="n">qubits</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">bulk_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="n">given_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
+        <span class="n">cpp_output</span> <span class="o">=</span> <span class="n">_c_check_nodes</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="n">ignore_extra_logical</span><span class="p">,</span>
+            <span class="n">minimal</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_graph</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_neighbors</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="c1"># see whether the bulk nodes are neutral</span>
-        <span class="k">if</span> <span class="n">bulk_nodes</span><span class="p">:</span>
-
-            <span class="c1"># check whether there are frustrated plaquettes</span>
-            <span class="n">parities</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)]:</span>
-                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">parities</span><span class="p">:</span>
-                        <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">parity</span> <span class="ow">in</span> <span class="n">parities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">parities</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">parity</span> <span class="o">%</span> <span class="mi">2</span>
-            <span class="n">frust</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">parities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-
-            <span class="c1"># if frust==True, no colouring is possible, so no need to do it</span>
-            <span class="k">if</span> <span class="n">frust</span><span class="p">:</span>
-                <span class="c1"># neutral if not frustrated</span>
-                <span class="n">neutral</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">frust</span>
-                <span class="c1"># empty because ignored</span>
-                <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="c1"># None because not counted</span>
-                <span class="n">num_errors</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># bicolor the nodes of the link graph, such that node edges connect unlike edges</span>
-                <span class="n">link_qubits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">)</span>
-                <span class="n">link_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_graph</span>
-                <span class="c1"># all the qubits around cycles of the node edges have to be covered</span>
-                <span class="n">ns_to_do</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bulk_nodes</span><span class="p">]:</span>
-                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">[</span><span class="n">edge</span><span class="p">]:</span>
-                        <span class="n">ns_to_do</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
-                <span class="c1"># if this gives us qubits to start with, we start with one</span>
-                <span class="k">if</span> <span class="n">ns_to_do</span><span class="p">:</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># otherwise we commit to covering them all</span>
-                    <span class="n">ns_to_do</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())))</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="n">ns_to_do</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-                <span class="n">node_color</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-                <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">node_color</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">base_neutral</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="c1"># count the number of nodes for each colour throughout</span>
-                <span class="n">num_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">last_num</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
-                <span class="n">fully_converged</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">last_converged</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">while</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
-                    <span class="c1"># go through all nodes coloured in the last pass</span>
-                    <span class="n">newly_colored</span> <span class="o">=</span> <span class="p">{}</span>
-                    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">recently_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="c1"># look at all the code qubits that are neighbours</span>
-                        <span class="n">incident_es</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">incident_edges</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">incident_es</span><span class="p">:</span>
-                            <span class="n">edge</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
-                            <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">()[</span><span class="n">e</span><span class="p">]</span>
-                            <span class="k">if</span> <span class="n">n0</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
-                                <span class="n">nn</span> <span class="o">=</span> <span class="n">n1</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">nn</span> <span class="o">=</span> <span class="n">n0</span>
-                            <span class="c1"># see if the edge corresponds to one of the given nodes</span>
-                            <span class="n">dc</span> <span class="o">=</span> <span class="n">edge</span><span class="p">[</span><span class="s2">&quot;link qubit&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">link_qubits</span>
-                            <span class="c1"># if the neighbour is not yet coloured, colour it</span>
-                            <span class="c1"># different color if edge is given node, same otherwise</span>
-                            <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_color</span><span class="p">:</span>
-                                <span class="n">new_c</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
-                                <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="p">:</span>
-                                    <span class="n">newly_colored</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_c</span>
-                                    <span class="n">num_nodes</span><span class="p">[</span><span class="n">new_c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                            <span class="c1"># if it is coloured, check the colour is correct</span>
-                            <span class="k">else</span><span class="p">:</span>
-                                <span class="n">base_neutral</span> <span class="o">=</span> <span class="n">base_neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">nn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="n">node_color</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
-                        <span class="k">if</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">ns_to_do</span><span class="p">:</span>
-                            <span class="n">ns_to_do</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nn</span><span class="p">)</span>
-                    <span class="n">recently_colored</span> <span class="o">=</span> <span class="n">newly_colored</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="c1"># process is converged once one colour has stoppped growing</span>
-                    <span class="c1"># once ns_to_do is empty</span>
-                    <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ns_to_do</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-                        <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">num_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">fully_converged</span> <span class="o">=</span> <span class="n">converged</span> <span class="ow">and</span> <span class="n">last_converged</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">fully_converged</span><span class="p">:</span>
-                        <span class="n">last_num</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                        <span class="n">last_converged</span> <span class="o">=</span> <span class="n">converged</span>
-                <span class="c1"># see how many qubits are in the converged colour, and determine the min colour</span>
-                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
-                        <span class="n">conv_color</span> <span class="o">=</span> <span class="n">c</span>
-                <span class="k">if</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">min_color</span> <span class="o">=</span> <span class="n">conv_color</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">min_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
-                <span class="c1"># calculate the number of nodes for the other</span>
-                <span class="n">num_nodes</span><span class="p">[(</span><span class="n">conv_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">()</span> <span class="o">-</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">conv_color</span><span class="p">]</span>
-                <span class="c1"># get the set of min nodes</span>
-                <span class="n">min_ns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node_color</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">min_color</span><span class="p">:</span>
-                        <span class="n">min_ns</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-                <span class="c1"># see which qubits for logical zs are needed</span>
-                <span class="n">flipped_logicals_all</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
-                <span class="k">if</span> <span class="n">base_neutral</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">qubit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">:</span>
-                        <span class="n">n</span> <span class="o">=</span> <span class="n">link_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
-                        <span class="n">dc</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">min_ns</span>
-                        <span class="n">flipped_logicals_all</span><span class="p">[(</span><span class="n">min_color</span> <span class="o">+</span> <span class="n">dc</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qubit</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                    <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-
-                <span class="c1"># list the colours with the max error one first</span>
-                <span class="c1"># (unless we do min only)</span>
-                <span class="n">cs</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">minimal</span><span class="p">:</span>
-                    <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">min_color</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
-                <span class="n">cs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_color</span><span class="p">)</span>
-
-                <span class="c1"># see what happens for both colours</span>
-                <span class="c1"># if neutral for maximal, it&#39;s neutral</span>
-                <span class="c1"># otherwise, it is whatever it is for the minimal</span>
-                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">:</span>
-                    <span class="n">neutral</span> <span class="o">=</span> <span class="n">base_neutral</span>
-                    <span class="n">num_errors</span> <span class="o">=</span> <span class="n">num_nodes</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
-                    <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals_all</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
-
-                    <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
-                    <span class="c1"># (unless this is ignored)</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
-                        <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-                    <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="n">flipped_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
-
-                    <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
-                        <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                            <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                            <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_logical</span><span class="p">],</span>
-                            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_logical</span><span class="p">),</span>
-                        <span class="p">)</span>
-                        <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">flipped_logical_nodes</span><span class="p">:</span>
-                        <span class="k">break</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># without bulk nodes, neutral only if no boundary nodes are given</span>
-            <span class="n">neutral</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">given_logicals</span><span class="p">)</span>
-            <span class="c1"># and no flipped logicals</span>
-            <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">num_errors</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
-            <span class="c1"># (unless this is ignored)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_boundary</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="p">:</span>
-                <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">neutral</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">cpp_output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">num_errors</span> <span class="o">=</span> <span class="n">cpp_output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">cpp_output</span><span class="p">[</span><span class="mi">2</span><span class="p">::]:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
+                <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_logical</span><span class="p">],</span>
+                <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_logical</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">neutral</span><span class="p">,</span> <span class="n">flipped_logical_nodes</span><span class="p">,</span> <span class="n">num_errors</span></div>
 
@@ -1745,11 +1559,17 @@
 <span class="sd">        Args:</span>
 <span class="sd">            atypical_nodes: dictionary in the form of the return value of string2nodes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear</span><span class="p">:</span>
-            <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logicals</span></div>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">_nodes2cpp</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_c_is_cluster_neutral</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="kc">False</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_graph</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_neighbors</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_linear</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ArcCircuit.transpile">
@@ -1839,7 +1659,7 @@
         <span class="p">)</span>
         <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DecodingGraphNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                     <span class="n">new_node</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                     <span class="n">new_node</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">t</span>
@@ -1858,7 +1678,7 @@
                     <span class="n">dt</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">((</span><span class="n">node1</span><span class="o">.</span><span class="n">time</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">node0</span><span class="o">.</span><span class="n">time</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">))</span>
                     <span class="n">adj</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node0</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">node1</span><span class="o">.</span><span class="n">qubits</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">adj</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="p">(</span><span class="n">node0</span><span class="o">.</span><span class="n">is_boundary</span> <span class="o">^</span> <span class="n">node1</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">node0</span><span class="o">.</span><span class="n">is_logical</span> <span class="o">^</span> <span class="n">node1</span><span class="o">.</span><span class="n">is_logical</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dt</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
                             <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">))</span>
                         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">resets</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">node0</span><span class="o">.</span><span class="n">qubits</span> <span class="o">==</span> <span class="n">node1</span><span class="o">.</span><span class="n">qubits</span> <span class="ow">and</span> <span class="n">dt</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -1872,7 +1692,7 @@
             <span class="n">source</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n0</span><span class="p">]</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
             <span class="n">qubits</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">is_boundary</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">is_logical</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">is_logical</span><span class="p">):</span>
                 <span class="n">qubits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">qubits</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">time</span> <span class="o">!=</span> <span class="n">target</span><span class="o">.</span><span class="n">time</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">qubits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">qubits</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1942,9 +1762,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">error_probs</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">n0</span><span class="p">,</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edge_list</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n0</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n0</span><span class="p">]</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span>
                     <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">nodes</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span><span class="o">.</span><span class="n">is_logical</span><span class="p">:</span>
                     <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n0</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">edge</span> <span class="o">=</span> <span class="p">(</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">)</span>
@@ -2129,7 +1949,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

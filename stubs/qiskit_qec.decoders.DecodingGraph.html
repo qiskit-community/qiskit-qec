@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CircuitModelMatchingDecoder" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html" /><link rel="prev" title="Decoders (qiskit_qec.decoders)" href="../apidocs/decoders.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="UnionFindDecoder" href="qiskit_qec.decoders.UnionFindDecoder.html" /><link rel="prev" title="Decoders (qiskit_qec.decoders)" href="../apidocs/decoders.html" />
 
     <!-- Generated with Sphinx 7.2.6 and Furo 2023.08.19 -->
         <title>DecodingGraph - Qiskit QEC 0.0.0</title>
@@ -216,9 +216,6 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../apidocs/decoders.html">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -334,7 +331,7 @@
 <h1>DecodingGraph<a class="headerlink" href="#decodinggraph" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.DecodingGraph">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DecodingGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DecodingGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hyperedges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to construct the decoding graph for the code given by a CodeCircuit object,
 for use in a decoder.
@@ -389,6 +386,23 @@ the edge exists within the graph.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.DecodingGraph.get_edge_graph">
+<span class="sig-name descname"><span class="pre">get_edge_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph.get_edge_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph.get_edge_graph" title="Link to this definition">#</a></dt>
+<dd><p>Returns a copy of the graph that uses edges to store information
+about the effects of errors on logical operators. This is done
+via the <cite>‘fault_ids’</cite> of the edges. No logical nodes are present
+in such a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The edge graph.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>edge_graph (rx.PyGraph)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.DecodingGraph.get_error_probs">
 <span class="sig-name descname"><span class="pre">get_error_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph.get_error_probs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph.get_error_probs" title="Link to this definition">#</a></dt>
 <dd><p>Generate probabilities of single error events from result counts.</p>
@@ -416,6 +430,22 @@ events, and values are the calculated probabilities.</p>
 create the pairs of nodes specified by the edge.
 Default calculation method is that of Spitz, et al.
 <a class="reference external" href="https://doi.org/10.1002/qute.201800012">https://doi.org/10.1002/qute.201800012</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.decoders.DecodingGraph.get_node_graph">
+<span class="sig-name descname"><span class="pre">get_node_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph.get_node_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph.get_node_graph" title="Link to this definition">#</a></dt>
+<dd><p>Returns a copy of the graph that uses logical nodes to store information
+about the effects of errors on logical operators. No non-trivial <cite>‘fault_ids’</cite>
+are present in such a graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The node graph.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>node_graph (rx.PyGraph)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -509,12 +539,12 @@ replaced with the corresponding -log(p/(1-p).</p>
       </div>
       <footer>
         <div class="related-pages">
-          <a class="next-page" href="qiskit_qec.decoders.CircuitModelMatchingDecoder.html">
+          <a class="next-page" href="qiskit_qec.decoders.UnionFindDecoder.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">CircuitModelMatchingDecoder</div>
+                <div class="title">UnionFindDecoder</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -539,7 +569,7 @@ replaced with the corresponding -log(p/(1-p).</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             
@@ -564,7 +594,9 @@ replaced with the corresponding -log(p/(1-p).</p>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph"><code class="docutils literal notranslate"><span class="pre">DecodingGraph</span></code></a><ul>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.clean_measurements"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.clean_measurements()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.edge_in_graph"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.edge_in_graph()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.get_edge_graph"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.get_edge_graph()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.get_error_probs"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.get_error_probs()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.get_node_graph"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.get_node_graph()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.make_error_graph"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.make_error_graph()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.node_index"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.node_index()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.decoders.DecodingGraph.update_attributes"><code class="docutils literal notranslate"><span class="pre">DecodingGraph.update_attributes()</span></code></a></li>

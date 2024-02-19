@@ -216,9 +216,6 @@
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">Decoders (<code class="xref py py-mod docutils literal notranslate"><span class="pre">qiskit_qec.decoders</span></code>)</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Decoders (qiskit_qec.decoders)</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_qec.decoders.DecodingGraph.html">DecodingGraph</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html">CircuitModelMatchingDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_qec.decoders.RepetitionDecoder.html">RepetitionDecoder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_qec.decoders.ThreeBitDecoder.html">ThreeBitDecoder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../stubs/qiskit_qec.decoders.UnionFindDecoder.html">UnionFindDecoder</a></li>
 </ul>
 </li>
@@ -337,20 +334,11 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph" title="qiskit_qec.decoders.DecodingGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DecodingGraph</span></code></a>(code[, brute, graph])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph" title="qiskit_qec.decoders.DecodingGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DecodingGraph</span></code></a>(code[, brute, graph, hyperedges])</p></td>
 <td><p>Class to construct the decoding graph for the code given by a CodeCircuit object, for use in a decoder.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.CircuitModelMatchingDecoder.html#qiskit_qec.decoders.CircuitModelMatchingDecoder" title="qiskit_qec.decoders.CircuitModelMatchingDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitModelMatchingDecoder</span></code></a>(n, ...[, ...])</p></td>
-<td><p>Matching decoder for circuit noise.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.RepetitionDecoder.html#qiskit_qec.decoders.RepetitionDecoder" title="qiskit_qec.decoders.RepetitionDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RepetitionDecoder</span></code></a>(code_circuit, model, ...)</p></td>
-<td><p>Instance of CircuitModelMatchingDecoder for use with circuits from RepetitionCodeCircuit.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.ThreeBitDecoder.html#qiskit_qec.decoders.ThreeBitDecoder" title="qiskit_qec.decoders.ThreeBitDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ThreeBitDecoder</span></code></a>(n, css_x_gauge_ops, ...)</p></td>
-<td><p>Simple 3-bit code matching decoder.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder" title="qiskit_qec.decoders.UnionFindDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionFindDecoder</span></code></a>(code[, decoding_graph, ...])</p></td>
-<td><p>Decoder based on growing clusters around syndrome errors to &quot;convert&quot; them into erasure errors, which can be corrected easily, by the peeling decoder in case of the surface code, or by checking for interference with the boundary in case of an abritrary ARC.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder" title="qiskit_qec.decoders.UnionFindDecoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnionFindDecoder</span></code></a>(code[, decoding_graph, ...])</p></td>
+<td><p>Decoder based on growing clusters around syndrome errors to &quot;convert&quot; them into erasure errors, which can be corrected easily, by the peeling decoder for compatible codes or by the standard HDRG method in general.</p></td>
 </tr>
 </tbody>
 </table>
@@ -392,7 +380,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/02/16</div>
+              Last updated on 2024/02/19</div>
           </div>
           <div class="right-details">
             

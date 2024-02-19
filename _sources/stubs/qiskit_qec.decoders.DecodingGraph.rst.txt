@@ -14,7 +14,9 @@
 
    .. automethod:: DecodingGraph.clean_measurements
    .. automethod:: DecodingGraph.edge_in_graph
+   .. automethod:: DecodingGraph.get_edge_graph
    .. automethod:: DecodingGraph.get_error_probs
+   .. automethod:: DecodingGraph.get_node_graph
    .. automethod:: DecodingGraph.make_error_graph
    .. automethod:: DecodingGraph.node_index
    .. automethod:: DecodingGraph.update_attributes

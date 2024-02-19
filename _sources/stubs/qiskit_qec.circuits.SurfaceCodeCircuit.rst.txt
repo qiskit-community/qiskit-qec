@@ -15,7 +15,6 @@
    .. automethod:: SurfaceCodeCircuit.check_nodes
    .. automethod:: SurfaceCodeCircuit.get_circuit_list
    .. automethod:: SurfaceCodeCircuit.is_cluster_neutral
-   .. automethod:: SurfaceCodeCircuit.measured_logicals
    .. automethod:: SurfaceCodeCircuit.readout
    .. automethod:: SurfaceCodeCircuit.string2nodes
    .. automethod:: SurfaceCodeCircuit.string2raw_logicals

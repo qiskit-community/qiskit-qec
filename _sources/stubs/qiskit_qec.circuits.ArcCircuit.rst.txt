@@ -17,7 +17,6 @@
    .. automethod:: ArcCircuit.flatten_nodes
    .. automethod:: ArcCircuit.get_error_coords
    .. automethod:: ArcCircuit.is_cluster_neutral
-   .. automethod:: ArcCircuit.measured_logicals
    .. automethod:: ArcCircuit.string2nodes
    .. automethod:: ArcCircuit.string2raw_logicals
    .. automethod:: ArcCircuit.transpile
