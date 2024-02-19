@@ -60,5 +60,9 @@ set(ANALYSIS_BINDINGS_SRC "src/qiskit_qec/analysis/bindings/analysis_bindings.cp
 pybind11_add_module(_c_analysis ${ANALYSIS_BINDINGS_SRC})
 target_link_libraries(_c_analysis PRIVATE libanalysis)
 
+set(CIRCUITS_BINDINGS_SRC "src/qiskit_qec/circuits/bindings/circuits_bindings.cpp")
+pybind11_add_module(_c_circuits ${CIRCUITS_BINDINGS_SRC})
+target_link_libraries(_c_circuits PRIVATE libcircuits)
+
 
 

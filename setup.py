@@ -177,13 +177,18 @@ setup(
     python_requires=">=3.8",
     include_package_data=True,
     install_requires=(REQUIREMENTS,),
-    ext_modules=[CMakeExtension("qiskit_qec.analysis._c_analysis")],
+    ext_modules=[
+        CMakeExtension("qiskit_qec.circuits._c_circuits"),
+        CMakeExtension("qiskit_qec.analysis._c_analysis"),
+    ],
     packages=find_packages(
         where="src",
         exclude=[
             "test*",
             "src/qiskit_qec/analysis/bindings*",
             "src/qiskit_qec/analysis/intern*",
+            "src/qiskit_qec/circuits/bindings*",
+            "src/qiskit_qec/circuits/intern*",
             "src/qiskit_qec/codes/codebase/data*",
         ],
     ),

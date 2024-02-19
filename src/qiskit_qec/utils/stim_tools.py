@@ -389,8 +389,8 @@ def detector_error_model_to_rx_graph(
         if g.has_edge(dets[0], dets[1]):
             edge_ind = list(g.edge_list()).index((dets[0], dets[1]))
             edge_data = g.edges()[edge_ind].properties
+            old_frame_changes = g.edges()[edge_ind].fault_ids
             old_p = edge_data["error_probability"]
-            old_frame_changes = edge_data["fault_ids"]
             # If frame changes differ, the code has distance 2; just keep whichever was first.
             if set(old_frame_changes) == set(frame_changes):
                 p = p * (1 - old_p) + old_p * (1 - p)
@@ -406,7 +406,8 @@ def detector_error_model_to_rx_graph(
             edge = DecodingGraphEdge(
                 qubits=qubits,
                 weight=loga((1 - p) / p),
-                properties={"fault_ids": set(frame_changes), "error_probability": p},
+                fault_ids=set(frame_changes),
+                properties={"error_probability": p},
             )
             g.add_edge(dets[0], dets[1], edge)
             hyperedge[dets[0], dets[1]] = edge
@@ -532,10 +533,14 @@ def string2rawlogicals_with_detectors(
 
         if all_logicals or str(logical_out) != logical:
             node = DecodingGraphNode(
+                is_logical=True,
                 is_boundary=True,
-                qubits=[],
                 index=index,
             )
+            if "qubits" in logical_op:
+                node.qubits = logical_op["qubits"]
+            else:
+                node.qubits = []
             nodes.append(node)
 
     return nodes

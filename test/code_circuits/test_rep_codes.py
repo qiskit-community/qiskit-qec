@@ -138,11 +138,7 @@ class TestRepCodes(unittest.TestCase):
                 (5, 0),
                 "00001",
                 [
-                    DecodingGraphNode(
-                        is_boundary=True,
-                        qubits=[0],
-                        index=0,
-                    ),
+                    DecodingGraphNode(is_logical=True, is_boundary=True, qubits=[0], index=0),
                     DecodingGraphNode(
                         time=0,
                         qubits=[0, 1],
@@ -243,7 +239,7 @@ class TestARCCodes(unittest.TestCase):
                 string = "".join([str(c) for c in output[::-1]])
                 nodes = code.string2nodes(string)
                 # check that it doesn't extend over more than two rounds
-                ts = [node.time for node in nodes if not node.is_boundary]
+                ts = [node.time for node in nodes if not node.is_logical]
                 if ts:
                     minimal = minimal and (max(ts) - min(ts)) <= 1
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
@@ -254,20 +250,25 @@ class TestARCCodes(unittest.TestCase):
                     minimal,
                     "Error: Single error creates too many nodes",
                 )
+                neutral, flipped_logicals, num = code.check_nodes(nodes)
                 # check that the nodes are neutral
-                neutral, flipped_logicals, _ = code.check_nodes(nodes)
                 self.assertTrue(
                     neutral and flipped_logicals == [],
-                    "Error: Single error nodes are not neutral: " + string,
+                    "Error: Single error nodes are not neutral for string "
+                    + string
+                    + " which yields "
+                    + str(code.check_nodes(nodes))
+                    + " for nodes "
+                    + str(nodes),
                 )
-                # and that the given flipped logical makes sense
-                for node in nodes:
-                    if not node.is_boundary:
-                        for logical in flipped_logicals:
-                            self.assertTrue(
-                                logical in node.qubits,
-                                "Error: Single error appears to flip logical is not part of nodes.",
-                            )
+                # and caused by at most a single error
+                self.assertTrue(
+                    num <= 1,
+                    "Error: Nodes seem to be caused by more than one error for "
+                    + string
+                    + " which yields "
+                    + str(code.check_nodes(nodes)),
+                )
 
     def test_graph_construction(self):
         """Test single errors for a range of layouts"""
@@ -360,7 +361,7 @@ class TestARCCodes(unittest.TestCase):
                         nodes = [
                             node
                             for node in code.string2nodes(string)
-                            if "conjugate" not in node.properties and not node.is_boundary
+                            if "conjugate" not in node.properties and not node.is_logical
                         ]
                         # require at most two (or three for the trivalent vertex or neighbouring aux)
                         self.assertTrue(
@@ -502,9 +503,7 @@ class TestDecoding(unittest.TestCase):
         """Test initializtion of decoding graphs with None"""
         DecodingGraph(None)
 
-    def clustering_decoder_test(
-        self, Decoder
-    ):  # NOT run directly by unittest; called by test_graph_constructions
+    def clustering_decoder_test(self, Decoder):  # NOT run directly by unittest
         """Test decoding of ARCs and RCCs with clustering decoders"""
 
         # parameters for test
@@ -545,7 +544,6 @@ class TestDecoding(unittest.TestCase):
                 decoder = Decoder(code, decoding_graph=decoding_graph, use_peeling=False)
             else:
                 decoder = Decoder(code, decoding_graph=decoding_graph)
-            errors = {z_logical[0]: 0 for z_logical in decoder.measured_logicals}
             min_error_num = code.d
             min_error_string = ""
             for _ in range(N):
@@ -555,14 +553,14 @@ class TestDecoding(unittest.TestCase):
                     string = string + " " + "0" * (d - 1)
                 # get and check corrected_z_logicals
                 corrected_z_logicals = decoder.process(string)
-                for j, z_logical in enumerate(decoder.measured_logicals):
-                    error = corrected_z_logicals[j] != 1
-                    if error:
-                        error_num = string.split(" ", maxsplit=1)[0].count("0")
-                        if error_num < min_error_num:
-                            min_error_num = error_num
-                            min_error_string = string
-                    errors[z_logical[0]] += error
+                for node in decoder.decoding_graph.logical_nodes:
+                    if node.index < len(corrected_z_logicals):
+                        error = corrected_z_logicals[node.index] != 1
+                        if error:
+                            error_num = string.split(" ", maxsplit=1)[0].count("0")
+                            if error_num < min_error_num:
+                                min_error_num = error_num
+                                min_error_string = string
             # check that min num errors to cause logical errors >d/3
             self.assertTrue(
                 min_error_num > d / 3,
@@ -573,16 +571,271 @@ class TestDecoding(unittest.TestCase):
                 + str(c)
                 + " with "
                 + min_error_string
+                + "."
+                + " Corresponding clusters are "
+                + str(decoder.cluster(code.string2nodes(string, all_logicals=True)))
                 + ".",
             )
+
+    def heavy_hex_test(self, Decoder):  # NOT run directly by unittest
+        """Test decoding of heavy hex ARC"""
+        links = [
+            (0, 1, 2),
+            (2, 3, 4),
+            (4, 5, 6),
+            (6, 7, 8),
+            (8, 9, 10),
+            (10, 11, 12),
+            (0, 14, 18),
+            (4, 15, 22),
+            (8, 16, 26),
+            (12, 17, 30),
+            (18, 19, 20),
+            (20, 21, 22),
+            (22, 23, 24),
+            (24, 25, 26),
+            (26, 27, 28),
+            (28, 29, 30),
+            (30, 31, 32),
+            (20, 33, 39),
+            (24, 34, 43),
+            (28, 35, 47),
+            (32, 36, 51),
+            (37, 38, 39),
+            (39, 40, 41),
+            (41, 42, 43),
+            (43, 44, 45),
+            (45, 46, 47),
+            (47, 48, 49),
+            (49, 50, 51),
+            (37, 52, 56),
+            (41, 53, 60),
+            (45, 54, 64),
+            (49, 55, 68),
+            (56, 57, 58),
+            (58, 59, 60),
+            (60, 61, 62),
+            (62, 63, 64),
+            (64, 65, 66),
+            (66, 67, 68),
+            (68, 69, 70),
+            (58, 71, 77),
+            (62, 72, 81),
+            (66, 73, 85),
+            (70, 74, 89),
+            (75, 76, 77),
+            (77, 78, 79),
+            (79, 80, 81),
+            (81, 82, 83),
+            (83, 84, 85),
+            (85, 86, 87),
+            (87, 88, 89),
+            (75, 90, 94),
+            (79, 91, 98),
+            (83, 92, 102),
+            (87, 93, 106),
+            (94, 95, 96),
+            (96, 97, 98),
+            (98, 99, 100),
+            (100, 101, 102),
+            (102, 103, 104),
+            (104, 105, 106),
+            (106, 107, 108),
+            (96, 109, 114),
+            (100, 110, 118),
+            (104, 111, 122),
+            (108, 112, 126),
+            (114, 115, 116),
+            (116, 117, 118),
+            (118, 119, 120),
+            (120, 121, 122),
+            (122, 123, 124),
+            (124, 125, 126),
+        ]
+        schedule = [
+            [
+                (0, 14),
+                (2, 3),
+                (4, 15),
+                (6, 7),
+                (8, 16),
+                (10, 11),
+                (12, 17),
+                (18, 19),
+                (22, 23),
+                (26, 27),
+                (30, 31),
+                (20, 33),
+                (24, 34),
+                (28, 35),
+                (32, 36),
+                (39, 40),
+                (43, 44),
+                (47, 48),
+                (37, 52),
+                (41, 53),
+                (45, 54),
+                (49, 55),
+                (56, 57),
+                (60, 61),
+                (64, 65),
+                (68, 69),
+                (58, 71),
+                (62, 72),
+                (66, 73),
+                (70, 74),
+                (77, 78),
+                (81, 82),
+                (85, 86),
+                (75, 90),
+                (79, 91),
+                (83, 92),
+                (87, 93),
+                (94, 95),
+                (98, 99),
+                (102, 103),
+                (106, 107),
+                (96, 109),
+                (100, 110),
+                (104, 111),
+                (108, 112),
+                (114, 115),
+                (118, 119),
+                (122, 123),
+            ],
+            [
+                (0, 1),
+                (4, 5),
+                (8, 9),
+                (18, 14),
+                (22, 15),
+                (26, 16),
+                (30, 17),
+                (20, 21),
+                (24, 25),
+                (28, 29),
+                (39, 33),
+                (43, 34),
+                (47, 35),
+                (51, 36),
+                (37, 38),
+                (41, 42),
+                (45, 46),
+                (49, 50),
+                (56, 52),
+                (60, 53),
+                (64, 54),
+                (68, 55),
+                (58, 59),
+                (62, 63),
+                (66, 67),
+                (77, 71),
+                (81, 72),
+                (85, 73),
+                (89, 74),
+                (75, 76),
+                (79, 80),
+                (83, 84),
+                (87, 88),
+                (94, 90),
+                (98, 91),
+                (102, 92),
+                (106, 93),
+                (96, 97),
+                (100, 101),
+                (104, 105),
+                (114, 109),
+                (118, 110),
+                (122, 111),
+                (126, 112),
+                (116, 117),
+                (120, 121),
+                (124, 125),
+            ],
+            [
+                (2, 1),
+                (4, 3),
+                (6, 5),
+                (8, 7),
+                (10, 9),
+                (12, 11),
+                (22, 21),
+                (26, 25),
+                (30, 29),
+                (20, 19),
+                (24, 23),
+                (28, 27),
+                (32, 31),
+                (39, 38),
+                (43, 42),
+                (47, 46),
+                (51, 50),
+                (41, 40),
+                (45, 44),
+                (49, 48),
+                (60, 59),
+                (64, 63),
+                (68, 67),
+                (58, 57),
+                (62, 61),
+                (66, 65),
+                (70, 69),
+                (77, 76),
+                (81, 80),
+                (85, 84),
+                (89, 88),
+                (79, 78),
+                (83, 82),
+                (87, 86),
+                (98, 97),
+                (102, 101),
+                (106, 105),
+                (96, 95),
+                (100, 99),
+                (104, 103),
+                (108, 107),
+                (118, 117),
+                (122, 121),
+                (126, 125),
+                (116, 115),
+                (120, 119),
+                (124, 123),
+            ],
+        ]
+        code = ArcCircuit(
+            links, 10, schedule=schedule, run_202=False, basis="zx", logical="0", resets=True
+        )
+        if Decoder is UnionFindDecoder:
+            decoder = Decoder(code, use_peeling=False)
+        else:
+            decoder = Decoder(code)
+        string = (
+            "110100001100010110010011110110100011111100000101100101 "
+            + "01111010000111111110111110111111000010001000111111101110111111101010001 "
+            + "11110100001000110001011110110111100000111111011011011100011001000110111 "
+            + "11110100010000010110010100110110000011010110101000010101011100001000111 "
+            + "11110101010001001010001110001111000011011100111001011100001010001000111 "
+            + "01010000110001100011010110001110010011000000111010011000000100011010011 "
+            + "11001000110001110011010011101101010101000110101010010000000000011111011 "
+            + "11000000100011111001010101101011010101000100111110010000001010001101011 "
+            + "11000000001000100000010000001011001101000100100111010000110001101111100 "
+            + "11000001000000001001010001111100010000100111011110000000011000010000101 "
+            + "01000010000000000000110000001100011000000100000010000010000100010000000"
+        )
+        self.assertTrue(
+            decoder.process(string)[0] == 0,
+            "Incorrect decoding for example string with heavy-hex ARC.",
+        )
 
     def test_bravyi_haah(self):
         """Test decoding of ARCs and RCCs with Bravyi Haah"""
         self.clustering_decoder_test(BravyiHaahDecoder)
+        self.heavy_hex_test(BravyiHaahDecoder)
 
     def test_union_find(self):
         """Test decoding of ARCs and RCCs with Union Find"""
         self.clustering_decoder_test(UnionFindDecoder)
+        self.heavy_hex_test(UnionFindDecoder)
 
 
 if __name__ == "__main__":

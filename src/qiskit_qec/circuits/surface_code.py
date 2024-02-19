@@ -64,17 +64,15 @@ class SurfaceCodeCircuit(CodeCircuit):
         self._logicals["z"].append(list(range(self.d)))
         self._logicals["z"].append([self.d**2 - 1 - j for j in range(self.d)])
 
-        # set info needed for css codes
-        self.css_x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
-        self.css_x_stabilizer_ops = self.css_x_gauge_ops
-        self.css_x_logical = [self._logicals["x"][0]]
-        self.css_x_boundary = [self._logicals["x"][0] + self._logicals["x"][1]]
-        self.css_z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
-        self.css_z_stabilizer_ops = self.css_z_gauge_ops
-        self.css_z_logical = [self._logicals["z"][0]]
-        self.css_z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
-        self.round_schedule = self.basis
-        self.blocks = T
+        # set gauge and stabilizer info
+        self.x_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.xplaqs]
+        self.x_stabilizer_ops = self.x_gauge_ops
+        self.x_logical = [self._logicals["x"][0]]
+        self.x_boundary = [self._logicals["x"][0] + self._logicals["x"][1]]
+        self.z_gauge_ops = [[q for q in plaq if q is not None] for plaq in self.zplaqs]
+        self.z_stabilizer_ops = self.z_gauge_ops
+        self.z_logical = [self._logicals["z"][0]]
+        self.z_boundary = [self._logicals["z"][0] + self._logicals["z"][1]]
 
         # quantum registers
         self._num_xy = int((d**2 - 1) / 2)
@@ -316,13 +314,6 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         return syndrome_changes
 
-    def measured_logicals(self):
-        if self.basis == "x":
-            measured_logicals = self.css_x_logical
-        else:
-            measured_logicals = self.css_z_logical
-        return measured_logicals
-
     def string2raw_logicals(self, string):
         """
         Extracts raw logicals from output string.
@@ -403,7 +394,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
                 node = DecodingGraphNode(
-                    is_boundary=True,
+                    is_logical=True,
                     qubits=self._logicals[self.basis][-bqec_index - 1],
                     index=1 - bqec_index,
                 )
@@ -416,14 +407,14 @@ class SurfaceCodeCircuit(CodeCircuit):
                 for qec_index, element in enumerate(elements[::-1]):
                     if element == "1":
                         if self.basis == "x":
-                            qubits = self.css_x_stabilizer_ops[qec_index]
+                            qubits = self.x_stabilizer_ops[qec_index]
                         else:
-                            qubits = self.css_z_stabilizer_ops[qec_index]
+                            qubits = self.z_stabilizer_ops[qec_index]
                         node = DecodingGraphNode(time=syn_round, qubits=qubits, index=qec_index)
                         nodes.append(node)
         return nodes
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -431,7 +422,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_boundary (bool): If `True`, undeeded boundary nodes are
+            ignore_extra_logical (bool): If `True`, undeeded logical nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -444,9 +435,9 @@ class SurfaceCodeCircuit(CodeCircuit):
             num_errors (int): Minimum number of errors required to create nodes.
         """
 
-        bulk_nodes = [node for node in nodes if not node.is_boundary]
-        boundary_nodes = [node for node in nodes if node.is_boundary]
-        given_logicals = set(node.index for node in boundary_nodes)
+        bulk_nodes = [node for node in nodes if not node.is_logical]
+        logical_nodes = [node for node in nodes if node.is_logical]
+        given_logicals = set(node.index for node in logical_nodes)
 
         if self.basis == "z":
             coords = self._zplaq_coords
@@ -454,7 +445,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             coords = self._xplaq_coords
 
         if (len(bulk_nodes) % 2) == 0:
-            if (len(boundary_nodes) % 2) == 0 or ignore_extra_boundary:
+            if (len(logical_nodes) % 2) == 0 or ignore_extra_logical:
                 neutral = True
                 flipped_logicals = set()
                 # estimate num_errors from size
@@ -490,7 +481,7 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         # if unneeded logical zs are given, cluster is not neutral
         # (unless this is ignored)
-        if (not ignore_extra_boundary) and given_logicals.difference(flipped_logicals):
+        if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
             neutral = False
         # otherwise, report only needed logicals that aren't given
         else:
@@ -501,7 +492,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         flipped_logical_nodes = []
         for elem in flipped_logicals:
             node = DecodingGraphNode(
-                is_boundary=True, qubits=self._logicals[self.basis][elem], index=elem
+                is_logical=True, qubits=self._logicals[self.basis][elem], index=elem
             )
             flipped_logical_nodes.append(node)
 

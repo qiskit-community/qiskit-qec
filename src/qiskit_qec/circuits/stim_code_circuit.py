@@ -191,7 +191,8 @@ class StimCodeCircuit(CodeCircuit):
         self.decomp_stim_circuit = self.decompose_stim_circuit(self.stim_circuit)
         _helper(self.decomp_stim_circuit, 1)
 
-        self.circuit = self.qc
+        self.circuit = {"": self.qc}
+        self.base = ""
 
         # if a set of measurement comparisons is deterministically 1 in the absence of errors,
         # the set of syndromes is compared to that
@@ -586,8 +587,5 @@ class StimCodeCircuit(CodeCircuit):
         graph, hyperedges = detector_error_model_to_rx_graph(e, detectors=self.detectors)
         return graph, hyperedges
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
-        raise NotImplementedError
-
-    def is_cluster_neutral(self, atypical_nodes):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         raise NotImplementedError

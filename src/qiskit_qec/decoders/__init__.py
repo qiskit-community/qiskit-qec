@@ -24,14 +24,9 @@ Decoders module classes and functions
     :toctree: ../stubs/
 
     DecodingGraph
-    CircuitModelMatchingDecoder
-    RepetitionDecoder
-    ThreeBitDecoder
     UnionFindDecoder
 """
 
 from .decoding_graph import DecodingGraph
-from .circuit_matching_decoder import CircuitModelMatchingDecoder
-from .repetition_decoder import RepetitionDecoder
-from .three_bit_decoder import ThreeBitDecoder
+from .pymatching_decoder import PyMatchingDecoder
 from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder

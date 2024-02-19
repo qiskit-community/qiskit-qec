@@ -18,7 +18,6 @@
 Graph used as the basis of decoders.
 """
 import itertools
-import logging
 import copy
 from typing import List, Tuple, Union
 
@@ -44,7 +43,7 @@ class DecodingGraph:
     METHOD_NAIVE: str = "naive"
     AVAILABLE_METHODS = {METHOD_SPITZ, METHOD_NAIVE}
 
-    def __init__(self, code, brute=False, graph=None):
+    def __init__(self, code, brute=False, graph=None, hyperedges=None):
         """
         Args:
             code (CodeCircuit): The QEC code circuit object for which this decoding
@@ -58,13 +57,14 @@ class DecodingGraph:
 
         if graph:
             self.graph = graph
+            self.hyperedges = hyperedges
         else:
             self._make_syndrome_graph()
 
-        self._logical_nodes = []
+        self.logical_nodes = []
         for node in self.graph.nodes():
-            if node.is_boundary:
-                self._logical_nodes.append(node)
+            if node.is_logical:
+                self.logical_nodes.append(node)
 
         self.update_attributes()
 
@@ -142,15 +142,15 @@ class DecodingGraph:
                                 n0 = graph.nodes().index(source)
                                 n1 = graph.nodes().index(target)
                                 qubits = []
-                                if not (source.is_boundary and target.is_boundary):
+                                if not (source.is_logical and target.is_logical):
                                     qubits = list(set(source.qubits).intersection(target.qubits))
                                     if not qubits:
                                         continue
                                 if (
                                     source.time != target.time
                                     and len(qubits) > 1
-                                    and not source.is_boundary
-                                    and not target.is_boundary
+                                    and not source.is_logical
+                                    and not target.is_logical
                                 ):
                                     qubits = []
                                 edge = DecodingGraphEdge(qubits, 1)
@@ -232,9 +232,9 @@ class DecodingGraph:
             boundary = []
             error_probs = {}
             for n0, n1 in self.graph.edge_list():
-                if self.graph[n0].is_boundary:
+                if self.graph[n0].is_logical:
                     boundary.append(n1)
-                elif self.graph[n1].is_boundary:
+                elif self.graph[n1].is_logical:
                     boundary.append(n0)
                 else:
                     if (1 - 2 * av_xor[n0, n1]) != 0:
@@ -289,9 +289,9 @@ class DecodingGraph:
                 else:
                     ratio = np.nan
                 p = ratio / (1 + ratio)
-                if self.graph[n0].is_boundary and not self.graph[n1].is_boundary:
+                if self.graph[n0].is_logical and not self.graph[n1].is_logical:
                     edge = (n1, n1)
-                elif not self.graph[n0].is_boundary and self.graph[n1].is_boundary:
+                elif not self.graph[n0].is_logical and self.graph[n1].is_logical:
                     edge = (n0, n0)
                 else:
                     edge = (n0, n1)
@@ -363,7 +363,7 @@ class DecodingGraph:
             nodes = self.code.string2nodes(data, all_logicals=all_logicals)
         else:
             if all_logicals:
-                nodes = list(set(data).union(set(self._logical_nodes)))
+                nodes = list(set(data).union(set(self.logical_nodes)))
             else:
                 nodes = data
         for node in nodes:
@@ -441,242 +441,100 @@ class DecodingGraph:
         unpaired_ns = ns.difference(paired_ns)
         return [self.graph.nodes()[n] for n in unpaired_ns]
 
-
-class CSSDecodingGraph:
-    """
-    Class to construct the decoding graph required for the CircuitModelMatchingDecoder
-    for a generic CSS code.
-    """
-
-    def __init__(
-        self,
-        css_x_gauge_ops: List[Tuple[int]],
-        css_x_stabilizer_ops: List[Tuple[int]],
-        css_x_boundary: List[Tuple[int]],
-        css_z_gauge_ops: List[Tuple[int]],
-        css_z_stabilizer_ops: List[Tuple[int]],
-        css_z_boundary: List[Tuple[int]],
-        blocks: int,
-        round_schedule: str,
-        basis: str,
-    ):
-        self.css_x_gauge_ops = css_x_gauge_ops
-        self.css_x_stabilizer_ops = css_x_stabilizer_ops
-        self.css_x_boundary = css_x_boundary
-        self.css_z_gauge_ops = css_z_gauge_ops
-        self.css_z_stabilizer_ops = css_z_stabilizer_ops
-        self.css_z_boundary = css_z_boundary
-        self.blocks = blocks
-        self.round_schedule = round_schedule
-        self.basis = basis
-
-        self.layer_types = self._layer_types(self.blocks, self.round_schedule, self.basis)
-
-        self._decoding_graph()
-
-    @staticmethod
-    def _layer_types(blocks: int, round_schedule: str, basis: str) -> List[str]:
-        """Return a list of decoding graph layer types.
-
-        The entries are 'g' for gauge and 's' for stabilizer.
+    def get_edge_graph(self):
         """
-        layer_types = []
-        last_step = basis
-        for _ in range(blocks):
-            for step in round_schedule:
-                if basis == "z" and step == "z" and last_step == "z":
-                    layer_types.append("g")
-                elif basis == "z" and step == "z" and last_step == "x":
-                    layer_types.append("s")
-                elif basis == "x" and step == "x" and last_step == "x":
-                    layer_types.append("g")
-                elif basis == "x" and step == "x" and last_step == "z":
-                    layer_types.append("s")
-                last_step = step
-        if last_step == basis:
-            layer_types.append("g")
-        else:
-            layer_types.append("s")
-        return layer_types
+        Returns a copy of the graph that uses edges to store information
+        about the effects of errors on logical operators. This is done
+        via the `'fault_ids'` of the edges. No logical nodes are present
+        in such a graph.
 
-    def _decoding_graph(self):
-        """Construct the decoding graph for the given basis.
-
-        This method sets edge weights all to 1 and is based on
-        computing intersections of operator supports.
-
-        Returns a tuple (idxmap, node_layers, G)
-        where idxmap is a dict
-        mapping tuples (t, qubit_set) to integer vertex indices in the
-        decoding graph G. The list node_layers contains lists of nodes
-        for each time step.
+        Returns:
+            edge_graph (rx.PyGraph): The edge graph.
         """
-        graph = rx.PyGraph(multigraph=False)
-        gauges = []
-        stabilizers = []
-        boundary = []
-        if self.basis == "z":
-            gauges = self.css_z_gauge_ops
-            stabilizers = self.css_z_stabilizer_ops
-            boundary = self.css_z_boundary
-        elif self.basis == "x":
-            gauges = self.css_x_gauge_ops
-            stabilizers = self.css_x_stabilizer_ops
-            boundary = self.css_x_boundary
 
-        # Construct the decoding graph
-        idx = 0  # vertex index counter
-        idxmap = {}  # map from vertex data (t, qubits) to vertex index
-        node_layers = []
-        for time, layer in enumerate(self.layer_types):
-            # Add vertices at time t
-            node_layer = []
-            if layer == "g":
-                all_z = gauges
-            elif layer == "s":
-                all_z = stabilizers
-            for index, supp in enumerate(all_z):
-                node = DecodingGraphNode(time=time, qubits=supp, index=index)
-                node.properties["highlighted"] = True
-                graph.add_node(node)
-                logging.debug("node %d t=%d %s", idx, time, supp)
-                idxmap[(time, tuple(supp))] = idx
-                node_layer.append(idx)
-                idx += 1
-            for index, supp in enumerate(boundary):
-                # Add optional is_boundary property for pymatching
-                node = DecodingGraphNode(is_boundary=True, qubits=supp, index=index)
-                node.properties["highlighted"] = False
-                graph.add_node(node)
-                logging.debug("boundary %d t=%d %s", idx, time, supp)
-                idxmap[(time, tuple(supp))] = idx
-                node_layer.append(idx)
-                idx += 1
-            node_layers.append(node_layer)
-            if layer == "g":
-                all_z = gauges + boundary
-            elif layer == "s":
-                all_z = stabilizers + boundary
-            # Add space-like edges at time t
-            # The qubit sets of any pair of vertices at time
-            # t can intersect on multiple qubits.
-            # If they intersect, we add an edge and label it by
-            # one of the common qubits. This makes an assumption
-            # that the intersection operator is equivalent to a single
-            # qubit operator modulo the gauge group.
-            # Space-like edges do not correspond to syndrome errors, so the
-            # syndrome property is an empty list.
-            for i, op_g in enumerate(all_z):
-                for j in range(i + 1, len(all_z)):
-                    op_h = all_z[j]
-                    com = list(set(op_g).intersection(set(op_h)))
-                    if -1 in com:
-                        com.remove(-1)
-                    if len(com) > 0:
-                        # Include properties for use with pymatching:
-                        # qubit_id is an integer or set of integers
-                        # weight is a floating point number
-                        # error_probability is a floating point number
-                        edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
-                        edge.properties["highlighted"] = False
-                        edge.properties["measurement_error"] = 0
-                        graph.add_edge(
-                            idxmap[(time, tuple(op_g))], idxmap[(time, tuple(op_h))], edge
-                        )
-                        logging.debug("spacelike t=%d (%s, %s)", time, op_g, op_h)
-                        logging.debug(
-                            " qubits %s",
-                            [com[0]],
-                        )
+        nodes = self.graph.nodes()
+        # get a list of boundary nodes
+        bns = []
+        for n, node in enumerate(nodes):
+            if node.is_logical:
+                bns.append(n)
+        # find pairs of bulk edges that have overlap with a boundary
+        bedge = {}
+        # and their edges connecting to the boundary, that we'll discard
+        spares = set()
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if not nodes[n0].is_logical and not nodes[n1].is_logical:
+                for n2 in bns:
+                    adj = set(edge.qubits).intersection(set(nodes[n2].qubits))
+                    if adj:
+                        if (n0, n1) not in bedge:
+                            bedge[n0, n1] = {nodes[n2].index}
+                        else:
+                            bedge[n0, n1].add(nodes[n2].index)
+                        for n in (n0, n1):
+                            spares.add((n, n2))
+                            spares.add((n2, n))
+        # find bulk-boundary pairs not covered by the above
+        for (n0, n1) in self.graph.edge_list():
+            n2 = None
+            for n in (n0, n1):
+                if nodes[n].is_logical:
+                    n2 = n
+            if n2 is not None:
+                if (n0, n1) not in spares:
+                    adj = set(nodes[n2].qubits)
+                    for n in (n0, n1):
+                        adj = adj.intersection(set(nodes[n].qubits))
+                    if (n0, n1) not in bedge:
+                        bedge[n0, n1] = {nodes[n2].index}
+                    else:
+                        bedge[n0, n1].add(nodes[n2].index)
+        # make a new graph with fault_ids on boundary edges, and ignoring the spare edges
+        edge_graph = rx.PyGraph(multigraph=False)
+        for node in nodes:
+            edge_graph.add_node(copy.copy(node))
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if (n0, n1) in bedge:
+                edge.fault_ids = bedge[n0, n1]
+                edge_graph.add_edge(n0, n1, edge)
+            elif (n0, n1) not in spares and (n1, n0) not in spares:
+                edge.fault_ids = set()
+                edge_graph.add_edge(n0, n1, edge)
+        # turn logical nodes into boundary nodes
+        for node in edge_graph.nodes():
+            if node.is_logical:
+                node.is_boundary = True
+                node.is_logical = False
+        return edge_graph
 
-            # Add boundary space-like edges
-            for i in range(len(boundary) - 1):
-                bound_g = boundary[i]
-                bound_h = boundary[i + 1]
-                # Include properties for use with pymatching:
-                # qubit_id is an integer or set of integers
-                # weight is a floating point number
-                # error_probability is a floating point number
-                edge = DecodingGraphEdge(qubits=[], weight=0)
-                edge.properties["highlighted"] = False
-                edge.properties["measurement_error"] = 0
-                graph.add_edge(idxmap[(time, tuple(bound_g))], idxmap[(time, tuple(bound_h))], edge)
-                logging.debug("spacelike boundary t=%d (%s, %s)", time, bound_g, bound_h)
+    def get_node_graph(self):
+        """
+        Returns a copy of the graph that uses logical nodes to store information
+        about the effects of errors on logical operators. No non-trivial `'fault_ids'`
+        are present in such a graph.
 
-            # Add (space)time-like edges from t to t-1
-            # By construction, the qubit sets of pairs of vertices at graph and T
-            # at times t-1 and t respectively
-            # either (a) contain each other (graph subset T or T subset graph) and
-            # |graph|,|T|>1,
-            # (b) intersect on one or more qubits, or (c) are disjoint.
-            # In case (a), we add an edge that corresponds to a syndrome bit
-            # error at time t-1.
-            # In case (b), we add an edge that corresponds to a spacetime hook
-            # error, i.e. a syndrome bit error at time t-1
-            # together with an error on one of the common qubits. Again
-            # this makes an assumption that all such errors are equivalent.
-            # In case (c), we do not add an edge.
-            # Important: some space-like hooks are not accounted for.
-            # They can have longer paths between non-intersecting operators.
-            # We will account for these in _revise_decoding_graph if needed.
-            if time > 0:
-                current_sets = gauges
-                prior_sets = gauges
-                if self.layer_types[time] == "s":
-                    current_sets = stabilizers
-                if self.layer_types[time - 1] == "s":
-                    prior_sets = stabilizers
-                for op_g in current_sets:
-                    for op_h in prior_sets:
-                        com = list(set(op_g).intersection(set(op_h)))
-                        if -1 in com:
-                            com.remove(-1)
-                        if len(com) > 0:  # not Case (c)
-                            # Include properties for use with pymatching:
-                            # qubit_id is an integer or set of integers
-                            # weight is a floating point number
-                            # error_probability is a floating point number
-                            # Case (a)
-                            if set(com) == set(op_h) or set(com) == set(op_g):
-                                edge = DecodingGraphEdge(qubits=[], weight=1)
-                                edge.properties["highlighted"] = False
-                                edge.properties["measurement_error"] = 1
-                                graph.add_edge(
-                                    idxmap[(time - 1, tuple(op_h))],
-                                    idxmap[(time, tuple(op_g))],
-                                    edge,
-                                )
-                                logging.debug("timelike t=%d (%s, %s)", time, op_g, op_h)
-                            else:  # Case (b)
-                                edge = DecodingGraphEdge(qubits=[com[0]], weight=1)
-                                edge.properties["highlighted"] = False
-                                edge.properties["measurement_error"] = 1
-                                graph.add_edge(
-                                    idxmap[(time - 1, tuple(op_h))],
-                                    idxmap[(time, tuple(op_g))],
-                                    edge,
-                                )
-                                logging.debug("spacetime hook t=%d (%s, %s)", time, op_g, op_h)
-                                logging.debug(" qubits %s", [com[0]])
-                # Add a single time-like edge between boundary vertices at
-                # time t-1 and t
-                edge = DecodingGraphEdge(qubits=[], weight=0)
-                edge.properties["highlighted"] = False
-                edge.properties["measurement_error"] = 0
-                graph.add_edge(
-                    idxmap[(time - 1, tuple(boundary[0]))], idxmap[(time, tuple(boundary[0]))], edge
-                )
-                logging.debug("boundarylink t=%d", time)
-
-        self.idxmap = idxmap
-        self.node_layers = node_layers
-        self.graph = graph
+        Returns:
+            node_graph (rx.PyGraph): The node graph.
+        """
+        node_graph = self.graph.copy()
+        for edge, (n0, n1) in zip(self.graph.edges(), self.graph.edge_list()):
+            if edge.fault_ids:
+                # is the edge has fault ids, make corresponding logical nodes
+                # and connect them to these edges
+                for index in edge.fault_ids:
+                    node2 = DecodingGraphNode(is_logical=True, index=index)
+                    n2 = node_graph.add_node(node2)
+                    node_graph.add_edge(n0, n2, copy.copy(edge))
+                    node_graph.add_edge(n1, n2, copy.copy(edge))
+        for edge in self.graph.edges():
+            edge.fault_ids = set()
+        return node_graph
 
 
 def make_syndrome_graph_from_aer(code, shots=1):
     """
-    Generates a graph and list of hyperedges for a given code by inserting single qubit
-    Paulis into the base circuit for that code. Also supplied information regarding which
+    Generates a graph and list of hyperedges for a given code by inserting Pauli errors
+    around the gates of the base circuit for that code. Also supplied information regarding which
     edges where generated by which Pauli insertions.
 
     Args:
@@ -708,7 +566,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
     for j in range(depth):
         gate = qc.data[j][0].name
         qubits = qc.data[j][1]
-        if gate not in ["measure", "reset", "barrier"]:
+        if gate not in ["measure", "reset", "barrier"] and len(qubits) != 2:
             for error in ["x", "y", "z"]:
                 for qubit in qubits:
                     temp_qc = copy.deepcopy(blank_qc)
@@ -720,6 +578,28 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     getattr(temp_qc, error)(qubit)
                     temp_qc.data += qc.data[j : depth + 1]
                     error_circuit[temp_qc_name] = temp_qc
+        elif len(qubits) == 2:
+            qregs = []
+            for qubit in qubits:
+                for qreg in qc.qregs:
+                    if qubit in qreg:
+                        qregs.append(qreg)
+                        break
+            for pauli_0 in ["id", "x", "y", "z"]:
+                for pauli_1 in ["id", "x", "y", "z"]:
+                    if not pauli_0 == pauli_1 == "id":
+                        temp_qc = copy.deepcopy(blank_qc)
+                        temp_qc_name = (
+                            j,
+                            (qc.qregs.index(qregs[0]), qc.qregs.index(qregs[1])),
+                            (qregs[0].index(qubits[0]), qregs[1].index(qubits[1])),
+                            pauli_0 + "," + pauli_1,
+                        )
+                        temp_qc.data = qc.data[0:j]
+                        getattr(temp_qc, pauli_0)(qubits[0])
+                        getattr(temp_qc, pauli_1)(qubits[1])
+                        temp_qc.data += qc.data[j : depth + 1]
+                        error_circuit[temp_qc_name] = temp_qc
         elif gate == "measure":
             pre_error = "x"
             for post_error in ["id", "x"]:
@@ -761,7 +641,7 @@ def make_syndrome_graph_from_aer(code, shots=1):
                     if target != source or (len(nodes) == 1):
                         n0 = graph.nodes().index(source)
                         n1 = graph.nodes().index(target)
-                        if not (source.is_boundary and target.is_boundary):
+                        if not (source.is_logical and target.is_logical):
                             qubits = list(set(source.qubits).intersection(target.qubits))
                         if source.time != target.time and len(qubits) > 1:
                             qubits = []

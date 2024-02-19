@@ -183,16 +183,6 @@ class CSSCodeCircuit(CodeCircuit):
             self.z_stabilizers = self.code.z_stabilizers
             self.logical_x = self.code.logical_x
             self.logical_z = self.code.logical_z
-        # for the unionfind decoder
-        self.css_x_logical = self.logical_x
-        self.css_z_logical = self.logical_z
-
-    def measured_logicals(self):
-        if self.basis == "x":
-            measured_logicals = self.logical_x
-        else:
-            measured_logicals = self.logical_z
-        return measured_logicals
 
     def _prepare_initial_state(self, qc, qregs, state):
         if state[0] == "1":
@@ -289,7 +279,7 @@ class CSSCodeCircuit(CodeCircuit):
         log_outs = string2logical_meas(string, self.logicals, self.circuit["0"].clbits)
         return log_outs
 
-    def check_nodes(self, nodes, ignore_extra_boundary=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
         raise NotImplementedError
 
     def is_cluster_neutral(self, atypical_nodes):
