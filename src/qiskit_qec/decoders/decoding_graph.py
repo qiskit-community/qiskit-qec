@@ -322,7 +322,7 @@ class DecodingGraph:
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
-            if node.is_boundary:
+            if node.is_logical:
                 boundary_nodes.append(n)
 
         for edge in self.graph.edge_list():
