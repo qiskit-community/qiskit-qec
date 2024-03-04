@@ -793,6 +793,7 @@ class ArcCircuit(CodeCircuit):
             if graph.degree(n) == 1:
                 z_logicals.append(node)
                 self._leaves = True
+                break
         # if there are none, just use the first
         if not z_logicals:
             z_logicals = [min(self.code_index.keys())]
