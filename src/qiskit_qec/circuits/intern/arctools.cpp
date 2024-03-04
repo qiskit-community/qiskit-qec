@@ -10,9 +10,12 @@ bool is_cluster_neutral(
         return nodes.size()%2==0;
     } else {
         std::vector<int> output = check_nodes(nodes, ignore_extras, minimal, cycle_dict, link_graph, link_neighbors, z_logicals);
-        return (output[0]==1) and (output.size()==2);
+        bool no_logicals = true;
+        for (int j = 2; j < output.size(); j++) {
+            no_logicals = no_logicals and (output[j]<2);
+        };
+        return (output[0]==1) and no_logicals;
     }
-
 };
 
 std::vector<int> check_nodes(

@@ -76,10 +76,10 @@ class CodeCircuit(ABC):
         pass
 
     @abstractmethod
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, nodes):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
-        errors could have caused the set of atypical nodes (syndrome changes) passed
+        errors could have caused the set of nodes (syndrome changes) passed
         to the method.
 
         Default version here assumes that it is as simple as an an even/odd assessment
@@ -87,6 +87,6 @@ class CodeCircuit(ABC):
         more complex codes. It also should be used with care, by only supplying sets
         of nodes for which the even/odd assessment is valid.
         Args:
-            atypical_nodes (dictionary in the form of the return value of string2nodes)
+            nodes (dictionary in the form of the return value of string2nodes)
         """
-        return not bool(len(atypical_nodes) % 2)
+        return not bool(len(nodes) % 2)
