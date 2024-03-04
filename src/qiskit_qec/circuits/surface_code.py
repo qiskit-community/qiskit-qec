@@ -498,12 +498,12 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, nodes):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
-        errors could have caused the set of atypical nodes (syndrome changes) passed
+        errors could have caused the set of nodes (syndrome changes) passed
         to the method.
         Args:
-            atypical_nodes (dictionary in the form of the return value of string2nodes)
+            nodes (dictionary in the form of the return value of string2nodes)
         """
-        return not bool(len(atypical_nodes) % 2)
+        return not bool(len(nodes) % 2)
