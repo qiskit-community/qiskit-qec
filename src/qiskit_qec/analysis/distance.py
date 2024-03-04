@@ -113,14 +113,12 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_we
     for row in range(xl.shape[0]):
         for w in range(1, max_weight + 1):
             if _distance_test(stabilizer.astype(int), xl[row].astype(int), w):
-                if w < weight:
-                    weight = w
+                weight = min(weight, w)
                 break
     for row in range(zl.shape[0]):
         for w in range(1, max_weight + 1):
             if _distance_test(stabilizer.astype(int), zl[row].astype(int), w):
-                if w < weight:
-                    weight = w
+                weight = min(weight, w)
                 break
     if weight < max_weight + 1:
         return weight

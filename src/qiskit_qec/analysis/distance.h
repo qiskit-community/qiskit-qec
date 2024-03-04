@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <exception>
+#include <iterator>
 
 #include "linear.h"
 #include "combinations.h"
