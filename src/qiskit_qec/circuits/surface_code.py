@@ -414,7 +414,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                         nodes.append(node)
         return nodes
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -422,7 +422,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded logical nodes are
+            ignore_extras (bool): If `True`, undeeded logical nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -445,7 +445,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             coords = self._xplaq_coords
 
         if (len(bulk_nodes) % 2) == 0:
-            if (len(logical_nodes) % 2) == 0 or ignore_extra_logical:
+            if (len(logical_nodes) % 2) == 0 or ignore_extras:
                 neutral = True
                 flipped_logicals = set()
                 # estimate num_errors from size
@@ -481,7 +481,7 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         # if unneeded logical zs are given, cluster is not neutral
         # (unless this is ignored)
-        if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+        if (not ignore_extras) and given_logicals.difference(flipped_logicals):
             neutral = False
         # otherwise, report only needed logicals that aren't given
         else:

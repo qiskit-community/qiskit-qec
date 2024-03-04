@@ -53,7 +53,7 @@ class CodeCircuit(ABC):
         pass
 
     @abstractmethod
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -61,7 +61,7 @@ class CodeCircuit(ABC):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded logical nodes are
+            ignore_extras (bool): If `True`, undeeded logical and boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.

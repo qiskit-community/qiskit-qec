@@ -135,7 +135,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
             # check the neutrality of each connected component
             con_nodes = [cg[n] for n in con_comp]
             neutral, logicals, num_errors = self.code.check_nodes(
-                con_nodes, ignore_extra_logical=True
+                con_nodes, ignore_extras=True
             )
 
             # it's fully neutral if no extra logicals are needed

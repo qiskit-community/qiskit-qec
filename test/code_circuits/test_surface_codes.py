@@ -235,6 +235,6 @@ class TestSurfaceCodes(unittest.TestCase):
             DecodingGraphNode(time=3, qubits=[11, 16, 12, 17], index=7),
             DecodingGraphNode(qubits=[24, 23, 22, 21, 20], is_logical=True, index=1),
         ]
-        valid = valid and code.check_nodes(nodes, ignore_extra_logical=True) == (True, [], 1)
+        valid = valid and code.check_nodes(nodes, ignore_extras=True) == (True, [], 1)
 
         self.assertTrue(valid, "A set of nodes did not give the expected outcome for check_nodes.")

@@ -279,7 +279,7 @@ class CSSCodeCircuit(CodeCircuit):
         log_outs = string2logical_meas(string, self.logicals, self.circuit["0"].clbits)
         return log_outs
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         raise NotImplementedError
 
     def is_cluster_neutral(self, atypical_nodes):

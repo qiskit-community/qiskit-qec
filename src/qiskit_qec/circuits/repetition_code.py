@@ -326,7 +326,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         return [string.split(" ", maxsplit=1)[0][-1]]
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -334,7 +334,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
+            ignore_extras (bool): If `True`, undeeded boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -397,7 +397,7 @@ class RepetitionCodeCircuit(CodeCircuit):
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
-            if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+            if (not ignore_extras) and given_logicals.difference(flipped_logicals):
                 neutral = False
             # otherwise, report only needed logicals that aren't given
             else:
@@ -1131,7 +1131,7 @@ class ArcCircuit(CodeCircuit):
                 link_neighbors[node].append(nodes[j])
         return link_graph, link_neighbors
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1139,7 +1139,7 @@ class ArcCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
+            ignore_extras (bool): If `True`, undeeded boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -1156,7 +1156,7 @@ class ArcCircuit(CodeCircuit):
 
         cpp_output = _c_check_nodes(
             nodes,
-            ignore_extra_logical,
+            ignore_extras,
             minimal,
             self.cycle_dict,
             self._cpp_link_graph,
