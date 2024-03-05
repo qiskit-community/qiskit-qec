@@ -3,24 +3,24 @@
 
 bool is_cluster_neutral(
     std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extras, bool minimal,
-    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals,
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::map<int, int> extras,
     bool linear
     ) {
     if (linear) {
         return nodes.size()%2==0;
     } else {
-        std::vector<int> output = check_nodes(nodes, ignore_extras, minimal, cycle_dict, link_graph, link_neighbors, z_logicals);
-        bool no_logicals = true;
+        std::vector<int> output = check_nodes(nodes, ignore_extras, minimal, cycle_dict, link_graph, link_neighbors, extras);
+        bool no_boundary = true;
         for (int j = 2; j < output.size(); j++) {
-            no_logicals = no_logicals and (output[j]<2);
+            no_boundary = no_boundary and (extras[output[j]]<2);
         };
-        return (output[0]==1) and no_logicals;
+        return (output[0]==1) and no_boundary;
     }
 };
 
 std::vector<int> check_nodes(
     std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extras, bool minimal,
-    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::map<int, int> extras
     ) {
     
     // output[0] is neutral (as int), output[1] is num_errors, rest is list of given extras
@@ -169,11 +169,11 @@ std::vector<int> check_nodes(
             }
             // determine which flipped extras correspond to which colour
             std::vector<std::set<int>> color_extras = {{}, {}};
-            for (auto & q: z_logicals){
-                if (color.find(q) == color.end()){
-                    color[q] = (conv_color+1)%2;
+            for (auto & qe: extras){
+                if (color.find(qe.first) == color.end()){
+                    color[qe.first] = (conv_color+1)%2;
                 }
-                color_extras[color[q]].insert(q);
+                color_extras[color[qe.first]].insert(qe.first);
             }
             // see if we can find a color for which we have no extra extras
             // and see what additional extras are required

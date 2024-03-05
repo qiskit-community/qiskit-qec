@@ -785,15 +785,17 @@ class ArcCircuit(CodeCircuit):
                 self.circuit[basis].x(self.code_qubit)
             self._basis_change(basis)
 
-        # use degree 1 code qubits for logical z readouts
+        # use degree 1 code qubits for logical z readouts (and boundary)
         graph = self._get_coupling_graph()
         self._leaves = False
         z_logicals = []
+        self.boundary = []
         for n, node in enumerate(graph.nodes()):
             if graph.degree(n) == 1:
                 z_logicals.append(node)
+                self.boundary.append(node)
                 self._leaves = True
-        # if there are none, just use the first
+        # if there are none, just use the first (not boundary)
         if not z_logicals:
             z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
@@ -1134,6 +1136,19 @@ class ArcCircuit(CodeCircuit):
                 link_neighbors[node].append(nodes[j])
         return link_graph, link_neighbors
 
+    def _extras2cpp(self):
+        """
+        Returns logical and boundary nodes as tuples. First value is the qubit,
+        second is 1 for logical only, 2 for boundary only and 3 for both.
+        """
+        extras = {}
+        for q in self.z_logicals:
+            extras[q] = 1 + 2 * (q in self.boundary)
+        for q in self.boundary:
+            if q not in self.z_logicals:
+                extras[q] = 2
+        return extras
+
     def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
@@ -1164,21 +1179,28 @@ class ArcCircuit(CodeCircuit):
             self.cycle_dict,
             self._cpp_link_graph,
             self._cpp_link_neighbors,
-            self.z_logicals,
+            self._extras2cpp(),
         )
 
         neutral = bool(cpp_output[0])
         num_errors = cpp_output[1]
-        flipped_logical_nodes = []
-        for flipped_logical in cpp_output[2::]:
+        flipped_extra_nodes = []
+        for flipped_extra in cpp_output[2::]:
+            is_logical = flipped_extra in self.z_logicals
+            is_boundary = flipped_extra in self.boundary
+            if is_logical:
+                index = self.z_logicals.index(flipped_extra)
+            else:
+                index = self.boundary.index(flipped_extra)
             node = DecodingGraphNode(
-                is_logical=True,
-                qubits=[flipped_logical],
-                index=self.z_logicals.index(flipped_logical),
+                is_logical=is_logical,
+                is_boundary=is_boundary,
+                qubits=[flipped_extra],
+                index=index,
             )
-            flipped_logical_nodes.append(node)
+            flipped_extra_nodes.append(node)
 
-        return neutral, flipped_logical_nodes, num_errors
+        return neutral, flipped_extra_nodes, num_errors
 
     def is_cluster_neutral(self, nodes: dict):
         """
@@ -1196,7 +1218,7 @@ class ArcCircuit(CodeCircuit):
             self.cycle_dict,
             self._cpp_link_graph,
             self._cpp_link_neighbors,
-            self.z_logicals,
+            self._extras2cpp(),
             self._linear,
         )
 

@@ -96,16 +96,21 @@ class ClusteringDecoder(ABC):
 class BravyiHaahDecoder(ClusteringDecoder):
     """Decoder based on finding connected components within the decoding graph."""
 
+    def __init__(
+        self,
+        code_circuit,
+        decoding_graph: DecodingGraph = None,
+    ):
+        super().__init__(code_circuit, decoding_graph)
+        self._distance = distance_matrix(self.decoding_graph.graph)
+
     def _cluster(self, ns, dist_max):
         """
         Finds connected components in the given nodes, for nodes connected by at most the given distance
         in the given decoding graph.
         """
 
-        # calculate distance for the graph
         dg = self.decoding_graph.graph
-        distance = distance_matrix(dg)
-
         # create empty `DecodingGraph`
         cluster_graph = DecodingGraph(None)
         cg = cluster_graph.graph
@@ -120,7 +125,7 @@ class BravyiHaahDecoder(ClusteringDecoder):
         for n0 in ns:
             for n1 in ns:
                 if n0 < n1:
-                    dist = distance[n0, n1]
+                    dist = self._distance[n0, n1]
                     if dist <= dist_max:
                         cg.add_edge(d2c[n0], d2c[n1], {"distance": dist})
         # find the connected components of cg
@@ -284,8 +289,6 @@ class UnionFindDecoder(ClusteringDecoder):
     "convert" them into erasure errors, which can be corrected easily,
     by the peeling decoder for compatible codes or by the standard HDRG
     method in general.
-
-    TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)
 
     See arXiv:1709.06218v3 for more details.
     """
