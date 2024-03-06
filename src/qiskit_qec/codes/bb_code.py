@@ -9,12 +9,13 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Bivariate Bicycle code builder example"""
+"""Define the bivariate bicylce code."""
 
 from typing import Optional, Sequence
 
 import numpy as np
 
+from qiskit_qec.linear.symplectic import normalizer
 import qiskit_qec.utils.pauli_rep as pauli_rep
 from qiskit_qec.codes.codebuilders.builder import Builder
 from qiskit_qec.codes.stabsubsystemcodes import StabSubSystemCode
@@ -23,10 +24,14 @@ from qiskit_qec.operators.pauli_list import PauliList
 from qiskit_qec.structures.gauge import GaugeGroup
 
 
-class BivariateBicycleCodeBuilder(Builder):
-    """Bivariate Bicycle Code (arXiv:2308.07915) Builder Class"""
+class BBCode:
+    """Bivariate Bicycle code data.
 
-    # pylint: disable=anomalous-backslash-in-string
+    The X and Z gauge operator lists are given as lists of supports.
+    There is a consistent qubit ordering of these lists so that
+    we can construct gate schedules for circuits.
+    """
+
     def __init__(
         self,
         l: int,
@@ -74,25 +79,104 @@ class BivariateBicycleCodeBuilder(Builder):
             self.set_B(self.gen_y(d), self.gen_x(e), self.gen_x(f))
         else: self.B = None
 
-    def build(self) -> StabSubSystemCode:
-        """
-        Buils the Stabilizer surface code and returns it.
+        self._hx = None
+        self._hz = None
+        self._x_stabilizers = None
+        self._z_stabilizers = None
+        self._logical_z = None
+        self._logical_x = None
 
-        Returns
-        -------
-        StabSubSystemCode
-            The Stabilizer code defined by the parity check matrices
-            hx = [A|B] and hz = [B^T, A^T].
+    @property
+    def hx(self) -> np.array:
+        if not self.is_defined():
+            raise AttributeError(f'A or B undefined, first set them via set_A and set_B')
+        if self._hx is None: self._hx = np.hstack([self.A, self.B])
+        return self._hx
 
-        Raises
-        ------
-        AttributeError
-            When A or B are None (have not been defined yet).
-        
-        """
+    @property
+    def hz(self) -> np.array:
+        if not self.is_defined():
+            raise AttributeError(f'A or B undefined, first set them via set_A and set_B')
+        if self._hz is None: self._hz = np.hstack([self.B.T, self.A.T])
+        return self._hz
+    
+    @property
+    def x_stabilizers(self) -> PauliList:
+        if self._x_stabilizers is None: self._x_stabilizers = PauliList(np.hstack([self.hx, np.zeros((self.n//2, self.n))]))
+        return self._x_stabilizers
+    
+    @property
+    def z_stabilizers(self) -> PauliList:
+        if self._z_stabilizers is None: self._z_stabilizers = PauliList(np.hstack([np.zeros((self.n//2, self.n)), self.hz]))
+        return self._z_stabilizers
+    
+    @property
+    def x_gauges(self) -> PauliList:
+        return self.x_stabilizers
+    
+    @property
+    def z_gauges(self) -> PauliList:
+        return self.z_stabilizers
+    
+    @property
+    def logical_z(self):
+        if self._logical_z is None:
+            full_sym = np.vstack([np.hstack([self.hx, np.zeros((self.n//2, self.n))]),
+                                  np.hstack([np.zeros((self.n//2, self.n)), self.hz])])
+            center_, x_new, z_new = normalizer(full_sym)
+            self._logical_z = PauliList(z_new)
+            self._logical_x = PauliList(x_new)
 
-        gauge_group = self._create_gauge_group()
-        return StabSubSystemCode(gauge_group=gauge_group)
+        #return self._logical_z.matrix.astype(int).tolist()
+        return self._logical_z
+    
+    @property
+    def logical_x(self):
+        if self._logical_x is None:
+            full_sym = np.vstack([np.hstack([self.hx, np.zeros((self.n//2, self.n))]),
+                                  np.hstack([np.zeros((self.n//2, self.n)), self.hz])])
+            center_, x_new, z_new = normalizer(full_sym.astype(np.bool_))
+            self._logical_z = PauliList(z_new)
+            self._logical_x = PauliList(x_new)
+
+        return self._logical_x
+    
+    @property
+    def x_boundary(self):
+        raise NotImplementedError()
+    
+    @property
+    def z_boundary(self):
+        raise NotImplementedError()
+    
+    @property
+    def k(self):
+        raise NotImplementedError()
+
+    @property
+    def d(self):
+        raise NotImplementedError()
+
+    def __str__(self) -> str:
+        """Formatted string."""
+        return f"(l={self.l},m={self.m}) bivariate bicycle code"
+        #return f"[[{self.n}, {self.k}, {self.d}]] heavy-hexagon compass code"
+
+    def __repr__(self) -> str:
+        """String representation."""
+        val = str(self)
+        val += f"\nx_gauges = {self.x_gauges}"
+        val += f"\nz_gauges = {self.z_gauges}"
+        val += f"\nx_stabilizers = {self.x_stabilizers}"
+        val += f"\nz_stabilizers = {self.z_stabilizers}"
+        val += f"\nlogical_x = {self.logical_x}"
+        val += f"\nlogical_z = {self.logical_z}"
+        val += f"\nx_boundary = {self.x_boundary}"
+        val += f"\nz_boundary = {self.z_boundary}"
+        return val
+    
+    def is_defined(self):
+        return self.A is not None and self.B is not None
     
     def set_A(self, A1, A2, A3) -> None:
         """
@@ -160,7 +244,7 @@ class BivariateBicycleCodeBuilder(Builder):
         >>> builder.gen_x() # x
         """
 
-        return np.kron(BivariateBicycleCodeBuilder.cs_pow(self.l, power=power), np.eye(self.m)).astype(np.uint8)
+        return np.kron(BBCode.cs_pow(self.l, power=power), np.eye(self.m)).astype(np.uint8)
     
     def gen_y(self, power=1):
         """
@@ -184,7 +268,7 @@ class BivariateBicycleCodeBuilder(Builder):
         >>> builder.gen_y() # y
         """
 
-        return np.kron(np.eye(self.l), BivariateBicycleCodeBuilder.cs_pow(self.m, power=power)).astype(np.uint8)
+        return np.kron(np.eye(self.l), BBCode.cs_pow(self.m, power=power)).astype(np.uint8)
     
     @staticmethod
     def cs_pow(l, power=1):
@@ -210,55 +294,7 @@ class BivariateBicycleCodeBuilder(Builder):
         """
 
         return np.roll(np.eye(l), shift=power, axis=1).astype(np.uint8)
-
-    def _create_gauge_group(self):
-        """
-        Creates the gauge group of this code.
-
-        Returns
-        -------
-        GaugeGroup
-            The Gauge Group (Stabilizer Group) defined by the parity check matrices
-            hx = [A|B] and hz = [B^T, A^T].
-
-        Raises
-        ------
-        AttributeError
-            When A or B are None (have not been defined yet).
-        
-        """
-        if self.A is None or self.B is None:
-            raise AttributeError(f'A or B is undefined, first set them via set_A and set_B')
-        
-        # create parity check matrices, padded with zeros (for conversion to PauliList from sympletic representation)
-        hx_s = np.hstack([self.A, self.B, np.zeros((self.n//2, self.n))])
-        hz_s = np.hstack([np.zeros((self.n//2, self.n)), self.B.T, self.A.T])
-
-        s = np.vstack([hx_s, hz_s]) # total sympletic representation of all stabilizers of this code
-
-        generators = PauliList(s)
-        gauge_group = GaugeGroup(generators)
-        return gauge_group
-
-
-def main():
-    """ test """
-    code1 = BivariateBicycleCodeBuilder(l=6, m=6, p1=(3,1,2), p2=(3,1,2)).build()
-
-    builder = BivariateBicycleCodeBuilder(l=6, m=6)
-    builder.set_A(builder.gen_x(3), builder.gen_y(1), builder.gen_y(2))
-    builder.set_B(builder.gen_y(3), builder.gen_x(1), builder.gen_x(2))
-    code2 = builder.build()
-
-    print(code1._n)
-    BasePauli.set_syntax(pauli_rep.INDEX_SYNTAX)
-    print(code1.gauge_group.generators)
-    print(code1.gauge_group.generators[0])
-    BasePauli.set_syntax(pauli_rep.PRODUCT_SYNTAX)
-    print(code1.gauge_group.generators[0])
-    BasePauli.set_syntax(pauli_rep.LATEX_SYNTAX)
-    print(code1.gauge_group.generators[0])
-    print(code1.gauge_group.generators==code2.gauge_group.generators)
-
-if __name__ == "__main__":
-    main()
+    
+    @staticmethod
+    def symplectic_to_indices(arr):
+        """ Returns """
