@@ -395,6 +395,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             if all_logicals or belement != logical:
                 node = DecodingGraphNode(
                     is_logical=True,
+                    is_boundary=True,
                     qubits=self._logicals[self.basis][-bqec_index - 1],
                     index=1 - bqec_index,
                 )
@@ -492,7 +493,10 @@ class SurfaceCodeCircuit(CodeCircuit):
         flipped_logical_nodes = []
         for elem in flipped_logicals:
             node = DecodingGraphNode(
-                is_logical=True, qubits=self._logicals[self.basis][elem], index=elem
+                is_logical=True,
+                is_boundary=True,
+                qubits=self._logicals[self.basis][elem],
+                index=elem,
             )
             flipped_logical_nodes.append(node)
 

@@ -16,6 +16,7 @@ import unittest
 from unittest import TestCase
 from qiskit_qec.decoders import UnionFindDecoder
 from qiskit_qec.circuits import SurfaceCodeCircuit
+from qiskit_qec.circuits.repetition_code import ArcCircuit
 
 
 class UnionFindDecoderTest(TestCase):
@@ -36,6 +37,31 @@ class UnionFindDecoderTest(TestCase):
                 self.assertTrue(
                     corrected_outcome[0] == int(logical), "Correction for surface code failed."
                 )
+
+    def test_hourglass_ARC(self):
+        """
+        Tests that clustering is done correctly on an ARC with (possibly misleading) loops
+        """
+        links = [
+            (0, 1, 2),
+            (0, 3, 4),
+            (2, 5, 6),
+            (4, 7, 8),
+            (6, 9, 8),
+            (8, 11, 10),
+            (10, 13, 12),
+            (12, 15, 14),
+            (12, 17, 16),
+            (14, 19, 18),
+            (16, 21, 20),
+            (18, 22, 20),
+        ]
+        code = ArcCircuit(links, 0)
+        decoder = UnionFindDecoder(code)
+        cluster = decoder.cluster(code.string2nodes("00001110000"))
+        self.assertTrue(
+            len(set(cluster.values())) == 1, "Clustering doesn't create single cluster."
+        )
 
 
 if __name__ == "__main__":

@@ -269,6 +269,7 @@ class UnionFindDecoderCluster:
     boundary_nodes: Set[int]
     nodes: Set[int]
     fully_grown_edges: Set[int]
+    edge_support: Set[tuple[int]]
     size: int
 
 
@@ -294,8 +295,8 @@ class UnionFindDecoder(ClusteringDecoder):
     """
 
     def __init__(self, code, decoding_graph: DecodingGraph = None, use_peeling=True) -> None:
-        super().__init__(code, decoding_graph=decoding_graph)
-        self.graph = deepcopy(self.decoding_graph.graph)
+        super().__init__(code, decoding_graph=deepcopy(decoding_graph))
+        self.graph = self.decoding_graph.graph
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots: List[int] = []
         self.use_peeling = use_peeling
@@ -370,7 +371,7 @@ class UnionFindDecoder(ClusteringDecoder):
             value.
         """
         node_indices = [self.decoding_graph.node_index(node) for node in nodes]
-        for node_index, _ in enumerate(self.graph.nodes()):
+        for node_index in self.graph.node_indexes():
             self.graph[node_index].properties["syndrome"] = node_index in node_indices
             self.graph[node_index].properties["root"] = node_index
 
@@ -435,6 +436,7 @@ class UnionFindDecoder(ClusteringDecoder):
         self.clusters[node_index] = UnionFindDecoderCluster(
             boundary=boundary_edges,
             fully_grown_edges=set(),
+            edge_support=set(),
             atypical_nodes=set([node_index]) if not node.is_logical else set([]),
             boundary_nodes=set([node_index]) if node.is_logical else set([]),
             nodes=set([node_index]),
@@ -477,6 +479,7 @@ class UnionFindDecoder(ClusteringDecoder):
                         self.clusters[edge.neighbour_vertex] = UnionFindDecoderCluster(
                             boundary=boundary_edges,
                             fully_grown_edges=set(),
+                            edge_support=set(),
                             atypical_nodes=set(),
                             boundary_nodes=set([edge.neighbour_vertex])
                             if self.graph[edge.neighbour_vertex].is_logical
@@ -518,6 +521,9 @@ class UnionFindDecoder(ClusteringDecoder):
             entry.connecting_edge.data.properties["growth"] = 0
             entry.connecting_edge.data.properties["fully_grown"] = True
             cluster.fully_grown_edges.add(entry.connecting_edge.index)
+            cluster.edge_support.add(
+                tuple(self.graph.get_edge_data_by_index(entry.connecting_edge.index).qubits)
+            )
 
             # Merge boundaries
             cluster.boundary += other_cluster.boundary
@@ -528,18 +534,25 @@ class UnionFindDecoder(ClusteringDecoder):
             cluster.atypical_nodes |= other_cluster.atypical_nodes
             cluster.boundary_nodes |= other_cluster.boundary_nodes
             cluster.fully_grown_edges |= other_cluster.fully_grown_edges
+            cluster.edge_support |= other_cluster.edge_support
             cluster.size += other_cluster.size
 
-            # update odd_cluster_roots
-            if self.code.is_cluster_neutral(
-                [self.graph[node] for node in cluster.atypical_nodes]
-            ) or self.code.is_cluster_neutral(
+            # see if the cluster is neutral and update odd_cluster_roots accordingly
+            fully_neutral = False
+            for nodes in [
+                [self.graph[node] for node in cluster.atypical_nodes],
                 [
                     self.graph[node]
                     for node in cluster.atypical_nodes
                     | (set(list(cluster.boundary_nodes)[:1]) if cluster.boundary_nodes else set())
-                ]
-            ):
+                ],
+            ]:
+                neutral, extras, num = self.code.check_nodes(nodes)
+                for node in extras:
+                    neutral = neutral and (not node.is_boundary)
+                neutral = neutral and num <= len(cluster.edge_support)
+                fully_neutral = fully_neutral or neutral
+            if fully_neutral:
                 if new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(new_root)
                     new_neutral_clusters.append(new_root)
