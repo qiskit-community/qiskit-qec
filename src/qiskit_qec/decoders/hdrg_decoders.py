@@ -269,7 +269,7 @@ class UnionFindDecoderCluster:
     boundary_nodes: Set[int]
     nodes: Set[int]
     fully_grown_edges: Set[int]
-    edge_support: Set[tuple[int]]
+    edge_support: Set[Tuple[int]]
     size: int
 
 
