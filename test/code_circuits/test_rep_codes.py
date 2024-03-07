@@ -242,6 +242,11 @@ class TestARCCodes(unittest.TestCase):
                 ts = [node.time for node in nodes if not node.is_logical]
                 if ts:
                     minimal = minimal and (max(ts) - min(ts)) <= 1
+                # check that it corresponds to more than one node (or none)
+                self.assertTrue(
+                    len(nodes) != 1,
+                    "Error: Single error creates only one node",
+                )
                 # check that it doesn't extend beyond the neigbourhood of a code qubit
                 flat_nodes = code.flatten_nodes(nodes)
                 link_qubits = set(node.properties["link qubit"] for node in flat_nodes)
