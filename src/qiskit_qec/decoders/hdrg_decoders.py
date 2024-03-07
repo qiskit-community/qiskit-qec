@@ -294,12 +294,19 @@ class UnionFindDecoder(ClusteringDecoder):
     See arXiv:1709.06218v3 for more details.
     """
 
-    def __init__(self, code, decoding_graph: DecodingGraph = None, use_peeling=True) -> None:
+    def __init__(
+        self,
+        code,
+        decoding_graph: DecodingGraph = None,
+        use_peeling=True,
+        use_is_cluster_neutral=False,
+    ) -> None:
         super().__init__(code, decoding_graph=deepcopy(decoding_graph))
         self.graph = self.decoding_graph.graph
         self.clusters: Dict[int, UnionFindDecoderCluster] = {}
         self.odd_cluster_roots: List[int] = []
         self.use_peeling = use_peeling
+        self.use_is_cluster_neutral = use_is_cluster_neutral
         self._clusters4peeling = []
 
     def process(self, string: str, predecoder=None):
@@ -547,11 +554,14 @@ class UnionFindDecoder(ClusteringDecoder):
                     | (set(list(cluster.boundary_nodes)[:1]) if cluster.boundary_nodes else set())
                 ],
             ]:
-                neutral, extras, num = self.code.check_nodes(nodes)
-                for node in extras:
-                    neutral = neutral and (not node.is_boundary)
-                neutral = neutral and num <= len(cluster.edge_support)
-                fully_neutral = fully_neutral or neutral
+                if self.use_is_cluster_neutral:
+                    fully_neutral = self.code.is_cluster_neutral(nodes)
+                else:
+                    neutral, extras, num = self.code.check_nodes(nodes)
+                    for node in extras:
+                        neutral = neutral and (not node.is_boundary)
+                    neutral = neutral and num <= len(cluster.edge_support)
+                    fully_neutral = fully_neutral or neutral
             if fully_neutral:
                 if new_root in self.odd_cluster_roots:
                     self.odd_cluster_roots.remove(new_root)

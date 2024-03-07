@@ -29,14 +29,17 @@ class UnionFindDecoderTest(TestCase):
         """
         for logical in ["0", "1"]:
             code = SurfaceCodeCircuit(d=3, T=1)
-            decoder = UnionFindDecoder(code)
-            for j in range(code.n):
-                string = logical * (j) + str((1 + int(logical)) % 2) + logical * (code.n - j - 1)
-                string += " 0000 0000"
-                corrected_outcome = decoder.process(string)
-                self.assertTrue(
-                    corrected_outcome[0] == int(logical), "Correction for surface code failed."
-                )
+            for use_is_cluster_neutral in [True, False]:
+                decoder = UnionFindDecoder(code, use_is_cluster_neutral=use_is_cluster_neutral)
+                for j in range(code.n):
+                    string = (
+                        logical * (j) + str((1 + int(logical)) % 2) + logical * (code.n - j - 1)
+                    )
+                    string += " 0000 0000"
+                    corrected_outcome = decoder.process(string)
+                    self.assertTrue(
+                        corrected_outcome[0] == int(logical), "Correction for surface code failed."
+                    )
 
     def test_hourglass_ARC(self):
         """
