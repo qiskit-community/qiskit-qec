@@ -331,13 +331,12 @@
 <h1>UnionFindDecoder<a class="headerlink" href="#unionfinddecoder" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnionFindDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_peeling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnionFindDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_peeling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_is_cluster_neutral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusteringDecoder</span></code></p>
 <p>Decoder based on growing clusters around syndrome errors to
 “convert” them into erasure errors, which can be corrected easily,
 by the peeling decoder for compatible codes or by the standard HDRG
 method in general.</p>
-<p>TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)</p>
 <p>See arXiv:1709.06218v3 for more details.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
@@ -514,7 +513,7 @@ Based on arXiv:1703.01517.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

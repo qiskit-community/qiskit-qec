@@ -745,6 +745,7 @@
             <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="n">belement</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
                 <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
                     <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">][</span><span class="o">-</span><span class="n">bqec_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
                     <span class="n">index</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">bqec_index</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -767,7 +768,7 @@
 
 <div class="viewcode-block" id="SurfaceCodeCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extras</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -775,7 +776,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded logical nodes are</span>
+<span class="sd">            ignore_extras (bool): If `True`, undeeded logical nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -798,7 +799,7 @@
             <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xplaq_coords</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bulk_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ignore_extra_logical</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">ignore_extras</span><span class="p">:</span>
                 <span class="n">neutral</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">flipped_logicals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
                 <span class="c1"># estimate num_errors from size</span>
@@ -834,7 +835,7 @@
 
         <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
         <span class="c1"># (unless this is ignored)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_logical</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extras</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
             <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
         <span class="k">else</span><span class="p">:</span>
@@ -845,7 +846,10 @@
         <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">flipped_logicals</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">][</span><span class="n">elem</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">elem</span>
+                <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">is_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">qubits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">basis</span><span class="p">][</span><span class="n">elem</span><span class="p">],</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">elem</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
@@ -854,15 +858,15 @@
 
 <div class="viewcode-block" id="SurfaceCodeCircuit.is_cluster_neutral">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.SurfaceCodeCircuit.html#qiskit_qec.circuits.SurfaceCodeCircuit.is_cluster_neutral">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atypical_nodes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether or not the cluster is neutral, meaning that one or more</span>
-<span class="sd">        errors could have caused the set of atypical nodes (syndrome changes) passed</span>
+<span class="sd">        errors could have caused the set of nodes (syndrome changes) passed</span>
 <span class="sd">        to the method.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            atypical_nodes (dictionary in the form of the return value of string2nodes)</span>
+<span class="sd">            nodes (dictionary in the form of the return value of string2nodes)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -882,7 +886,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

@@ -519,7 +519,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a list of nodes to the form required by C++ functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># nodes are a tuple with (q0, q1,t, boundary)</span>
+    <span class="c1"># nodes are a tuple with (q0, q1,t, extra)</span>
+    <span class="c1"># extra is 0 if neither logical nor boundary</span>
+    <span class="c1"># 1 for logical, 2 for boundary, 3 for both</span>
     <span class="c1"># if there is no q1 or t, -1 is used</span>
     <span class="n">cnodes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
@@ -530,7 +532,7 @@
             <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-        <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">is_logical</span><span class="p">)</span>
+        <span class="n">cnode</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">)</span>
         <span class="n">cnodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">cnode</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">cnodes</span>
 </pre></div>
@@ -550,7 +552,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

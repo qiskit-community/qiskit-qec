@@ -424,16 +424,21 @@
 <span class="k">class</span> <span class="nc">BravyiHaahDecoder</span><span class="p">(</span><span class="n">ClusteringDecoder</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder based on finding connected components within the decoding graph.&quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">code_circuit</span><span class="p">,</span>
+        <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code_circuit</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">,</span> <span class="n">dist_max</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds connected components in the given nodes, for nodes connected by at most the given distance</span>
 <span class="sd">        in the given decoding graph.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># calculate distance for the graph</span>
         <span class="n">dg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span>
-        <span class="n">distance</span> <span class="o">=</span> <span class="n">distance_matrix</span><span class="p">(</span><span class="n">dg</span><span class="p">)</span>
-
         <span class="c1"># create empty `DecodingGraph`</span>
         <span class="n">cluster_graph</span> <span class="o">=</span> <span class="n">DecodingGraph</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">cg</span> <span class="o">=</span> <span class="n">cluster_graph</span><span class="o">.</span><span class="n">graph</span>
@@ -448,7 +453,7 @@
         <span class="k">for</span> <span class="n">n0</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">ns</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">n0</span> <span class="o">&lt;</span> <span class="n">n1</span><span class="p">:</span>
-                    <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">[</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span>
+                    <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">[</span><span class="n">n0</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">dist_max</span><span class="p">:</span>
                         <span class="n">cg</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">d2c</span><span class="p">[</span><span class="n">n0</span><span class="p">],</span> <span class="n">d2c</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="n">dist</span><span class="p">})</span>
         <span class="c1"># find the connected components of cg</span>
@@ -462,9 +467,7 @@
 
             <span class="c1"># check the neutrality of each connected component</span>
             <span class="n">con_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">cg</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">con_comp</span><span class="p">]</span>
-            <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">num_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span>
-                <span class="n">con_nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">neutral</span><span class="p">,</span> <span class="n">logicals</span><span class="p">,</span> <span class="n">num_errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">con_nodes</span><span class="p">,</span> <span class="n">ignore_extras</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="c1"># it&#39;s fully neutral if no extra logicals are needed</span>
             <span class="c1"># and if the error num is less than the max dist</span>
@@ -594,6 +597,7 @@
     <span class="n">boundary_nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">nodes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">fully_grown_edges</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">edge_support</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
     <span class="n">size</span><span class="p">:</span> <span class="nb">int</span>
 
 
@@ -617,17 +621,22 @@
 <span class="sd">    by the peeling decoder for compatible codes or by the standard HDRG</span>
 <span class="sd">    method in general.</span>
 
-<span class="sd">    TODO: Add weights to edges of graph according to Huang et al (see. arXiv:2004.04693, section III)</span>
-
 <span class="sd">    See arXiv:1709.06218v3 for more details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_peeling</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="o">=</span><span class="n">decoding_graph</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">code</span><span class="p">,</span>
+        <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_peeling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_is_cluster_neutral</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">decoding_graph</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnionFindDecoderCluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_peeling</span> <span class="o">=</span> <span class="n">use_peeling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_is_cluster_neutral</span> <span class="o">=</span> <span class="n">use_is_cluster_neutral</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="UnionFindDecoder.process">
@@ -704,7 +713,7 @@
 <span class="sd">            value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">node_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
+        <span class="k">for</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node_indexes</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="n">node_indices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span>
 
@@ -773,6 +782,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnionFindDecoderCluster</span><span class="p">(</span>
             <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_edges</span><span class="p">,</span>
             <span class="n">fully_grown_edges</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+            <span class="n">edge_support</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
             <span class="n">atypical_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">])</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span> <span class="k">else</span> <span class="nb">set</span><span class="p">([]),</span>
             <span class="n">boundary_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">])</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_logical</span> <span class="k">else</span> <span class="nb">set</span><span class="p">([]),</span>
             <span class="n">nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">node_index</span><span class="p">]),</span>
@@ -815,6 +825,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnionFindDecoderCluster</span><span class="p">(</span>
                             <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_edges</span><span class="p">,</span>
                             <span class="n">fully_grown_edges</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
+                            <span class="n">edge_support</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
                             <span class="n">atypical_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
                             <span class="n">boundary_nodes</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">])</span>
                             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">neighbour_vertex</span><span class="p">]</span><span class="o">.</span><span class="n">is_logical</span>
@@ -856,6 +867,9 @@
             <span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">edge_support</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_edge_data_by_index</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">connecting_edge</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">qubits</span><span class="p">)</span>
+            <span class="p">)</span>
 
             <span class="c1"># Merge boundaries</span>
             <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span> <span class="o">+=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">boundary</span>
@@ -866,18 +880,28 @@
             <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
             <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">boundary_nodes</span>
             <span class="n">cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">fully_grown_edges</span>
+            <span class="n">cluster</span><span class="o">.</span><span class="n">edge_support</span> <span class="o">|=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">edge_support</span>
             <span class="n">cluster</span><span class="o">.</span><span class="n">size</span> <span class="o">+=</span> <span class="n">other_cluster</span><span class="o">.</span><span class="n">size</span>
 
-            <span class="c1"># update odd_cluster_roots</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">]</span>
-            <span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span>
+            <span class="c1"># see if the cluster is neutral and update odd_cluster_roots accordingly</span>
+            <span class="n">fully_neutral</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">],</span>
                 <span class="p">[</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
                     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
                     <span class="o">|</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)[:</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="k">else</span> <span class="nb">set</span><span class="p">())</span>
-                <span class="p">]</span>
-            <span class="p">):</span>
+                <span class="p">],</span>
+            <span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_is_cluster_neutral</span><span class="p">:</span>
+                    <span class="n">fully_neutral</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">neutral</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
+                        <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">)</span>
+                    <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">edge_support</span><span class="p">)</span>
+                    <span class="n">fully_neutral</span> <span class="o">=</span> <span class="n">fully_neutral</span> <span class="ow">or</span> <span class="n">neutral</span>
+            <span class="k">if</span> <span class="n">fully_neutral</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">new_root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
                     <span class="n">new_neutral_clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
@@ -998,7 +1022,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

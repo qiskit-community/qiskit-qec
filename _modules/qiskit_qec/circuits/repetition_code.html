@@ -639,7 +639,7 @@
         <span class="n">separated_string</span> <span class="o">=</span> <span class="n">_separate_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># logical nodes</span>
+        <span class="c1"># logical/boundary nodes</span>
         <span class="n">boundary</span> <span class="o">=</span> <span class="n">separated_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># [&lt;last_elem&gt;, &lt;init_elem&gt;]</span>
         <span class="k">for</span> <span class="n">bqec_index</span><span class="p">,</span> <span class="n">belement</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">boundary</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">all_logicals</span> <span class="ow">or</span> <span class="n">belement</span> <span class="o">!=</span> <span class="n">logical</span><span class="p">:</span>
@@ -676,7 +676,7 @@
 
 <div class="viewcode-block" id="RepetitionCodeCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extras</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -684,7 +684,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are</span>
+<span class="sd">            ignore_extras (bool): If `True`, undeeded boundary nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -747,7 +747,7 @@
 
             <span class="c1"># if unneeded logical zs are given, cluster is not neutral</span>
             <span class="c1"># (unless this is ignored)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extra_logical</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">ignore_extras</span><span class="p">)</span> <span class="ow">and</span> <span class="n">given_logicals</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">flipped_logicals</span><span class="p">):</span>
                 <span class="n">neutral</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="c1"># otherwise, report only needed logicals that aren&#39;t given</span>
             <span class="k">else</span><span class="p">:</span>
@@ -771,15 +771,15 @@
 
 <div class="viewcode-block" id="RepetitionCodeCircuit.is_cluster_neutral">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.RepetitionCodeCircuit.html#qiskit_qec.circuits.RepetitionCodeCircuit.is_cluster_neutral">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atypical_nodes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether or not the cluster is neutral, meaning that one or more</span>
-<span class="sd">        errors could have caused the set of atypical nodes (syndrome changes) passed</span>
+<span class="sd">        errors could have caused the set of nodes (syndrome changes) passed</span>
 <span class="sd">        to the method.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            atypical_nodes (dictionary in the form of the return value of string2nodes)</span>
+<span class="sd">            nodes (list of nodes)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RepetitionCodeCircuit.partition_outcomes">
@@ -1145,13 +1145,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="p">[</span><span class="n">basis</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_qubit</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_basis_change</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
 
-        <span class="c1"># use degree 1 code qubits for logical z readouts</span>
+        <span class="c1"># use degree 1 code qubits for logical z readouts (and boundary)</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_coupling_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_leaves</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">z_logicals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
             <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">z_logicals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-        <span class="c1"># if there are none, just use the first</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_leaves</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># if there are none, just use the first (not boundary)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">z_logicals</span><span class="p">:</span>
             <span class="n">z_logicals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code_index</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span> <span class="o">=</span> <span class="n">z_logicals</span>
@@ -1435,6 +1439,7 @@
                             <span class="n">tau</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
                             <span class="n">is_logical</span><span class="o">=</span><span class="n">is_logical</span><span class="p">,</span>
+                            <span class="n">is_boundary</span><span class="o">=</span><span class="p">(</span><span class="n">is_logical</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leaves</span><span class="p">),</span>
                             <span class="n">time</span><span class="o">=</span><span class="n">syn_round</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_logical</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                             <span class="n">qubits</span><span class="o">=</span><span class="n">code_qubits</span><span class="p">,</span>
                             <span class="n">index</span><span class="o">=</span><span class="n">elem_num</span><span class="p">,</span>
@@ -1500,9 +1505,22 @@
                 <span class="n">link_neighbors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">link_graph</span><span class="p">,</span> <span class="n">link_neighbors</span>
 
+    <span class="k">def</span> <span class="nf">_extras2cpp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns logical and boundary nodes as tuples. First value is the qubit,</span>
+<span class="sd">        second is 1 for logical only, 2 for boundary only and 3 for both.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">extras</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">:</span>
+            <span class="n">extras</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">:</span>
+                <span class="n">extras</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">extras</span>
+
 <div class="viewcode-block" id="ArcCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.check_nodes">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extras</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -1510,7 +1528,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are</span>
+<span class="sd">            ignore_extras (bool): If `True`, undeeded boundary and logical nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -1527,39 +1545,46 @@
 
         <span class="n">cpp_output</span> <span class="o">=</span> <span class="n">_c_check_nodes</span><span class="p">(</span>
             <span class="n">nodes</span><span class="p">,</span>
-            <span class="n">ignore_extra_logical</span><span class="p">,</span>
+            <span class="n">ignore_extras</span><span class="p">,</span>
             <span class="n">minimal</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_graph</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_neighbors</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extras2cpp</span><span class="p">(),</span>
         <span class="p">)</span>
 
         <span class="n">neutral</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">cpp_output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">num_errors</span> <span class="o">=</span> <span class="n">cpp_output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">flipped_logical_nodes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">flipped_logical</span> <span class="ow">in</span> <span class="n">cpp_output</span><span class="p">[</span><span class="mi">2</span><span class="p">::]:</span>
+        <span class="n">flipped_extra_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">flipped_extra</span> <span class="ow">in</span> <span class="n">cpp_output</span><span class="p">[</span><span class="mi">2</span><span class="p">::]:</span>
+            <span class="n">is_logical</span> <span class="o">=</span> <span class="n">flipped_extra</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span>
+            <span class="n">is_boundary</span> <span class="o">=</span> <span class="n">flipped_extra</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span>
+            <span class="k">if</span> <span class="n">is_logical</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_extra</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_extra</span><span class="p">)</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">DecodingGraphNode</span><span class="p">(</span>
-                <span class="n">is_logical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_logical</span><span class="p">],</span>
-                <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">flipped_logical</span><span class="p">),</span>
+                <span class="n">is_logical</span><span class="o">=</span><span class="n">is_logical</span><span class="p">,</span>
+                <span class="n">is_boundary</span><span class="o">=</span><span class="n">is_boundary</span><span class="p">,</span>
+                <span class="n">qubits</span><span class="o">=</span><span class="p">[</span><span class="n">flipped_extra</span><span class="p">],</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">flipped_logical_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">flipped_extra_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">neutral</span><span class="p">,</span> <span class="n">flipped_logical_nodes</span><span class="p">,</span> <span class="n">num_errors</span></div>
+        <span class="k">return</span> <span class="n">neutral</span><span class="p">,</span> <span class="n">flipped_extra_nodes</span><span class="p">,</span> <span class="n">num_errors</span></div>
 
 
 <div class="viewcode-block" id="ArcCircuit.is_cluster_neutral">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atypical_nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether or not the cluster is neutral, meaning that one or more</span>
-<span class="sd">        errors could have caused the set of atypical nodes (syndrome changes) passed</span>
+<span class="sd">        errors could have caused the set of nodes (syndrome changes) passed</span>
 <span class="sd">        to the method.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            atypical_nodes: dictionary in the form of the return value of string2nodes</span>
+<span class="sd">            nodes: dictionary in the form of the return value of string2nodes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">nodes</span> <span class="o">=</span> <span class="n">_nodes2cpp</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">_nodes2cpp</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_c_is_cluster_neutral</span><span class="p">(</span>
             <span class="n">nodes</span><span class="p">,</span>
             <span class="kc">False</span><span class="p">,</span>
@@ -1567,7 +1592,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cycle_dict</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_graph</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_link_neighbors</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">z_logicals</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extras2cpp</span><span class="p">(),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_linear</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -1949,7 +1974,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

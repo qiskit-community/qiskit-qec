@@ -388,7 +388,7 @@
 <div class="viewcode-block" id="CodeCircuit.check_nodes">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.check_nodes">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extra_logical</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">ignore_extras</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimal</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether a given set of nodes are neutral. If so, also</span>
 <span class="sd">        determines any additional logical readout qubits that would be</span>
@@ -396,7 +396,7 @@
 <span class="sd">        would be required to make the cluster.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nodes (list): List of nodes, of the type produced by `string2nodes`.</span>
-<span class="sd">            ignore_extra_logical (bool): If `True`, undeeded logical nodes are</span>
+<span class="sd">            ignore_extras (bool): If `True`, undeeded logical and boundary nodes are</span>
 <span class="sd">            ignored.</span>
 <span class="sd">            minimal (bool): Whether output should only reflect the minimal error</span>
 <span class="sd">            case.</span>
@@ -414,10 +414,10 @@
 <div class="viewcode-block" id="CodeCircuit.is_cluster_neutral">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit.is_cluster_neutral">[docs]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atypical_nodes</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_cluster_neutral</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines whether or not the cluster is neutral, meaning that one or more</span>
-<span class="sd">        errors could have caused the set of atypical nodes (syndrome changes) passed</span>
+<span class="sd">        errors could have caused the set of nodes (syndrome changes) passed</span>
 <span class="sd">        to the method.</span>
 
 <span class="sd">        Default version here assumes that it is as simple as an an even/odd assessment</span>
@@ -425,9 +425,9 @@
 <span class="sd">        more complex codes. It also should be used with care, by only supplying sets</span>
 <span class="sd">        of nodes for which the even/odd assessment is valid.</span>
 <span class="sd">        Args:</span>
-<span class="sd">            atypical_nodes (dictionary in the form of the return value of string2nodes)</span>
+<span class="sd">            nodes (dictionary in the form of the return value of string2nodes)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atypical_nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -447,7 +447,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             

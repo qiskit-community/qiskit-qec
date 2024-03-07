@@ -393,7 +393,7 @@ measurement rounds, with the syndrome measurements provided.
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.check_nodes">
-<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extra_logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">#</a></dt>
 <dd><p>Determines whether a given set of nodes are neutral. If so, also
 determines any additional logical readout qubits that would be
 flipped by the errors creating such a cluster and how many errors
@@ -401,9 +401,9 @@ would be required to make the cluster.
 :type nodes: 
 :param nodes: List of nodes, of the type produced by <cite>string2nodes</cite>.
 :type nodes: list
-:type ignore_extra_logical: 
-:param ignore_extra_logical: If <cite>True</cite>, undeeded boundary nodes are
-:type ignore_extra_logical: bool
+:type ignore_extras: 
+:param ignore_extras: If <cite>True</cite>, undeeded boundary and logical nodes are
+:type ignore_extras: bool
 :param ignored.:
 :type minimal: 
 :param minimal: Whether output should only reflect the minimal error
@@ -500,12 +500,12 @@ is in units of rounds.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.is_cluster_neutral">
-<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atypical_nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral" title="Link to this definition">#</a></dt>
 <dd><p>Determines whether or not the cluster is neutral, meaning that one or more
-errors could have caused the set of atypical nodes (syndrome changes) passed
+errors could have caused the set of nodes (syndrome changes) passed
 to the method.
-:type atypical_nodes: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>
-:param atypical_nodes: dictionary in the form of the return value of string2nodes</p>
+:type nodes: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span>
+:param nodes: dictionary in the form of the return value of string2nodes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -636,7 +636,7 @@ with dynamical decoupling added.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/04</div>
+              Last updated on 2024/03/07</div>
           </div>
           <div class="right-details">
             
