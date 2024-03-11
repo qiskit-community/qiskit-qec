@@ -303,8 +303,9 @@ class DecodingGraph:
         else:
             return error_probs
 
-    def weight_syndrome_graph(self, counts: dict = {}, method: str = METHOD_SPITZ,
-                              error_probs: dict = {}):
+    def weight_syndrome_graph(
+        self, counts: dict = {}, method: str = METHOD_SPITZ, error_probs: dict = {}
+    ):
         """Generate weighted syndrome graph from result counts.
 
         Args:
@@ -313,7 +314,7 @@ class DecodingGraph:
             method (string): Method to used for calculation. Supported
             methods are 'spitz' (default) and 'naive'.
             error_probs (dict): probability that the syndrome contains the node pair
-            of a given edge. Overridden by counts if both are given. 
+            of a given edge. Overridden by counts if both are given.
 
         Additional information:
             Uses `counts` to estimate the probability of the errors that
@@ -321,13 +322,15 @@ class DecodingGraph:
             replaced with the corresponding -log(p/(1-p).
         """
 
-        if counts!={}:
+        if counts != {}:
             error_probs = self.get_error_probs(counts, method=method)
-        elif error_probs!={}:
+        elif error_probs != {}:
             error_probs = error_probs
         else:
-            raise NotImplementedError("No information provided to reweight the graph."+
-                                      "Specify either counts or error_probs.")
+            raise NotImplementedError(
+                "No information provided to reweight the graph."
+                + "Specify either counts or error_probs."
+            )
 
         boundary_nodes = []
         for n, node in enumerate(self.graph.nodes()):
