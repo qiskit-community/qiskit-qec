@@ -326,7 +326,7 @@ class DecodingGraph:
         elif error_probs!={}:
             error_probs = error_probs
         else:
-            raise NotImplementedError("No information provided to reweight the graph. "+
+            raise NotImplementedError("No information provided to reweight the graph."+
                                       "Specify either counts or error_probs.")
 
         boundary_nodes = []
