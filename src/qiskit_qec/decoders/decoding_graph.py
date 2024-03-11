@@ -322,9 +322,9 @@ class DecodingGraph:
             replaced with the corresponding -log(p/(1-p).
         """
 
-        if counts != None:
+        if counts:
             error_probs = self.get_error_probs(counts, method=method)
-        elif error_probs == None:
+        elif not error_probs:
             raise NotImplementedError(
                 "No information provided to reweight the graph."
                 + "Specify either counts or error_probs."
