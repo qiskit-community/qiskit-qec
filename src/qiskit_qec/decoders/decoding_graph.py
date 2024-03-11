@@ -304,7 +304,7 @@ class DecodingGraph:
             return error_probs
 
     def weight_syndrome_graph(
-        self, counts: dict = {}, method: str = METHOD_SPITZ, error_probs: dict = {}
+        self, counts: dict = None, method: str = METHOD_SPITZ, error_probs: dict = None
     ):
         """Generate weighted syndrome graph from result counts.
 
@@ -322,11 +322,9 @@ class DecodingGraph:
             replaced with the corresponding -log(p/(1-p).
         """
 
-        if counts != {}:
+        if counts != None:
             error_probs = self.get_error_probs(counts, method=method)
-        elif error_probs != {}:
-            error_probs = error_probs
-        else:
+        elif error_probs == None:
             raise NotImplementedError(
                 "No information provided to reweight the graph."
                 + "Specify either counts or error_probs."
