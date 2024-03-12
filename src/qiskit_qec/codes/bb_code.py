@@ -11,9 +11,11 @@
 # that they have been altered from the originals.
 """Define the bivariate bicylce code."""
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
 
 import numpy as np
+import rustworkx as rx
+from rustworkx.visualization import graphviz_draw
 
 from qiskit_qec.linear.symplectic import normalizer
 import qiskit_qec.utils.pauli_rep as pauli_rep
@@ -67,6 +69,7 @@ class BBCode:
 
         self.l = l
         self.m = m
+        self.s = l*m
         self.n = 2*l*m
 
         if p1 is not None:
@@ -85,6 +88,7 @@ class BBCode:
         self._z_stabilizers = None
         self._logical_z = None
         self._logical_x = None
+        self._tanner_graph = None
 
     @property
     def hx(self) -> np.array:
@@ -102,13 +106,15 @@ class BBCode:
     
     @property
     def x_stabilizers(self) -> PauliList:
-        if self._x_stabilizers is None: self._x_stabilizers = PauliList(np.hstack([self.hx, np.zeros((self.n//2, self.n))]))
-        return self._x_stabilizers
+        return BBCode.arr_to_indices(self.hx)
+        # if self._x_stabilizers is None: self._x_stabilizers = PauliList(np.hstack([self.hx, np.zeros((self.n//2, self.n))]))
+        # return self._x_stabilizers
     
     @property
     def z_stabilizers(self) -> PauliList:
-        if self._z_stabilizers is None: self._z_stabilizers = PauliList(np.hstack([np.zeros((self.n//2, self.n)), self.hz]))
-        return self._z_stabilizers
+        return BBCode.arr_to_indices(self.hz)
+        # if self._z_stabilizers is None: self._z_stabilizers = PauliList(np.hstack([np.zeros((self.n//2, self.n)), self.hz]))
+        # return self._z_stabilizers
     
     @property
     def x_gauges(self) -> PauliList:
@@ -123,12 +129,12 @@ class BBCode:
         if self._logical_z is None:
             full_sym = np.vstack([np.hstack([self.hx, np.zeros((self.n//2, self.n))]),
                                   np.hstack([np.zeros((self.n//2, self.n)), self.hz])])
-            center_, x_new, z_new = normalizer(full_sym)
+            center_, x_new, z_new = normalizer(full_sym.astype(np.bool_))
             self._logical_z = PauliList(z_new)
             self._logical_x = PauliList(x_new)
 
-        #return self._logical_z.matrix.astype(int).tolist()
-        return self._logical_z
+        #return self._logical_z
+        return BBCode.arr_to_indices(self._logical_z.matrix[:, self.n:])
     
     @property
     def logical_x(self):
@@ -138,8 +144,9 @@ class BBCode:
             center_, x_new, z_new = normalizer(full_sym.astype(np.bool_))
             self._logical_z = PauliList(z_new)
             self._logical_x = PauliList(x_new)
-
-        return self._logical_x
+        
+        #return self._logical_x
+        return BBCode.arr_to_indices(self._logical_x.matrix[:, :self.n])
     
     @property
     def x_boundary(self):
@@ -156,6 +163,12 @@ class BBCode:
     @property
     def d(self):
         raise NotImplementedError()
+    
+    @property
+    def tanner_graph(self):
+        if self._tanner_graph is None:
+            self.create_tanner_graph()
+        return self._tanner_graph
 
     def __str__(self) -> str:
         """Formatted string."""
@@ -270,6 +283,57 @@ class BBCode:
 
         return np.kron(np.eye(self.l), BBCode.cs_pow(self.m, power=power)).astype(np.uint8)
     
+    def create_tanner_graph(self):
+        """
+        Creates the tanner graph of the code. Manually creates nodes and edges to have more flexibility and additional parameters,
+        instead of something like rx.from_adjacency_matrix(np.hstack([self.hx, self.hz])).
+
+        """
+        tanner = rx.PyGraph()
+
+        l_nodes = [{'index': i, 
+                    'type': 'data',
+                    'subtype': 'L',
+                    'node_attr': {'color': 'blue', 'fillcolor': 'blue', 'style': 'filled', 'shape': 'circle', 'label': f'L_{i}'}}
+                    for i in range(self.s)]
+        r_nodes = [{'index': i, 
+                    'type': 'data',
+                    'subtype': 'R',
+                    'node_attr': {'color': 'orange', 'fillcolor': 'orange', 'style': 'filled', 'shape': 'circle', 'label': f'R_{i}'}}
+                    for i in range(self.s)]
+        x_nodes = [{'index': i, 
+                    'type': 'check',
+                    'subtype': 'X',
+                    'node_attr': {'color': 'red', 'fillcolor': 'red', 'style': 'filled', 'shape': 'square', 'label': f'X_{i}'}}
+                    for i in range(self.s)]
+        z_nodes = [{'index': i, 
+                    'type': 'check',
+                    'subtype': 'Z',
+                    'node_attr': {'color': 'green', 'fillcolor': 'green', 'style': 'filled', 'shape': 'square', 'label': f'Z_{i}'}}
+                    for i in range(self.s)]
+
+        tanner.add_nodes_from(l_nodes)
+        tanner.add_nodes_from(r_nodes)
+        tanner.add_nodes_from(x_nodes)
+        tanner.add_nodes_from(z_nodes)
+
+        for c,q in zip(*np.where(self.A)): # between X and L
+            tanner.add_edge(c + 2*self.s, q, None)
+        for c,q in zip(*np.where(self.B)): # between X and R
+            tanner.add_edge(c + 2*self.s, q + self.s, None)
+        for c,q in zip(*np.where(self.B.T)): # between Z and L
+            tanner.add_edge(c + 3*self.s, q, None)
+        for c,q in zip(*np.where(self.A.T)): # between Z and R
+            tanner.add_edge(c + 3*self.s, q + self.s, None)
+
+        self._tanner_graph = tanner
+
+    def draw_tanner(self):
+        """
+        Draws the tanner graph using rustworkx.visualization.graphviz_draw. Graphviz must be installed.
+        """
+        return graphviz_draw(self.tanner_graph, node_attr_fn=lambda node: node['node_attr'])
+
     @staticmethod
     def cs_pow(l, power=1):
         """
@@ -296,5 +360,6 @@ class BBCode:
         return np.roll(np.eye(l), shift=power, axis=1).astype(np.uint8)
     
     @staticmethod
-    def symplectic_to_indices(arr):
-        """ Returns """
+    def arr_to_indices(arr: np.array) -> List[List[int]]:
+        """ Converts a numpy array to a list of list of indices where it is non-zero """
+        return [np.where(row)[0].tolist() for row in arr]
