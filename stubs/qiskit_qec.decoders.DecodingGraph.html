@@ -495,7 +495,7 @@ If <cite>graph</cite> is updated this method should called to update these prope
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.DecodingGraph.weight_syndrome_graph">
-<span class="sig-name descname"><span class="pre">weight_syndrome_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph.weight_syndrome_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph.weight_syndrome_graph" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">weight_syndrome_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/decoding_graph.html#DecodingGraph.weight_syndrome_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.DecodingGraph.weight_syndrome_graph" title="Link to this definition">#</a></dt>
 <dd><p>Generate weighted syndrome graph from result counts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -504,6 +504,8 @@ If <cite>graph</cite> is updated this method should called to update these prope
 <li><p><strong>weights.</strong> (<em>the</em>) – </p></li>
 <li><p><strong>method</strong> (<em>string</em>) – Method to used for calculation. Supported</p></li>
 <li><p><strong>'spitz'</strong> (<em>methods are</em>) – </p></li>
+<li><p><strong>error_probs</strong> (<em>dict</em>) – probability that the syndrome contains the node pair</p></li>
+<li><p><strong>given.</strong> (<em>of a given edge. Overridden by counts if both are</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -569,7 +571,7 @@ replaced with the corresponding -log(p/(1-p).</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/07</div>
+              Last updated on 2024/03/13</div>
           </div>
           <div class="right-details">
             
