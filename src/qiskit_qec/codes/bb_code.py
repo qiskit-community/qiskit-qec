@@ -169,6 +169,16 @@ class BBCode:
         if self._tanner_graph is None:
             self.create_tanner_graph()
         return self._tanner_graph
+    
+    @property
+    def tanner_graph_X(self):
+        nodes = self.tanner_graph.filter_nodes(lambda node: node['subtype'] != 'Z')
+        return self.tanner_graph.subgraph(nodes)
+    
+    @property
+    def tanner_graph_Z(self):
+        nodes = self.tanner_graph.filter_nodes(lambda node: node['subtype'] != 'X')
+        return self.tanner_graph.subgraph(nodes)
 
     def __str__(self) -> str:
         """Formatted string."""
@@ -291,22 +301,28 @@ class BBCode:
         """
         tanner = rx.PyGraph()
 
-        l_nodes = [{'index': i, 
+        offset = self.l*self.m
+
+        l_nodes = [{'index': i,
+                    'subindex': i,
                     'type': 'data',
                     'subtype': 'L',
                     'node_attr': {'color': 'blue', 'fillcolor': 'blue', 'style': 'filled', 'shape': 'circle', 'label': f'L_{i}'}}
                     for i in range(self.s)]
-        r_nodes = [{'index': i, 
+        r_nodes = [{'index': i + offset, 
+                    'subindex': i,
                     'type': 'data',
                     'subtype': 'R',
                     'node_attr': {'color': 'orange', 'fillcolor': 'orange', 'style': 'filled', 'shape': 'circle', 'label': f'R_{i}'}}
                     for i in range(self.s)]
-        x_nodes = [{'index': i, 
+        x_nodes = [{'index': i + 2*offset, 
+                    'subindex': i,
                     'type': 'check',
                     'subtype': 'X',
                     'node_attr': {'color': 'red', 'fillcolor': 'red', 'style': 'filled', 'shape': 'square', 'label': f'X_{i}'}}
                     for i in range(self.s)]
-        z_nodes = [{'index': i, 
+        z_nodes = [{'index': i + 3*offset, 
+                    'subindex': i,
                     'type': 'check',
                     'subtype': 'Z',
                     'node_attr': {'color': 'green', 'fillcolor': 'green', 'style': 'filled', 'shape': 'square', 'label': f'Z_{i}'}}
