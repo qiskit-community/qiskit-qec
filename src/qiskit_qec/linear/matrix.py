@@ -493,3 +493,84 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
     if interleave:
         return np.hstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
     return np.vstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
+
+def is_binary(arr: np.array):
+    """ Check if a numpy.array is binary"""
+    return np.all((arr.astype(int) == 1) + (arr.astype(int) == 0))
+
+def solve2(A: np.array, b: np.array):
+    """
+    Solves the system of equations Ax = b mod 2 for binary matrices and vectors b.
+    Will raise an exception if no solution exists.
+    Return a solution x and the reduced system of equations (A,b),
+    i.e. A will be in reduced row echelon form (but with zero rows 
+    remaining to preserve shape) and b corresponding.
+    NOTE: this could also be achieved with rref_complete and intelligently using transform_mat
+    to transform b and to see if there are solutions. Currently rref_complete is faster than this for smaller matrices.
+    This implementation is faster for matrices starting with dimensions of several hundred.
+    """
+
+    if not is_binary(A) or not is_binary(b):
+        raise ValueError('A and b must be binary arrays')
+
+    A = np.copy(A).astype(bool)
+    b = np.copy(b).astype(bool)
+    m, n = A.shape
+    if len(b) != m or m*n == 0:
+        raise ValueError('Non compatible shapes')
+    
+    # We can check this in the beginning. Is vital if we never actually do a gaussian elimination, because then we never check
+    all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+    safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
+    if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
+        raise ValueError('System has no solution')
+    
+    g = 0 # how many times gaussian elimination was actually done
+    for i in range(n): # go through all columns of A with increment variable i
+        idxs = np.where(A[:, i])[0] # at current column find all rows that have a 1
+        try:
+            idx = idxs[idxs >= g][0] # find the first row that is at g or higher. This will not have any other 1's before
+        except IndexError:
+            continue
+        for target in idxs: # Perform Gaussian elimination with the row found above targeting all other rows that have a 1 at column i
+            if target == idx:
+                continue
+            A[target] ^= A[idx]
+            b[target] ^= b[idx]
+        
+        all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+        safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
+        if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
+            raise ValueError('System has no solution')
+
+        A[[idx,g]] = A[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+        b[[idx,g]] = b[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+
+        g += 1 # increment g
+
+    return _back_substitution(A,b), A.astype(int), b.astype(int)
+
+def _back_substitution(A, b):
+    """
+    Backsubstitution step for solving of linear system of equations mod 2.
+    Does NOT give minimum weight solution, but just an arbitrary solution (mostly for testing).
+    Input: A and b after gaussian elimination step (A is upper triangular and no 0=1 rows exist)
+    """
+    A = np.copy(A)
+    b = np.copy(b)
+    m, n = A.shape
+    x = np.nan*np.zeros(n)
+    r = min(m,n)
+    for i in range(r):
+        ones = np.where(A[r-1-i])[0] # find all 1 entries in this row
+        x[ones[:-1]] = 0 # in x set all these rows to 0, except the last
+        if len(ones) > 0:
+            x[ones[-1]] = b[r-1-i] # the last of these rows we set to the value of b at this row. Now we have one solution for this row, not dependant on nans
+            # if ones is emtpy that means all zero row, since we assume there is a solution is this step, we can just continue
+            
+        aint_nans = ~np.isnan(x)
+        b = (b + A[:,aint_nans] @ x[aint_nans]) % 2
+        A[:, aint_nans] = 0
+
+    x[np.isnan(x)] = 0 # set remaining nans (degrees of freedom) to zero
+    return x.astype(int)
