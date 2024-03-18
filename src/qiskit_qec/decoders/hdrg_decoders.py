@@ -21,9 +21,13 @@ from copy import copy, deepcopy
 from dataclasses import dataclass
 from typing import Dict, List, Set, Tuple
 
-from rustworkx import PyGraph, connected_components, distance_matrix
+import numpy as np
+from rustworkx import PyGraph, connected_components, distance_matrix, adjacency_matrix
+from rustworkx.visualization import graphviz_draw
 
+from qiskit_qec.codes.bb_code import BBCode
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
+from qiskit_qec.linear.matrix import solve2
 from qiskit_qec.utils import DecodingGraphEdge
 
 
@@ -635,3 +639,154 @@ class UnionFindDecoder(ClusteringDecoder):
                 self.graph.incident_edge_index_map(node_index)
             ).items()
         ]
+    
+class TannerUnionFind:
+    def __init__(self, code: BBCode) -> None:
+        self.code = code
+
+    def extract_syndrome_naive(self, output):
+        """
+        output is a substring (over two SM cycles) of an actual output of the syndrome measurement circuit
+        with 'zx' SM order.
+        Returns the X syndrome sx and the Y syndrome sy
+        """
+        z0, x0, z1, x1 = output[::-1].split(' ')
+        sz = (np.array(list(z0)).astype(int) + np.array(list(z1)).astype(int)) % 2
+        sx = (np.array(list(x0)).astype(int) + np.array(list(x1)).astype(int)) % 2
+        return sx, sz
+    
+    def expand(self, tanner, subnodes):
+        nodes = []
+        for node in subnodes:
+            nodes += list(tanner.adj(node).keys())
+        nodes += list(subnodes)
+        return nodes
+    
+    def is_valid(self, graph, subnodes):
+        subgraph = graph.subgraph(subnodes)
+        data = subgraph.filter_nodes(lambda node: node['type']=='data')
+        checks = subgraph.filter_nodes(lambda node: node['type']=='check')
+
+        A = adjacency_matrix(subgraph)[np.ix_(checks, data)].astype(int)
+        b = np.ones(A.shape[0])
+
+        try:
+            x, Ap, bp = solve2(A,b)
+            # is a binary vector with indicating errors on this subgraph
+            # painfully convert this to indices of the original graph
+            x = [subgraph.get_node_data(i)['index'] for i in np.where(x)[0]]
+            return True, x, Ap, bp
+        except:
+            return False, None, None, None
+
+    def interior(self, graph, subnodes):
+        _int = []
+        for node in subnodes:
+            is_in_int = True
+            for neighbour in graph.adj(node).keys():
+                if neighbour not in subnodes:
+                    is_in_int = False
+                    break
+            if is_in_int:
+                _int.append(node)
+        return _int
+    
+    def get_connected_components(self, tanner, E):
+        """ Takes as input the full tanner graph (X or Z) and a subset of its nodes.
+        Returns the connected components as a list of sets of indices of the original graph."""
+        subgraph = tanner.subgraph(E)
+        ccs = connected_components(subgraph) # css is a list of sets of indices of the subgraph
+        return [[subgraph.get_node_data(sub_index)['index'] for sub_index in cc] for cc in ccs]
+    
+    def decode(self, output):
+        sx, sy = self.extract_syndrome_naive(output)
+
+        E_x = np.where(sx)[0] + self.code.n
+        E_z = np.where(sy)[0] + self.code.n
+
+        ex = self.decode_tanner_recursive(self.code.tanner_graph_X, E_x)
+        ez = self.decode_tanner_recursive(self.code.tanner_graph_Z, E_z)
+
+        from qiskit_qec.operators.pauli import Pauli
+
+        return Pauli(np.hstack([ex, ez]))
+    
+    def decode_x(self, output, visual=False):
+        sx, sz = self.extract_syndrome_naive(output)
+        tanner = self.code.tanner_graph_X
+        #initial E
+        E = np.where(sx)[0] + self.code.n
+        if visual:
+            return self.decode_tanner_recursive_visual(tanner, E)
+        return self.decode_tanner_recursive(tanner, E)
+    
+    def decode_z(self, output, visual=False):
+        sx, sz = self.extract_syndrome_naive(output)
+        tanner = self.code.tanner_graph_Z
+        #initial E
+        E = np.where(sz)[0] + self.code.n
+        if visual:
+            return self.decode_tanner_recursive_visual(tanner, E)
+        return self.decode_tanner_recursive(tanner, E)
+
+    def decode_tanner_recursive(self, tanner, E):
+        """
+        Performs one step of the decoding. Get all connected components of E
+        Checks if there are invalid ones, if so, calls itself again
+        """
+        ccs = self.get_connected_components(tanner, E)
+        all_valid = True
+        e = np.zeros(self.code.n) # initial error
+        for cc in ccs:
+            #subgraph = tanner.subgraph(cc)
+            #fig = graphviz_draw(subgraph, node_attr_fn=lambda node: node['node_attr'])
+            interior_ = self.interior(tanner, cc)
+            #plot_info_round[2].append(graphviz_draw(tanner.subgraph(interior_), node_attr_fn=lambda node: node['node_attr']))
+            valid, x, _, _ = self.is_valid(tanner, interior_)
+            # x contains error indices
+            e[x] = 1
+            #plot_info_round[1].append((fig, valid, x))
+            if not valid:
+                all_valid = False
+                break
+        
+        #plot_info.append(plot_info_round)
+
+        if all_valid:
+            return e#, plot_info
+        
+        E = self.expand(tanner, E)
+
+        return self.decode_tanner_recursive(tanner, E)
+    
+    def decode_tanner_recursive_visual(self, tanner, E, plot_info=[]):
+        """
+        Performs one step of the decoding. Get all connected components of E
+        Checks if there are invalid ones, if so, calls itself again
+        """
+        ccs = self.get_connected_components(tanner, E)
+        plot_info_round = (len(ccs), [], [])
+        all_valid = True
+        e = np.zeros(self.code.n) # initial error
+        for cc in ccs:
+            subgraph = tanner.subgraph(cc)
+            fig = graphviz_draw(subgraph, node_attr_fn=lambda node: node['node_attr'])
+            interior_ = self.interior(tanner, cc)
+            plot_info_round[2].append(graphviz_draw(tanner.subgraph(interior_), node_attr_fn=lambda node: node['node_attr']))
+            valid, x, _, _ = self.is_valid(tanner, interior_)
+            # x contains error indices
+            e[x] = 1
+            plot_info_round[1].append((fig, valid, x))
+            if not valid:
+                all_valid = False
+                break
+        
+        plot_info.append(plot_info_round)
+
+        if all_valid:
+            return e, plot_info
+        
+        E = self.expand(tanner, E)
+
+        return self.decode_tanner_recursive_visual(tanner, E, plot_info=plot_info)
+    
