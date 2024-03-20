@@ -655,6 +655,11 @@ class TannerUnionFind:
         sx = (np.array(list(x0)).astype(int) + np.array(list(x1)).astype(int)) % 2
         return sx, sz
     
+    def extract_syndromes(self, output, round_schedule='zx'):
+        """
+        output is the whole output string of the syndrome measurement with round schedule 'zx' (otherwise not implemented yet)
+        """
+    
     def expand(self, tanner, subnodes):
         nodes = []
         for node in subnodes:
