@@ -13,6 +13,7 @@
 """Matrix ops."""
 
 from typing import List, Tuple
+import itertools
 import numpy as np
 from qiskit import QiskitError
 
@@ -494,9 +495,28 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
         return np.hstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
     return np.vstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
 
+def ker2(a):
+    """ calculates the kernel of the binary matrix 'a' over the field GF(2). Adapted from code from S. Bravyi.
+    Returns a basis for the ker2(a) as rows of a 2d numpy.ndarray. """
+    m,n = a.shape
+    ker = np.identity(n,dtype=int)
+
+    for i in range(m):
+        y = np.dot(a[i], ker) % 2 # multiplication of current row with all columns of ker
+        good = ker[:,y==0] # columns of ker that are in the kernel of a[i,:] (and thus in the kernel of a[:i+1,:])
+        bad = ker[:, y==1] # colums of ker that are in kernel of a[:i,:] but not in kernel of a[i,:]
+        if bad.shape[1]>0: # in case there are enough columns not in the kernel
+            new_good = (bad[:,:-1] + bad[:,1:]) % 2 # by construction all of these will be in kernel of a[i,:], independent and complete
+            ker = np.concatenate((good, new_good), axis=1) # new basis for kernel of a[:i+1,:]
+    # now columns of ker span the binary null-space of a
+    return np.transpose(ker)
+
 def is_binary(arr: np.array):
     """ Check if a numpy.array is binary"""
     return np.all((arr.astype(int) == 1) + (arr.astype(int) == 0))
+
+class LinAlgError(ValueError):
+    pass
 
 def solve2(A: np.array, b: np.array):
     """
@@ -516,14 +536,14 @@ def solve2(A: np.array, b: np.array):
     A = np.copy(A).astype(bool)
     b = np.copy(b).astype(bool)
     m, n = A.shape
-    if len(b) != m or m*n == 0:
+    if len(b) != m:
         raise ValueError('Non compatible shapes')
     
     # We can check this in the beginning. Is vital if we never actually do a gaussian elimination, because then we never check
     all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
     safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
     if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
-        raise ValueError('System has no solution')
+        raise LinAlgError('System has no solution')
     
     g = 0 # how many times gaussian elimination was actually done
     for i in range(n): # go through all columns of A with increment variable i
@@ -541,14 +561,14 @@ def solve2(A: np.array, b: np.array):
         all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
         safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
         if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
-            raise ValueError('System has no solution')
+            raise LinAlgError('System has no solution')
 
         A[[idx,g]] = A[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
         b[[idx,g]] = b[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
 
         g += 1 # increment g
 
-    return _back_substitution(A,b), A.astype(int), b.astype(int)
+    return _back_substitution_weight_opt(A,b), A.astype(int), b.astype(int)
 
 def _back_substitution(A, b):
     """
@@ -574,3 +594,24 @@ def _back_substitution(A, b):
 
     x[np.isnan(x)] = 0 # set remaining nans (degrees of freedom) to zero
     return x.astype(int)
+
+def _back_substitution_weight_opt(A, b):
+    """
+    Backsubstitution step for solving of linear system of equations mod 2.
+    Finds ALL solutions of the LSE and returns the minimum weight one.
+    Input: A and b after gaussian elimination step (A is upper triangular and no 0=1 rows exist)
+    """
+    xs = _back_substitution(A, b) # an arbitrary inhomogeneous solution
+    ker = ker2(A) # basis of nullspace of A 
+    # all solutions of Ax = b can be written as xs + ker
+
+    best = xs
+    min_weight = xs.sum()
+    for sel in itertools.product([False,True], repeat=ker.shape[0]):
+        x = (xs + ker[list(sel)].sum(axis=0)) % 2
+        if x.sum() < min_weight:
+            best = x
+            min_weight = x.sum()
+    
+    return best
+
