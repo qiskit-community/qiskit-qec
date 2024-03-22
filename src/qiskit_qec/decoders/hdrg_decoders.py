@@ -27,7 +27,7 @@ from rustworkx.visualization import graphviz_draw
 
 from qiskit_qec.codes.bb_code import BBCode
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.linear.matrix import solve2
+from qiskit_qec.linear.matrix import solve2, LinAlgError
 from qiskit_qec.utils import DecodingGraphEdge
 
 
@@ -641,6 +641,100 @@ class UnionFindDecoder(ClusteringDecoder):
         ]
     
 class TannerUnionFind:
+    def __init__(self, adj_mat: np.ndarray) -> None:
+        self.adj_mat = adj_mat
+
+    def decode(self, syndrome: np.ndarray):
+        checks = syndrome.astype(bool)
+        data = np.zeros(self.adj_mat.shape[1], dtype=bool)
+        cluster = (checks, data)
+
+        return self.decode_recursive(cluster, syndrome)
+    
+    def decode_recursive(self, cluster, syndrome):
+        ccs = self.connected_components(cluster)
+        all_valid = True
+        decoded_error = np.zeros_like(cluster[1])
+        for cc in ccs:
+            valid, x = self.is_valid(cc, syndrome)
+            if not valid:
+                all_valid = False
+                break
+            decoded_error |= x
+        
+        if all_valid:
+            return decoded_error
+
+        cluster = self.grow(cluster)
+        return self.decode_recursive(cluster, syndrome)     
+
+    def is_valid(self, cluster, syndrome):
+        checks, data = cluster
+        soe, interior = self.relevant_soe(cluster)
+        b = syndrome[checks]
+        try:
+            x, _, _ = solve2(soe,b)
+            tmp_x = np.zeros_like(data)
+            tmp_x[interior] = x.astype(bool)
+            return True, tmp_x
+        except LinAlgError:
+            return False, None
+        
+
+    def relevant_soe(self, cluster):
+        """ajd_mat is the reduced (bipartite) adjaceny matrix (n//2 x n) of the whole tanner (X or Z) graph.
+        cluster = (check_selector, data_selector)
+        check_selector is a binary array of size n//2, where a 1 means the corresponing check node is in E.
+        data_selector is a binary array of size n, where a 1 means the corresponing data node is in E."""
+        
+        check_selector, data_selector = cluster
+
+        # First we want to find the interior of E. But we only care about the data qubits in Int(E)
+        no_outside = self.adj_mat[~check_selector].sum(axis=0) == 0 # selector for all data qubits that do not have connection to any check outside of E
+        #print(no_outside)
+        interior = data_selector & no_outside
+        #print(data_selector)
+        #print(interior)
+        return self.adj_mat[check_selector][:,interior], interior
+    
+    def grow(self, cluster):
+        checks, data = cluster
+        new_checks = self.adj_mat[:, data].sum(axis=1) > 0
+        new_data = self.adj_mat[checks].sum(axis=0) > 0
+        return (checks|new_checks, data|new_data)
+    
+    def connected_components(self, cluster):
+        checks, data = cluster
+
+        subgraph = self.adj_mat[checks][:, data] # or np._ix
+        ms, ns = subgraph.shape
+        clusters = []
+        checks_accounted = np.zeros(ms, dtype=bool)
+        while not np.all(checks_accounted):
+            cluster_checks = np.zeros(ms, dtype=bool)
+            cluster_data = np.zeros(ns, dtype=bool)
+            new_checks = np.zeros_like(cluster_checks)
+            new_checks[np.argmax(~checks_accounted)] = True
+            while True:
+                new_data = (subgraph[new_checks].sum(axis=0) > 0) & ~cluster_data
+                cluster_checks |= new_checks
+                if not np.any(new_data):
+                    break
+                new_checks = (subgraph[:, new_data].sum(axis=1) > 0) & ~cluster_checks
+                cluster_data |= new_data
+                if not np.any(new_checks):
+                    break
+            checks_accounted |= cluster_checks
+            
+            tmp_checks = np.zeros_like(cluster[0])
+            tmp_checks[checks] = cluster_checks
+            tmp_data = np.zeros_like(cluster[1])
+            tmp_data[data] = cluster_data
+            clusters.append((tmp_checks, tmp_data))
+        return clusters
+    
+
+class TannerUnionFind_GraphLegacy:
     def __init__(self, code: BBCode) -> None:
         self.code = code
 
