@@ -29,4 +29,4 @@ Decoders module classes and functions
 
 from .decoding_graph import DecodingGraph
 from .pymatching_decoder import PyMatchingDecoder
-from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder, TannerUnionFind
+from .hdrg_decoders import BravyiHaahDecoder, UnionFindDecoder, TannerUnionFind, TannerUnionFindOptimized
