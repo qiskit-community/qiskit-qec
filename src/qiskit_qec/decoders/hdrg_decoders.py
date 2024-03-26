@@ -19,6 +19,7 @@
 from abc import ABC
 from copy import copy, deepcopy
 from dataclasses import dataclass
+from time import perf_counter
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
@@ -651,34 +652,62 @@ class TannerUnionFind:
 
         return self.decode_recursive(cluster, syndrome)
     
-    def decode_recursive(self, cluster, syndrome):
+    def decode_recursive(self, cluster, syndrome, history=None):
+        if history is None:
+            history = []
+        size = (cluster[0].sum(), cluster[1].sum()) # benchmarking
+        t0 = perf_counter()# benchmarking
         ccs = self.connected_components(cluster)
+        t_con = perf_counter() - t0 # benchmarking
+        num_clust = len(ccs) # benchmarking
+        cluster_figs = []  # benchmarking
         all_valid = True
         decoded_error = np.zeros_like(cluster[1])
         for cc in ccs:
-            valid, x = self.is_valid(cc, syndrome)
+            valid, x, figs = self.is_valid(cc, syndrome)  # benchmarking
+            cluster_figs.append(figs)  # benchmarking
             if not valid:
                 all_valid = False
                 break
             decoded_error |= x
         
         if all_valid:
-            return decoded_error
-
+            figs = (size, t_con, num_clust, cluster_figs, None) # benchmarking
+            history.append(figs) # benchmarking
+            return decoded_error, history # benchmarking
+        t0 = perf_counter() # benchmarking
         cluster = self.grow(cluster)
-        return self.decode_recursive(cluster, syndrome)     
+        t_grow = perf_counter() - t0 # benchmarking
+        figs = (size, t_con, num_clust, cluster_figs, t_grow) # benchmarking
+        history.append(figs) # benchmarking
+        return self.decode_recursive(cluster, syndrome, history=history)      # benchmarking
 
     def is_valid(self, cluster, syndrome):
         checks, data = cluster
-        soe, interior = self.relevant_soe(cluster)
+        clust_size = checks.sum(), data.sum() # benchmarking
+        t0 = perf_counter() # benchmarking
+        soe, interior = self.relevant_soe(cluster) # benchmarking
+        t_int = perf_counter() - t0
+        int_size = interior.sum() # benchmarking
         b = syndrome[checks]
+        t0 = perf_counter() # benchmarking
+        figs = None # benchmarking
         try:
-            x, _, _ = solve2(soe,b)
+            x, figs = solve2(soe,b) # benchmarking
             tmp_x = np.zeros_like(data)
             tmp_x[interior] = x.astype(bool)
-            return True, tmp_x
+            valid, int_x = True, tmp_x
         except LinAlgError:
-            return False, None
+            valid, int_x = False, None
+        
+        t_valid = perf_counter() - t0 # benchmarking
+        if figs is not None: # benchmarking
+            t_valid -= (figs[0] + figs[2]) # benchmarking
+            figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
+        else:
+            figs = (clust_size, t_int, int_size, t_valid, None, None, None)
+        
+        return valid, int_x, figs
         
 
     def relevant_soe(self, cluster):

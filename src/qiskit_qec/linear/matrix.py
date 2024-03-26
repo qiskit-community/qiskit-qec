@@ -12,6 +12,7 @@
 
 """Matrix ops."""
 
+from time import perf_counter
 from typing import List, Tuple
 import itertools
 import numpy as np
@@ -568,7 +569,11 @@ def solve2(A: np.array, b: np.array):
 
         g += 1 # increment g
 
-    return _back_substitution_weight_opt(A,b), A.astype(int), b.astype(int)
+    t0 = perf_counter()
+    error, t_part, nullity = _back_substitution_weight_opt(A,b) #, A.astype(int), b.astype(int)
+    t_opt = perf_counter() - t0 - t_part
+
+    return error, (t_part, nullity, t_opt)
 
 def _back_substitution(A, b):
     """
@@ -601,7 +606,9 @@ def _back_substitution_weight_opt(A, b):
     Finds ALL solutions of the LSE and returns the minimum weight one.
     Input: A and b after gaussian elimination step (A is upper triangular and no 0=1 rows exist)
     """
+    t0 = perf_counter()
     xs = _back_substitution(A, b) # an arbitrary inhomogeneous solution
+    t_part = perf_counter() - t0
     ker = ker2(A) # basis of nullspace of A 
     # all solutions of Ax = b can be written as xs + ker
 
@@ -613,5 +620,5 @@ def _back_substitution_weight_opt(A, b):
             best = x
             min_weight = x.sum()
     
-    return best
+    return best, t_part, ker.shape[0]
 
