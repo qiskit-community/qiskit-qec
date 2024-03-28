@@ -614,6 +614,8 @@ def _back_substitution_weight_opt(A, b):
 
     best = xs
     min_weight = xs.sum()
+    if ker.shape[0] > 7:
+        return best, t_part, ker.shape[0]
     for sel in itertools.product([False,True], repeat=ker.shape[0]):
         x = (xs + ker[list(sel)].sum(axis=0)) % 2
         if x.sum() < min_weight:
