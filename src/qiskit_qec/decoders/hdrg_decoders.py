@@ -645,187 +645,194 @@ class TannerUnionFindOptimized:
     def __init__(self, adj_mat: np.ndarray) -> None:
         """ Initializes the Tanner graph (simply with reduced adjacency matrix) """
         self.adj_mat = adj_mat
+        self.decoders = {}
+
+    class Decoder:
+        def __init__(self, adj_mat: np.ndarray, T: int) -> None:
+            m, n = adj_mat.shape
+            if T > 1: # in this case (more than two consecutive SM rounds) assume with measurement error
+                self.adj_mat_T = np.zeros((T*m, (T+1)*m + T*n), dtype=bool) # reduced adjacency matrix of T-foliated Tanner graph
+                for i in range(T):
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n): i*(m+n) + m] = np.eye(m, dtype=bool)
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n) + m: i*(m+n) + m+n] = adj_mat
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n) + m+n: i*(m+n) + 2*m+n] = np.eye(m, dtype=bool)
+            else:
+                self.adj_mat_T = adj_mat # otherwise assume no measurement errors -> decode on unfoliated (in particular no boundary virtual qubits) Tanner graph
+            self.m = m
+            self.n = n
+            self.T = T
+            #self.adj_mat_T = adj_mat
+
+        def decode(self, clusters, syndrome, history=None):
+            if history is None:
+                history = []
+            #size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
+            if clusters[0][3] == 'c':
+                size = (np.sum([cluster[0] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
+            else:
+                size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters])) # benchmarking
+            #t0 = perf_counter()# benchmarking
+            #ccs = self.connected_components(cluster)
+            #t_con = perf_counter() - t0 # benchmarking
+            t_con = 0 # bechmarking, finding connected components merged with grow
+            num_clust = len(clusters) # benchmarking
+            cluster_figs = []  # benchmarking
+            all_valid = True
+            decoded_error = np.zeros(self.adj_mat_T.shape[1], dtype=np.uint8)
+            for cluster in clusters:
+                valid, x, figs = self.is_valid(cluster, syndrome)  # benchmarking
+                cluster_figs.append(figs)  # benchmarking
+                if not valid:
+                    all_valid = False
+                    break
+                decoded_error |= x
+            
+            if all_valid:
+                figs = (size, t_con, num_clust, cluster_figs, None) # benchmarking
+                history.append(figs) # benchmarking
+                return decoded_error, history # benchmarking
+            t0 = perf_counter() # benchmarking
+            clusters = self.grow(clusters)
+            t_grow = perf_counter() - t0 # benchmarking
+            figs = (size, t_con, num_clust, cluster_figs, t_grow) # benchmarking
+            history.append(figs) # benchmarking
+            return self.decode(clusters, syndrome, history=history)      # benchmarking
+
+        def is_valid(self, cluster, syndrome):
+            checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+            if cluster_surface_type == 'c':
+                checks = checks_interior | cluster_surface
+                data = data_interior
+            else:
+                checks = checks_interior
+                data = data_interior | cluster_surface
+
+            clust_size = (checks).sum(), data.sum() # benchmarking
+            t0 = perf_counter() # benchmarking
+            soe, interior = self.relevant_soe(cluster) # benchmarking
+            #soe = self.adj_mat[checks][:,interior] # now keep track of interior always, no need for this function -> WRONG
+            t_int = perf_counter() - t0 # t_int really doesn't say much, just means how long to copy the array
+            int_size = interior.sum() # benchmarking
+            b = syndrome[checks]
+            t0 = perf_counter() # benchmarking
+            figs = None # benchmarking
+            try:
+                x, figs = solve2(soe,b) # benchmarking
+                tmp_x = np.zeros_like(data)
+                tmp_x[interior] = x.astype(bool)
+                valid, int_x = True, tmp_x
+            except LinAlgError:
+                valid, int_x = False, None
+            
+            t_valid = perf_counter() - t0 # benchmarking
+            if figs is not None: # benchmarking
+                t_valid -= (figs[0] + figs[2]) # benchmarking
+                figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
+            else:
+                figs = (clust_size, t_int, int_size, t_valid, None, None, None)
+            
+            return valid, int_x, figs
+            
+
+        def relevant_soe(self, cluster):
+            """ajd_mat is the reduced (bipartite) adjaceny matrix (n//2 x n) of the whole tanner (X or Z) graph.
+            cluster = (check_selector, data_selector)
+            check_selector is a binary array of size n//2, where a 1 means the corresponing check node is in E.
+            data_selector is a binary array of size n, where a 1 means the corresponing data node is in E."""
+            checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+            if cluster_surface_type == 'c':
+                check_selector = checks_interior | cluster_surface
+                data_selector = data_interior
+            else:
+                check_selector = checks_interior
+                data_selector = data_interior | cluster_surface
+
+            # First we want to find the interior of E. But we only care about the data qubits in Int(E)
+            no_outside = self.adj_mat_T[~check_selector].sum(axis=0) == 0 # selector for all data qubits that do not have connection to any check outside of E
+            #print(no_outside)
+            interior = data_selector & no_outside
+            #print(data_selector)
+            #print(interior)
+            return self.adj_mat_T[check_selector][:,interior], interior
+        
+        def grow(self, clusters):
+            """ Get a bit more complicated, now check for merging clusters """
+            grown_clusters = []
+            if clusters[0][3] == 'c':
+                for cluster in clusters:
+                    checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+                    checks_interior |= cluster_surface
+                    cluster_surface = np.any(self.adj_mat_T[cluster_surface], axis=0) &~data_interior # surface might contain interior nodes still, but this causes no harm
+                    cluster_surface_type = 'd'
+                    # merge directly
+                    merged_away = []
+                    for i, other in enumerate(grown_clusters):
+                        if np.any(cluster_surface & other[2]): # these clusters are connected
+                            #keep track of merged
+                            merged_away.append(i)
+                            # merge
+                            checks_interior |= other[0]
+                            data_interior |= other[1]
+                            cluster_surface |= other[2]
+                    for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
+                        del grown_clusters[i]
+                    # append the merged cluster
+                    grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
+            else:
+                for cluster in clusters:
+                    checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+                    data_interior |= cluster_surface
+                    cluster_surface = np.any(self.adj_mat_T[:, cluster_surface], axis=1) &~checks_interior # surface might contain interior nodes still, but this causes no harm
+                    cluster_surface_type = 'c'
+                    # merge directly
+                    merged_away = []
+                    for i, other in enumerate(grown_clusters):
+                        if np.any(cluster_surface & other[2]): # these clusters are connected
+                            #keep track of merged
+                            merged_away.append(i)
+                            # merge
+                            checks_interior |= other[0]
+                            data_interior |= other[1]
+                            cluster_surface |= other[2]
+                    for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
+                        del grown_clusters[i]
+                    # append the merged cluster
+                    grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
+
+            return grown_clusters
+
+    def get_decoder(self, T: int) -> "TannerUnionFindOptimized.Decoder":
+        if T not in self.decoders:
+            self.decoders[T] = TannerUnionFindOptimized.Decoder(self.adj_mat, T)
+        return self.decoders[T]
 
     def decode(self, syndrome: np.ndarray):
         """ Main entry point for decoding, takes syndrome and initialized clusters. In optimized version actually creates the clusters. """
-        checks = syndrome.astype(bool)
-        clusters = []
+
+        "Syndrome can be from multiple measurement rounds"
         m, n = self.adj_mat.shape
+        l = len(syndrome)
+        # syndrome length should be T*m where T+1 is number of SM rounds (i.e T number of parity comparisons between them)
+        if l % m != 0:
+            raise ValueError("Syndrome not of valid length (valid <=> multiple of number of checks)")
+        
+        T = l // m
+
+        clusters = []
         for check in np.where(syndrome)[0]:
-            checks = np.zeros(m, dtype=bool)
-            data = np.zeros(n, dtype=bool)
-            cluster_surface = np.zeros(m, dtype=bool)
+            checks = np.zeros(T*m, dtype=bool)
+            if T > 1:
+                data = np.zeros((T+1)*m + T*n, dtype=bool)
+            else:
+                data = np.zeros(n, dtype=bool)
+            cluster_surface = np.zeros(T*m, dtype=bool)
             cluster_surface[check] = True
             cluster_surface_type = 'c'
             clusters.append((checks, data, cluster_surface, cluster_surface_type))
-        
 
-        return self.decode_recursive(clusters, syndrome)
-    
-    def decode_recursive(self, clusters, syndrome, history=None):
-        if history is None:
-            history = []
-        size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
-        #t0 = perf_counter()# benchmarking
-        #ccs = self.connected_components(cluster)
-        #t_con = perf_counter() - t0 # benchmarking
-        t_con = 0 # bechmarking, finding connected components merged with grow
-        num_clust = len(clusters) # benchmarking
-        cluster_figs = []  # benchmarking
-        all_valid = True
-        decoded_error = np.zeros(self.adj_mat.shape[1], dtype=np.uint8)
-        for cluster in clusters:
-            valid, x, figs = self.is_valid(cluster, syndrome)  # benchmarking
-            cluster_figs.append(figs)  # benchmarking
-            if not valid:
-                all_valid = False
-                break
-            decoded_error |= x
-        
-        if all_valid:
-            figs = (size, t_con, num_clust, cluster_figs, None) # benchmarking
-            history.append(figs) # benchmarking
-            return decoded_error, history # benchmarking
-        t0 = perf_counter() # benchmarking
-        clusters = self.grow(clusters)
-        t_grow = perf_counter() - t0 # benchmarking
-        figs = (size, t_con, num_clust, cluster_figs, t_grow) # benchmarking
-        history.append(figs) # benchmarking
-        return self.decode_recursive(clusters, syndrome, history=history)      # benchmarking
+        decoder = self.get_decoder(T)
+        return decoder.decode(clusters, syndrome)
 
-    def is_valid(self, cluster, syndrome):
-        checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-        if cluster_surface_type == 'c':
-            checks = checks_interior | cluster_surface
-            data = data_interior
-        else:
-            checks = checks_interior
-            data = data_interior | cluster_surface
-
-        clust_size = (checks).sum(), data.sum() # benchmarking
-        t0 = perf_counter() # benchmarking
-        soe, interior = self.relevant_soe(cluster) # benchmarking
-        #soe = self.adj_mat[checks][:,interior] # now keep track of interior always, no need for this function -> WRONG
-        t_int = perf_counter() - t0 # t_int really doesn't say much, just means how long to copy the array
-        int_size = interior.sum() # benchmarking
-        b = syndrome[checks]
-        t0 = perf_counter() # benchmarking
-        figs = None # benchmarking
-        try:
-            x, figs = solve2(soe,b) # benchmarking
-            tmp_x = np.zeros_like(data)
-            tmp_x[interior] = x.astype(bool)
-            valid, int_x = True, tmp_x
-        except LinAlgError:
-            valid, int_x = False, None
-        
-        t_valid = perf_counter() - t0 # benchmarking
-        if figs is not None: # benchmarking
-            t_valid -= (figs[0] + figs[2]) # benchmarking
-            figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
-        else:
-            figs = (clust_size, t_int, int_size, t_valid, None, None, None)
-        
-        return valid, int_x, figs
-        
-
-    def relevant_soe(self, cluster):
-        """ajd_mat is the reduced (bipartite) adjaceny matrix (n//2 x n) of the whole tanner (X or Z) graph.
-        cluster = (check_selector, data_selector)
-        check_selector is a binary array of size n//2, where a 1 means the corresponing check node is in E.
-        data_selector is a binary array of size n, where a 1 means the corresponing data node is in E."""
-        checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-        if cluster_surface_type == 'c':
-            check_selector = checks_interior | cluster_surface
-            data_selector = data_interior
-        else:
-            check_selector = checks_interior
-            data_selector = data_interior | cluster_surface
-
-        # First we want to find the interior of E. But we only care about the data qubits in Int(E)
-        no_outside = self.adj_mat[~check_selector].sum(axis=0) == 0 # selector for all data qubits that do not have connection to any check outside of E
-        #print(no_outside)
-        interior = data_selector & no_outside
-        #print(data_selector)
-        #print(interior)
-        return self.adj_mat[check_selector][:,interior], interior
-    
-    def grow(self, clusters):
-        """ Get a bit more complicated, now check for merging clusters """
-        grown_clusters = []
-        if clusters[0][3] == 'c':
-            for cluster in clusters:
-                checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-                checks_interior |= cluster_surface
-                cluster_surface = np.any(self.adj_mat[cluster_surface], axis=0) &~data_interior # surface might contain interior nodes still, but this causes no harm
-                cluster_surface_type = 'd'
-                # merge directly
-                merged_away = []
-                for i, other in enumerate(grown_clusters):
-                    if np.any(cluster_surface & other[2]): # these clusters are connected
-                        #keep track of merged
-                        merged_away.append(i)
-                        # merge
-                        checks_interior |= other[0]
-                        data_interior |= other[1]
-                        cluster_surface |= other[2]
-                for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
-                    del grown_clusters[i]
-                # append the merged cluster
-                grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
-        else:
-            for cluster in clusters:
-                checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-                data_interior |= cluster_surface
-                cluster_surface = np.any(self.adj_mat[:, cluster_surface], axis=1) &~checks_interior # surface might contain interior nodes still, but this causes no harm
-                cluster_surface_type = 'c'
-                # merge directly
-                merged_away = []
-                for i, other in enumerate(grown_clusters):
-                    if np.any(cluster_surface & other[2]): # these clusters are connected
-                        #keep track of merged
-                        merged_away.append(i)
-                        # merge
-                        checks_interior |= other[0]
-                        data_interior |= other[1]
-                        cluster_surface |= other[2]
-                for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
-                    del grown_clusters[i]
-                # append the merged cluster
-                grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
-
-        return grown_clusters
-    
-    def connected_components(self, cluster):
-        checks, data = cluster
-
-        subgraph = self.adj_mat[checks][:, data] # or np._ix
-        ms, ns = subgraph.shape
-        clusters = []
-        checks_accounted = np.zeros(ms, dtype=bool)
-        while not np.all(checks_accounted):
-            cluster_checks = np.zeros(ms, dtype=bool)
-            cluster_data = np.zeros(ns, dtype=bool)
-            new_checks = np.zeros_like(cluster_checks)
-            new_checks[np.argmax(~checks_accounted)] = True
-            while True:
-                new_data = (subgraph[new_checks].sum(axis=0) > 0) & ~cluster_data
-                cluster_checks |= new_checks
-                if not np.any(new_data):
-                    break
-                new_checks = (subgraph[:, new_data].sum(axis=1) > 0) & ~cluster_checks
-                cluster_data |= new_data
-                if not np.any(new_checks):
-                    break
-            checks_accounted |= cluster_checks
-            
-            tmp_checks = np.zeros_like(cluster[0])
-            tmp_checks[checks] = cluster_checks
-            tmp_data = np.zeros_like(cluster[1])
-            tmp_data[data] = cluster_data
-            clusters.append((tmp_checks, tmp_data))
-        return clusters
-    
 class TannerUnionFind:
     def __init__(self, adj_mat: np.ndarray) -> None:
         self.adj_mat = adj_mat
