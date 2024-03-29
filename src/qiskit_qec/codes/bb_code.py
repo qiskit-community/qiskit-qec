@@ -148,6 +148,36 @@ class BBCode:
         #return self._logical_x
         return BBCode.arr_to_indices(self._logical_x.matrix[:, :self.n])
     
+    def get_syndrome(self, physical_error: np.ndarray, base: str='z') -> np.ndarray:
+        if base == 'z':
+            return self.hz @ physical_error % 2
+        elif base == 'x':
+            return self.hx @ physical_error % 2
+        else:
+            raise ValueError(f'"base" must be one of {{"x", "y"}}, not {base}.')
+        
+    def get_logical_error(self, physical_error: np.ndarray, base: str='z') -> np.ndarray:
+        if base == 'z':
+            if self._logical_z is None:
+                full_sym = np.vstack([np.hstack([self.hx, np.zeros((self.n//2, self.n))]),
+                                    np.hstack([np.zeros((self.n//2, self.n)), self.hz])])
+                center_, x_new, z_new = normalizer(full_sym.astype(np.bool_))
+                self._logical_z = PauliList(z_new)
+                self._logical_x = PauliList(x_new)
+            return self._logical_z.matrix[:, self.n:] @ physical_error % 2
+        elif base == 'x':
+            if self._logical_x is None:
+                full_sym = np.vstack([np.hstack([self.hx, np.zeros((self.n//2, self.n))]),
+                                    np.hstack([np.zeros((self.n//2, self.n)), self.hz])])
+                center_, x_new, z_new = normalizer(full_sym.astype(np.bool_))
+                self._logical_z = PauliList(z_new)
+                self._logical_x = PauliList(x_new)
+            return self._logical_x.matrix[:, :self.n] @ physical_error % 2
+        else:
+            raise ValueError(f'"base" must be one of {{"x", "y"}}, not {base}.')
+
+    
+
     @property
     def x_boundary(self):
         raise NotImplementedError()
