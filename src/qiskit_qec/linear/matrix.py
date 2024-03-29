@@ -17,6 +17,7 @@ from typing import List, Tuple
 import itertools
 import numpy as np
 from qiskit import QiskitError
+from numba import njit, jit
 
 
 def create_lambda_matrix(n: int) -> np.ndarray:
@@ -520,60 +521,127 @@ class LinAlgError(ValueError):
     pass
 
 def solve2(A: np.array, b: np.array):
-    """
-    Solves the system of equations Ax = b mod 2 for binary matrices and vectors b.
-    Will raise an exception if no solution exists.
-    Return a solution x and the reduced system of equations (A,b),
-    i.e. A will be in reduced row echelon form (but with zero rows 
-    remaining to preserve shape) and b corresponding.
-    NOTE: this could also be achieved with rref_complete and intelligently using transform_mat
-    to transform b and to see if there are solutions. Currently rref_complete is faster than this for smaller matrices.
-    This implementation is faster for matrices starting with dimensions of several hundred.
-    """
-
     if not is_binary(A) or not is_binary(b):
         raise ValueError('A and b must be binary arrays')
+    
+    Ap, bp = jitable(A, b)
+    if np.array_equal(Ap, np.empty((0, A.shape[1]), dtype=np.bool_)):
+        raise LinAlgError('System has no solution')
+    
+    t0 = perf_counter()
+    error, t_part, nullity = _back_substitution_weight_opt(Ap,bp) #, A.astype(int), b.astype(int)
+    t_opt = perf_counter() - t0 - t_part
 
-    A = np.copy(A).astype(bool)
-    b = np.copy(b).astype(bool)
+    return error, (t_part, nullity, t_opt)
+    
+
+@jit(nopython=True)
+def check_all_zero_rows(A):
+    """Manually checks each row for all zeros, compatible with Numba."""
+    m = A.shape[0]
+    all_zero_rows = np.zeros(m, dtype=np.bool_)
+    for i in range(m):
+        all_zero_rows[i] = np.all(A[i] == 0)
+    return all_zero_rows
+
+@jit(nopython=True)
+def jitable(A, b):
+    A = np.copy(A).astype(np.bool_)
+    b = np.copy(b).astype(np.bool_)
     m, n = A.shape
     if len(b) != m:
-        raise ValueError('Non compatible shapes')
-    
+        return np.empty((0, A.shape[1]), dtype=np.bool_), np.empty(0, dtype=np.bool_)
     # We can check this in the beginning. Is vital if we never actually do a gaussian elimination, because then we never check
-    all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+    all_zero_rows = check_all_zero_rows(A) # Find all all-zero rows of A (no degree of freedom)
     safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
     if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
-        raise LinAlgError('System has no solution')
+        return np.empty((0, A.shape[1]), dtype=np.bool_), np.empty(0, dtype=np.bool_)
     
     g = 0 # how many times gaussian elimination was actually done
     for i in range(n): # go through all columns of A with increment variable i
         idxs = np.where(A[:, i])[0] # at current column find all rows that have a 1
-        try:
-            idx = idxs[idxs >= g][0] # find the first row that is at g or higher. This will not have any other 1's before
-        except IndexError:
+        potentials = idxs[idxs >= g]
+        if len(potentials) == 0:
             continue
+        idx = idxs[idxs >= g][0]
+
         for target in idxs: # Perform Gaussian elimination with the row found above targeting all other rows that have a 1 at column i
             if target == idx:
                 continue
             A[target] ^= A[idx]
             b[target] ^= b[idx]
         
-        all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+        all_zero_rows = check_all_zero_rows(A) # Find all all-zero rows of A (no degree of freedom)
         safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
         if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
-            raise LinAlgError('System has no solution')
+            return np.empty((0, A.shape[1]), dtype=np.bool_), np.empty(0, dtype=np.bool_)
 
-        A[[idx,g]] = A[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
-        b[[idx,g]] = b[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+        # A[[idx,g]] = A[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+        # b[[idx,g]] = b[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+        # Manual row swap
+        # Direct assignment for swapping
+        if g != idx:
+            A[g, :], A[idx, :] = A[idx, :].copy(), A[g, :].copy()
+            b[g], b[idx] = b[idx], b[g]
 
         g += 1 # increment g
+    return A,b
 
-    t0 = perf_counter()
-    error, t_part, nullity = _back_substitution_weight_opt(A,b) #, A.astype(int), b.astype(int)
-    t_opt = perf_counter() - t0 - t_part
+# def solve2(A: np.array, b: np.array):
+#     """
+#     Solves the system of equations Ax = b mod 2 for binary matrices and vectors b.
+#     Will raise an exception if no solution exists.
+#     Return a solution x and the reduced system of equations (A,b),
+#     i.e. A will be in reduced row echelon form (but with zero rows 
+#     remaining to preserve shape) and b corresponding.
+#     NOTE: this could also be achieved with rref_complete and intelligently using transform_mat
+#     to transform b and to see if there are solutions. Currently rref_complete is faster than this for smaller matrices.
+#     This implementation is faster for matrices starting with dimensions of several hundred.
+#     """
 
-    return error, (t_part, nullity, t_opt)
+#     if not is_binary(A) or not is_binary(b):
+#         raise ValueError('A and b must be binary arrays')
+
+#     A = np.copy(A).astype(bool)
+#     b = np.copy(b).astype(bool)
+#     m, n = A.shape
+#     if len(b) != m:
+#         raise ValueError('Non compatible shapes')
+    
+#     # We can check this in the beginning. Is vital if we never actually do a gaussian elimination, because then we never check
+#     all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+#     safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
+#     if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
+#         raise LinAlgError('System has no solution')
+    
+#     g = 0 # how many times gaussian elimination was actually done
+#     for i in range(n): # go through all columns of A with increment variable i
+#         idxs = np.where(A[:, i])[0] # at current column find all rows that have a 1
+#         try:
+#             idx = idxs[idxs >= g][0] # find the first row that is at g or higher. This will not have any other 1's before
+#         except IndexError:
+#             continue
+#         for target in idxs: # Perform Gaussian elimination with the row found above targeting all other rows that have a 1 at column i
+#             if target == idx:
+#                 continue
+#             A[target] ^= A[idx]
+#             b[target] ^= b[idx]
+        
+#         all_zero_rows = np.all(A == 0, axis=1) # Find all all-zero rows of A (no degree of freedom)
+#         safe = np.all(b[all_zero_rows] == 0) # If we have the trivial equation 0=0 for all of them we are safe
+#         if not safe: # otherwise 0=1 for at least one row, abort as no solution exists
+#             raise LinAlgError('System has no solution')
+
+#         A[[idx,g]] = A[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+#         b[[idx,g]] = b[[g,idx]] # Swap the row that was used for elimination with the one at that has index at the current step i
+
+#         g += 1 # increment g
+
+#     t0 = perf_counter()
+#     error, t_part, nullity = _back_substitution_weight_opt(A,b) #, A.astype(int), b.astype(int)
+#     t_opt = perf_counter() - t0 - t_part
+
+#     return error, (t_part, nullity, t_opt)
 
 def _back_substitution(A, b):
     """
