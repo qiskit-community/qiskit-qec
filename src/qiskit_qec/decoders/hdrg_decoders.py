@@ -663,14 +663,22 @@ class TannerUnionFindOptimized:
             self.T = T
             #self.adj_mat_T = adj_mat
 
+        def predecode(self, syndrome):
+            pre_error = self.adj_mat_T.T @ syndrome == 3
+            pre_syndrome = self.adj_mat_T @ pre_error % 2 ^ syndrome
+            return pre_error, pre_syndrome
+
         def decode(self, clusters, syndrome, history=None):
             if history is None:
                 history = []
             #size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
-            if clusters[0][3] == 'c':
-                size = (np.sum([cluster[0] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
+            if len(clusters) > 0:
+                if clusters[0][3] == 'c':
+                    size = (np.sum([cluster[0] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
+                else:
+                    size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters])) # benchmarking
             else:
-                size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters])) # benchmarking
+                size =(0,0)
             #t0 = perf_counter()# benchmarking
             #ccs = self.connected_components(cluster)
             #t_con = perf_counter() - t0 # benchmarking
@@ -806,7 +814,7 @@ class TannerUnionFindOptimized:
             self.decoders[T] = TannerUnionFindOptimized.Decoder(self.adj_mat, T)
         return self.decoders[T]
 
-    def decode(self, syndrome: np.ndarray):
+    def decode(self, syndrome: np.ndarray, predecode=False) -> Tuple[np.ndarray, List[Tuple[Tuple[int,int], float, int, List[Tuple[Tuple[int,int], float, int, float, float, int, float]], float]]]:
         """ Main entry point for decoding, takes syndrome and initialized clusters. In optimized version actually creates the clusters. """
 
         "Syndrome can be from multiple measurement rounds"
@@ -817,6 +825,11 @@ class TannerUnionFindOptimized:
             raise ValueError("Syndrome not of valid length (valid <=> multiple of number of checks)")
         
         T = l // m
+
+        decoder = self.get_decoder(T)
+
+        if predecode:
+            pre_error, syndrome = decoder.predecode(syndrome=syndrome)
 
         clusters = []
         for check in np.where(syndrome)[0]:
@@ -830,8 +843,12 @@ class TannerUnionFindOptimized:
             cluster_surface_type = 'c'
             clusters.append((checks, data, cluster_surface, cluster_surface_type))
 
-        decoder = self.get_decoder(T)
-        return decoder.decode(clusters, syndrome)
+
+        decoded_error, history = decoder.decode(clusters, syndrome)
+        if predecode:
+            decoded_error ^= pre_error
+
+        return decoded_error, history
 
 class TannerUnionFind:
     def __init__(self, adj_mat: np.ndarray) -> None:
