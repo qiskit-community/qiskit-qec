@@ -124,8 +124,6 @@ void debugToFile(const std::string& filename, const std::string& output) {
 
 std::tuple<bool, std::vector<std::vector<bool>>, std::vector<bool>, std::vector<bool>> solve(std::vector<std::vector<bool>> &a, std::vector<bool> &b)
 {
-  debugToFile("debug.log", "starting");
-  debugToFile("debug.log", "pushed back");
   if (contradiction(a, b)) { // 0=1 for at least one row, abort as no solution exists
     return std::make_tuple(false, a, b, b);
   } 

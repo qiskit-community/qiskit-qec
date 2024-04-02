@@ -535,7 +535,6 @@ def solve2_numba(A: np.array, b: np.array):
 
     return error, (t_part, nullity, t_opt)
     
-
 @jit(nopython=True)
 def check_all_zero_rows(A):
     """Manually checks each row for all zeros, compatible with Numba."""
@@ -671,6 +670,19 @@ def solve2_cpp(A: np.array, b: np.array):
     t_opt = perf_counter() - t0 - t_part
 
     return error, (t_part, nullity, t_opt)
+
+def solve2(A: np.array, b: np.array, lse_solver: str = None):
+    if lse_solver is None:
+        return solve2_python(A=A, b=b)
+    elif lse_solver == 'python':
+        return solve2_python(A=A, b=b)
+    elif lse_solver == 'numba':
+        return solve2_numba(A=A, b=b)
+    elif lse_solver == 'c++':
+        return solve2_cpp(A=A, b=b)
+    else:
+        raise ValueError(f'lse_solve has to be one of [None, "python", "numba", "c++"], not "{lse_solver}"')
+
 
 def _back_substitution(A, b):
     """

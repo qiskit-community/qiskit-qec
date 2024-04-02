@@ -668,7 +668,7 @@ class TannerUnionFindOptimized:
             pre_syndrome = self.adj_mat_T @ pre_error % 2 ^ syndrome
             return pre_error, pre_syndrome
 
-        def decode(self, clusters, syndrome, history=None):
+        def decode(self, clusters, syndrome, history=None, lse_solver=None):
             if history is None:
                 history = []
             #size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
@@ -688,7 +688,7 @@ class TannerUnionFindOptimized:
             all_valid = True
             decoded_error = np.zeros(self.adj_mat_T.shape[1], dtype=np.uint8)
             for cluster in clusters:
-                valid, x, figs = self.is_valid(cluster, syndrome)  # benchmarking
+                valid, x, figs = self.is_valid(cluster, syndrome, lse_solver=lse_solver)  # benchmarking
                 cluster_figs.append(figs)  # benchmarking
                 if not valid:
                     all_valid = False
@@ -704,9 +704,9 @@ class TannerUnionFindOptimized:
             t_grow = perf_counter() - t0 # benchmarking
             figs = (size, t_con, num_clust, cluster_figs, t_grow) # benchmarking
             history.append(figs) # benchmarking
-            return self.decode(clusters, syndrome, history=history)      # benchmarking
+            return self.decode(clusters, syndrome, history=history, lse_solver=lse_solver)      # benchmarking
 
-        def is_valid(self, cluster, syndrome):
+        def is_valid(self, cluster, syndrome, lse_solver=None):
             checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
             if cluster_surface_type == 'c':
                 checks = checks_interior | cluster_surface
@@ -725,7 +725,8 @@ class TannerUnionFindOptimized:
             t0 = perf_counter() # benchmarking
             figs = None # benchmarking
             try:
-                x, figs = solve2(soe,b) # benchmarking
+
+                x, figs = solve2(soe,b, lse_solver=lse_solver) # benchmarking
                 tmp_x = np.zeros_like(data)
                 tmp_x[interior] = x.astype(bool)
                 valid, int_x = True, tmp_x
@@ -814,7 +815,7 @@ class TannerUnionFindOptimized:
             self.decoders[T] = TannerUnionFindOptimized.Decoder(self.adj_mat, T)
         return self.decoders[T]
 
-    def decode(self, syndrome: np.ndarray, predecode=False) -> Tuple[np.ndarray, List[Tuple[Tuple[int,int], float, int, List[Tuple[Tuple[int,int], float, int, float, float, int, float]], float]]]:
+    def decode(self, syndrome: np.ndarray, predecode=False, lse_solver=None) -> Tuple[np.ndarray, List[Tuple[Tuple[int,int], float, int, List[Tuple[Tuple[int,int], float, int, float, float, int, float]], float]]]:
         """ Main entry point for decoding, takes syndrome and initialized clusters. In optimized version actually creates the clusters. """
 
         "Syndrome can be from multiple measurement rounds"
@@ -844,7 +845,7 @@ class TannerUnionFindOptimized:
             clusters.append((checks, data, cluster_surface, cluster_surface_type))
 
 
-        decoded_error, history = decoder.decode(clusters, syndrome)
+        decoded_error, history = decoder.decode(clusters, syndrome, lse_solver=lse_solver)
         if predecode:
             decoded_error ^= pre_error
 
