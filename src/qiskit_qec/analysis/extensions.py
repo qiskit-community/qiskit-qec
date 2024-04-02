@@ -94,3 +94,25 @@ except ImportError as import_error:
             raising {import_error}"
     )
     C_ISOTROPIC = False
+
+try:
+    from qiskit_qec.analysis._c_analysis import _c_solve  # pylint: disable=unused-import
+
+    C_SOLVE = True
+except ImportError as import_error:
+    logger.exception(  # pylint: disable=logging-fstring-interpolation
+        f"from qiskit_qec.analysis._c_analysis import _c_solve failed, \
+            raising {import_error}"
+    )
+    C_SOLVE = False
+
+try:
+    from qiskit_qec.analysis._c_analysis import _c_contradiction # pylint: disable=unused-import
+
+    C_CONTRADICT = True
+except ImportError as import_error:
+    logger.exception(  # pylint: disable=logging-fstring-interpolation
+        f"from qiskit_qec.analysis._c_analysis import _c_contradiction failed, \
+            raising {import_error}"
+    )
+    C_CONTRADICT = False

@@ -59,4 +59,6 @@ PYBIND11_MODULE(_c_analysis, module)
              py::arg("symplectic_vectors"), py::arg("symplectic_xl"), py::arg("symplectic_zl"), py::arg("max_weight") = 10);
   module.def("_c_rank", &rank, "compute rank of set of vectors", py::arg("vectors"));
   module.def("_c_isotropic", &is_isotropic, "test if set of symplectic vectors is isotropic", py::arg("symplectic_vectors"));
+  module.def("_c_solve", &solve, "solve a LSE over GF(2) if solvable", py::arg("a"), py::arg("b"));
+  module.def("_c_contradiction", &contradiction, "see if contradict", py::arg("a"), py::arg("b"));
 }

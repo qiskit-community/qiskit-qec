@@ -82,3 +82,95 @@ int rank(std::vector<std::vector<int> > vectors)
   return i;
 }
 
+bool contradiction(const std::vector<std::vector<bool>> &a, const std::vector<bool> &b) {
+  for (int row = 0; row < a.size(); ++row) {
+    bool we_good = false;
+    for (int col = 0; col < a[0].size(); ++col) {
+      if (a[row][col]) {
+        we_good = true;
+        break;
+      }
+    }
+    if (!we_good && b[row]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void debugToFile(const std::string& filename, const std::string& output) {
+    std::ofstream debugFile; // Create an ofstream object for file operations
+    debugFile.open(filename, std::ios::out | std::ios::app); // Open file in append mode
+    
+    // Check if file is open and ready for writing
+    if (debugFile.is_open()) {
+        debugFile << "Starting debug session\n";
+        
+
+        debugFile << output << "\n";
+        // // Example: writing a vector's content to the file
+        // std::vector<int> myVector = {1, 2, 3, 4, 5};
+        // for (int value : myVector) {
+        //     debugFile << "Vector element: " << value << "\n";
+        // }
+        
+        debugFile << "Ending debug session\n";
+        debugFile.close(); // Always close the file when you're done writing
+    } else {
+        // If the file couldn't be opened, you might want to handle the error
+        //std::cerr << "Unable to open file for writing.\n";
+    }
+}
+
+std::tuple<bool, std::vector<std::vector<bool>>, std::vector<bool>, std::vector<bool>> solve(std::vector<std::vector<bool>> &a, std::vector<bool> &b)
+{
+  debugToFile("debug.log", "starting");
+  debugToFile("debug.log", "pushed back");
+  if (contradiction(a, b)) { // 0=1 for at least one row, abort as no solution exists
+    return std::make_tuple(false, a, b, b);
+  } 
+  int g = 0; // how many times gaussian elimination was actually done
+  for (int col = 0; col < a[0].size(); ++col) { // go through all columns of A with increment variable i
+    for (int row = g; row < a.size(); ++row) {
+      if (a[row][col]) { // found first row with 1 in respective column
+        // found one such row
+        for (int target_row = 0; target_row < a.size(); ++target_row) { // Perform Gaussian elimination with the row found above targeting all other rows that have a 1 at column i
+          if (target_row == row) {
+            continue;
+          }
+          if (a[target_row][col]) {
+            // actual gaussian elimination step between two rows
+            for (int target_col = col; target_col < a[0].size(); ++target_col) {
+              a[target_row][target_col] = a[target_row][target_col] ^ a[row][target_col];
+            }
+            b[target_row] = b[target_row] ^ b[row];
+          }
+        }
+
+        // after do contradiciton step again
+        if (contradiction(a, b)) { // 0=1 for at least one row, abort as no solution exists
+          return std::make_tuple(false, a, b, b);
+        } 
+
+        // Swap the row that was used for elimination with the one at that has index at the current step 
+        std::vector<bool> tmp_a = a[g];
+        a[g] = a[row];
+        a[row] = tmp_a;
+        
+        bool tmp_b = b[g];
+        b[g] = b[row];
+        b[row] = tmp_b;
+
+        ++g; // increment g as gaussian elimination step is done
+
+        break; //break out of search for row and go to next column
+      }
+    }
+  }
+  // now a contains the row reduced echolon form of the original a (with remaining all zeros rows)
+  // and b the correspondingly transformed target vector
+  // TODO: backsubsitution step to populate x still missing
+  return std::make_tuple(true, a, b, b);
+}
+
+
