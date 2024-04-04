@@ -300,6 +300,7 @@ class UnionFindDecoder(ClusteringDecoder):
         decoding_graph: DecodingGraph = None,
         use_peeling=True,
         use_is_cluster_neutral=False,
+        growth_unit=0.5,
     ) -> None:
         super().__init__(code, decoding_graph=deepcopy(decoding_graph))
         self.graph = self.decoding_graph.graph
@@ -307,6 +308,7 @@ class UnionFindDecoder(ClusteringDecoder):
         self.odd_cluster_roots: List[int] = []
         self.use_peeling = use_peeling
         self.use_is_cluster_neutral = use_is_cluster_neutral
+        self.growth_unit = growth_unit
         self._clusters4peeling = []
 
     def process(self, string: str, predecoder=None):
@@ -456,7 +458,7 @@ class UnionFindDecoder(ClusteringDecoder):
 
     def _grow_clusters(self) -> List[FusionEntry]:
         """
-        Grow every "odd" cluster by half an edge.
+        Grow every non-neutral cluster by the growth unit.
 
         Returns:
             fusion_edge_list (List[FusionEntry]): List of edges that connect two
@@ -466,7 +468,7 @@ class UnionFindDecoder(ClusteringDecoder):
         for root in self.odd_cluster_roots:
             cluster = self.clusters[root]
             for edge in cluster.boundary:
-                edge.data.properties["growth"] += 0.5
+                edge.data.properties["growth"] += self.growth_unit
                 if (
                     edge.data.properties["growth"] >= edge.data.weight
                     and not edge.data.properties["fully_grown"]
