@@ -647,6 +647,27 @@ class TannerUnionFindOptimized:
         self.adj_mat = adj_mat
         self.decoders = {}
 
+    class Cluster:
+        def __init__(self, checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error) -> None:
+            self.checks_interior = checks_interior
+            self.data_interior = data_interior
+            self.cluster_surface = cluster_surface
+            self.cluster_surface_type = cluster_surface_type
+            self.valid = valid
+            self.internal_error = internal_error
+
+        def touches(self, other: "TannerUnionFindOptimized.Cluster") -> bool:
+            return self.cluster_surface_type == other.cluster_surface_type and np.any(self.cluster_surface & other.cluster_surface)
+        
+        def merge(self, other: "TannerUnionFindOptimized.Cluster") -> None:
+            """ merging happens in place. This assumes that touches is true """
+            self.checks_interior |= other.checks_interior
+            self.data_interior |= other.data_interior
+            self.cluster_surface |= other.cluster_surface
+            # self.cluster_surface_type not affected
+            self.valid = False
+            self.internal_error = None
+
     class Decoder:
         def __init__(self, adj_mat: np.ndarray, T: int) -> None:
             m, n = adj_mat.shape
@@ -672,13 +693,14 @@ class TannerUnionFindOptimized:
             if history is None:
                 history = []
             #size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
-            if len(clusters) > 0:
-                if clusters[0][3] == 'c':
-                    size = (np.sum([cluster[0] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
-                else:
-                    size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters])) # benchmarking
-            else:
-                size =(0,0)
+            # if len(clusters) > 0:
+            #     if clusters[0][3] == 'c':
+            #         size = (np.sum([cluster[0] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])) # benchmarking
+            #     else:
+            #         size = (np.sum([cluster[0] for cluster in clusters]), np.sum([cluster[1] for cluster in clusters])+np.sum([cluster[2] for cluster in clusters])) # benchmarking
+            # else:
+            #     size =(0,0)
+            size = (0,0)
             #t0 = perf_counter()# benchmarking
             #ccs = self.connected_components(cluster)
             #t_con = perf_counter() - t0 # benchmarking
@@ -687,13 +709,20 @@ class TannerUnionFindOptimized:
             cluster_figs = []  # benchmarking
             all_valid = True
             decoded_error = np.zeros(self.adj_mat_T.shape[1], dtype=np.uint8)
+            new_clusters = []
             for cluster in clusters:
+                if cluster[4]: # if valid
+                    decoded_error |= cluster[5]
+                    new_clusters.append(cluster)
+                    continue
                 valid, x, figs = self.is_valid(cluster, syndrome, lse_solver=lse_solver)  # benchmarking
                 cluster_figs.append(figs)  # benchmarking
                 if not valid:
                     all_valid = False
-                    break
-                decoded_error |= x
+                else:
+                    decoded_error |= x
+                new_clusters.append((*cluster[:4], valid, x))
+            clusters = new_clusters
             
             if all_valid:
                 figs = (size, t_con, num_clust, cluster_figs, None) # benchmarking
@@ -707,7 +736,7 @@ class TannerUnionFindOptimized:
             return self.decode(clusters, syndrome, history=history, lse_solver=lse_solver)      # benchmarking
 
         def is_valid(self, cluster, syndrome, lse_solver=None):
-            checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+            checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
             if cluster_surface_type == 'c':
                 checks = checks_interior | cluster_surface
                 data = data_interior
@@ -748,7 +777,7 @@ class TannerUnionFindOptimized:
             cluster = (check_selector, data_selector)
             check_selector is a binary array of size n//2, where a 1 means the corresponing check node is in E.
             data_selector is a binary array of size n, where a 1 means the corresponing data node is in E."""
-            checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
+            checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
             if cluster_surface_type == 'c':
                 check_selector = checks_interior | cluster_surface
                 data_selector = data_interior
@@ -764,51 +793,84 @@ class TannerUnionFindOptimized:
             #print(interior)
             return self.adj_mat_T[check_selector][:,interior], interior
         
-        def grow(self, clusters):
-            """ Get a bit more complicated, now check for merging clusters """
+        def grow(self, clusters, grow_valid=False):
             grown_clusters = []
-            if clusters[0][3] == 'c':
-                for cluster in clusters:
-                    checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-                    checks_interior |= cluster_surface
-                    cluster_surface = np.any(self.adj_mat_T[cluster_surface], axis=0) &~data_interior # surface might contain interior nodes still, but this causes no harm
-                    cluster_surface_type = 'd'
-                    # merge directly
-                    merged_away = []
-                    for i, other in enumerate(grown_clusters):
-                        if np.any(cluster_surface & other[2]): # these clusters are connected
-                            #keep track of merged
-                            merged_away.append(i)
-                            # merge
-                            checks_interior |= other[0]
-                            data_interior |= other[1]
-                            cluster_surface |= other[2]
-                    for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
-                        del grown_clusters[i]
-                    # append the merged cluster
-                    grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
-            else:
-                for cluster in clusters:
-                    checks_interior, data_interior, cluster_surface, cluster_surface_type = cluster
-                    data_interior |= cluster_surface
-                    cluster_surface = np.any(self.adj_mat_T[:, cluster_surface], axis=1) &~checks_interior # surface might contain interior nodes still, but this causes no harm
-                    cluster_surface_type = 'c'
-                    # merge directly
-                    merged_away = []
-                    for i, other in enumerate(grown_clusters):
-                        if np.any(cluster_surface & other[2]): # these clusters are connected
-                            #keep track of merged
-                            merged_away.append(i)
-                            # merge
-                            checks_interior |= other[0]
-                            data_interior |= other[1]
-                            cluster_surface |= other[2]
-                    for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
-                        del grown_clusters[i]
-                    # append the merged cluster
-                    grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
-
+            for cluster in clusters:
+                checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+                if not valid or grow_valid:
+                    # grow this cluster
+                    if cluster_surface_type == 'c':
+                        checks_interior |= cluster_surface
+                        cluster_surface = np.any(self.adj_mat_T[cluster_surface], axis=0) &~data_interior # surface might contain interior nodes still, but this causes no harm
+                        cluster_surface_type = 'd'
+                    elif cluster_surface_type == 'd':
+                        data_interior |= cluster_surface
+                        cluster_surface = np.any(self.adj_mat_T[:, cluster_surface], axis=1) &~checks_interior # surface might contain interior nodes still, but this causes no harm
+                        cluster_surface_type = 'c'
+                # merge directly
+                merged_away = []
+                for i, other in enumerate(grown_clusters):
+                    if cluster_surface_type == other[3] and np.any(cluster_surface & other[2]): # these 2 clusters are now connected
+                        #keep track of merged
+                        merged_away.append(i)
+                        # merge
+                        checks_interior |= other[0]
+                        data_interior |= other[1]
+                        cluster_surface |= other[2]
+                        valid = False
+                        internal_error = None
+                for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
+                    del grown_clusters[i]
+                # append the merged cluster
+                grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error))
             return grown_clusters
+
+
+        # def grow(self, clusters):
+        #     """ Get a bit more complicated, now check for merging clusters """
+        #     grown_clusters = []
+        #     if clusters[0][3] == 'c':
+        #         for cluster in clusters:
+        #             checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+        #             checks_interior |= cluster_surface
+        #             cluster_surface = np.any(self.adj_mat_T[cluster_surface], axis=0) &~data_interior # surface might contain interior nodes still, but this causes no harm
+        #             cluster_surface_type = 'd'
+        #             # merge directly
+        #             merged_away = []
+        #             for i, other in enumerate(grown_clusters):
+        #                 if np.any(cluster_surface & other[2]): # these clusters are connected
+        #                     #keep track of merged
+        #                     merged_away.append(i)
+        #                     # merge
+        #                     checks_interior |= other[0]
+        #                     data_interior |= other[1]
+        #                     cluster_surface |= other[2]
+        #             for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
+        #                 del grown_clusters[i]
+        #             # append the merged cluster
+        #             grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
+        #     else:
+        #         for cluster in clusters:
+        #             checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+        #             data_interior |= cluster_surface
+        #             cluster_surface = np.any(self.adj_mat_T[:, cluster_surface], axis=1) &~checks_interior # surface might contain interior nodes still, but this causes no harm
+        #             cluster_surface_type = 'c'
+        #             # merge directly
+        #             merged_away = []
+        #             for i, other in enumerate(grown_clusters):
+        #                 if np.any(cluster_surface & other[2]): # these clusters are connected
+        #                     #keep track of merged
+        #                     merged_away.append(i)
+        #                     # merge
+        #                     checks_interior |= other[0]
+        #                     data_interior |= other[1]
+        #                     cluster_surface |= other[2]
+        #             for i in merged_away[::-1]: # delete in reverse order so indices keep making sense
+        #                 del grown_clusters[i]
+        #             # append the merged cluster
+        #             grown_clusters.append((checks_interior, data_interior, cluster_surface, cluster_surface_type))
+
+        #     return grown_clusters
 
     def get_decoder(self, T: int) -> "TannerUnionFindOptimized.Decoder":
         if T not in self.decoders:
@@ -842,7 +904,9 @@ class TannerUnionFindOptimized:
             cluster_surface = np.zeros(T*m, dtype=bool)
             cluster_surface[check] = True
             cluster_surface_type = 'c'
-            clusters.append((checks, data, cluster_surface, cluster_surface_type))
+            valid = False
+            internal_error = None
+            clusters.append((checks, data, cluster_surface, cluster_surface_type, valid, internal_error))
 
 
         decoded_error, history = decoder.decode(clusters, syndrome, lse_solver=lse_solver)
