@@ -18,7 +18,7 @@ import itertools
 import numpy as np
 from qiskit import QiskitError
 from numba import njit, jit
-from qiskit_qec.analysis.extensions import _c_solve
+#from qiskit_qec.analysis.extensions import _c_solve
 
 
 def create_lambda_matrix(n: int) -> np.ndarray:
@@ -644,6 +644,7 @@ def solve2_python(A: np.array, b: np.array):
     return error, (t_part, nullity, t_opt)
 
 def solve2_cpp(A: np.array, b: np.array):
+    raise NotImplementedError
     """
     Solves the system of equations Ax = b mod 2 for binary matrices and vectors b.
     Will raise an exception if no solution exists.
@@ -723,7 +724,7 @@ def _back_substitution_weight_opt(A, b):
 
     best = xs
     min_weight = xs.sum()
-    if ker.shape[0] > 7:
+    if ker.shape[0] > 9:
         return best, t_part, ker.shape[0]
     for sel in itertools.product([False,True], repeat=ker.shape[0]):
         x = (xs + ker[list(sel)].sum(axis=0)) % 2
