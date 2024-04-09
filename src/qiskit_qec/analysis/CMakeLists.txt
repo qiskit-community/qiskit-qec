@@ -9,6 +9,7 @@ set(ANALYSIS_SRC
     intern/faultenumerator.cpp
     intern/faultsampler.cpp
     intern/linear.cpp
+    intern/linearsparse.cpp
     intern/productiterator.cpp
     
     combinations.h
@@ -17,6 +18,7 @@ set(ANALYSIS_SRC
     faultenumerator.h
     faultsampler.h
     linear.h
+    linearsparse.h
     productiterator.h
 )
 

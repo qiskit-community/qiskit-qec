@@ -106,13 +106,27 @@ except ImportError as import_error:
     )
     C_SOLVE = False
 
-try:
-    from qiskit_qec.analysis._c_analysis import _c_contradiction # pylint: disable=unused-import
 
-    C_CONTRADICT = True
-except ImportError as import_error:
-    logger.exception(  # pylint: disable=logging-fstring-interpolation
-        f"from qiskit_qec.analysis._c_analysis import _c_contradiction failed, \
-            raising {import_error}"
-    )
-    C_CONTRADICT = False
+
+funcs = ['_c_solve_sparse',
+         '_c_gaussian_elimination_sparse',
+         '_c_back_substitution_sparse',
+         '_c_nullspace_sparse',
+         #'_c_lxor_sparse',
+         #'_c_lxor_weight_sparse',
+         #'_c_minimize_weight_sparse',
+         '_c_solve_optimal_sparse',
+          ]
+
+for func in funcs:
+    try:
+        # Dynamically construct and execute the import statement
+        exec(f"from qiskit_qec.analysis._c_analysis import {func}")
+        globals()[func.upper()[1:]] = True
+    except ImportError as import_error:
+        logger.exception(  # pylint: disable=logging-fstring-interpolation
+            f"from qiskit_qec.analysis._c_analysis import {func} failed, \
+                raising {import_error}"
+        )
+        globals()[func.upper()[1:]] = False
+

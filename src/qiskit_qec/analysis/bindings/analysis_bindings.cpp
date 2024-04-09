@@ -3,6 +3,7 @@
 #include "faultsampler.h"
 #include "distance.h"
 #include "linear.h"
+#include "linearsparse.h"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -60,5 +61,23 @@ PYBIND11_MODULE(_c_analysis, module)
   module.def("_c_rank", &rank, "compute rank of set of vectors", py::arg("vectors"));
   module.def("_c_isotropic", &is_isotropic, "test if set of symplectic vectors is isotropic", py::arg("symplectic_vectors"));
   module.def("_c_solve", &solve, "solve a LSE over GF(2) if solvable", py::arg("a"), py::arg("b"));
-  module.def("_c_contradiction", &contradiction, "see if contradict", py::arg("a"), py::arg("b"));
+  
+  module.def("_c_nullspace_sparse", &nullspace_sparse, "compute nullspace", py::arg("a"), py::arg("n"));
+  module.def("_c_gaussian_elimination_sparse", &gaussian_elimination_sparse, "gaussian elimination", py::arg("a"), py::arg("n"), py::arg("b"));
+  module.def("_c_back_substitution_sparse", &back_substitution_sparse, "back substitution step", py::arg("a"), py::arg("n"), py::arg("b"));
+  module.def("_c_solve_sparse", &solve_sparse, "solve the LSE", py::arg("a"), py::arg("n"), py::arg("b"));
+  module.def("_c_solve_optimal_sparse", &solve_optimal_sparse, "if you know you know 3", py::arg("a"), py::arg("n"), py::arg("b"), py::arg("max_dof"));
+  //module.def("_c_lxor_sparse", &lxor_sparse_a, "if you know you know", py::arg("a"));
+  //module.def("_c_lxor_weight_sparse", &lxor_weight_sparse_a, "if you know you know", py::arg("a"));
+  //module.def("_c_minimize_weight_sparse", &minimize_weight_sparse, "if you know you know 2", py::arg("x_part"), py::arg("nullspace"), py::arg("max_dof"));
+
+
+  // module.def("_c_solve_sparse", &solve_sparse, "solve sparse", py::arg("a"), py::arg("n"), py::arg("b"));
+  // module.def("_c_contradiction_sparse", &contradiction_sparse, "see if contradict", py::arg("a"), py::arg("b"));
+  // module.def("_c_contains", &contains, "see if contains", py::arg("a"), py::arg("x"));
+  // module.def("_c_sparse_xor", &sparse_xor, "sprase xor", py::arg("a1"), py::arg("b1"));
+  // module.def("_c_sparse_dif", &sparse_dif, "sprase dif", py::arg("a1"), py::arg("b1"));
+  // module.def("_c_back_propagation_sparse", &back_propagation_sparse, "back prop sparse", py::arg("a"), py::arg("n"), py::arg("b"));
+  // module.def("_c_kernel", &kernel, "back prop sparse", py::arg("a"), py::arg("n"));
+
 }

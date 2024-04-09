@@ -104,17 +104,41 @@ void debugToFile(const std::string& filename, const std::string& output) {
     
     // Check if file is open and ready for writing
     if (debugFile.is_open()) {
-        debugFile << "Starting debug session\n";
-        
-
         debugFile << output << "\n";
+        debugFile.close(); // Always close the file when you're done writing
+    } else {
+        // If the file couldn't be opened, you might want to handle the error
+        //std::cerr << "Unable to open file for writing.\n";
+    }
+}
+
+void debugToFile(const std::string& filename, const std::vector<int>& output) {
+    std::ofstream debugFile; // Create an ofstream object for file operations
+    debugFile.open(filename, std::ios::out | std::ios::app); // Open file in append mode
+    
+    // Check if file is open and ready for writing
+    if (debugFile.is_open()) {
+        debugFile << "[";
         // // Example: writing a vector's content to the file
-        // std::vector<int> myVector = {1, 2, 3, 4, 5};
-        // for (int value : myVector) {
-        //     debugFile << "Vector element: " << value << "\n";
-        // }
+        for (int value : output) {
+            debugFile << "" << value << ",";
+        }
         
-        debugFile << "Ending debug session\n";
+        debugFile << "]";
+        debugFile.close(); // Always close the file when you're done writing
+    } else {
+        // If the file couldn't be opened, you might want to handle the error
+        //std::cerr << "Unable to open file for writing.\n";
+    }
+}
+
+void debugToFile(const std::string& filename, int output) {
+    std::ofstream debugFile; // Create an ofstream object for file operations
+    debugFile.open(filename, std::ios::out | std::ios::app); // Open file in append mode
+    
+    // Check if file is open and ready for writing
+    if (debugFile.is_open()) {
+        debugFile << output << "\n";
         debugFile.close(); // Always close the file when you're done writing
     } else {
         // If the file couldn't be opened, you might want to handle the error
@@ -171,4 +195,19 @@ std::tuple<bool, std::vector<std::vector<bool>>, std::vector<bool>, std::vector<
   return std::make_tuple(true, a, b, b);
 }
 
+// what to implement this but for sparse matrix representation
+// def ker2(a):
+//     """ calculates the kernel of the binary matrix 'a' over the field GF(2). Adapted from code from S. Bravyi.
+//     Returns a basis for the ker2(a) as rows of a 2d numpy.ndarray. """
+//     m,n = a.shape
+//     ker = np.identity(n,dtype=int)
 
+//     for i in range(m):
+//         y = np.dot(a[i], ker) % 2 # multiplication of current row with all columns of ker
+//         good = ker[:,y==0] # columns of ker that are in the kernel of a[i,:] (and thus in the kernel of a[:i+1,:])
+//         bad = ker[:, y==1] # colums of ker that are in kernel of a[:i,:] but not in kernel of a[i,:]
+//         if bad.shape[1]>0: # in case there are enough columns not in the kernel
+//             new_good = (bad[:,:-1] + bad[:,1:]) % 2 # by construction all of these will be in kernel of a[i,:], independent and complete
+//             ker = np.concatenate((good, new_good), axis=1) # new basis for kernel of a[:i+1,:]
+//     # now columns of ker span the binary null-space of a
+//     return np.transpose(ker)
