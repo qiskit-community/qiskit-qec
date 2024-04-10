@@ -28,7 +28,8 @@ from rustworkx.visualization import graphviz_draw
 
 from qiskit_qec.codes.bb_code import BBCode
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
-from qiskit_qec.linear.matrix import solve2, LinAlgError
+#from qiskit_qec.linear.matrix import solve2, LinAlgError
+from qiskit_qec.analysis.lse_solvers import solve
 from qiskit_qec.utils import DecodingGraphEdge
 
 
@@ -775,27 +776,29 @@ class TannerUnionFindOptimized:
 
             int_size = true_interior_data.sum() # benchmarking
 
-            t0 = perf_counter() # benchmarking
+            #t0 = perf_counter() # benchmarking
 
-
-            figs = None # benchmarking
-            try:
-                x, figs = solve2(a, b, lse_solver=lse_solver) # benchmarking
-                tmp_x = np.zeros_like(cluster.data)
-                tmp_x[true_interior_data] = x.astype(bool)
-                valid, int_x = True, tmp_x
-            except LinAlgError:
-                valid, int_x = False, None
+            valid, x, solve_stats = solve(a, b, minimize_weight=True, stats=True, lse_solver=lse_solver)
+            if valid:
+            # x is sparse, contains true indices of error within interior
+                int_x = np.zeros_like(cluster.data)
+                int_x[true_interior_data] = x
+            else: int_x = None
+            # now int_x contains the interior error in dense format with respect to whole graph
             
-            t_valid = perf_counter() - t0 # benchmarking
+            #t_valid = perf_counter() - t0 # benchmarking
 
-            if figs is not None: # benchmarking
-                t_valid -= (figs[0] + figs[2]) # benchmarking
-                figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
-            else:
-                figs = (clust_size, t_int, int_size, t_valid, None, None, None)
+            stats = {'valid': valid, 'clust_size': clust_size, 'int_size': int_size, 't_int': t_int}
+            for solve_stat in solve_stats:
+                stats[solve_stat] = solve_stats[solve_stat]
+
+            # if figs is not None: # benchmarking
+            #     t_valid -= (figs[0] + figs[2]) # benchmarking
+            #     figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
+            # else:
+            #     figs = (clust_size, t_int, int_size, t_valid, None, None, None)
             
-            return valid, int_x, figs
+            return valid, int_x, stats
             
 
         def get_cluster_LSE(self, cluster: "TannerUnionFindOptimized.Cluster"):
