@@ -23,13 +23,10 @@ from time import perf_counter
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
-from rustworkx import PyGraph, connected_components, distance_matrix, adjacency_matrix
-from rustworkx.visualization import graphviz_draw
+from rustworkx import PyGraph, connected_components, distance_matrix
 
-from qiskit_qec.codes.bb_code import BBCode
-from qiskit_qec.decoders.decoding_graph import DecodingGraph
-#from qiskit_qec.linear.matrix import solve2, LinAlgError
 from qiskit_qec.analysis.lse_solvers import solve
+from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphEdge
 
 
@@ -718,6 +715,9 @@ class TannerUnionFindOptimized:
             return pre_error, pre_syndrome
 
         def decode(self, clusters: List["TannerUnionFindOptimized.Cluster"], syndrome, history=None, lse_solver=None):
+            # kinda horrible place to put it but whatever
+            clusters = self.extra_merging_strategy(clusters)
+            
             if history is None:# benchmarking
                 history = []# benchmarking
 
@@ -731,6 +731,7 @@ class TannerUnionFindOptimized:
             for cluster in clusters:
                 if cluster.valid:
                     decoded_error |= cluster.internal_error
+                    cluster_figs.append({'valid': True, 'cluster_nodes': (list(np.where(cluster.checks)[0]), list(np.where(cluster.data)[0]))})
                     continue
 
                 valid, x, figs = self.is_valid(cluster, syndrome, lse_solver=lse_solver)  # benchmarking
@@ -788,7 +789,7 @@ class TannerUnionFindOptimized:
             
             #t_valid = perf_counter() - t0 # benchmarking
 
-            stats = {'valid': valid, 'clust_size': clust_size, 'int_size': int_size, 't_int': t_int}
+            stats = {'valid': valid, 'clust_size': clust_size, 'cluster_nodes': (list(np.where(cluster.checks)[0]), list(np.where(cluster.data)[0])), 'int_size': int_size, 't_int': t_int}
             for solve_stat in solve_stats:
                 stats[solve_stat] = solve_stats[solve_stat]
 
@@ -819,8 +820,8 @@ class TannerUnionFindOptimized:
             interior = cluster.data & no_outside
             return self.adj_mat_T[cluster.checks][:,interior], interior
         
-        def grow(self, clusters: List["TannerUnionFindOptimized.Cluster"], grow_valid=False):
-            grown_clusters = []
+        def grow(self, clusters: List["TannerUnionFindOptimized.Cluster"], grow_valid=False, merging_strategy = None):
+            grown_clusters: List[TannerUnionFindOptimized.Cluster] = []
             for cluster in clusters:
                 #checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
                 if not cluster.valid or grow_valid:
@@ -845,7 +846,46 @@ class TannerUnionFindOptimized:
                     del grown_clusters[i]
                 # append the merged cluster
                 grown_clusters.append(cluster)
+            # very inefficient, but let's just hack this in:
+            # want to add and merge all clusters when a data node is outside of any cluster but touches only clusters
+            # get all such data nodes:
+            # all data nodes not in clusters
+            if merging_strategy is None:
+                grown_clusters = self.extra_merging_strategy(grown_clusters)
             return grown_clusters
+    
+        def extra_merging_strategy(self, clusters: List["TannerUnionFindOptimized.Cluster"]):
+            # This strategy will be removed again...
+            return clusters
+            data_in_clusters = np.zeros_like(clusters[0].data)
+            check_in_clusters = np.zeros_like(clusters[0].checks)
+            for cluster in clusters:
+                data_in_clusters |= cluster.data
+                check_in_clusters |= cluster.checks
+            data_outside_clusters = ~data_in_clusters
+            checks_outside_clusters = ~check_in_clusters
+            data_touching_checks_outside = np.any(self.adj_mat_T[checks_outside_clusters], axis=0)
+            data_to_merge = data_outside_clusters & ~data_touching_checks_outside
+            # data_to_merge contains all data nodes that only touch clustesr but aren't in clusters
+            # iterate through all of them
+            data_to_merge = np.where(data_to_merge)[0]
+            for data_node in data_to_merge:
+                # find connected checks (grow to checks):
+                conn_checks = self.adj_mat_T[:, data_node]
+                # find what clusters that corresponds too
+                corresponding_cluster_indices = []
+                for i, cluster in enumerate(clusters):
+                    if np.any(conn_checks & cluster.checks):
+                        corresponding_cluster_indices.append(i)
+                # corresponding_cluster indices must contain at least one entry
+                this_idx = corresponding_cluster_indices[0]
+                clusters[this_idx].data_interior[data_node] = 1
+                # merge others into this
+                for other_idx in corresponding_cluster_indices[1:]:
+                    clusters[this_idx].merge(clusters[other_idx])
+                for i in corresponding_cluster_indices[1:][::-1]: # delete the merged clusters in reverse order so indices keep making sense
+                    del clusters[i]
+            return clusters
 
     def get_decoder(self, T: int) -> "TannerUnionFindOptimized.Decoder":
         if T not in self.decoders:
