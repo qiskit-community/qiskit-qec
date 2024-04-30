@@ -295,7 +295,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         separated_string = _separate_string(string)
         nodes = []
 
-        # logical nodes
+        # logical/boundary nodes
         boundary = separated_string[0]  # [<last_elem>, <init_elem>]
         for bqec_index, belement in enumerate(boundary[::-1]):
             if all_logicals or belement != logical:
@@ -326,7 +326,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         """
         return [string.split(" ", maxsplit=1)[0][-1]]
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -334,7 +334,7 @@ class RepetitionCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
+            ignore_extras (bool): If `True`, undeeded boundary nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -397,7 +397,7 @@ class RepetitionCodeCircuit(CodeCircuit):
 
             # if unneeded logical zs are given, cluster is not neutral
             # (unless this is ignored)
-            if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+            if (not ignore_extras) and given_logicals.difference(flipped_logicals):
                 neutral = False
             # otherwise, report only needed logicals that aren't given
             else:
@@ -418,15 +418,15 @@ class RepetitionCodeCircuit(CodeCircuit):
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, nodes):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
-        errors could have caused the set of atypical nodes (syndrome changes) passed
+        errors could have caused the set of nodes (syndrome changes) passed
         to the method.
         Args:
-            atypical_nodes (dictionary in the form of the return value of string2nodes)
+            nodes (list of nodes)
         """
-        return not bool(len(atypical_nodes) % 2)
+        return not bool(len(nodes) % 2)
 
     def partition_outcomes(
         self, round_schedule: str, outcome: List[int]
@@ -785,13 +785,17 @@ class ArcCircuit(CodeCircuit):
                 self.circuit[basis].x(self.code_qubit)
             self._basis_change(basis)
 
-        # use degree 1 code qubits for logical z readouts
+        # use degree 1 code qubits for logical z readouts (and boundary)
         graph = self._get_coupling_graph()
+        self._leaves = False
         z_logicals = []
+        self.boundary = []
         for n, node in enumerate(graph.nodes()):
             if graph.degree(n) == 1:
                 z_logicals.append(node)
-        # if there are none, just use the first
+                self.boundary.append(node)
+                self._leaves = True
+        # if there are none, just use the first (not boundary)
         if not z_logicals:
             z_logicals = [min(self.code_index.keys())]
         self.z_logicals = z_logicals
@@ -1070,6 +1074,7 @@ class ArcCircuit(CodeCircuit):
                             tau = 0
                         node = DecodingGraphNode(
                             is_logical=is_logical,
+                            is_boundary=(is_logical and self._leaves),
                             time=syn_round if not is_logical else None,
                             qubits=code_qubits,
                             index=elem_num,
@@ -1131,7 +1136,20 @@ class ArcCircuit(CodeCircuit):
                 link_neighbors[node].append(nodes[j])
         return link_graph, link_neighbors
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def _extras2cpp(self):
+        """
+        Returns logical and boundary nodes as tuples. First value is the qubit,
+        second is 1 for logical only, 2 for boundary only and 3 for both.
+        """
+        extras = {}
+        for q in self.z_logicals:
+            extras[q] = 1 + 2 * (q in self.boundary)
+        for q in self.boundary:
+            if q not in self.z_logicals:
+                extras[q] = 2
+        return extras
+
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -1139,7 +1157,7 @@ class ArcCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded boundary nodes are
+            ignore_extras (bool): If `True`, undeeded boundary and logical nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -1156,36 +1174,43 @@ class ArcCircuit(CodeCircuit):
 
         cpp_output = _c_check_nodes(
             nodes,
-            ignore_extra_logical,
+            ignore_extras,
             minimal,
             self.cycle_dict,
             self._cpp_link_graph,
             self._cpp_link_neighbors,
-            self.z_logicals,
+            self._extras2cpp(),
         )
 
         neutral = bool(cpp_output[0])
         num_errors = cpp_output[1]
-        flipped_logical_nodes = []
-        for flipped_logical in cpp_output[2::]:
+        flipped_extra_nodes = []
+        for flipped_extra in cpp_output[2::]:
+            is_logical = flipped_extra in self.z_logicals
+            is_boundary = flipped_extra in self.boundary
+            if is_logical:
+                index = self.z_logicals.index(flipped_extra)
+            else:
+                index = self.boundary.index(flipped_extra)
             node = DecodingGraphNode(
-                is_logical=True,
-                qubits=[flipped_logical],
-                index=self.z_logicals.index(flipped_logical),
+                is_logical=is_logical,
+                is_boundary=is_boundary,
+                qubits=[flipped_extra],
+                index=index,
             )
-            flipped_logical_nodes.append(node)
+            flipped_extra_nodes.append(node)
 
-        return neutral, flipped_logical_nodes, num_errors
+        return neutral, flipped_extra_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes: dict):
+    def is_cluster_neutral(self, nodes: dict):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
-        errors could have caused the set of atypical nodes (syndrome changes) passed
+        errors could have caused the set of nodes (syndrome changes) passed
         to the method.
         Args:
-            atypical_nodes: dictionary in the form of the return value of string2nodes
+            nodes: dictionary in the form of the return value of string2nodes
         """
-        nodes = _nodes2cpp(atypical_nodes)
+        nodes = _nodes2cpp(nodes)
         return _c_is_cluster_neutral(
             nodes,
             False,
@@ -1193,7 +1218,7 @@ class ArcCircuit(CodeCircuit):
             self.cycle_dict,
             self._cpp_link_graph,
             self._cpp_link_neighbors,
-            self.z_logicals,
+            self._extras2cpp(),
             self._linear,
         )
 

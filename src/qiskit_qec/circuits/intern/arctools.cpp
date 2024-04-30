@@ -2,30 +2,34 @@
 #include <iostream>
 
 bool is_cluster_neutral(
-    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
-    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals,
+    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extras, bool minimal,
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::map<int, int> extras,
     bool linear
     ) {
     if (linear) {
         return nodes.size()%2==0;
     } else {
-        std::vector<int> output = check_nodes(nodes, ignore_extra_logicals, minimal, cycle_dict, link_graph, link_neighbors, z_logicals);
-        return (output[0]==1) and (output.size()==2);
+        std::vector<int> output = check_nodes(nodes, ignore_extras, minimal, cycle_dict, link_graph, link_neighbors, extras);
+        bool no_boundary = true;
+        for (int j = 2; j < output.size(); j++) {
+            no_boundary = no_boundary and (extras[output[j]]<2);
+        };
+        return (output[0]==1) and no_boundary;
     }
-
 };
 
 std::vector<int> check_nodes(
-    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extra_logicals, bool minimal,
-    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::vector<int> z_logicals
+    std::vector<std::tuple<int, int, int, bool>> nodes, bool ignore_extras, bool minimal,
+    std::map<std::tuple<int, int>, std::set<int>> cycle_dict, std::vector<std::tuple<int, int>> link_graph, std::map<int, std::vector<int>> link_neighbors, std::map<int, int> extras
     ) {
     
-    // output[0] is neutral (as int), output[1] is num_errors, rest is list of given logicals
+    // output[0] is neutral (as int), output[1] is num_errors, rest is list of given extras
     std::vector<int> output;
 
-    // we convert to flat nodes, which are a std::tuple with (q0, q1, boundary)
+    // we convert to flat nodes, which are a std::tuple with (q0, q1, boundary/logical)
+    // here boundary/logical is 0 if the node is neither boundary or logical, 1 for logical, 2 for bounary and 3 for both
     // if we have an even number of corresponding nodes, they cancel
-    std::map<std::tuple<int, int, bool>, int> node_counts;
+    std::map<std::tuple<int, int, int>, int> node_counts;
     for (auto & node : nodes) {
         node_counts[std::make_tuple(std::get<0>(node), std::get<1>(node), std::get<3>(node))] = 0;
     }
@@ -39,12 +43,12 @@ std::vector<int> check_nodes(
             flat_nodes.push_back(node_count.first);
         }
     }
-    // see what logicals and bulk nodes are given
-    std::set<int> given_logicals;
+    // see what extras and bulk nodes are given
+    std::set<int> given_extras;
     std::set<std::tuple<int, int, bool>> bulk_nodes;
     for (auto & node : flat_nodes) {
-        if (std::get<2>(node)) {
-            given_logicals.insert(std::get<0>(node));
+        if (std::get<2>(node) > 0) {
+            given_extras.insert(std::get<0>(node));
         } else {
             bulk_nodes.insert(node);
         }
@@ -52,12 +56,12 @@ std::vector<int> check_nodes(
 
     if (bulk_nodes.size()==0){
         // without bulk nodes, neutral only if no logical nodes are given (unless this is ignored)
-        int neutral = (ignore_extra_logicals || given_logicals.size()==0);
+        int neutral = (ignore_extras || given_extras.size()==0);
         int num_errors = 0;
         // compile the output
         output.push_back(neutral);
         output.push_back(num_errors);
-        // no flipped logicals need to be added
+        // no flipped extras need to be added
     } else {
         std::map<int, int> parities;
         // check how many times the bulk nodes turn up in each cycle
@@ -79,7 +83,7 @@ std::vector<int> check_nodes(
             output.push_back(0);
             // number of errors not counted
             output.push_back(-1);
-            // no flipped logicals need to be added
+            // no flipped extras need to be added
         } else {
             // now we must bicolor the qubits of the link graph, such that node edges connect unlike edges
             
@@ -163,53 +167,53 @@ std::vector<int> check_nodes(
             if (not minimal){
                 cs.push_back((min_color+1)%2);
             }
-            // determine which flipped logicals correspond to which colour
-            std::vector<std::set<int>> color_logicals = {{}, {}};
-            for (auto & q: z_logicals){
-                if (color.find(q) == color.end()){
-                    color[q] = (conv_color+1)%2;
+            // determine which flipped extras correspond to which colour
+            std::vector<std::set<int>> color_extras = {{}, {}};
+            for (auto & qe: extras){
+                if (color.find(qe.first) == color.end()){
+                    color[qe.first] = (conv_color+1)%2;
                 }
-                color_logicals[color[q]].insert(q);
+                color_extras[color[qe.first]].insert(qe.first);
             }
-            // see if we can find a color for which we have no extra logicals
-            // and see what additional logicals are required
-            std::set<int> flipped_logicals;
-            std::set<int> flipped_ng_logicals;
-            std::vector<int> extra_logicals;
+            // see if we can find a color for which we have no extra extras
+            // and see what additional extras are required
+            std::set<int> flipped_extras;
+            std::set<int> flipped_ng_extras;
+            std::vector<int> extra_extras;
             bool done = false;
             int j = 0;
             while (not done){
-                flipped_logicals = {};
-                flipped_ng_logicals = {};
-                // see which logicals for this colour have been flipped
-                for (auto & q: color_logicals[cs[j]]){
-                    flipped_logicals.insert(q);
+                flipped_extras = {};
+                flipped_ng_extras = {};
+                // see which extras for this colour have been flipped
+                for (auto & q: color_extras[cs[j]]){
+                    flipped_extras.insert(q);
                     // and which of those were not given
-                    if (given_logicals.find(q) == given_logicals.end()) {
-                        flipped_ng_logicals.insert(q);
+                    if (given_extras.find(q) == given_extras.end()) {
+                        flipped_ng_extras.insert(q);
                     }
                 }
-                // see which extra logicals are given
-                extra_logicals = {};
-                if (not ignore_extra_logicals) {
-                    for (auto & q: given_logicals){
-                        if ((flipped_logicals.find(q) == flipped_logicals.end())) {
-                            extra_logicals.push_back(q);
+                // see which extra extras are given
+                extra_extras = {};
+                if (not ignore_extras) {
+                    for (auto & q: given_extras){
+                        if ((flipped_extras.find(q) == flipped_extras.end())) {
+                            extra_extras.push_back(q);
                         }
                     }
                 }
-                // if we have no extra logicals, or we've run out of colours, we move on
+                // if we have no extra extras, or we've run out of colours, we move on
                 // otherwise we try the next colour
-                done = (extra_logicals.size()==0) || (j+1)==cs.size();
+                done = (extra_extras.size()==0) || (j+1)==cs.size();
                 if (not done){
                     j++;
                 }
             }
 
             // construct output
-            output.push_back(extra_logicals.size()==0); // neutral
+            output.push_back(extra_extras.size()==0); // neutral
             output.push_back(num_nodes[cs[j]]); // num_errors
-            for (auto & q: flipped_ng_logicals){
+            for (auto & q: flipped_ng_extras){
                 output.push_back(q);
             }
 

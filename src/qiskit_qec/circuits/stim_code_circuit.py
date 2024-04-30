@@ -587,5 +587,5 @@ class StimCodeCircuit(CodeCircuit):
         graph, hyperedges = detector_error_model_to_rx_graph(e, detectors=self.detectors)
         return graph, hyperedges
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         raise NotImplementedError
