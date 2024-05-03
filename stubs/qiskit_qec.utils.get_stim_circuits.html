@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="qiskit_qec.utils.noisify_circuit" href="qiskit_qec.utils.noisify_circuit.html" /><link rel="prev" title="qiskit_qec.utils.get_counts_via_stim" href="qiskit_qec.utils.get_counts_via_stim.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>qiskit_qec.utils.get_stim_circuits - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -328,10 +328,10 @@
         </div>
         <article role="main">
           <section id="qiskit-qec-utils-get-stim-circuits">
-<h1>qiskit_qec.utils.get_stim_circuits<a class="headerlink" href="#qiskit-qec-utils-get-stim-circuits" title="Link to this heading">#</a></h1>
+<h1>qiskit_qec.utils.get_stim_circuits<a class="headerlink" href="#qiskit-qec-utils-get-stim-circuits" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="qiskit_qec.utils.get_stim_circuits">
-<span class="sig-name descname"><span class="pre">get_stim_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logicals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/stim_tools.html#get_stim_circuits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.get_stim_circuits" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_stim_circuits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logicals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/utils/stim_tools.html#get_stim_circuits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.utils.get_stim_circuits" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Converts compatible qiskit circuits to stim circuits.</dt><dd><p>Dictionaries are not complete. For the stim definitions see:
 <a class="reference external" href="https://github.com/quantumlib/Stim/blob/main/doc/gates.md">https://github.com/quantumlib/Stim/blob/main/doc/gates.md</a></p>
@@ -341,22 +341,22 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>circuit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">QuantumCircuit</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]</span>) – Compatible gates are Paulis, controlled Paulis, h, s,</p></li>
-<li><p><strong>sdg</strong> (<em>and</em>) – </p></li>
-<li><p><strong>swap</strong> – </p></li>
-<li><p><strong>reset</strong> – </p></li>
-<li><p><strong>operators</strong> (<em>measure and barrier. Compatible noise</em>) – </p></li>
-<li><p><strong>channel.</strong> (<em>correspond to a single</em><em> or </em><em>two qubit pauli</em>) – </p></li>
+<li><p><strong>sdg</strong> (<em>and</em>)</p></li>
+<li><p><strong>swap</strong></p></li>
+<li><p><strong>reset</strong></p></li>
+<li><p><strong>operators</strong> (<em>measure and barrier. Compatible noise</em>)</p></li>
+<li><p><strong>channel.</strong> (<em>correspond to a single</em><em> or </em><em>two qubit pauli</em>)</p></li>
 <li><p><strong>detectors</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]</span>) – A list of measurement comparisons. A measurement comparison</p></li>
-<li><p><strong>index</strong> (<em>(</em><em>detector</em><em>) </em><em>is either a list</em><em> of </em><em>measurements given by a the name and</em>) – </p></li>
-<li><p><strong>dictionaries</strong> (<em>of the classical bit</em><em> or </em><em>a list of</em>) – </p></li>
-<li><p><strong>clbits</strong> (<em>with a mandatory</em>) – </p></li>
-<li><p><strong>like</strong> (<em>key containing the classical bits. A dictionary can contain keys</em>) – </p></li>
-<li><p><strong>'qubits'</strong> – </p></li>
-<li><p><strong>'time'</strong> – </p></li>
-<li><p><strong>etc.</strong> (<em>'basis'</em>) – </p></li>
+<li><p><strong>index</strong> (<em>(</em><em>detector</em><em>) </em><em>is either a list</em><em> of </em><em>measurements given by a the name and</em>)</p></li>
+<li><p><strong>dictionaries</strong> (<em>of the classical bit</em><em> or </em><em>a list of</em>)</p></li>
+<li><p><strong>clbits</strong> (<em>with a mandatory</em>)</p></li>
+<li><p><strong>like</strong> (<em>key containing the classical bits. A dictionary can contain keys</em>)</p></li>
+<li><p><strong>'qubits'</strong></p></li>
+<li><p><strong>'time'</strong></p></li>
+<li><p><strong>etc.</strong> (<em>'basis'</em>)</p></li>
 <li><p><strong>logicals</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]]</span>) – A list of logical measurements. A logical measurement is a</p></li>
-<li><p><strong>eigenvalue.</strong> (<em>list</em><em> of </em><em>classical bits whose total parity is the logical</em>) – </p></li>
-<li><p><strong>dictionaries.</strong> (<em>Again it can be a list of</em>) – </p></li>
+<li><p><strong>eigenvalue.</strong> (<em>list</em><em> of </em><em>classical bits whose total parity is the logical</em>)</p></li>
+<li><p><strong>dictionaries.</strong> (<em>Again it can be a list of</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -401,7 +401,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -438,7 +438,7 @@
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

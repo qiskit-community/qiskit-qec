@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SurfaceCodeCircuit" href="qiskit_qec.circuits.SurfaceCodeCircuit.html" /><link rel="prev" title="RepetitionCodeCircuit" href="qiskit_qec.circuits.RepetitionCodeCircuit.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>ArcCircuit - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -328,10 +328,10 @@
         </div>
         <article role="main">
           <section id="arccircuit">
-<h1>ArcCircuit<a class="headerlink" href="#arccircuit" title="Link to this heading">#</a></h1>
+<h1>ArcCircuit<a class="headerlink" href="#arccircuit" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ArcCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rounds_per_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditional_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ArcCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rounds_per_202</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conditional_reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit" title="qiskit_qec.circuits.code_circuit.CodeCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodeCircuit</span></code></a></p>
 <p>Anisotropic repetition code class.</p>
 <p>Creates circuits corresponding to an anisotropic repetition code implemented over T syndrome
@@ -393,7 +393,7 @@ measurement rounds, with the syndrome measurements provided.
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.check_nodes">
-<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.check_nodes" title="Link to this definition">¶</a></dt>
 <dd><p>Determines whether a given set of nodes are neutral. If so, also
 determines any additional logical readout qubits that would be
 flipped by the errors creating such a cluster and how many errors
@@ -426,7 +426,7 @@ num_errors (int): Minimum number of errors required to create nodes.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.clean_code">
-<span class="sig-name descname"><span class="pre">clean_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.clean_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.clean_code" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">clean_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.clean_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.clean_code" title="Link to this definition">¶</a></dt>
 <dd><p>Given an output string of the code, obvious code qubit errors are identified and their effects
 are removed.</p>
 <dl class="field-list simple">
@@ -444,7 +444,7 @@ are removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.flatten_nodes">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.flatten_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.flatten_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.flatten_nodes" title="Link to this definition">¶</a></dt>
 <dd><p>Removes time information from a set of nodes, and consolidates those on
 the same position at different times. Also removes nodes corresponding
 to the conjugate error from [[2,0,2]]s.
@@ -463,7 +463,7 @@ to the conjugate error from [[2,0,2]]s.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.get_error_coords">
-<span class="sig-name descname"><span class="pre">get_error_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_invalid_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.get_error_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_error_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spitz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_invalid_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.get_error_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.get_error_coords" title="Link to this definition">¶</a></dt>
 <dd><p>Uses the <cite>get_error_probs</cite> method of the given decoding graph to generate probabilities
 of single error events from given counts. The location and time of each error is
 also calculated.</p>
@@ -472,13 +472,13 @@ also calculated.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>counts</strong> (<em>dict</em>) – Counts dictionary of the results to be analyzed.</p></li>
 <li><p><strong>decoding_graph</strong> (<a class="reference internal" href="qiskit_qec.decoders.DecodingGraph.html#qiskit_qec.decoders.DecodingGraph" title="qiskit_qec.decoders.DecodingGraph"><em>DecodingGraph</em></a>) – Decoding graph object constructed</p></li>
-<li><p><strong>code.</strong> (<em>from this</em>) – </p></li>
+<li><p><strong>code.</strong> (<em>from this</em>)</p></li>
 <li><p><strong>method</strong> (<em>string</em>) – Method to used for calculation. Supported</p></li>
-<li><p><strong>'spitz'</strong> (<em>methods are</em>) – </p></li>
+<li><p><strong>'spitz'</strong> (<em>methods are</em>)</p></li>
 <li><p><strong>remove_invalid_edges</strong> (<em>string</em>) – Whether to delete edges from the graph if</p></li>
-<li><p><strong>invalid.</strong> (<em>they are found to be</em>) – </p></li>
+<li><p><strong>invalid.</strong> (<em>they are found to be</em>)</p></li>
 <li><p><strong>return_samples</strong> (<em>bool</em>) – Whether to also return the number of</p></li>
-<li><p><strong>probability.</strong> (<em>samples used to calculated each</em>) – </p></li>
+<li><p><strong>probability.</strong> (<em>samples used to calculated each</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -500,7 +500,7 @@ is in units of rounds.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.is_cluster_neutral">
-<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.is_cluster_neutral" title="Link to this definition">¶</a></dt>
 <dd><p>Determines whether or not the cluster is neutral, meaning that one or more
 errors could have caused the set of nodes (syndrome changes) passed
 to the method.
@@ -510,7 +510,7 @@ to the method.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.string2nodes">
-<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2nodes" title="Link to this definition">¶</a></dt>
 <dd><p>Convert output string from circuits into a set of nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -540,7 +540,7 @@ elements in the string.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.string2raw_logicals">
-<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2raw_logicals" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.string2raw_logicals" title="Link to this definition">¶</a></dt>
 <dd><p>Extracts raw logicals from output string.
 :type string: 
 :param string: Results string from which to extract logicals
@@ -557,19 +557,19 @@ elements in the string.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.transpile">
-<span class="sig-name descname"><span class="pre">transpile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('X',</span> <span class="pre">'X')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.transpile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.transpile" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transpile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('X',</span> <span class="pre">'X')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.transpile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.transpile" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>backend</strong> (<em>qiskit.providers.ibmq.IBMQBackend</em>) – Backend to transpile and schedule the</p></li>
-<li><p><strong>to</strong> (<em>circuits for. The numbering</em><em> of </em><em>the qubits in this backend should correspond</em>) – </p></li>
-<li><p><strong>self.links.</strong> (<em>the numbering used in</em>) – </p></li>
+<li><p><strong>to</strong> (<em>circuits for. The numbering</em><em> of </em><em>the qubits in this backend should correspond</em>)</p></li>
+<li><p><strong>self.links.</strong> (<em>the numbering used in</em>)</p></li>
 <li><p><strong>echo</strong> (<em>tuple</em>) – List of gate sequences (expressed as strings) to be used on code qubits and</p></li>
-<li><p><strong>qubits</strong> (<em>link</em>) – </p></li>
-<li><p><strong>'XZX'.</strong> (<em>respectively. Valid strings are 'X' and</em>) – </p></li>
+<li><p><strong>qubits</strong> (<em>link</em>)</p></li>
+<li><p><strong>'XZX'.</strong> (<em>respectively. Valid strings are 'X' and</em>)</p></li>
 <li><p><strong>echo_num</strong> (<em>tuple</em>) – Number of times to repeat the sequences for code qubits and</p></li>
-<li><p><strong>qubits</strong> – </p></li>
-<li><p><strong>respectively.</strong> – </p></li>
+<li><p><strong>qubits</strong></p></li>
+<li><p><strong>respectively.</strong></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -585,17 +585,17 @@ with dynamical decoupling added.</p>
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS">
-<span class="sig-name descname"><span class="pre">AVAILABLE_METHODS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'naive',</span> <span class="pre">'spitz'}</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">AVAILABLE_METHODS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'naive',</span> <span class="pre">'spitz'}</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.AVAILABLE_METHODS" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE">
-<span class="sig-name descname"><span class="pre">METHOD_NAIVE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'naive'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">METHOD_NAIVE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'naive'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_NAIVE" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ">
-<span class="sig-name descname"><span class="pre">METHOD_SPITZ</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spitz'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">METHOD_SPITZ</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spitz'</span></em><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.METHOD_SPITZ" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -636,7 +636,7 @@ with dynamical decoupling added.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -686,7 +686,7 @@ with dynamical decoupling added.</p>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

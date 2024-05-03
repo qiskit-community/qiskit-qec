@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How-to: work with geometry objects" href="2-how-to-work-with-shape-objects.html" /><link rel="prev" title="Qiskit QEC How-to guides" href="index.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>How-to: Create Codes - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -329,26 +329,26 @@
         </div>
         <article role="main">
           <section id="How-to:-Create-Codes">
-<h1>How-to: Create Codes<a class="headerlink" href="#How-to:-Create-Codes" title="Link to this heading">#</a></h1>
+<h1>How-to: Create Codes<a class="headerlink" href="#How-to:-Create-Codes" title="Link to this heading">¶</a></h1>
 <p>The QEC framework does not prescribe any particular way to create codes but it does follow some simple design philosophies and looks to provide a wide range of tools, methods and instructure to make creatings codes easier.</p>
 <section id="Code-Classs">
-<h2>Code Classs<a class="headerlink" href="#Code-Classs" title="Link to this heading">#</a></h2>
+<h2>Code Classs<a class="headerlink" href="#Code-Classs" title="Link to this heading">¶</a></h2>
 <p>Within the framework there are very few specific code classes. This is done for two primary reasons. The first is that changes in codes (due to failures or gauge fixing or other) can easy take a code out of a given class wheere class methods not longer work and we want to avoid having to continually check if a code is still within an given class or whether a given operation keeps a code inside the class. Second, since there is no simple code heirachy that could be used the number of code classes
 would be large, overlapping and difficult to manage. Instead the aim is to only use a few classes such as the <code class="docutils literal notranslate"><span class="pre">StabSubSystemCode</span></code> class which deal with stabilizer subsystem codes.</p>
 </section>
 <section id="Code-Factories">
-<h2>Code Factories<a class="headerlink" href="#Code-Factories" title="Link to this heading">#</a></h2>
+<h2>Code Factories<a class="headerlink" href="#Code-Factories" title="Link to this heading">¶</a></h2>
 <p>A code factory is a general method of constructing a wide range of codes rather than any specific code, of group of codes. A code factory usually has many different configuration parameters and options. Code factories inherit from the <code class="docutils literal notranslate"><span class="pre">Factory</span></code> class. An example is the <code class="docutils literal notranslate"><span class="pre">TileCodeFactory</span></code> which builds codes based on cutting and gluing regions cut from tiles placed on a lattice.</p>
 </section>
 <section id="Code-Builders">
-<h2>Code Builders<a class="headerlink" href="#Code-Builders" title="Link to this heading">#</a></h2>
+<h2>Code Builders<a class="headerlink" href="#Code-Builders" title="Link to this heading">¶</a></h2>
 <p>A code builder is a method of constructing specific codes or groups of codes. Usually, the number of configuration parameters is small the builder is relatively easy to use. Code builders often utilize a specialize configured code factory but may not. For example the code builders <code class="docutils literal notranslate"><span class="pre">TriangularColorCodeBuilder</span></code> and <code class="docutils literal notranslate"><span class="pre">HeavyHexCodeBuilder</span></code> builder classes use the <code class="docutils literal notranslate"><span class="pre">TileCodeFactory</span></code> to build specific codes.</p>
 </section>
 <section id="Code-Library/Database">
-<h2>Code Library/Database<a class="headerlink" href="#Code-Library/Database" title="Link to this heading">#</a></h2>
+<h2>Code Library/Database<a class="headerlink" href="#Code-Library/Database" title="Link to this heading">¶</a></h2>
 <p>Qiskit-QEC contains a <code class="docutils literal notranslate"><span class="pre">CodeLibrarian</span></code> that manages various <code class="docutils literal notranslate"><span class="pre">CodeLibrary</span></code> instances that store a range of codes and their properties. This code database will eventually be hosted on a separate web server as the number of possible codes (even under local Clifford and permutation equivalance) grows very quickly. This database is meant to be analogous to GAP’s small group database or Sloan’s encyclopedia of integer sequences.</p>
 <section id="Creating-Codes">
-<h3>Creating Codes<a class="headerlink" href="#Creating-Codes" title="Link to this heading">#</a></h3>
+<h3>Creating Codes<a class="headerlink" href="#Creating-Codes" title="Link to this heading">¶</a></h3>
 <p>There are many ways to create codes using the framework. These include</p>
 <ol class="arabic simple">
 <li><p>Creating a symplectic matrix</p></li>
@@ -361,7 +361,7 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 </section>
 </section>
 <section id="Creating-a-symplectic-matrix">
-<h2>Creating a symplectic matrix<a class="headerlink" href="#Creating-a-symplectic-matrix" title="Link to this heading">#</a></h2>
+<h2>Creating a symplectic matrix<a class="headerlink" href="#Creating-a-symplectic-matrix" title="Link to this heading">¶</a></h2>
 <p>We first consider creating the 7-qubit Steane/color code:</p>
 <p>TODO: Add image of a 7-qubit Steane code</p>
 <div class="nbinput nblast docutils container">
@@ -394,7 +394,7 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 </div>
 </section>
 <section id="Providing-the-stabilizer/gauge-generators-as-strings">
-<h2>Providing the stabilizer/gauge generators as strings<a class="headerlink" href="#Providing-the-stabilizer/gauge-generators-as-strings" title="Link to this heading">#</a></h2>
+<h2>Providing the stabilizer/gauge generators as strings<a class="headerlink" href="#Providing-the-stabilizer/gauge-generators-as-strings" title="Link to this heading">¶</a></h2>
 <p>Codes can also be created by given a set of Pauli genertors described by strings.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -421,7 +421,7 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 </div>
 </section>
 <section id="Loading-a-code-via-the-codebase-libraries">
-<h2>Loading a code via the codebase libraries<a class="headerlink" href="#Loading-a-code-via-the-codebase-libraries" title="Link to this heading">#</a></h2>
+<h2>Loading a code via the codebase libraries<a class="headerlink" href="#Loading-a-code-via-the-codebase-libraries" title="Link to this heading">¶</a></h2>
 <p>Codes can also be loaded from a code database</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -516,7 +516,7 @@ n                    : 5
 </div>
 </section>
 <section id="Configuring-and-running-a-TileCodeFactory">
-<h2>Configuring and running a TileCodeFactory<a class="headerlink" href="#Configuring-and-running-a-TileCodeFactory" title="Link to this heading">#</a></h2>
+<h2>Configuring and running a TileCodeFactory<a class="headerlink" href="#Configuring-and-running-a-TileCodeFactory" title="Link to this heading">¶</a></h2>
 <p>The following example shows how to use the TileCodeFactory to build the Steane/color code or more generally the triangular color code. The follow example also shows how to see intermediate results when using a factory.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -625,7 +625,7 @@ n                    : 5
 </div>
 </section>
 <section id="Configuring-and-running-a-specific-CodeBuilder">
-<h2>Configuring and running a specific CodeBuilder<a class="headerlink" href="#Configuring-and-running-a-specific-CodeBuilder" title="Link to this heading">#</a></h2>
+<h2>Configuring and running a specific CodeBuilder<a class="headerlink" href="#Configuring-and-running-a-specific-CodeBuilder" title="Link to this heading">¶</a></h2>
 <p>The previous approach can be wrapped into a builder class. In this case a triangular code code builder</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -748,7 +748,7 @@ n                    : 5
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -796,7 +796,7 @@ n                    : 5
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Geometry (qiskit_qec.geometry)" href="../apidocs/geometry.html" /><link rel="prev" title="DecodingGraph" href="qiskit_qec.decoders.DecodingGraph.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>UnionFindDecoder - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -328,26 +328,30 @@
         </div>
         <article role="main">
           <section id="unionfinddecoder">
-<h1>UnionFindDecoder<a class="headerlink" href="#unionfinddecoder" title="Link to this heading">#</a></h1>
+<h1>UnionFindDecoder<a class="headerlink" href="#unionfinddecoder" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnionFindDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_peeling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_is_cluster_neutral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UnionFindDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoding_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_peeling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_is_cluster_neutral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">growth_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ClusteringDecoder</span></code></p>
 <p>Decoder based on growing clusters around syndrome errors to
 “convert” them into erasure errors, which can be corrected easily,
 by the peeling decoder for compatible codes or by the standard HDRG
 method in general.</p>
-<p>See arXiv:1709.06218v3 for more details.</p>
+<p>To avoid using the peeling decoder, and instead use the standard
+method for clustering decoders to get corrections, set <cite>use_peeling=False</cite>.
+Growth unit is 0.5 by default, but can be changed with <cite>growth_unit</cite>.
+To use half the minimum boundarye edge weight for each clustering round,
+set <cite>growth_unit=None</cite>.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.cluster">
-<span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.cluster" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.cluster" title="Link to this definition">¶</a></dt>
 <dd><p>Create clusters using the union-find algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nodes</strong> (<em>List</em>) – List of non-typical nodes in the syndrome graph,</p></li>
-<li><p><strong>string2nodes.</strong> (<em>of the type produced by</em>) – </p></li>
+<li><p><strong>string2nodes.</strong> (<em>of the type produced by</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -363,7 +367,7 @@ value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.find">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.find" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.find" title="Link to this definition">¶</a></dt>
 <dd><p>Find() function as described in the paper that returns the root
 of the cluster of a node, including path compression.</p>
 <dl class="field-list simple">
@@ -381,15 +385,15 @@ of the cluster of a node, including path compression.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.get_corrections">
-<span class="sig-name descname"><span class="pre">get_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.get_corrections" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_corrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.get_corrections" title="Link to this definition">¶</a></dt>
 <dd><p>Turn a set of neutral clusters into corrections.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>string</strong> (<em>str</em>) – Output string of the code</p></li>
 <li><p><strong>clusters</strong> (<em>dict</em>) – Dictionary with the indices of the given node</p></li>
-<li><p><strong>corresponding</strong> (<em>as keys and an integer specifying their cluster as the</em>) – </p></li>
-<li><p><strong>value.</strong> – </p></li>
+<li><p><strong>corresponding</strong> (<em>as keys and an integer specifying their cluster as the</em>)</p></li>
+<li><p><strong>value.</strong></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -405,7 +409,7 @@ measurement, in the same form as given by the code’s <cite>string2raw_logicals
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges">
-<span class="sig-name descname"><span class="pre">neighbouring_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.neighbouring_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">neighbouring_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.neighbouring_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.neighbouring_edges" title="Link to this definition">¶</a></dt>
 <dd><p>Returns all of the neighbouring edges of a node in the decoding graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -431,7 +435,7 @@ measurement, in the same form as given by the code’s <cite>string2raw_logicals
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.peeling">
-<span class="sig-name descname"><span class="pre">peeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">erasure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.peeling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.peeling" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">peeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">erasure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.peeling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.peeling" title="Link to this definition">¶</a></dt>
 <dd><p>”
 Runs the peeling decoder on the erasure provided.
 Assumes that the erasure is one connected component, if not it will run in an
@@ -454,15 +458,15 @@ Based on arXiv:1703.01517.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.decoders.UnionFindDecoder.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predecoder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.process" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predecoder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/decoders/hdrg_decoders.html#UnionFindDecoder.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.decoders.UnionFindDecoder.process" title="Link to this definition">¶</a></dt>
 <dd><p>Process an output string and return corrected final outcomes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>string</strong> (<em>str</em>) – Output string of the code.</p></li>
 <li><p><strong>predecoder</strong> (<em>callable</em>) – Function that takes in and returns</p></li>
-<li><p><strong>nodes</strong> (<em>a list</em><em> of </em><em>nodes. Used to do preprocessing on the</em>) – </p></li>
-<li><p><strong>string.</strong> (<em>corresponding to the input</em>) – </p></li>
+<li><p><strong>nodes</strong> (<em>a list</em><em> of </em><em>nodes. Used to do preprocessing on the</em>)</p></li>
+<li><p><strong>string.</strong> (<em>corresponding to the input</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -513,7 +517,7 @@ Based on arXiv:1703.01517.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -558,7 +562,7 @@ Based on arXiv:1703.01517.</p>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

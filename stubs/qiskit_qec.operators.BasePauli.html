@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Structures (qiskit_qec.structures)" href="../apidocs/structures.html" /><link rel="prev" title="Pauli" href="qiskit_qec.operators.Pauli.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>BasePauli - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -328,10 +328,10 @@
         </div>
         <article role="main">
           <section id="basepauli">
-<h1>BasePauli<a class="headerlink" href="#basepauli" title="Link to this heading">#</a></h1>
+<h1>BasePauli<a class="headerlink" href="#basepauli" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BasePauli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BasePauli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xz'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AdjointMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiplyMixin</span></code></p>
 <p>Base class for Pauli and PauliList.</p>
 <p>Symplectic representation of a list of N-qubit Paulis with phases using numpy
@@ -374,7 +374,7 @@ result in an a complex coefficients of 1 for each Pauli operator. Defaults to No
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.adjoint">
-<span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.adjoint" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">adjoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.adjoint" title="Link to this definition">¶</a></dt>
 <dd><p>Return the adjoint of the Operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -385,7 +385,7 @@ result in an a complex coefficients of 1 for each Pauli operator. Defaults to No
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.all_commutes">
-<span class="sig-name descname"><span class="pre">all_commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.all_commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.all_commutes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">all_commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.all_commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.all_commutes" title="Link to this definition">¶</a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -402,7 +402,7 @@ result in an a complex coefficients of 1 for each Pauli operator. Defaults to No
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.commutes">
-<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.commutes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.commutes" title="Link to this definition">¶</a></dt>
 <dd><p>Return True if Pauli that commutes with other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -429,7 +429,7 @@ result in an a complex coefficients of 1 for each Pauli operator. Defaults to No
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.compose">
-<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.compose" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">front</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.compose" title="Link to this definition">¶</a></dt>
 <dd><p>Return the composition of Paulis lists</p>
 <p>To be consistent with other compose functions in Qiskit, composition is defined via
 left multiplication. That is</p>
@@ -470,7 +470,7 @@ on (default: None-&gt;All).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.conjugate">
-<span class="sig-name descname"><span class="pre">conjugate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.conjugate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.conjugate" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">conjugate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.conjugate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.conjugate" title="Link to this definition">¶</a></dt>
 <dd><p>Return the conjugate of each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -488,7 +488,7 @@ the phase of the clasing instance if replace=True</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.copy">
-<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.copy" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.copy" title="Link to this definition">¶</a></dt>
 <dd><p>Make a deep copy of current operator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -499,7 +499,7 @@ the phase of the clasing instance if replace=True</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.dot">
-<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.dot" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.dot" title="Link to this definition">¶</a></dt>
 <dd><p>Return the right multiplied operator self * other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -526,7 +526,7 @@ Hence <code class="docutils literal notranslate"><span class="pre">a.dot(b)</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.evolve">
-<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.evolve" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'h'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.evolve" title="Link to this definition">¶</a></dt>
 <dd><p>Heisenberg picture evolution of a Pauli by a Clifford.</p>
 <p>This returns the Pauli <span class="math notranslate nohighlight">\(P^\prime = C^\dagger.P.C\)</span>.</p>
 <p>By choosing the parameter frame=’s’, this function returns the Schrödinger evolution of the Pauli
@@ -553,7 +553,7 @@ Hence <code class="docutils literal notranslate"><span class="pre">a.dot(b)</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.expand">
-<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.expand" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.expand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.expand" title="Link to this definition">¶</a></dt>
 <dd><p>Return the reverse-order tensor product with another CLASS.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -574,19 +574,19 @@ Hence <code class="docutils literal notranslate"><span class="pre">a.dot(b)</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.input_dims">
-<span class="sig-name descname"><span class="pre">input_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.input_dims" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">input_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.input_dims" title="Link to this definition">¶</a></dt>
 <dd><p>Return tuple of input dimension for specified subsystems.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.output_dims">
-<span class="sig-name descname"><span class="pre">output_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.output_dims" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">output_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.output_dims" title="Link to this definition">¶</a></dt>
 <dd><p>Return tuple of output dimension for specified subsystems.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.power">
-<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.power" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.power" title="Link to this definition">¶</a></dt>
 <dd><p>Return the compose of a operator with itself n times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -607,7 +607,7 @@ Hence <code class="docutils literal notranslate"><span class="pre">a.dot(b)</spa
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.reshape">
-<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.reshape" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.reshape" title="Link to this definition">¶</a></dt>
 <dd><p>Return a shallow copy with reshaped input and output subsystem dimensions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -634,13 +634,13 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_pauli_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_pauli_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_pauli_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_pauli_encoding" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_pauli_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_pauli_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_pauli_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Set the Pauli encoding</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>encoding</strong> (<em>optional</em>) – Pauli encoding.</p></li>
-<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.</strong> (<em>Defaults to</em>) – </p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PAULI_REP_FORMAT.</strong> (<em>Defaults to</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -648,13 +648,13 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_phase_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-i'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_phase_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_phase_encoding" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-i'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_phase_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_phase_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Set the phase encoding</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>encoding</strong> (<em>optional</em>) – phase encoding.</p></li>
-<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING.</strong> (<em>Defaults to</em>) – </p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_PHASE_ENCODING.</strong> (<em>Defaults to</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -662,7 +662,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_print_phase_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_print_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_print_phase_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_print_phase_encoding" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_print_phase_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_print_phase_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_print_phase_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>_summary_</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -676,7 +676,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_qubit_order">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_qubit_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_qubit_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_qubit_order" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_qubit_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_qubit_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_qubit_order" title="Link to this definition">¶</a></dt>
 <dd><p>Set external qubit order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -690,7 +690,7 @@ If None the original output dims will be preserved [Default: None].</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_syntax">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_syntax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syntax_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Product'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_syntax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_syntax" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_syntax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syntax_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Product'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_syntax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_syntax" title="Link to this definition">¶</a></dt>
 <dd><p>Sets the global input and output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -711,13 +711,13 @@ the syntax is set to Order. Defaults to “Product”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.set_tensor_encoding">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_tensor_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YZX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_tensor_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_tensor_encoding" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_tensor_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'YZX'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.set_tensor_encoding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.set_tensor_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Set the external symplectic matrix format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>encoding</strong> (<em>optional</em>) – Symplectic matrix tensor encoding.</p></li>
-<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING.</strong> (<em>Defaults to</em>) – </p></li>
+<li><p><strong>pauli_rep.DEFAULT_EXTERNAL_TENSOR_ENCODING.</strong> (<em>Defaults to</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -725,7 +725,7 @@ the syntax is set to Order. Defaults to “Product”.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.tensor">
-<span class="sig-name descname"><span class="pre">tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.tensor" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.tensor" title="Link to this definition">¶</a></dt>
 <dd><p>Return the tensor product with another CLASS.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -751,7 +751,7 @@ Hence <code class="docutils literal notranslate"><span class="pre">a.tensor(b)</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.to_label">
-<span class="sig-name descname"><span class="pre">to_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squeeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.to_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.to_label" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">to_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syntax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squeeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.to_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.to_label" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the string representatiojn for a Pauli or Paulis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -798,7 +798,7 @@ for the label from the full Pauli group.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.transpose">
-<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.transpose" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/base_pauli.html#BasePauli.transpose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.BasePauli.transpose" title="Link to this definition">¶</a></dt>
 <dd><p>Return the transpose of each Pauli in the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -810,97 +810,97 @@ for the label from the full Pauli group.</p>
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.EXTERNAL_PAULI_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_PAULI_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-iYZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_PAULI_ENCODING" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_PAULI_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-iYZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_PAULI_ENCODING" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.EXTERNAL_PHASE_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-i'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_PHASE_ENCODING" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'-i'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.EXTERNAL_QUBIT_ORDER">
-<span class="sig-name descname"><span class="pre">EXTERNAL_QUBIT_ORDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right-to-left'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_QUBIT_ORDER" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_QUBIT_ORDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'right-to-left'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_QUBIT_ORDER" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.EXTERNAL_SYNTAX">
-<span class="sig-name descname"><span class="pre">EXTERNAL_SYNTAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_SYNTAX" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_SYNTAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_SYNTAX" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.EXTERNAL_TENSOR_ENCODING">
-<span class="sig-name descname"><span class="pre">EXTERNAL_TENSOR_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_TENSOR_ENCODING" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">EXTERNAL_TENSOR_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'YZX'</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.EXTERNAL_TENSOR_ENCODING" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.PRINT_PHASE_ENCODING">
-<span class="sig-name descname"><span class="pre">PRINT_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.PRINT_PHASE_ENCODING" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">PRINT_PHASE_ENCODING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qiskit_qec.operators.BasePauli.PRINT_PHASE_ENCODING" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.dim">
-<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.dim" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.dim" title="Link to this definition">¶</a></dt>
 <dd><p>Return tuple (input_shape, output_shape).</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.num_qubits">
-<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.num_qubits" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_qubits</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.num_qubits" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of qubits if a N-qubit operator or None otherwise.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.num_y">
-<span class="sig-name descname"><span class="pre">num_y</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.num_y" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">num_y</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.num_y" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of Y for each operator</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.pauli_encoding">
-<span class="sig-name descname"><span class="pre">pauli_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.pauli_encoding" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">pauli_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.pauli_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Pauli format.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.phase_encoding">
-<span class="sig-name descname"><span class="pre">phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.phase_encoding" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.phase_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Return the phase encoding</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.print_phase_encoding">
-<span class="sig-name descname"><span class="pre">print_phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.print_phase_encoding" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">print_phase_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.print_phase_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Prints how the phase will be displayed in when printing.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.qargs">
-<span class="sig-name descname"><span class="pre">qargs</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.qargs" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">qargs</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.qargs" title="Link to this definition">¶</a></dt>
 <dd><p>Return the qargs for the operator.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.qubit_order">
-<span class="sig-name descname"><span class="pre">qubit_order</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.qubit_order" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">qubit_order</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.qubit_order" title="Link to this definition">¶</a></dt>
 <dd><p>Get external qubit order</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.syntax">
-<span class="sig-name descname"><span class="pre">syntax</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.syntax" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">syntax</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.syntax" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the syntax</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.tensor_encoding">
-<span class="sig-name descname"><span class="pre">tensor_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.tensor_encoding" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">tensor_encoding</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.tensor_encoding" title="Link to this definition">¶</a></dt>
 <dd><p>Return the external symplectic matrix encoding</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.x" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.x" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the X part of symplectic representation as a 2d matrix.</p>
 <p>Note: The Pauli class over writes this method to return
 a 1d array instead of a 2d array. Use the self._x method
@@ -922,7 +922,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qiskit_qec.operators.BasePauli.z">
-<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.z" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#qiskit_qec.operators.BasePauli.z" title="Link to this definition">¶</a></dt>
 <dd><p>The z array for the symplectic representation.</p>
 </dd></dl>
 
@@ -964,7 +964,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -1043,7 +1043,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Codes (qiskit_qec.codes)" href="../apidocs/codes.html" /><link rel="prev" title="SurfaceCodeCircuit" href="qiskit_qec.circuits.SurfaceCodeCircuit.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>CSSCodeCircuit - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=82a976d7" />
@@ -328,17 +328,17 @@
         </div>
         <article role="main">
           <section id="csscodecircuit">
-<h1>CSSCodeCircuit<a class="headerlink" href="#csscodecircuit" title="Link to this heading">#</a></h1>
+<h1>CSSCodeCircuit<a class="headerlink" href="#csscodecircuit" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CSSCodeCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_schedule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CSSCodeCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_schedule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.circuits.CodeCircuit.html#qiskit_qec.circuits.CodeCircuit" title="qiskit_qec.circuits.code_circuit.CodeCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodeCircuit</span></code></a></p>
 <p>CodeCircuit class for generic CSS codes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>code</strong> – A CSS code class which is either</p></li>
-<li><p><strong>StabSubSystemCode</strong> (<em>a</em><em>)</em>) – </p></li>
+<li><p><strong>StabSubSystemCode</strong> (<em>a</em><em>)</em>)</p></li>
 <li><p><strong>methods</strong> (<em>b</em><em>) </em><em>a class with the following</em>) – ‘x_gauges’ (as a list of list of qubit indices),
 ‘z_gauges’,
 ‘x_stabilizers’,
@@ -350,11 +350,11 @@
 <li><p><strong>basis</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – basis for encoding (‘x’ or ‘z’)</p></li>
 <li><p><strong>round_schedule</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Order in which to measureme gauge operators (‘zx’ or ‘xz’)</p></li>
 <li><p><strong>noise_model</strong> – Pauli noise model used in the construction of noisy circuits.</p></li>
-<li><p><strong>tuple</strong> (<em>If a</em>) – </p></li>
-<li><p><strong>being</strong> (<em>a pnenomological noise model is used with the entries</em>) – </p></li>
-<li><p><strong>and</strong> (<em>probabity</em><em> of </em><em>depolarizing noise on code qubits between rounds</em>) – </p></li>
-<li><p><strong>errors</strong> (<em>probability</em><em> of </em><em>measurement</em>) – </p></li>
-<li><p><strong>respectively.</strong> – </p></li>
+<li><p><strong>tuple</strong> (<em>If a</em>)</p></li>
+<li><p><strong>being</strong> (<em>a pnenomological noise model is used with the entries</em>)</p></li>
+<li><p><strong>and</strong> (<em>probabity</em><em> of </em><em>depolarizing noise on code qubits between rounds</em>)</p></li>
+<li><p><strong>errors</strong> (<em>probability</em><em> of </em><em>measurement</em>)</p></li>
+<li><p><strong>respectively.</strong></p></li>
 </ul>
 </dd>
 </dl>
@@ -367,7 +367,7 @@
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit.check_nodes">
-<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.check_nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.check_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.check_nodes" title="Link to this definition">¶</a></dt>
 <dd><p>Determines whether a given set of nodes are neutral. If so, also
 determines any additional logical readout qubits that would be
 flipped by the errors creating such a cluster and how many errors
@@ -400,7 +400,7 @@ num_errors (int): Minimum number of errors required to create nodes.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit.is_cluster_neutral">
-<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.is_cluster_neutral" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">is_cluster_neutral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.is_cluster_neutral"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.is_cluster_neutral" title="Link to this definition">¶</a></dt>
 <dd><p>Determines whether or not the cluster is neutral, meaning that one or more
 errors could have caused the set of nodes (syndrome changes) passed
 to the method.</p>
@@ -415,7 +415,7 @@ of nodes for which the even/odd assessment is valid.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit.stim_detectors">
-<span class="sig-name descname"><span class="pre">stim_detectors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.stim_detectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.stim_detectors" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">stim_detectors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.stim_detectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.stim_detectors" title="Link to this definition">¶</a></dt>
 <dd><p>Constructs detectors and logicals required for stim.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -436,7 +436,7 @@ b) ‘basis’, the pauli basis (‘x’ or ‘z’) of the logical</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit.string2nodes">
-<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.string2nodes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">string2nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.string2nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.string2nodes" title="Link to this definition">¶</a></dt>
 <dd><p>Convert output string from circuits into a set of nodes for
 <cite>DecodingGraph</cite>.</p>
 <dl class="field-list simple">
@@ -460,7 +460,7 @@ irrespective of value. (False as default).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.CSSCodeCircuit.string2raw_logicals">
-<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.string2raw_logicals" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">string2raw_logicals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/css_code.html#CSSCodeCircuit.string2raw_logicals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.CSSCodeCircuit.string2raw_logicals" title="Link to this definition">¶</a></dt>
 <dd><p>Converts output string into a list of logical measurement outcomes
 Logicals are the logical measurements produced by self.stim_detectors()</p>
 </dd></dl>
@@ -503,7 +503,7 @@ Logicals are the logical measurements produced by self.stim_detectors()</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -547,7 +547,7 @@ Logicals are the logical measurements produced by self.stim_detectors()</p>
 </div><script src="../_static/jquery.js?v=5d32c60e"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>

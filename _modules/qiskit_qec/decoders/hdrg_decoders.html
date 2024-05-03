@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>qiskit_qec.decoders.hdrg_decoders - Qiskit QEC 0.0.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=82a976d7" />
@@ -345,11 +345,12 @@
 <span class="sd">&quot;&quot;&quot;Hard decision renormalization group decoders.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span><span class="p">,</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">rustworkx</span> <span class="kn">import</span> <span class="n">PyGraph</span><span class="p">,</span> <span class="n">connected_components</span><span class="p">,</span> <span class="n">distance_matrix</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">qiskit_qec.decoders.decoding_graph</span> <span class="kn">import</span> <span class="n">DecodingGraph</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphEdge</span>
@@ -621,7 +622,11 @@
 <span class="sd">    by the peeling decoder for compatible codes or by the standard HDRG</span>
 <span class="sd">    method in general.</span>
 
-<span class="sd">    See arXiv:1709.06218v3 for more details.</span>
+<span class="sd">    To avoid using the peeling decoder, and instead use the standard</span>
+<span class="sd">    method for clustering decoders to get corrections, set `use_peeling=False`.</span>
+<span class="sd">    Growth unit is 0.5 by default, but can be changed with `growth_unit`.</span>
+<span class="sd">    To use half the minimum boundarye edge weight for each clustering round,</span>
+<span class="sd">    set `growth_unit=None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -630,14 +635,17 @@
         <span class="n">decoding_graph</span><span class="p">:</span> <span class="n">DecodingGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_peeling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">use_is_cluster_neutral</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">growth_unit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">decoding_graph</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">decoding_graph</span><span class="o">=</span><span class="n">decoding_graph</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">UnionFindDecoderCluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_peeling</span> <span class="o">=</span> <span class="n">use_peeling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_is_cluster_neutral</span> <span class="o">=</span> <span class="n">use_is_cluster_neutral</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clusters4peeling</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">growth_unit</span> <span class="o">=</span> <span class="n">growth_unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="UnionFindDecoder.process">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.decoders.UnionFindDecoder.html#qiskit_qec.decoders.UnionFindDecoder.process">[docs]</a>
@@ -656,7 +664,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_peeling</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
             <span class="n">highlighted_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">string2nodes</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">all_logicals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">predecoder</span><span class="p">:</span>
                 <span class="n">highlighted_nodes</span> <span class="o">=</span> <span class="n">predecoder</span><span class="p">(</span><span class="n">highlighted_nodes</span><span class="p">)</span>
@@ -712,6 +719,11 @@
 <span class="sd">            the given node as keys and an integer specifying their cluster as the corresponding</span>
 <span class="sd">            value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_unit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_unit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="n">node_indices</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">decoding_graph</span><span class="o">.</span><span class="n">node_index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node_indexes</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;syndrome&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_index</span> <span class="ow">in</span> <span class="n">node_indices</span>
@@ -778,7 +790,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">node_index</span><span class="p">)</span>
         <span class="n">boundary_edges</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbouring_edges</span><span class="p">(</span><span class="n">node_index</span><span class="p">):</span>
-            <span class="n">boundary_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BoundaryEdge</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+            <span class="n">boundary_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BoundaryEdge</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">neighbour</span><span class="p">,</span> <span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">node_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">UnionFindDecoderCluster</span><span class="p">(</span>
             <span class="n">boundary</span><span class="o">=</span><span class="n">boundary_edges</span><span class="p">,</span>
             <span class="n">fully_grown_edges</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>
@@ -791,7 +803,7 @@
 
     <span class="k">def</span> <span class="nf">_grow_and_merge_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="n">fusion_edge_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grow_clusters</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_clusters</span><span class="p">(</span><span class="n">fusion_edge_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_merge_clusters</span><span class="p">(</span><span class="n">fusion_edge_list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_grow_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">FusionEntry</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -802,10 +814,18 @@
 <span class="sd">            clusters that will be merged in the next step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fusion_edge_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FusionEntry</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth_unit</span><span class="p">:</span>
+            <span class="n">min_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
+                <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">root</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
+                    <span class="n">min_weight</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">min_weight</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">weight</span><span class="p">),</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span> <span class="o">=</span> <span class="n">min_weight</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
             <span class="n">cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">root</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary</span><span class="p">:</span>
-                <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.5</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;growth&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">weight</span>
                     <span class="ow">and</span> <span class="ow">not</span> <span class="n">edge</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;fully_grown&quot;</span><span class="p">]</span>
@@ -847,9 +867,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            fusion_edge_list (List[FusionEntry]): List of edges that connect two</span>
 <span class="sd">            clusters that was computed in _grow_clusters().</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            new_neutral_cluster_roots (List[int]): List of roots of newly neutral clusters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">new_neutral_clusters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">fusion_edge_list</span><span class="p">:</span>
             <span class="n">root_u</span><span class="p">,</span> <span class="n">root_v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">u</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
@@ -885,22 +904,27 @@
 
             <span class="c1"># see if the cluster is neutral and update odd_cluster_roots accordingly</span>
             <span class="n">fully_neutral</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">],</span>
-                <span class="p">[</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
-                    <span class="o">|</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)[:</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span> <span class="k">else</span> <span class="nb">set</span><span class="p">())</span>
-                <span class="p">],</span>
-            <span class="p">]:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_is_cluster_neutral</span><span class="p">:</span>
-                    <span class="n">fully_neutral</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">neutral</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
-                        <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">)</span>
-                    <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">edge_support</span><span class="p">)</span>
-                    <span class="n">fully_neutral</span> <span class="o">=</span> <span class="n">fully_neutral</span> <span class="ow">or</span> <span class="n">neutral</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_growth_unit</span><span class="p">:</span>  <span class="c1"># assume non-neutral while growing along 0-weight edges</span>
+                <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span><span class="p">],</span>
+                    <span class="p">[</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cluster</span><span class="o">.</span><span class="n">atypical_nodes</span>
+                        <span class="o">|</span> <span class="p">(</span>
+                            <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span><span class="p">)[:</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">cluster</span><span class="o">.</span><span class="n">boundary_nodes</span>
+                            <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+                        <span class="p">)</span>
+                    <span class="p">],</span>
+                <span class="p">]:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_is_cluster_neutral</span><span class="p">:</span>
+                        <span class="n">fully_neutral</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">is_cluster_neutral</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">neutral</span><span class="p">,</span> <span class="n">extras</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="o">.</span><span class="n">check_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">extras</span><span class="p">:</span>
+                            <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_boundary</span><span class="p">)</span>
+                        <span class="n">neutral</span> <span class="o">=</span> <span class="n">neutral</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">edge_support</span><span class="p">)</span>
+                        <span class="n">fully_neutral</span> <span class="o">=</span> <span class="n">fully_neutral</span> <span class="ow">or</span> <span class="n">neutral</span>
             <span class="k">if</span> <span class="n">fully_neutral</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">new_root</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">odd_cluster_roots</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">new_root</span><span class="p">)</span>
@@ -1022,7 +1046,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/03/13</div>
+              Last updated on 2024/05/03</div>
           </div>
           <div class="right-details">
             
@@ -1040,7 +1064,7 @@
 </div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
     <script src="../../../_static/documentation_options.js?v=7026087e"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/qiskit-sphinx-theme.js?v=4d77b8ca"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
