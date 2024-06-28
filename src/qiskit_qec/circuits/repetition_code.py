@@ -22,7 +22,8 @@ import numpy as np
 import rustworkx as rx
 import networkx as nx
 
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
+from qiskit import QuantumCircuit, transpile
+from qiskit.circuit import ClassicalRegister,QuantumRegister
 from qiskit.circuit.library import XGate, RZGate
 from qiskit.transpiler import PassManager, InstructionDurations
 from qiskit_ibm_provider.transpiler.passes.scheduling import DynamicCircuitInstructionDurations
