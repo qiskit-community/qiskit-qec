@@ -179,7 +179,9 @@ def _nodes2cpp(nodes):
     """
     Convert a list of nodes to the form required by C++ functions.
     """
-    # nodes are a tuple with (q0, q1,t, boundary)
+    # nodes are a tuple with (q0, q1,t, extra)
+    # extra is 0 if neither logical nor boundary
+    # 1 for logical, 2 for boundary, 3 for both
     # if there is no q1 or t, -1 is used
     cnodes = []
     for node in nodes:
@@ -190,6 +192,6 @@ def _nodes2cpp(nodes):
             cnode.append(-1)
         else:
             cnode.append(node.time)
-        cnode.append(node.is_logical)
+        cnode.append(1 * node.is_logical + 2 * node.is_boundary)
         cnodes.append(tuple(cnode))
     return cnodes

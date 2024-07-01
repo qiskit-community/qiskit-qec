@@ -89,19 +89,17 @@ class PyMatchingDecoder:
             or a list of binaries indicating which node is highlighted.
         Returns: list of DecodingGraphEdge-s included in the matching
         """
-        if isinstance(syndrome[0], DecodingGraphNode):
-            syndrome = self.nodes_to_detections(syndrome)
-        edge_dets = list(self.graph.edge_list())
-        edges = self.graph.edges()
-        matched_det_pairs = self.matcher.decode_to_edges_array(syndrome)
         det_pairs = []
-        for pair in matched_det_pairs:
-            if pair[1] == -1:
-                pair[-1] = pair[-1] + len(self.graph.nodes())
-            pair.sort()
-            det_pairs.append(tuple(pair))
-        mached_edges = [edges[edge_dets.index(det_pair)] for det_pair in det_pairs]
-        return mached_edges
+        if syndrome:
+            if isinstance(syndrome[0], DecodingGraphNode):
+                syndrome = self.nodes_to_detections(syndrome)
+            matched_det_pairs = self.matcher.decode_to_edges_array(syndrome)
+            for pair in matched_det_pairs:
+                if pair[1] == -1:
+                    pair[-1] = pair[-1] + len(self.graph.nodes())
+                pair.sort()
+                det_pairs.append(tuple(pair))
+        return det_pairs
 
     def nodes_to_detections(self, syndrome_nodes: List[DecodingGraphNode]) -> List[int]:
         """Converts nodes to detector indices to be used by pymatching.Matching.decode"""

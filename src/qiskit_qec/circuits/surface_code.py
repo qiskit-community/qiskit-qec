@@ -395,6 +395,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             if all_logicals or belement != logical:
                 node = DecodingGraphNode(
                     is_logical=True,
+                    is_boundary=True,
                     qubits=self._logicals[self.basis][-bqec_index - 1],
                     index=1 - bqec_index,
                 )
@@ -414,7 +415,7 @@ class SurfaceCodeCircuit(CodeCircuit):
                         nodes.append(node)
         return nodes
 
-    def check_nodes(self, nodes, ignore_extra_logical=False, minimal=False):
+    def check_nodes(self, nodes, ignore_extras=False, minimal=False):
         """
         Determines whether a given set of nodes are neutral. If so, also
         determines any additional logical readout qubits that would be
@@ -422,7 +423,7 @@ class SurfaceCodeCircuit(CodeCircuit):
         would be required to make the cluster.
         Args:
             nodes (list): List of nodes, of the type produced by `string2nodes`.
-            ignore_extra_logical (bool): If `True`, undeeded logical nodes are
+            ignore_extras (bool): If `True`, undeeded logical nodes are
             ignored.
             minimal (bool): Whether output should only reflect the minimal error
             case.
@@ -445,7 +446,7 @@ class SurfaceCodeCircuit(CodeCircuit):
             coords = self._xplaq_coords
 
         if (len(bulk_nodes) % 2) == 0:
-            if (len(logical_nodes) % 2) == 0 or ignore_extra_logical:
+            if (len(logical_nodes) % 2) == 0 or ignore_extras:
                 neutral = True
                 flipped_logicals = set()
                 # estimate num_errors from size
@@ -481,7 +482,7 @@ class SurfaceCodeCircuit(CodeCircuit):
 
         # if unneeded logical zs are given, cluster is not neutral
         # (unless this is ignored)
-        if (not ignore_extra_logical) and given_logicals.difference(flipped_logicals):
+        if (not ignore_extras) and given_logicals.difference(flipped_logicals):
             neutral = False
         # otherwise, report only needed logicals that aren't given
         else:
@@ -492,18 +493,21 @@ class SurfaceCodeCircuit(CodeCircuit):
         flipped_logical_nodes = []
         for elem in flipped_logicals:
             node = DecodingGraphNode(
-                is_logical=True, qubits=self._logicals[self.basis][elem], index=elem
+                is_logical=True,
+                is_boundary=True,
+                qubits=self._logicals[self.basis][elem],
+                index=elem,
             )
             flipped_logical_nodes.append(node)
 
         return neutral, flipped_logical_nodes, num_errors
 
-    def is_cluster_neutral(self, atypical_nodes):
+    def is_cluster_neutral(self, nodes):
         """
         Determines whether or not the cluster is neutral, meaning that one or more
-        errors could have caused the set of atypical nodes (syndrome changes) passed
+        errors could have caused the set of nodes (syndrome changes) passed
         to the method.
         Args:
-            atypical_nodes (dictionary in the form of the return value of string2nodes)
+            nodes (dictionary in the form of the return value of string2nodes)
         """
-        return not bool(len(atypical_nodes) % 2)
+        return not bool(len(nodes) % 2)
