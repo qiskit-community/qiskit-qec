@@ -1249,7 +1249,7 @@ class ArcCircuit(CodeCircuit):
             ]
 
         # transpile to backend
-        circuits = transpile(circuits, backend, initial_layout=initial_layout)
+        circuits = transpile(circuits, backend, initial_layout=initial_layout, scheduling_method="alap")
 
         # then dynamical decoupling if needed
         if any(echo_num):
