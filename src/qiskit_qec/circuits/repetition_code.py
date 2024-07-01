@@ -979,6 +979,7 @@ class ArcCircuit(CodeCircuit):
                 q_l = self.num_qubits[1] - 1 - j
                 qubit_l = self.links[q_l][1]
                 # the first results are themselves the changes
+                change = None
                 if t == 0:
                     change = syndrome_list[-1][j] != "0"
                 # if the link was involved in a just finished 202...

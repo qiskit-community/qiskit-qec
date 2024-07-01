@@ -20,8 +20,8 @@ import itertools
 import unittest
 from random import choices
 
-from qiskit import QuantumCircuit, execute
-from qiskit.providers.fake_provider import FakeJakarta
+from qiskit import QuantumCircuit
+from qiskit.providers.fake_provider import Fake7QPulseV1
 from qiskit_aer import Aer, AerSimulator
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer.noise.errors import depolarizing_error
@@ -38,9 +38,9 @@ def get_syndrome(code, noise_model, shots=1024):
     """Runs a code to get required results."""
     circuits = [code.circuit[log] for log in ["0", "1"]]
 
-    job = execute(
+    backend = Aer.get_backend("aer_simulator_stabilizer")
+    job = backend.run(
         circuits,
-        Aer.get_backend("aer_simulator_stabilizer"),
         noise_model=noise_model,
         shots=shots,
     )
@@ -444,7 +444,7 @@ class TestARCCodes(unittest.TestCase):
 
     def test_transpilation(self):
         """Test correct transpilation to a backend."""
-        backend = FakeJakarta()
+        backend = Fake7QPulseV1()
         links = [(0, 1, 3), (3, 5, 6)]
         schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
         code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, logical="0")
