@@ -448,20 +448,22 @@ class TestARCCodes(unittest.TestCase):
         links = [(0, 1, 3), (3, 5, 6)]
         schedule = [[(0, 1), (3, 5)], [(3, 1), (6, 5)]]
         code = ArcCircuit(links, schedule=schedule, T=2, delay=1000, logical="0")
-        circuit = code.transpile(backend)
         self.assertTrue(code.schedule == schedule, "Error: Given schedule not used.")
-        circuit = code.transpile(backend, echo_num=(0, 2))
-        self.assertTrue(
-            circuit[code.base].count_ops()["x"] == 4, "Error: Wrong echo sequence for link qubits."
-        )
-        circuit = code.transpile(backend, echo_num=(2, 0))
-        self.assertTrue(
-            circuit[code.base].count_ops()["x"] == 26, "Error: Wrong echo sequence for code qubits."
-        )
-        self.assertTrue(
-            circuit[code.base].count_ops()["cx"] == 8,
-            "Error: Wrong number of cx gates after transpilation.",
-        )
+        expected_ops = {
+            "delay": 30,
+            "rz": 22,
+            "sx": 12,
+            "cx": 8,
+            "measure": 7,
+            "barrier": 5,
+            "reset": 2,
+        }
+        for scheduling_method in ["alap", "asap"]:
+            circuit = code.transpile(backend, scheduling_method=scheduling_method)
+            self.assertTrue(
+                dict(circuit[code.base].count_ops()) == expected_ops,
+                "Error: Wrong number of operations in transpiled circuit.",
+            )
 
     def test_weight(self):
         """Error weighting code test."""
