@@ -23,11 +23,6 @@ import rustworkx as rx
 import networkx as nx
 
 from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister, transpile
-from qiskit.circuit.library import XGate, RZGate
-from qiskit.transpiler import PassManager, InstructionDurations
-from qiskit_ibm_provider.transpiler.passes.scheduling import DynamicCircuitInstructionDurations
-from qiskit_ibm_provider.transpiler.passes.scheduling import PadDynamicalDecoupling
-from qiskit_ibm_provider.transpiler.passes.scheduling import ALAPScheduleAnalysis
 
 from qiskit_qec.circuits.code_circuit import CodeCircuit
 from qiskit_qec.utils import DecodingGraphEdge, DecodingGraphNode
@@ -979,6 +974,7 @@ class ArcCircuit(CodeCircuit):
                 q_l = self.num_qubits[1] - 1 - j
                 qubit_l = self.links[q_l][1]
                 # the first results are themselves the changes
+                change = None
                 if t == 0:
                     change = syndrome_list[-1][j] != "0"
                 # if the link was involved in a just finished 202...
@@ -1222,19 +1218,16 @@ class ArcCircuit(CodeCircuit):
             self._linear,
         )
 
-    def transpile(self, backend, echo=("X", "X"), echo_num=(2, 0)):
+    def transpile(self, backend, scheduling_method="alap"):
         """
         Args:
             backend (qiskit.providers.ibmq.IBMQBackend): Backend to transpile and schedule the
             circuits for. The numbering of the qubits in this backend should correspond to
             the numbering used in `self.links`.
-            echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and
-            link qubits, respectively. Valid strings are `'X'` and `'XZX'`.
-            echo_num (tuple): Number of times to repeat the sequences for code qubits and
-            link qubits, respectively.
+            scheduling_method (str): Name of scheduling pass. Arguemnt passed to `qiskit.transpile`.
         Returns:
-            transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and
-            with dynamical decoupling added.
+            transpiled_circuit: As `self.circuit`, but with the circuits scheduled and remapped
+            to the device connectivity.
         """
 
         bases = list(self.circuit.keys())
@@ -1248,51 +1241,9 @@ class ArcCircuit(CodeCircuit):
             ]
 
         # transpile to backend
-        circuits = transpile(circuits, backend, initial_layout=initial_layout)
-
-        # then dynamical decoupling if needed
-        if any(echo_num):
-            if self.run_202:
-                durations = DynamicCircuitInstructionDurations().from_backend(backend)
-            else:
-                durations = InstructionDurations().from_backend(backend)
-
-            # set up the dd sequences
-            dd_sequences = []
-            spacings = []
-            for j in range(2):
-                if echo[j] == "X":
-                    dd_sequences.append([XGate()] * echo_num[j])
-                    spacings.append(None)
-                elif echo[j] == "XZX":
-                    dd_sequences.append([XGate(), RZGate(np.pi), XGate()] * echo_num[j])
-                    d = 1.0 / (2 * echo_num[j] - 1 + 1)
-                    spacing = [d / 2] + ([0, d, d] * echo_num[j])[:-1] + [d / 2]
-                    for _ in range(2):
-                        spacing[0] += 1 - sum(spacing)
-                    spacings.append(spacing)
-                else:
-                    dd_sequences.append(None)
-                    spacings.append(None)
-
-            # add in the dd sequences
-            for j, dd_sequence in enumerate(dd_sequences):
-                if dd_sequence:
-                    if echo_num[j]:
-                        qubits = self.qubits[j]
-                    else:
-                        qubits = None
-                    pm = PassManager(
-                        [
-                            ALAPScheduleAnalysis(durations),
-                            PadDynamicalDecoupling(
-                                durations, dd_sequence, qubits=qubits, spacings=spacings[j]
-                            ),
-                        ]
-                    )
-                    circuits = pm.run(circuits)
-            if not isinstance(circuits, list):
-                circuits = [circuits]
+        circuits = transpile(
+            circuits, backend, initial_layout=initial_layout, scheduling_method=scheduling_method
+        )
 
         return {basis: circuits[j] for j, basis in enumerate(bases)}
 

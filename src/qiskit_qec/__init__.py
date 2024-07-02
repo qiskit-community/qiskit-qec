@@ -24,6 +24,7 @@ from . import (
     linear,
     operators,
     structures,
+    test,
     utils,
 )
 

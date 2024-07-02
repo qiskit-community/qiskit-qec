@@ -37,10 +37,10 @@ from qiskit.circuit.library import (
 from qiskit.circuit.library.generalized_gates import PauliGate
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators import Operator
-from qiskit.test import QiskitTestCase
 
 from qiskit_qec.operators.base_pauli import BasePauli
 from qiskit_qec.operators.pauli import Pauli
+from qiskit_qec.test import QiskitTestCase
 
 
 from qiskit_qec.utils.pauli_rep import cpxstr2exp, split_pauli
