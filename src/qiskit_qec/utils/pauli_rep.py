@@ -2744,7 +2744,7 @@ def _to_cpx_matrix(
         csr_matrix: if sparse=True.
     """
     dim = 2**num_qubits
-    twos_array = 1 << np.arange(num_qubits)
+    twos_array = 1 << np.arange(num_qubits, dtype=np.uint)
     x_indices = np.asarray(matrix[:num_qubits]).dot(twos_array)
     z_indices = np.asarray(matrix[num_qubits:]).dot(twos_array)
     indptr = np.arange(dim + 1, dtype=np.uint)
