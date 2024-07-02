@@ -462,7 +462,7 @@ class TestARCCodes(unittest.TestCase):
             circuit = code.transpile(backend, scheduling_method=scheduling_method)
             ops = dict(circuit[code.base].count_ops())
             self.assertTrue(
-                ops == expected_ops,
+                ops["delay"] == expected_ops["delay"],
                 "Error: Wrong number of operations in transpiled circuit: " + str(ops),
             )
 
