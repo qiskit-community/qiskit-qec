@@ -460,9 +460,10 @@ class TestARCCodes(unittest.TestCase):
         }
         for scheduling_method in ["alap", "asap"]:
             circuit = code.transpile(backend, scheduling_method=scheduling_method)
+            ops = dict(circuit[code.base].count_ops())
             self.assertTrue(
-                dict(circuit[code.base].count_ops()) == expected_ops,
-                "Error: Wrong number of operations in transpiled circuit.",
+                ops == expected_ops,
+                "Error: Wrong number of operations in transpiled circuit: " + str(ops),
             )
 
     def test_weight(self):
