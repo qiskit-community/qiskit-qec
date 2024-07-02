@@ -360,7 +360,7 @@ class CSSCodeCircuit(CodeCircuit):
             logicals.append(
                 {
                     "clbits": [(reg_T, q) for q in sorted(self.logical_x[0])],
-                    "basis": "z",
+                    "basis": "x",
                 }
             )
         else:
@@ -374,7 +374,7 @@ class CSSCodeCircuit(CodeCircuit):
                     det["clbits"].append((reg_prev, gauge_ind))
                 det["qubits"] = stabilizer.copy()
                 det["time"] = self.T
-                det["basis"] = "x"
+                det["basis"] = "z"
                 detectors.append(det)
             logicals.append(
                 {
