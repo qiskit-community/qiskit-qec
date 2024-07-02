@@ -557,24 +557,19 @@ elements in the string.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.circuits.ArcCircuit.transpile">
-<span class="sig-name descname"><span class="pre">transpile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('X',</span> <span class="pre">'X')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">echo_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(2,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.transpile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.transpile" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">transpile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduling_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'alap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/circuits/repetition_code.html#ArcCircuit.transpile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.circuits.ArcCircuit.transpile" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>backend</strong> (<em>qiskit.providers.ibmq.IBMQBackend</em>) – Backend to transpile and schedule the</p></li>
 <li><p><strong>to</strong> (<em>circuits for. The numbering</em><em> of </em><em>the qubits in this backend should correspond</em>)</p></li>
 <li><p><strong>self.links.</strong> (<em>the numbering used in</em>)</p></li>
-<li><p><strong>echo</strong> (<em>tuple</em>) – List of gate sequences (expressed as strings) to be used on code qubits and</p></li>
-<li><p><strong>qubits</strong> (<em>link</em>)</p></li>
-<li><p><strong>'XZX'.</strong> (<em>respectively. Valid strings are 'X' and</em>)</p></li>
-<li><p><strong>echo_num</strong> (<em>tuple</em>) – Number of times to repeat the sequences for code qubits and</p></li>
-<li><p><strong>qubits</strong></p></li>
-<li><p><strong>respectively.</strong></p></li>
+<li><p><strong>scheduling_method</strong> (<em>str</em>) – Name of scheduling pass. Arguemnt passed to <cite>qiskit.transpile</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>As <cite>self.circuit</cite>, but with the circuits scheduled, transpiled and
-with dynamical decoupling added.</p>
+<dd class="field-even"><p>As <cite>self.circuit</cite>, but with the circuits scheduled and remapped
+to the device connectivity.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>transpiled_circuit</p>
@@ -636,7 +631,7 @@ with dynamical decoupling added.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/05/03</div>
+              Last updated on 2024/07/02</div>
           </div>
           <div class="right-details">
             

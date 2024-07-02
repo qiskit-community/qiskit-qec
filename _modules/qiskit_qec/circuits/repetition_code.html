@@ -351,11 +351,6 @@
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
 <span class="kn">from</span> <span class="nn">qiskit</span> <span class="kn">import</span> <span class="n">ClassicalRegister</span><span class="p">,</span> <span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">QuantumRegister</span><span class="p">,</span> <span class="n">transpile</span>
-<span class="kn">from</span> <span class="nn">qiskit.circuit.library</span> <span class="kn">import</span> <span class="n">XGate</span><span class="p">,</span> <span class="n">RZGate</span>
-<span class="kn">from</span> <span class="nn">qiskit.transpiler</span> <span class="kn">import</span> <span class="n">PassManager</span><span class="p">,</span> <span class="n">InstructionDurations</span>
-<span class="kn">from</span> <span class="nn">qiskit_ibm_provider.transpiler.passes.scheduling</span> <span class="kn">import</span> <span class="n">DynamicCircuitInstructionDurations</span>
-<span class="kn">from</span> <span class="nn">qiskit_ibm_provider.transpiler.passes.scheduling</span> <span class="kn">import</span> <span class="n">PadDynamicalDecoupling</span>
-<span class="kn">from</span> <span class="nn">qiskit_ibm_provider.transpiler.passes.scheduling</span> <span class="kn">import</span> <span class="n">ALAPScheduleAnalysis</span>
 
 <span class="kn">from</span> <span class="nn">qiskit_qec.circuits.code_circuit</span> <span class="kn">import</span> <span class="n">CodeCircuit</span>
 <span class="kn">from</span> <span class="nn">qiskit_qec.utils</span> <span class="kn">import</span> <span class="n">DecodingGraphEdge</span><span class="p">,</span> <span class="n">DecodingGraphNode</span>
@@ -1339,6 +1334,7 @@
                 <span class="n">q_l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">j</span>
                 <span class="n">qubit_l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">[</span><span class="n">q_l</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
                 <span class="c1"># the first results are themselves the changes</span>
+                <span class="n">change</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">change</span> <span class="o">=</span> <span class="n">syndrome_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span>
                 <span class="c1"># if the link was involved in a just finished 202...</span>
@@ -1599,19 +1595,16 @@
 
 <div class="viewcode-block" id="ArcCircuit.transpile">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.circuits.ArcCircuit.html#qiskit_qec.circuits.ArcCircuit.transpile">[docs]</a>
-    <span class="k">def</span> <span class="nf">transpile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">),</span> <span class="n">echo_num</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+    <span class="k">def</span> <span class="nf">transpile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">scheduling_method</span><span class="o">=</span><span class="s2">&quot;alap&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            backend (qiskit.providers.ibmq.IBMQBackend): Backend to transpile and schedule the</span>
 <span class="sd">            circuits for. The numbering of the qubits in this backend should correspond to</span>
 <span class="sd">            the numbering used in `self.links`.</span>
-<span class="sd">            echo (tuple): List of gate sequences (expressed as strings) to be used on code qubits and</span>
-<span class="sd">            link qubits, respectively. Valid strings are `&#39;X&#39;` and `&#39;XZX&#39;`.</span>
-<span class="sd">            echo_num (tuple): Number of times to repeat the sequences for code qubits and</span>
-<span class="sd">            link qubits, respectively.</span>
+<span class="sd">            scheduling_method (str): Name of scheduling pass. Arguemnt passed to `qiskit.transpile`.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            transpiled_circuit: As `self.circuit`, but with the circuits scheduled, transpiled and</span>
-<span class="sd">            with dynamical decoupling added.</span>
+<span class="sd">            transpiled_circuit: As `self.circuit`, but with the circuits scheduled and remapped</span>
+<span class="sd">            to the device connectivity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">bases</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -1625,51 +1618,9 @@
             <span class="p">]</span>
 
         <span class="c1"># transpile to backend</span>
-        <span class="n">circuits</span> <span class="o">=</span> <span class="n">transpile</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">initial_layout</span><span class="o">=</span><span class="n">initial_layout</span><span class="p">)</span>
-
-        <span class="c1"># then dynamical decoupling if needed</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">echo_num</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_202</span><span class="p">:</span>
-                <span class="n">durations</span> <span class="o">=</span> <span class="n">DynamicCircuitInstructionDurations</span><span class="p">()</span><span class="o">.</span><span class="n">from_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">durations</span> <span class="o">=</span> <span class="n">InstructionDurations</span><span class="p">()</span><span class="o">.</span><span class="n">from_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
-
-            <span class="c1"># set up the dd sequences</span>
-            <span class="n">dd_sequences</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">spacings</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">echo</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
-                    <span class="n">dd_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">XGate</span><span class="p">()]</span> <span class="o">*</span> <span class="n">echo_num</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-                    <span class="n">spacings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">echo</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;XZX&quot;</span><span class="p">:</span>
-                    <span class="n">dd_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">XGate</span><span class="p">(),</span> <span class="n">RZGate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">XGate</span><span class="p">()]</span> <span class="o">*</span> <span class="n">echo_num</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-                    <span class="n">d</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">echo_num</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">spacing</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">*</span> <span class="n">echo_num</span><span class="p">[</span><span class="n">j</span><span class="p">])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                        <span class="n">spacing</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span>
-                    <span class="n">spacings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">dd_sequences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="n">spacings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-
-            <span class="c1"># add in the dd sequences</span>
-            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dd_sequence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dd_sequences</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">dd_sequence</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">echo_num</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
-                        <span class="n">qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qubits</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">qubits</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="n">pm</span> <span class="o">=</span> <span class="n">PassManager</span><span class="p">(</span>
-                        <span class="p">[</span>
-                            <span class="n">ALAPScheduleAnalysis</span><span class="p">(</span><span class="n">durations</span><span class="p">),</span>
-                            <span class="n">PadDynamicalDecoupling</span><span class="p">(</span>
-                                <span class="n">durations</span><span class="p">,</span> <span class="n">dd_sequence</span><span class="p">,</span> <span class="n">qubits</span><span class="o">=</span><span class="n">qubits</span><span class="p">,</span> <span class="n">spacings</span><span class="o">=</span><span class="n">spacings</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-                            <span class="p">),</span>
-                        <span class="p">]</span>
-                    <span class="p">)</span>
-                    <span class="n">circuits</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">circuits</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="p">]</span>
+        <span class="n">circuits</span> <span class="o">=</span> <span class="n">transpile</span><span class="p">(</span>
+            <span class="n">circuits</span><span class="p">,</span> <span class="n">backend</span><span class="p">,</span> <span class="n">initial_layout</span><span class="o">=</span><span class="n">initial_layout</span><span class="p">,</span> <span class="n">scheduling_method</span><span class="o">=</span><span class="n">scheduling_method</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="n">basis</span><span class="p">:</span> <span class="n">circuits</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">basis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bases</span><span class="p">)}</span></div>
 
@@ -1974,7 +1925,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/05/03</div>
+              Last updated on 2024/07/02</div>
           </div>
           <div class="right-details">
             
