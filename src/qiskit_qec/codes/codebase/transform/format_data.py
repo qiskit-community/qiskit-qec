@@ -25,26 +25,28 @@ files = os.listdir(data_dir)
 
 # Loop through files in the current directory
 for filename in files:
-    if filename.endswith('.json'):
+    if filename.endswith(".json"):
         # Extract integers n and k from the filename
         try:
-            parts = filename.split('_')
+            parts = filename.split("_")
             N = int(parts[1])
             K = int(parts[2][:-5])
 
             # New filename
             new_filename = f"codes_n_{N}_k_{K}.json"
-            
+
             # Rename the file
             os.rename(os.path.join(data_dir, filename), os.path.join(data_dir, new_filename))
-            
+
             # Create subdirectory if it doesn't exist
-            subdir_path = os.path.join(data_dir, f'n_{N}')
+            subdir_path = os.path.join(data_dir, f"n_{N}")
             os.makedirs(subdir_path, exist_ok=True)
-            
+
             # Move the renamed file to the subdirectory
-            shutil.move(os.path.join(data_dir, new_filename), os.path.join(subdir_path, new_filename))
-            
+            shutil.move(
+                os.path.join(data_dir, new_filename), os.path.join(subdir_path, new_filename)
+            )
+
         except Exception as e:
             print(f"Error processing file {filename}: {e}")
 
@@ -53,4 +55,3 @@ print("Files renamed and moved successfully.")
 
 if __name__ == "__main__":
     test_prog = True
-

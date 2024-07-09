@@ -24,15 +24,17 @@ files_and_dirs = os.listdir(data_dir)
 # Filter out files
 dirs = [d for d in files_and_dirs if os.path.isdir(os.path.join(data_dir, d))]
 
+
 def is_valid_dir(s):
     # Define a regular expression pattern to match "n_xxx" where xxx is an integer
-    pattern = r'^n_\d+$'
-    
+    pattern = r"^n_\d+$"
+
     # Use re.match to check if the string matches the pattern
     if re.match(pattern, s):
         return True
     else:
         return False
+
 
 def move_files():
     # Loop through directories in the current directory
@@ -56,7 +58,7 @@ def move_files():
                         old_filename = os.path.join(source_dir, file)
 
                         # New filename
-                        filename = file[:-9]+".json"
+                        filename = file[:-9] + ".json"
 
                         # New filename + path
                         new_filename = os.path.join(new_dir, filename)

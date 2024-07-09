@@ -72,37 +72,19 @@ VALID_CODE_INFO_FIELDS = {
 
 
 PARENT = os.path.dirname(os.path.realpath(__file__))
-file_name_template = os.path.join(
-    PARENT, "input_data", "n_{}", "codes_n_{}_k_{}.json") # n, n, k
+file_name_template = os.path.join(PARENT, "input_data", "n_{}", "codes_n_{}_k_{}.json")  # n, n, k
 
-COPY_OVER_DIRECTLY = {
-    N,
-    K,
-    D,
-    IS_SUBSYSTEM,
-    WEIGHT_ENUMERATOR,
-    UUID,
-    AUT_GROUP_SIZE
-}
+COPY_OVER_DIRECTLY = {N, K, D, IS_SUBSYSTEM, WEIGHT_ENUMERATOR, UUID, AUT_GROUP_SIZE}
 
-REDUCE_INDEX = {
-    AUT_GROUP_GENERATORS,
-    ISOTROPIC_GEN,
-    LOGICAL_OPS
-}
+REDUCE_INDEX = {AUT_GROUP_GENERATORS, ISOTROPIC_GEN, LOGICAL_OPS}
 
-BOOLEAN_KEYS = {
-    IS_CSS,
-    IS_DECOMPOSABLE,
-    IS_DEGENERATE,
-    IS_GF4LINEAR,
-    IS_SUBSYSTEM
-}
+BOOLEAN_KEYS = {IS_CSS, IS_DECOMPOSABLE, IS_DEGENERATE, IS_GF4LINEAR, IS_SUBSYSTEM}
 
-def indices_minus_one(in_string:str) -> str:
+
+def indices_minus_one(in_string: str) -> str:
 
     # Use regular expression to find numeric and non-numeric sequences
-    segments = re.findall(r'(\d+|[^0-9]+)', in_string)
+    segments = re.findall(r"(\d+|[^0-9]+)", in_string)
 
     # Decrease numbers by 1 and throw an exception for negatives
     for i in range(len(segments)):
@@ -115,7 +97,7 @@ def indices_minus_one(in_string:str) -> str:
     segments = [str(segment) for segment in segments]
 
     # Join all entries into a single string
-    new_string = ''.join(segments)
+    new_string = "".join(segments)
 
     return new_string
 
@@ -125,7 +107,7 @@ def convert_jsons(data, i, csvfile="fails.csv"):
 
     # Convert list to dictionary with index
     keys = range(len(data))
-    data = dict(zip(keys,data))
+    data = dict(zip(keys, data))
 
     for index, code_info in data.items():
         n = code_info[N]
@@ -161,13 +143,16 @@ def convert_jsons(data, i, csvfile="fails.csv"):
 
     return data, i
 
+
 def remove_new_files(test=False):
     """Remove directories to start again"""
     print("Remove directories to start again")
-    for n_len in range(10):  
+    for n_len in range(10):
         for k_d in range(n_len):
             curnt_file_name = file_name_template.format(n_len, n_len, k_d)
-            new_json_file_name = curnt_file_name[:-5] + "-NEW.json" # Assumes file name ends with .json
+            new_json_file_name = (
+                curnt_file_name[:-5] + "-NEW.json"
+            )  # Assumes file name ends with .json
             try:
                 print(f"curnt_file_name = {curnt_file_name}")
                 print(f"Attempting to remove file : {new_json_file_name}")
@@ -182,17 +167,19 @@ def process_files(csvfile="fails.csv", test=False):
     with open(csvfile, "w", encoding="utf-8"):
         pass
 
-    i = 0 # Only used for showing the status of the process, counts total records processed
+    i = 0  # Only used for showing the status of the process, counts total records processed
     for n_length in range(10):
         for k_dim in range(n_length):
             cur_file_name = file_name_template.format(n_length, n_length, k_dim)
-            #print(f"Checking file : {cur_file_name}")
+            # print(f"Checking file : {cur_file_name}")
             if os.path.exists(cur_file_name):
-                #print(f"Working with found file:")
+                # print(f"Working with found file:")
                 with open(cur_file_name, "r", encoding="utf-8") as curfile:
                     data = json.load(curfile)
                 updated_data, i = convert_jsons(data, i, csvfile)
-                new_file_name = cur_file_name[:-5] + "-NEW.json" # Assumes file name ends with .json
+                new_file_name = (
+                    cur_file_name[:-5] + "-NEW.json"
+                )  # Assumes file name ends with .json
                 with open(new_file_name, "w", encoding="utf-8") as file_to_overwrite:
                     json.dump(updated_data, file_to_overwrite, indent=1)
 
