@@ -1,89 +1,111 @@
 {
  "0": {
+  "aut_group_generators": [
+   "V1",
+   "H1",
+   "V2",
+   "V0",
+   "(0,2)"
+  ],
+  "aut_group_size": 48,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 0,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
   "isotropic_generators": [
    "X0X2"
   ],
+  "k": 2,
   "logical_ops": [
    "X1",
    "X2",
    "Z1",
    "Z0Z2"
   ],
-  "is_subsystem": 1,
-  "index": "0",
-  "code_type": "StabSubSystemCode",
-  "aut_group_size": 48,
-  "is_decomposable": 0,
+  "n": 3,
+  "uuid": "57667611-661d-4769-a40b-8fe83bf4e8d7",
   "weight_enumerator": [
    1,
    0,
    1,
    0
-  ],
-  "is_css": 1,
-  "uuid": "7898e3a4-d9aa-4483-99e2-64ce07773c43",
-  "is_degenerate": 0,
-  "d": 1,
-  "is_gf4linear": 0,
-  "k": 2,
-  "n": 3
+  ]
  },
  "1": {
+  "aut_group_generators": [
+   "S2",
+   "S1",
+   "(1,2)",
+   "S0",
+   "(0,1)"
+  ],
+  "aut_group_size": 48,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 1,
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
   "isotropic_generators": [
    "Z0Z1Z2"
   ],
+  "k": 2,
   "logical_ops": [
    "X0X1",
    "X0X2",
    "Z1",
    "Z2"
   ],
-  "is_subsystem": 1,
-  "index": "1",
-  "code_type": "StabSubSystemCode",
-  "aut_group_size": 48,
-  "is_decomposable": 0,
+  "n": 3,
+  "uuid": "ddc56cfb-b003-4475-a9e8-ed31954b0886",
   "weight_enumerator": [
    1,
    0,
    0,
    1
-  ],
-  "is_css": 1,
-  "uuid": "7b560b43-acea-4688-a9a9-479216ff77d2",
-  "is_degenerate": 0,
-  "d": 1,
-  "is_gf4linear": 0,
-  "k": 2,
-  "n": 3
+  ]
  },
  "2": {
-  "isotropic_generators": [
-   "X0"
+  "aut_group_generators": [
+   "V1",
+   "H1",
+   "V0",
+   "H0",
+   "(0,1)",
+   "V2"
   ],
+  "aut_group_size": 144,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 2,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X2"
+  ],
+  "k": 2,
   "logical_ops": [
    "X1",
-   "X2",
+   "X0",
    "Z1",
-   "Z2"
+   "Z0"
   ],
-  "is_subsystem": 1,
-  "index": "2",
-  "code_type": "StabSubSystemCode",
-  "aut_group_size": 144,
-  "is_decomposable": 0,
+  "n": 3,
+  "uuid": "caeee543-e142-4d76-b032-ddbd9826c22c",
   "weight_enumerator": [
    1,
    1,
    0,
    0
-  ],
-  "is_css": 1,
-  "uuid": "1808da9d-d326-4ecd-a2d7-c4c701dab2da",
-  "is_degenerate": 0,
-  "d": 1,
-  "is_gf4linear": 0,
-  "k": 2,
-  "n": 3
+  ]
  }
 }

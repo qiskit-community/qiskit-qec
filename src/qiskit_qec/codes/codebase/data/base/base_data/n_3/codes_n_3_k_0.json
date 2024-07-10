@@ -1,78 +1,99 @@
 {
  "0": {
+  "aut_group_generators": [
+   "V2",
+   "V1",
+   "V0",
+   "(1,2)",
+   "(0,1)"
+  ],
+  "aut_group_size": 48,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 0,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
   "isotropic_generators": [
    "X0",
    "X1",
    "X2"
   ],
-  "is_subsystem": 1,
-  "index": "0",
-  "code_type": "StabSubSystemCode",
-  "aut_group_size": 48,
-  "is_decomposable": 1,
+  "k": 0,
+  "logical_ops": [],
+  "n": 3,
+  "uuid": "23a5da68-e2d0-46d4-949a-c2e039549a31",
   "weight_enumerator": [
    1,
    3,
    3,
    1
-  ],
-  "is_css": 1,
-  "uuid": "1fff17f1-edfb-4fc7-8e66-948a4734f838",
-  "is_degenerate": 0,
-  "d": 1,
-  "is_gf4linear": 0,
-  "k": 0,
-  "n": 3
+  ]
  },
  "1": {
+  "aut_group_generators": [
+   "V1V2",
+   "(1,2)",
+   "V0V2",
+   "(0,1)"
+  ],
+  "aut_group_size": 24,
+  "code_type": "StabSubSystemCode",
+  "d": 2,
+  "index": 1,
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
   "isotropic_generators": [
+   "X0X1",
    "X0X2",
-   "X1X2",
    "Z0Z1Z2"
   ],
-  "is_subsystem": 1,
-  "index": "1",
-  "code_type": "StabSubSystemCode",
-  "aut_group_size": 24,
-  "is_triorthogonal": 0,
-  "is_decomposable": 0,
+  "k": 0,
+  "logical_ops": [],
+  "n": 3,
+  "uuid": "bee4a8c5-e9dd-43da-bfcb-ae326347e11e",
   "weight_enumerator": [
    1,
    0,
    3,
    4
-  ],
-  "is_css": 1,
-  "uuid": "89e3f8a0-e2c6-48c9-991f-65b07dd02830",
-  "is_degenerate": 0,
-  "d": 2,
-  "is_gf4linear": 0,
-  "k": 0,
-  "n": 3
+  ]
  },
  "2": {
-  "isotropic_generators": [
-   "X1",
-   "Z0Z2",
-   "Y0Y2"
+  "aut_group_generators": [
+   "V2",
+   "V0V1",
+   "H0H1",
+   "(0,1)"
   ],
-  "is_subsystem": 1,
-  "index": "2",
-  "code_type": "StabSubSystemCode",
   "aut_group_size": 24,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 2,
+  "is_css": 1,
   "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X2",
+   "Z0Z1",
+   "X0X1"
+  ],
+  "k": 0,
+  "logical_ops": [],
+  "n": 3,
+  "uuid": "2113e247-5bc7-4eef-a032-5f44f60a291c",
   "weight_enumerator": [
    1,
    1,
    3,
    3
-  ],
-  "is_css": 1,
-  "uuid": "ee94af61-13dd-474f-a90e-bba8d9dd31d9",
-  "is_degenerate": 0,
-  "d": 1,
-  "is_gf4linear": 0,
-  "k": 0,
-  "n": 3
+  ]
  }
 }
