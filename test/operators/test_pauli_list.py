@@ -35,11 +35,11 @@ from qiskit.circuit.library import (
 )
 from qiskit.quantum_info.operators import Operator
 from qiskit.quantum_info.random import random_clifford, random_pauli_list
-from qiskit.test import QiskitTestCase
 from scipy.sparse import csr_matrix
 
 from qiskit_qec.operators.pauli import Pauli
 from qiskit_qec.operators.pauli_list import PauliList
+from qiskit_qec.test import QiskitTestCase
 
 # Note: In Qiskit tests below is just test
 
