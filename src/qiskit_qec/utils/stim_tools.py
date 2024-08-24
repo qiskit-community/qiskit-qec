@@ -28,7 +28,7 @@ import numpy as np
 import rustworkx as rx
 
 from qiskit import QuantumCircuit
-from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
+from qiskit_aer.noise.errors.base_quantum_error import QuantumChannelInstruction
 from qiskit_aer.noise import pauli_error
 from qiskit_qec.utils.decoding_graph_attributes import (
     DecodingGraphNode,
