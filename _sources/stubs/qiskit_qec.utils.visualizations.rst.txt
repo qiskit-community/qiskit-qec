@@ -4,15 +4,6 @@
 .. automodule:: qiskit_qec.utils.visualizations
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
@@ -21,11 +12,3 @@
       QiskitGameEngine
       Screen
    
-   
-
-   
-   
-   
-
-
-

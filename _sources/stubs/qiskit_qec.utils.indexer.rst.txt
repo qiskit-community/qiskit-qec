@@ -4,26 +4,9 @@
 .. automodule:: qiskit_qec.utils.indexer
 
    
-   
-   
-
-   
-   
-   
-
-   
-   
    .. rubric:: Classes
 
    .. autosummary::
    
       Indexer
    
-   
-
-   
-   
-   
-
-
-

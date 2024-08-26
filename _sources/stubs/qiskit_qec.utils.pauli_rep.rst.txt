@@ -4,11 +4,6 @@
 .. automodule:: qiskit_qec.utils.pauli_rep
 
    
-   
-   
-
-   
-   
    .. rubric:: Functions
 
    .. autosummary::
@@ -52,15 +47,3 @@
       symplectic2str
       to_cpx_matrix
    
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-
