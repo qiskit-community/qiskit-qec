@@ -244,8 +244,7 @@ def minimum_distance(
 
     Restrictions:
 
-    Partition: Current methods require n < 63 for python versions and
-    n < 64 for C versions.
+    Partition: Current methods require n-k < 63
 
     Enumerate: None, although very slow for larger n
 
@@ -269,8 +268,8 @@ def minimum_distance(
         if method == method_enumerate:
             distance = _c_minimum_distance(inputform1, inputform2, max_weight)
         elif method == method_partition:
-            if method == method_partition and not stabilizer.shape[0] < 64:
-                raise QiskitQECError(f"Compiled method {method} does not support n > 63.")
+            if method == method_partition and not stabilizer.shape[0] < 63:
+                raise QiskitQECError(f"Compiled method {method} only supports n-k < 63.")
             distance = _minimum_distance_2_compiled(stabilizer, gauge, max_weight)
     else:
         logger.exception("from compiled extension was not loaded: switching to no compiled")
@@ -278,6 +277,6 @@ def minimum_distance(
             distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
         elif method == method_partition:
             if method == method_partition and not stabilizer.shape[0] < 63:
-                raise QiskitQECError(f"Python method {method} does not support n > 62.")
+                raise QiskitQECError(f"Python method {method} only supports n-k < 63.")
             distance = _minimum_distance_2_python(stabilizer, gauge, max_weight)
     return distance

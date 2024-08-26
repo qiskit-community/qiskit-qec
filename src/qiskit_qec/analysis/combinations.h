@@ -23,7 +23,7 @@ class Combinations
   public:
     Combinations(int n_, int k_);
     bool next_combination(std::vector<int> &state);
-    int size(void);
+    long int size(void);
 };
 
 #endif

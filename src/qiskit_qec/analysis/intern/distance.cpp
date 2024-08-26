@@ -74,7 +74,7 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
 {
   int n = symplectic_vectors[0].size() / 2;  // num. qubits
   int m = symplectic_vectors.size();
-  assert(m<64 && "n-k must be < 64 for this version not to overflow.");
+  assert(m<63 && "n-k must be < 63 for this version not to overflow.");
   std::vector<uint64_t> pow2;
   for (int i = 0; i < m+1; i++)
     pow2.push_back(static_cast<uint64_t>(1) << i);

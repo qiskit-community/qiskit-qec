@@ -31,11 +31,11 @@ bool Combinations::next_combination(std::vector<int> &state)
   return true;
 }
 
-int Combinations::size(void)
+long int Combinations::size(void)
 {
   int k0 = k;
   if(2*k > n) k0 = n - k;
-  int result = n;
+  long int result = n;
   for(int i=2; i<=k0; i++)
   {
     result *= (n-i+1);
