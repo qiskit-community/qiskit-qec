@@ -1,4 +1,5 @@
 """Indexer object test."""
+
 import unittest
 from qiskit_qec.utils.indexer import Indexer
 

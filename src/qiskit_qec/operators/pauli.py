@@ -704,7 +704,11 @@ class Pauli(BasePauli):
                 output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING,
             )
         # Recursively apply instructions
-        for dinstr, qregs, cregs in instr.data:
+        # for dinstr, qregs, cregs in instr.data:
+        for instruction in instr.data:
+            dinstr = instruction.operation
+            qregs = instruction.qubits
+            cregs = instruction.clbits
             if cregs:
                 raise QiskitError(
                     f"Cannot apply instruction with classical registers: {dinstr.name}"

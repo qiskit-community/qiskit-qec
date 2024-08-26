@@ -1,4 +1,5 @@
 """Test python error propagator."""
+
 import unittest
 from qiskit_qec.analysis.errorpropagator import ErrorPropagator
 

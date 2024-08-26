@@ -1,4 +1,5 @@
 """Compute code distance."""
+
 from typing import List
 from itertools import combinations, product
 import functools
@@ -27,6 +28,8 @@ def _distance_test(stab: np.ndarray, logic_op: np.ndarray, weight: int) -> bool:
 
     Pauli operators on n qubits are represented as integer numpy arrays
     of length 2n in the order [X-part, Z-part].
+
+    Restrictions: n < 63 to avoid overflows in numpy
 
     Returns True or False.
     """
@@ -94,6 +97,8 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_we
 
     Second method based on parititioning errors.
 
+    Restrictions: n < 63 to avoid overflows in numpy
+
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
     if symplectic.is_stabilizer_group(gauge):
@@ -109,17 +114,21 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_we
         zl = np.setdiff1d(zp_rows, z_rows).view(zp.dtype).reshape(-1, zp.shape[1])
     if xl.shape[0] == 0:  # k = 0, fall back to first method
         return _minimum_distance_1_python(stabilizer, gauge, max_weight)
+
     weight = max_weight + 1
+
     for row in range(xl.shape[0]):
         for w in range(1, max_weight + 1):
-            if _distance_test(stabilizer.astype(int), xl[row].astype(int), w):
+            if _distance_test(stabilizer.astype(int), xl[row].astype(int), w) is True:
                 weight = min(weight, w)
                 break
+
     for row in range(zl.shape[0]):
         for w in range(1, max_weight + 1):
-            if _distance_test(stabilizer.astype(int), zl[row].astype(int), w):
+            if _distance_test(stabilizer.astype(int), zl[row].astype(int), w) is True:
                 weight = min(weight, w)
                 break
+
     if weight < max_weight + 1:
         return weight
     else:
@@ -223,7 +232,7 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
 def minimum_distance(
     stabilizer_or_gauge: np.ndarray,
     max_weight: int = 10,
-    method: str = "enumerate",
+    method: str = "partition",
     try_compiled: bool = True,
 ) -> int:
     """Minimum distance of (subsystem) stabilizer code.
@@ -232,6 +241,13 @@ def minimum_distance(
     either the stabilizer or gauge group.
 
     method and try_compiled select an algorithm and implementation.
+
+    Restrictions:
+
+    Partition: Current methods require n < 63 for python versions and
+    n < 64 for C versions.
+
+    Enumerate: None, although very slow for larger n
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
@@ -253,11 +269,15 @@ def minimum_distance(
         if method == method_enumerate:
             distance = _c_minimum_distance(inputform1, inputform2, max_weight)
         elif method == method_partition:
+            if method == method_partition and not stabilizer.shape[0] < 64:
+                raise QiskitQECError(f"Compiled method {method} does not support n > 63.")
             distance = _minimum_distance_2_compiled(stabilizer, gauge, max_weight)
     else:
         logger.exception("from compiled extension was not loaded: switching to no compiled")
         if method == method_enumerate:
             distance = _minimum_distance_1_python(stabilizer, gauge, max_weight)
         elif method == method_partition:
+            if method == method_partition and not stabilizer.shape[0] < 63:
+                raise QiskitQECError(f"Python method {method} does not support n > 62.")
             distance = _minimum_distance_2_python(stabilizer, gauge, max_weight)
     return distance

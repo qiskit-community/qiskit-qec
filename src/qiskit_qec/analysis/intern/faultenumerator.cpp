@@ -78,7 +78,7 @@ std::vector<FaultPath> FaultEnumerator::enumerate(int blocksize)
   // Reset if the state is empty
   if(_state.size() == 0) { _index = 0; _done = false; }
   Combinations c(_faulty_ops_indices.size(), _order);
-  long initial_index = _index;
+  int initial_index = _index;
   while(c.next_combination(_state))
   {
     std::vector<int> indices;

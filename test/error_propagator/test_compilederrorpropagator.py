@@ -1,4 +1,5 @@
 """Test the compiled error propagator directly."""
+
 import unittest
 from qiskit_qec.analysis.extensions import _CErrorPropagator
 

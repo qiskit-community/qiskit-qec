@@ -1,4 +1,5 @@
 """Test the compiled fault sampler."""
+
 import unittest
 from qiskit_qec.analysis.extensions import _CFaultSampler
 

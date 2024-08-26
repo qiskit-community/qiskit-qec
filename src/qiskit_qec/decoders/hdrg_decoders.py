@@ -508,9 +508,11 @@ class UnionFindDecoder(ClusteringDecoder):
                             fully_grown_edges=set(),
                             edge_support=set(),
                             atypical_nodes=set(),
-                            boundary_nodes=set([edge.neighbour_vertex])
-                            if self.graph[edge.neighbour_vertex].is_logical
-                            else set([]),
+                            boundary_nodes=(
+                                set([edge.neighbour_vertex])
+                                if self.graph[edge.neighbour_vertex].is_logical
+                                else set([])
+                            ),
                             nodes=set([edge.neighbour_vertex]),
                             size=1,
                         )
