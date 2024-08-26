@@ -196,7 +196,7 @@ def _symplectic_product_vv_boolean(vec1: np.ndarray, vec2: np.ndarray, n: int) -
     assert vec1.dtype == bool
     r = False
     for i in range(n):
-        r += vec1[i] & vec2[n + i] ^ vec1[n + i] & vec2[i]
+        r ^= vec1[i] & vec2[n + i] ^ vec1[n + i] & vec2[i]
     return int(r)
 
 
