@@ -1,4 +1,5 @@
 """Quantum circuit fault path sampler."""
+
 from typing import Tuple, List
 
 import numpy as np

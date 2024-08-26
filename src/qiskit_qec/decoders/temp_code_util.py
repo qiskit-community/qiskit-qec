@@ -1,4 +1,5 @@
 """Temporary module with methods for codes."""
+
 from functools import partial
 from typing import List
 
