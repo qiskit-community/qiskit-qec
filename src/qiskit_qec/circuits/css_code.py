@@ -144,10 +144,7 @@ class CSSCodeCircuit(CodeCircuit):
             stabilizers = [[], []]
             logicals = [[], []]
 
-            for (
-                raw_ops,
-                ops,
-            ) in zip(
+            for (raw_ops, ops,) in zip(
                 [raw_gauges, raw_stabilizers, raw_logicals],
                 [gauges, stabilizers, logicals],
             ):
