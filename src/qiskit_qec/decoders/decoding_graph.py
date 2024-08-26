@@ -485,7 +485,7 @@ class DecodingGraph:
                             spares.add((n, n2))
                             spares.add((n2, n))
         # find bulk-boundary pairs not covered by the above
-        for (n0, n1) in self.graph.edge_list():
+        for n0, n1 in self.graph.edge_list():
             n2 = None
             for n in (n0, n1):
                 if nodes[n].is_logical:

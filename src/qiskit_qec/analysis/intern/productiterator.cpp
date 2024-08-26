@@ -2,7 +2,7 @@
 
 ProductIterator::ProductIterator(std::vector<int> &ni_)
 {
-  for(int i=0; i < ni_.size(); i++)
+  for(uint64_t i=0; i < ni_.size(); i++)
     if(ni_[i] <= 0) throw std::invalid_argument("each element must be positive");
   ni = ni_;
 }

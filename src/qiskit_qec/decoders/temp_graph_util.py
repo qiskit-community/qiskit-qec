@@ -1,4 +1,5 @@
 """Temporary module with methods for graphs."""
+
 import json
 import networkx as nx
 import rustworkx as rx

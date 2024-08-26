@@ -1,4 +1,5 @@
 """Test python error propagator."""
+
 import unittest
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_qec.analysis.pyerrorpropagator import PyErrorPropagator

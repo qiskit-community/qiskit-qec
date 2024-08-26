@@ -1,4 +1,5 @@
 """Pauli circuit-level noise model."""
+
 import copy
 from typing import Union, Dict
 from qiskit_aer import noise
