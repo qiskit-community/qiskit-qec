@@ -183,11 +183,9 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -335,60 +333,60 @@
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.geometry.Tile.html#qiskit_qec.geometry.Tile" title="qiskit_qec.geometry.tiles.tile.Tile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tile</span></code></a></p>
 <p>Square Diamond Tile (Square or non-Rotated orientation)</p>
 <p>The follow labelling is used:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>q0    q1  q1   q2
-v0    v1  v0   v1
-  o--o     o--o
-  |0/       |
-  |/         \|
-  o           o
-v2             v2
-q3             q4
-       .(0,0)
-q3            q4
-v0            v0
-  o           o
-  |\         /|
-  |2\       /3|
-  o--o     o--o
-v1    v2 v1    v2
-q5    q6 q6    q7
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">q0</span>    <span class="n">q1</span>  <span class="n">q1</span>   <span class="n">q2</span>
+<span class="n">v0</span>    <span class="n">v1</span>  <span class="n">v0</span>   <span class="n">v1</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span>     <span class="n">o</span><span class="o">--</span><span class="n">o</span>
+  <span class="o">|</span><span class="mi">0</span><span class="o">/</span>       \<span class="mi">1</span><span class="o">|</span>
+  <span class="o">|/</span>         \<span class="o">|</span>
+  <span class="n">o</span>           <span class="n">o</span>
+<span class="n">v2</span>             <span class="n">v2</span>
+<span class="n">q3</span>             <span class="n">q4</span>
+       <span class="o">.</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">q3</span>            <span class="n">q4</span>
+<span class="n">v0</span>            <span class="n">v0</span>
+  <span class="n">o</span>           <span class="n">o</span>
+  <span class="o">|</span>\         <span class="o">/|</span>
+  <span class="o">|</span><span class="mi">2</span>\       <span class="o">/</span><span class="mi">3</span><span class="o">|</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span>     <span class="n">o</span><span class="o">--</span><span class="n">o</span>
+<span class="n">v1</span>    <span class="n">v2</span> <span class="n">v1</span>    <span class="n">v2</span>
+<span class="n">q5</span>    <span class="n">q6</span> <span class="n">q6</span>    <span class="n">q7</span>
 
-  o--o--o
-  |0/ |
-  |/   \|
-  o     o
-  |\   /|
-  |2\ /3|
-  o--o--o
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span><span class="o">--</span><span class="n">o</span>
+  <span class="o">|</span><span class="mi">0</span><span class="o">/</span> \<span class="mi">1</span><span class="o">|</span>
+  <span class="o">|/</span>   \<span class="o">|</span>
+  <span class="n">o</span>     <span class="n">o</span>
+  <span class="o">|</span>\   <span class="o">/|</span>
+  <span class="o">|</span><span class="mi">2</span>\ <span class="o">/</span><span class="mi">3</span><span class="o">|</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span><span class="o">--</span><span class="n">o</span>
 </pre></div>
 </div>
 <p>Square Diamond Tile</p>
 <p>The following labels are used:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>q0    q1  q1   q2
-v0    v1  v0   v1
-  o--o     o--o
-  |0/       |
-  |/         \|
-  o           o
-v2             v2
-q3             q4
-       .(0,0)
-q3            q4
-v0            v0
-  o           o
-  |\         /|
-  |2\       /3|
-  o--o     o--o
-v1    v2 v1    v2
-q5    q6 q6    q7
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">q0</span>    <span class="n">q1</span>  <span class="n">q1</span>   <span class="n">q2</span>
+<span class="n">v0</span>    <span class="n">v1</span>  <span class="n">v0</span>   <span class="n">v1</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span>     <span class="n">o</span><span class="o">--</span><span class="n">o</span>
+  <span class="o">|</span><span class="mi">0</span><span class="o">/</span>       \<span class="mi">1</span><span class="o">|</span>
+  <span class="o">|/</span>         \<span class="o">|</span>
+  <span class="n">o</span>           <span class="n">o</span>
+<span class="n">v2</span>             <span class="n">v2</span>
+<span class="n">q3</span>             <span class="n">q4</span>
+       <span class="o">.</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">q3</span>            <span class="n">q4</span>
+<span class="n">v0</span>            <span class="n">v0</span>
+  <span class="n">o</span>           <span class="n">o</span>
+  <span class="o">|</span>\         <span class="o">/|</span>
+  <span class="o">|</span><span class="mi">2</span>\       <span class="o">/</span><span class="mi">3</span><span class="o">|</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span>     <span class="n">o</span><span class="o">--</span><span class="n">o</span>
+<span class="n">v1</span>    <span class="n">v2</span> <span class="n">v1</span>    <span class="n">v2</span>
+<span class="n">q5</span>    <span class="n">q6</span> <span class="n">q6</span>    <span class="n">q7</span>
 
-  o--o--o
-  |0/ |
-  |/   \|
-  o     o
-  |\   /|
-  |2\ /3|
-  o--o--o
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span><span class="o">--</span><span class="n">o</span>
+  <span class="o">|</span><span class="mi">0</span><span class="o">/</span> \<span class="mi">1</span><span class="o">|</span>
+  <span class="o">|/</span>   \<span class="o">|</span>
+  <span class="n">o</span>     <span class="n">o</span>
+  <span class="o">|</span>\   <span class="o">/|</span>
+  <span class="o">|</span><span class="mi">2</span>\ <span class="o">/</span><span class="mi">3</span><span class="o">|</span>
+  <span class="n">o</span><span class="o">--</span><span class="n">o</span><span class="o">--</span><span class="n">o</span>
 </pre></div>
 </div>
 <p>Face colors for faces [0,1,2] are [“yellowgreen”,”tomato”,”steelblue”]</p>
@@ -543,7 +541,7 @@ from [HexagonTile.u_vec, HexagonTile.v_vec]</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             

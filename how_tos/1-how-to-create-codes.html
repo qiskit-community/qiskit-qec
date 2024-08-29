@@ -184,11 +184,9 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -364,8 +362,8 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 <h2>Creating a symplectic matrix<a class="headerlink" href="#Creating-a-symplectic-matrix" title="Link to this heading">¶</a></h2>
 <p>We first consider creating the 7-qubit Steane/color code:</p>
 <p>TODO: Add image of a 7-qubit Steane code</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -391,6 +389,16 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 <span class="n">code</span><span class="o">.</span><span class="n">generators</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PauliList([&#39;IIIXXXX&#39;, &#39;IIIZZZZ&#39;, &#39;IXXXIXI&#39;, &#39;IZZZIZI&#39;, &#39;XIXIIXX&#39;,
+           &#39;ZIZIIZZ&#39;])
+</pre></div></div>
 </div>
 </section>
 <section id="Providing-the-stabilizer/gauge-generators-as-strings">
@@ -423,8 +431,8 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 <section id="Loading-a-code-via-the-codebase-libraries">
 <h2>Loading a code via the codebase libraries<a class="headerlink" href="#Loading-a-code-via-the-codebase-libraries" title="Link to this heading">¶</a></h2>
 <p>Codes can also be loaded from a code database</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start the CodeLibrarian</span>
@@ -444,8 +452,17 @@ would be large, overlapping and difficult to manage. Instead the aim is to only 
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+PauliList([&#39;X1&#39;, &#39;X2&#39;, &#39;X3&#39;, &#39;Z0Z4&#39;, &#39;Y0Y4&#39;])
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the code with n=5, k=0 and index=4 but only fetch the information on it</span>
@@ -480,12 +497,12 @@ n                    : 5
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load all (1) small codes info with n=5 and k=2 that are not CSS with d=2</span>
 <span class="n">codes</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">all_small_codes</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">is_css</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">info_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">code</span><span class="o">.</span><span class="n">info</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -494,20 +511,18 @@ n                    : 5
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[5,2]]-36 of type StabSubSystemCode
--------------------------------------------------------------------------------
-isotropic_generators : [&#39;X1Z2Z3&#39;, &#39;Y0Y1X3&#39;, &#39;Z0Z1X2Z4&#39;]
-logical_ops          : [&#39;Z0Z1X3&#39;, &#39;Z2X4&#39;, &#39;Z0Z3&#39;, &#39;Z4&#39;]
+isotropic_generators : [&#39;Z0Z1X2&#39;, &#39;X1Z2X3Z4&#39;, &#39;X0X1Y3Y4&#39;]
+logical_ops          : [&#39;Z0X3&#39;, &#39;Z1X4&#39;, &#39;Z1Z3&#39;, &#39;Z0Z4&#39;]
 is_subsystem         : 1
-index                : 36
+index                : 27
 code_type            : StabSubSystemCode
-aut_group_size       : 8
+aut_group_size       : 12
 is_decomposable      : 0
-weight_enumerator    : [1, 0, 0, 2, 3, 2]
+weight_enumerator    : [1, 0, 0, 1, 3, 3]
 is_css               : 0
-uuid                 : 712505a9-19ed-4702-ba25-d2270317afaa
+uuid                 : 65e7ef69-1b5b-49a7-97f7-f41ca540cc8f
 is_degenerate        : 0
-d                    : 1
+d                    : 2
 is_gf4linear         : 0
 k                    : 2
 n                    : 5
@@ -519,7 +534,7 @@ n                    : 5
 <h2>Configuring and running a TileCodeFactory<a class="headerlink" href="#Configuring-and-running-a-TileCodeFactory" title="Link to this heading">¶</a></h2>
 <p>The following example shows how to use the TileCodeFactory to build the Steane/color code or more generally the triangular color code. The follow example also shows how to see intermediate results when using a factory.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set distance</span>
@@ -628,7 +643,7 @@ n                    : 5
 <h2>Configuring and running a specific CodeBuilder<a class="headerlink" href="#Configuring-and-running-a-specific-CodeBuilder" title="Link to this heading">¶</a></h2>
 <p>The previous approach can be wrapped into a builder class. In this case a triangular code code builder</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.triangular_color_code_builder</span> <span class="kn">import</span> <span class="n">TriangularColorCodeBuilder</span>
@@ -647,7 +662,7 @@ n                    : 5
 </div>
 <p>Another builder is the surface code builder</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.surface_code_builder</span> <span class="kn">import</span> <span class="n">SurfaceCodeBuilder</span>
@@ -666,7 +681,7 @@ n                    : 5
 </div>
 <p>or the rotated surface code builder.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.operators.pauli</span> <span class="kn">import</span> <span class="n">Pauli</span>
@@ -686,7 +701,7 @@ n                    : 5
 </div>
 <p>Or the heavy hex code builder.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qiskit_qec.codes.codebuilders.heavyhex_code_builder</span> <span class="kn">import</span> <span class="n">HeavyHexCodeBuilder</span>
@@ -748,7 +763,7 @@ n                    : 5
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             

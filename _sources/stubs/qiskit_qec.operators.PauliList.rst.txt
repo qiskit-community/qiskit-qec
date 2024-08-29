@@ -37,6 +37,7 @@
    .. automethod:: PauliList.output_dims
    .. automethod:: PauliList.power
    .. automethod:: PauliList.reshape
+   .. automethod:: PauliList.set_fast_load
    .. automethod:: PauliList.set_pauli_encoding
    .. automethod:: PauliList.set_phase_encoding
    .. automethod:: PauliList.set_print_phase_encoding

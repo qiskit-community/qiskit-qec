@@ -183,11 +183,9 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -331,22 +329,43 @@
 <h1>PauliList<a class="headerlink" href="#paulilist" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PauliList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PauliList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast_load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.base_pauli.BasePauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePauli</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">LinearMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GroupMixin</span></code></p>
 <p><cite>PauliList</cite> inherits from <cite>BasePauli</cite></p>
 <p>Inits a PauliList</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em>) – List of Pauli Operators. Ex: ‘IIXXZ’</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.BasePauli"><em>BasePauli</em></a><em>, </em><em>np.ndarray</em><em>, </em><em>Tuple</em><em>[</em><em>np.ndarray</em><em>]</em><em>, </em><em>Iterable</em><em>, </em><em>None</em>) – List of Pauli Operators.
+Ex: [‘IIXXZ’,…], np.array([[1,0,1,1],[0,1,0,1]]), …</p></li>
 <li><p><strong>phase_exp</strong> (<em>int</em><em>, </em><em>optional</em>) – i**phase_exp. Defaults to 0.</p></li>
 <li><p><strong>input_qubit_order</strong> (<em>str</em><em>, </em><em>optional</em>) – Order to read pdata. Defaults to “right-to-left”.</p></li>
+<li><p><strong>order</strong> (<em>str</em><em>, </em><em>optional</em>) – Order in which data input lists X and Z. Defaults to ‘xz’</p></li>
+<li><p><strong>num_qubits</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of qubits to use in Pauli. Defaults to None.</p></li>
+<li><p><strong>fast_load</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True class stores individual Pauls for fast element
+selection. The fast_load options is much faster when loading elements from the list,
+say 100ns versus 2.3 us but does so at the cost of initializing speed and memory.
+Defaults to True</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>QiskitError</strong> – Something went wrong.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>&gt;&gt;&gt;PauliList([“IIX”, “iIYI”, “ZII”], num_qubits=10)
+PauliList([‘IIIIIIIIIX’, ‘iIIIIIIIIYI’, ‘IIIIIIIZII’])</p>
+<p>&gt;&gt;&gt;paulis = PauliList([“IIX”, “iIYI”, “ZII”])
+&gt;&gt;&gt;%timeit pauli[1]
+97.1 ns ± 0.463 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)</p>
+<p>&gt;&gt;&gt;paulis.set_fast_load(False)</p>
+<p>&gt;&gt;&gt;%timeit pauli[1]
+2.33 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</p>
+<p>&gt;&gt;&gt;PauliList([“IIX”, “iIYI”, “ZII”], fast_load=False)</p>
+<p>&gt;&gt;&gt;PauliList(np.array([[1,1,0,0],[0,1,0,1]]), order = ‘zx’)
+PauliList([‘ZZ’, ‘YI’])</p>
+<p>&gt;&gt;&gt;PauliList([‘XZX’,’XXX’,’YIX’], input_qubit_order=”left-to-right”)
+PauliList([‘XZX’, ‘XXX’, ‘XIY’])</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.adjoint">
@@ -810,6 +829,12 @@ If None the original output dims will be preserved [Default: None].</p></li>
     subsystem output dimensions is not constant.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qiskit_qec.operators.PauliList.set_fast_load">
+<span class="sig-name descname"><span class="pre">set_fast_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fast_load</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli_list.html#PauliList.set_fast_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.PauliList.set_fast_load" title="Link to this definition">¶</a></dt>
+<dd><p>Set if class uses the fast_store method. Storing Pauli variables</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1373,7 +1398,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             
@@ -1421,6 +1446,7 @@ if a 2d array is needed as _x method is markeded as &#64;final</p>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.output_dims"><code class="docutils literal notranslate"><span class="pre">PauliList.output_dims()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.power"><code class="docutils literal notranslate"><span class="pre">PauliList.power()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.reshape"><code class="docutils literal notranslate"><span class="pre">PauliList.reshape()</span></code></a></li>
+<li><a class="reference internal" href="#qiskit_qec.operators.PauliList.set_fast_load"><code class="docutils literal notranslate"><span class="pre">PauliList.set_fast_load()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.set_pauli_encoding"><code class="docutils literal notranslate"><span class="pre">PauliList.set_pauli_encoding()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.set_phase_encoding"><code class="docutils literal notranslate"><span class="pre">PauliList.set_phase_encoding()</span></code></a></li>
 <li><a class="reference internal" href="#qiskit_qec.operators.PauliList.set_print_phase_encoding"><code class="docutils literal notranslate"><span class="pre">PauliList.set_print_phase_encoding()</span></code></a></li>

@@ -182,11 +182,9 @@
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -339,7 +337,7 @@
 <span class="c1"># that they have been altered from the originals.</span>
 <span class="c1"># Part of the QEC framework</span>
 <span class="sd">&quot;&quot;&quot;Module for Pauli&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">qiskit.circuit</span> <span class="kn">import</span> <span class="n">Instruction</span><span class="p">,</span> <span class="n">QuantumCircuit</span>
@@ -359,7 +357,7 @@
 <div class="viewcode-block" id="Pauli">
 <a class="viewcode-back" href="../../../stubs/qiskit_qec.operators.Pauli.html#qiskit_qec.operators.Pauli">[docs]</a>
 <span class="k">class</span> <span class="nc">Pauli</span><span class="p">(</span><span class="n">BasePauli</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;`Pauli` inherits from `BasePauli`&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;N-qubit Pauli operator&quot;&quot;&quot;</span>
 
     <span class="c1"># Set the max Pauli string size before truncation</span>
     <span class="n">_truncate__</span> <span class="o">=</span> <span class="mi">50</span>
@@ -371,87 +369,163 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">BasePauli</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">z</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">phase_exp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">input_pauli_encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PAULI_ENCODING</span><span class="p">,</span>
-        <span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">input_qubit_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;right-to-left&quot;</span><span class="p">,</span>
-        <span class="n">tuple_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;zx&quot;</span><span class="p">,</span>
+        <span class="n">phase_exp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_pauli_encoding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePauli</span><span class="o">.</span><span class="n">EXTERNAL_PAULI_ENCODING</span><span class="p">,</span>
+        <span class="n">input_qubit_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;right-to-left&quot;</span><span class="p">,</span>
+        <span class="n">order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;xz&quot;</span><span class="p">,</span>
+        <span class="n">tuple_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zx&quot;</span><span class="p">,</span>
+        <span class="n">num_qubits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pauli Init</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Pauli</span>
+
+<span class="sd">        Initialiazation of the N-qubit Pauli operator</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            data (str): Still in progress</span>
-<span class="sd">            x ([type], optional): [description]. Defaults to None.</span>
-<span class="sd">            z ([type], optional): [description]. Defaults to None.</span>
-<span class="sd">            phase_exponent ([type], optional): [description]. Defaults to None.</span>
-<span class="sd">            stype (str, optional): [description]. Defaults to &quot;numpy&quot;.</span>
-<span class="sd">            label ([type], optional): [description]. Defaults to None.</span>
-<span class="sd">            input_qubit_order (str, optional): [description]. Defaults to &quot;right-to-left&quot;.</span>
-<span class="sd">            tuple_prder (optional): Defaults to &#39;zx&#39;</span>
+<span class="sd">            data (Union[str, tuple, List, np.ndarray, BasePauli, None]): Input data.</span>
+<span class="sd">            x (Union[List, np.ndarray, None], optional):</span>
+<span class="sd">                X part. Defaults to None.</span>
+<span class="sd">            z (Union[List, np.ndarray, None], optional):</span>
+<span class="sd">                Z part. Defaults to None.</span>
+<span class="sd">            phase_exp (Union[str, np.ndarray, None], optional):</span>
+<span class="sd">                Phase expression of Pauli. Defaults to None.</span>
+<span class="sd">            input_pauli_encoding (str, optional):</span>
+<span class="sd">                What encoding is used for the input data. Defaults to</span>
+<span class="sd">                BasePauli.EXTERNAL_PAULI_ENCODING.</span>
+<span class="sd">            input_qubit_order (str, optional):</span>
+<span class="sd">                Qubit read order. Defaults to &quot;right-to-left&quot;.</span>
+<span class="sd">            order (str, optional):</span>
+<span class="sd">                Order in which data lists X and Z. Defaults to &#39;xz&#39;.</span>
+<span class="sd">            tuple_order (str, optional):</span>
+<span class="sd">                Order in data for X and Z parts of tuples. Defaults to &#39;zx&#39;.</span>
+<span class="sd">            num_qubits (int, optional):</span>
+<span class="sd">                Number of qubits to use in Pauli. Defaults to None.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            QiskitError: Something went wrong.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Pauli(&#39;XYXXIZ&#39;)</span>
+<span class="sd">            Pauli(&#39;XYXXIZ&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(&#39;X1Y3Z12&#39;)</span>
+<span class="sd">            Pauli(&#39;ZIIIIIIIIYIXI&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(&#39;X&#39;, num_qubits=12)</span>
+<span class="sd">            Pauli(&#39;IIIIIIIIIIIX&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(np.array([[0,1,1,1]]), phase_exp=&quot;(-i,1)&quot;, num_qubits=10)</span>
+<span class="sd">            Pauli(&#39;-iIIIIIIIIYZ&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(np.array([[0,1,1,1]]),phase_exp=&quot;(-i,1)&quot;, num_qubits=10, order=&quot;zx&quot;)</span>
+<span class="sd">            Pauli(&#39;-iIIIIIIIIYX&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(None, x=[0,1],z=[1,1],phase_exp = &#39;-i&#39;)</span>
+<span class="sd">            Pauli(&#39;-iYZ&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(np.array([[0,1,1,1]]),</span>
+<span class="sd">                            phase_exp=&quot;(-i,1)(-1,0)&quot;,</span>
+<span class="sd">                            num_qubits=10, order=&quot;zx&quot;, input_pauli_encoding=&#39;-isXZ&#39;)</span>
+<span class="sd">            Pauli(&#39;-iIIIIIIIIYX&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(([0,1],[1,1],&#39;-i&#39;), tuple_order=&#39;xz&#39;)</span>
+<span class="sd">            Pauli(&#39;-iYZ&#39;)</span>
+
+<span class="sd">            &gt;&gt;&gt; Pauli(([0,1],[1,1],&#39;-i&#39;))</span>
+<span class="sd">            Pauli(&#39;-iYX&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="c1"># str</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">str2symplectic</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">qubit_order</span><span class="o">=</span><span class="n">input_qubit_order</span><span class="p">,</span> <span class="n">num_qubits</span><span class="o">=</span><span class="n">num_qubits</span>
+            <span class="p">)</span>
+
+        <span class="c1"># numpy or list</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">phase_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">phase_exp</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">phase_enc</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">split_pauli_enc</span><span class="p">(</span><span class="n">input_pauli_encoding</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">str2exp</span><span class="p">(</span>
+                    <span class="n">pauli_rep</span><span class="o">.</span><span class="n">stand_phase_str</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">phase_enc</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">phase_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">exp2exp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span><span class="p">,</span> <span class="n">phase_enc</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span>
+                <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
+            <span class="p">)</span>
+
+        <span class="c1"># tuple (x,z,phase), (z,x,phase), (x,z), (z,x)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">))</span>
+            <span class="n">phase_enc</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">split_pauli_enc</span><span class="p">(</span><span class="n">input_pauli_encoding</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">tuple_order</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">str2exp</span><span class="p">(</span>
+                    <span class="n">pauli_rep</span><span class="o">.</span><span class="n">stand_phase_str</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">phase_enc</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">phase_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">exp2exp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span><span class="p">,</span> <span class="n">phase_enc</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span>
+                <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
+            <span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">tuple_order</span>
+
+        <span class="c1"># BasePauli</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">BasePauli</span><span class="p">):</span>
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span> <span class="p">:]</span>
             <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">[:]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span>
-                    <span class="s2">&quot;Invalid input tuple for Pauli, input tuple must be `(z, x, phase)` or `(z, x)`&quot;</span>
-                <span class="p">)</span>
-            <span class="k">if</span> <span class="n">tuple_order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;zx&quot;</span><span class="p">,</span> <span class="s2">&quot;xz&quot;</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`tuple_order` </span><span class="si">{</span><span class="n">tuple_order</span><span class="si">}</span><span class="s2"> not valid&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">tuple_order</span> <span class="o">==</span> <span class="s2">&quot;zx&quot;</span><span class="p">:</span>
-                    <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_split_array</span><span class="p">(</span>
-                        <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_split_array</span><span class="p">(</span>
-                        <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
-                    <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">tuple_order</span> <span class="o">==</span> <span class="s2">&quot;zx&quot;</span><span class="p">:</span>
-                <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_split_array</span><span class="p">(</span>
-                    <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span>
-                    <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
-                <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">str2symplectic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">qubit_order</span><span class="o">=</span><span class="n">input_qubit_order</span><span class="p">)</span>
+        <span class="c1"># ScalarOp</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ScalarOp</span><span class="p">):</span>
             <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">scalar_op2symplectic</span><span class="p">(</span>
                 <span class="n">data</span><span class="p">,</span> <span class="n">output_encoding</span><span class="o">=</span><span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span>
             <span class="p">)</span>
+
+        <span class="c1"># Quantum Circuit or Instruction</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">QuantumCircuit</span><span class="p">,</span> <span class="n">Instruction</span><span class="p">)):</span>
             <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrs2symplectic</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># DEPRECATED</span>
-            <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># Using old Pauli initialization with positional args instead of kwargs</span>
-                <span class="n">z</span> <span class="o">=</span> <span class="n">data</span>
-            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_split_array_deprecated</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># DEPRECATED</span>
-            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_label_deprecated</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">qubit_order</span><span class="o">=</span><span class="n">input_qubit_order</span><span class="p">)</span>
+        <span class="c1"># x= ... , z= ..., [phase_exp = ...]</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
+        <span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+
+            <span class="n">phase_enc</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">split_pauli_enc</span><span class="p">(</span><span class="n">input_pauli_encoding</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">str2exp</span><span class="p">(</span>
+                    <span class="n">pauli_rep</span><span class="o">.</span><span class="n">stand_phase_str</span><span class="p">(</span><span class="n">phase_exp</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="n">phase_enc</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">phase_exp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">exp2exp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">INTERNAL_PHASE_ENCODING</span><span class="p">,</span> <span class="n">phase_enc</span><span class="p">)</span>
+            <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span>
+                <span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">,</span> <span class="n">input_pauli_encoding</span><span class="o">=</span><span class="n">input_pauli_encoding</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Error: no input is suitable</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Invalid input data for Pauli.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add extra qubits if requested</span>
+        <span class="k">if</span> <span class="n">num_qubits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">num_qubits</span> <span class="o">&gt;</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">extend_num</span> <span class="o">=</span> <span class="n">num_qubits</span> <span class="o">-</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">pauli_rep</span><span class="o">.</span><span class="n">_extend_symplectic</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">extend_num</span><span class="p">)</span>
 
         <span class="c1"># Initialize BasePauli</span>
         <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">QiskitError</span><span class="p">(</span><span class="s2">&quot;Input is not a single Pauli&quot;</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
     <span class="c1"># ---------------------------------------------------------------------</span>
@@ -661,7 +735,7 @@
 <span class="sd">            i (int): index of qubit</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            str: Streing representing the Pauli acting on qubit i,</span>
+<span class="sd">            str: String representing the Pauli acting on qubit i,</span>
 <span class="sd">            (0,0):&quot;I&quot;, (1,0):&quot;X&quot;, (0,1):&quot;Z&quot;, (1,1):&quot;Y&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Pauli</span><span class="o">.</span><span class="n">pltb_str</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_qubits</span><span class="p">])]</span>
@@ -743,7 +817,7 @@
         <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="n">qubits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">Pauli</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_phase_exp</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Pauli</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">phase_exp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_exp</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Pauli.insert">
@@ -1506,7 +1580,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             

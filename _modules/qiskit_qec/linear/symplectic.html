@@ -182,11 +182,9 @@
 </ul>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -2545,6 +2543,13 @@
     <span class="n">center_</span><span class="p">,</span> <span class="n">hyper1</span><span class="p">,</span> <span class="n">hyper2</span> <span class="o">=</span> <span class="n">_symplectic_gram_schmidt</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
 
     <span class="k">return</span> <span class="n">_normalizer_group_preserve</span><span class="p">(</span><span class="n">center_</span><span class="p">,</span> <span class="n">hyper1</span><span class="p">,</span> <span class="n">hyper2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_extend_symplectic</span><span class="p">(</span><span class="n">matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">extend</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">ext_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extend</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">matrix</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">ext_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">matrix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">],</span> <span class="n">ext_part</span><span class="p">,</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="n">n</span><span class="p">:],</span> <span class="n">ext_part</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ext_matrix</span>
 </pre></div>
         </article>
       </div>
@@ -2562,7 +2567,7 @@
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             

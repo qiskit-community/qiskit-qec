@@ -183,11 +183,9 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -356,49 +354,51 @@
 
 
                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
-                 <span class="o">/</span>                         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
+                 <span class="o">/</span>       \
+          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
          <span class="o">/</span>       \       <span class="o">/</span>
         <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
-         \       <span class="o">/</span>                         <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
+         \       <span class="o">/</span>       \
+          <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
                  \       <span class="o">/</span>
                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
 </pre></div>
 </div>
 <p>Weight 2 operators (3,4,5,6,7,8,9,10,11):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   q0
-                 o v1
-              3 /
-               o v0
-                 q3
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   <span class="n">q0</span>
+                 <span class="n">o</span> <span class="n">v1</span>
+              <span class="mi">3</span> <span class="o">/</span>
+               <span class="n">o</span> <span class="n">v0</span>
+                 <span class="n">q3</span>
 
-q2   4     q3    q3        q4
-v1 o-----o v0  o v1      o v1
-                \ 5     / 6
-                 o v0  o v0
-                   q6    q7
+<span class="n">q2</span>   <span class="mi">4</span>     <span class="n">q3</span>    <span class="n">q3</span>        <span class="n">q4</span>
+<span class="n">v1</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v1</span>      <span class="n">o</span> <span class="n">v1</span>
+                \ <span class="mi">5</span>     <span class="o">/</span> <span class="mi">6</span>
+                 <span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v0</span>
+                   <span class="n">q6</span>    <span class="n">q7</span>
 
-              v0 o-----o v1
-              q6    7    q7
+              <span class="n">v0</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v1</span>
+              <span class="n">q6</span>    <span class="mi">7</span>    <span class="n">q7</span>
 
-                   q6    q7
-                 o v0  o v0
-q8    10    q9  / 8     \ 9
-v1 o-----o v0  o         o v1
-                 q9        q10
-               o v0
-                \ 11
-                 o v1
-                   q11
+                   <span class="n">q6</span>    <span class="n">q7</span>
+                 <span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v0</span>
+<span class="n">q8</span>    <span class="mi">10</span>    <span class="n">q9</span>  <span class="o">/</span> <span class="mi">8</span>     \ <span class="mi">9</span>
+<span class="n">v1</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span>         <span class="n">o</span> <span class="n">v1</span>
+                 <span class="n">q9</span>        <span class="n">q10</span>
+               <span class="n">o</span> <span class="n">v0</span>
+                \ <span class="mi">11</span>
+                 <span class="n">o</span> <span class="n">v1</span>
+                   <span class="n">q11</span>
 
-                 o
-               3/
-         o--4--o         o
-                      /6
-                 o--7--o
-                /8      \9
-         o--10-o         o
-
-                 o
+                 <span class="n">o</span>
+               <span class="mi">3</span><span class="o">/</span>
+         <span class="n">o</span><span class="o">--</span><span class="mi">4</span><span class="o">--</span><span class="n">o</span>         <span class="n">o</span>
+                \<span class="mi">5</span>      <span class="o">/</span><span class="mi">6</span>
+                 <span class="n">o</span><span class="o">--</span><span class="mi">7</span><span class="o">--</span><span class="n">o</span>
+                <span class="o">/</span><span class="mi">8</span>      \<span class="mi">9</span>
+         <span class="n">o</span><span class="o">--</span><span class="mi">10</span><span class="o">-</span><span class="n">o</span>         <span class="n">o</span>
+                \<span class="mi">11</span>
+                 <span class="n">o</span>
 </pre></div>
 </div>
 <p>Hexagon Tile</p>
@@ -424,49 +424,51 @@ v1 o-----o v0  o         o v1
 
 
                 <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
-                <span class="o">/</span>                                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
+                <span class="o">/</span>       \
+        <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">0</span>    <span class="n">o</span>
         <span class="o">/</span>       \       <span class="o">/</span>
     <span class="n">o</span>    <span class="mi">1</span>    <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
-        \       <span class="o">/</span>                                   <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
+        \       <span class="o">/</span>       \
+        <span class="n">o</span><span class="o">-----</span><span class="n">o</span>    <span class="mi">2</span>    <span class="n">o</span>
                 \       <span class="o">/</span>
                 <span class="n">o</span><span class="o">-----</span><span class="n">o</span>
 </pre></div>
 </div>
 <p>Weight 2 operators (3,4,5,6,7,8,9,10,11):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    q0
-                o v1
-            3 /
-                o v0
-                q3
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    <span class="n">q0</span>
+                <span class="n">o</span> <span class="n">v1</span>
+            <span class="mi">3</span> <span class="o">/</span>
+                <span class="n">o</span> <span class="n">v0</span>
+                <span class="n">q3</span>
 
-q2   4     q3    q3        q4
-v1 o-----o v0  o v1      o v1
-                \ 5     / 6
-                o v0  o v0
-                    q6    q7
+<span class="n">q2</span>   <span class="mi">4</span>     <span class="n">q3</span>    <span class="n">q3</span>        <span class="n">q4</span>
+<span class="n">v1</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v1</span>      <span class="n">o</span> <span class="n">v1</span>
+                \ <span class="mi">5</span>     <span class="o">/</span> <span class="mi">6</span>
+                <span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v0</span>
+                    <span class="n">q6</span>    <span class="n">q7</span>
 
-            v0 o-----o v1
-            q6    7    q7
+            <span class="n">v0</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v1</span>
+            <span class="n">q6</span>    <span class="mi">7</span>    <span class="n">q7</span>
 
-                    q6    q7
-                o v0  o v0
-q8    10    q9  / 8     \ 9
-v1 o-----o v0  o         o v1
-                q9        q10
-                o v0
-                \ 11
-                o v1
-                    q11
+                    <span class="n">q6</span>    <span class="n">q7</span>
+                <span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span> <span class="n">v0</span>
+<span class="n">q8</span>    <span class="mi">10</span>    <span class="n">q9</span>  <span class="o">/</span> <span class="mi">8</span>     \ <span class="mi">9</span>
+<span class="n">v1</span> <span class="n">o</span><span class="o">-----</span><span class="n">o</span> <span class="n">v0</span>  <span class="n">o</span>         <span class="n">o</span> <span class="n">v1</span>
+                <span class="n">q9</span>        <span class="n">q10</span>
+                <span class="n">o</span> <span class="n">v0</span>
+                \ <span class="mi">11</span>
+                <span class="n">o</span> <span class="n">v1</span>
+                    <span class="n">q11</span>
 
-                o
-                3/
-        o--4--o         o
-                      /6
-                o--7--o
-                /8      \9
-        o--10-o         o
-
-                o
+                <span class="n">o</span>
+                <span class="mi">3</span><span class="o">/</span>
+        <span class="n">o</span><span class="o">--</span><span class="mi">4</span><span class="o">--</span><span class="n">o</span>         <span class="n">o</span>
+                \<span class="mi">5</span>      <span class="o">/</span><span class="mi">6</span>
+                <span class="n">o</span><span class="o">--</span><span class="mi">7</span><span class="o">--</span><span class="n">o</span>
+                <span class="o">/</span><span class="mi">8</span>      \<span class="mi">9</span>
+        <span class="n">o</span><span class="o">--</span><span class="mi">10</span><span class="o">-</span><span class="n">o</span>         <span class="n">o</span>
+                \<span class="mi">11</span>
+                <span class="n">o</span>
 </pre></div>
 </div>
 <p>Face colors for faces [0,1,2] are [“yellowgreen”,”tomato”,”steelblue”] and red for the
@@ -617,7 +619,7 @@ from [HexagonTile.u_vec, HexagonTile.v_vec]</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             

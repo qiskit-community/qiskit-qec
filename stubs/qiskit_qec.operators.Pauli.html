@@ -183,11 +183,9 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Tutorials</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/1-tutorial-example.html">Tutorial: example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html">Qiskit QEC Software Framework</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Installation-guide">Installation guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/QEC_Framework_IEEE_2022.html#Quantum-Error-Correction">Quantum Error Correction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/how-to-use-union-find.html">Using the Union Find decoder in qiskit_qec</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how_tos/index.html">How-to Guides</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of How-to Guides</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -331,27 +329,69 @@
 <h1>Pauli<a class="headerlink" href="#pauli" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="qiskit_qec.operators.Pauli">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Pauli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Pauli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_pauli_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-iYZX'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_qubit_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right-to-left'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuple_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qiskit_qec/operators/pauli.html#Pauli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qiskit_qec.operators.Pauli" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.base_pauli.BasePauli"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePauli</span></code></a></p>
-<p><cite>Pauli</cite> inherits from <cite>BasePauli</cite></p>
-<p>Pauli Init</p>
+<p>N-qubit Pauli operator</p>
+<p>Initialize the Pauli</p>
+<p>Initialiazation of the N-qubit Pauli operator</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>str</em>) – Still in progress</p></li>
-<li><p><strong>x</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
-<li><p><strong>z</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
-<li><p><strong>phase_exponent</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
-<li><p><strong>stype</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “numpy”.</p></li>
-<li><p><strong>label</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – [description]. Defaults to None.</p></li>
-<li><p><strong>input_qubit_order</strong> (<em>str</em><em>, </em><em>optional</em>) – [description]. Defaults to “right-to-left”.</p></li>
-<li><p><strong>tuple_prder</strong> (<em>optional</em>) – Defaults to ‘zx’</p></li>
+<li><p><strong>data</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>tuple</em><em>, </em><em>List</em><em>, </em><em>np.ndarray</em><em>, </em><a class="reference internal" href="qiskit_qec.operators.BasePauli.html#qiskit_qec.operators.BasePauli" title="qiskit_qec.operators.BasePauli"><em>BasePauli</em></a><em>, </em><em>None</em><em>]</em>) – Input data.</p></li>
+<li><p><strong>x</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>np.ndarray</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – X part. Defaults to None.</p></li>
+<li><p><strong>z</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>np.ndarray</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – Z part. Defaults to None.</p></li>
+<li><p><strong>phase_exp</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – Phase expression of Pauli. Defaults to None.</p></li>
+<li><p><strong>input_pauli_encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – What encoding is used for the input data. Defaults to
+BasePauli.EXTERNAL_PAULI_ENCODING.</p></li>
+<li><p><strong>input_qubit_order</strong> (<em>str</em><em>, </em><em>optional</em>) – Qubit read order. Defaults to “right-to-left”.</p></li>
+<li><p><strong>order</strong> (<em>str</em><em>, </em><em>optional</em>) – Order in which data lists X and Z. Defaults to ‘xz’.</p></li>
+<li><p><strong>tuple_order</strong> (<em>str</em><em>, </em><em>optional</em>) – Order in data for X and Z parts of tuples. Defaults to ‘zx’.</p></li>
+<li><p><strong>num_qubits</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of qubits to use in Pauli. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>QiskitError</strong> – Something went wrong.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="s1">&#39;XYXXIZ&#39;</span><span class="p">)</span>
+<span class="go">Pauli(&#39;XYXXIZ&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="s1">&#39;X1Y3Z12&#39;</span><span class="p">)</span>
+<span class="go">Pauli(&#39;ZIIIIIIIIYIXI&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">num_qubits</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="go">Pauli(&#39;IIIIIIIIIIIX&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">phase_exp</span><span class="o">=</span><span class="s2">&quot;(-i,1)&quot;</span><span class="p">,</span> <span class="n">num_qubits</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">Pauli(&#39;-iIIIIIIIIYZ&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]),</span><span class="n">phase_exp</span><span class="o">=</span><span class="s2">&quot;(-i,1)&quot;</span><span class="p">,</span> <span class="n">num_qubits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;zx&quot;</span><span class="p">)</span>
+<span class="go">Pauli(&#39;-iIIIIIIIIYX&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">phase_exp</span> <span class="o">=</span> <span class="s1">&#39;-i&#39;</span><span class="p">)</span>
+<span class="go">Pauli(&#39;-iYZ&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]),</span>
+<span class="go">                phase_exp=&quot;(-i,1)(-1,0)&quot;,</span>
+<span class="go">                num_qubits=10, order=&quot;zx&quot;, input_pauli_encoding=&#39;-isXZ&#39;)</span>
+<span class="go">Pauli(&#39;-iIIIIIIIIYX&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;-i&#39;</span><span class="p">),</span> <span class="n">tuple_order</span><span class="o">=</span><span class="s1">&#39;xz&#39;</span><span class="p">)</span>
+<span class="go">Pauli(&#39;-iYZ&#39;)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Pauli</span><span class="p">(([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;-i&#39;</span><span class="p">))</span>
+<span class="go">Pauli(&#39;-iYX&#39;)</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qiskit_qec.operators.Pauli.adjoint">
@@ -1390,7 +1430,7 @@ represents the pauli.</p>
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2024/08/26</div>
+              Last updated on 2024/08/29</div>
           </div>
           <div class="right-details">
             
