@@ -38,7 +38,7 @@ class SurfaceCodeBuilder(Builder):
         dz: Optional[int] = None,
         ul_op: Optional[Pauli] = Pauli("Z"),
     ) -> None:
-        """Initializes a surface code builder
+        r"""Initializes a surface code builder
 
         If d is specified then dx and dz are ignored.
 

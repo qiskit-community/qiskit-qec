@@ -22,7 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class OctaSquareTile(Tile):
-    """Octa-Square Tile
+    r"""Octa-Square Tile
 
     The tile has the following structure::
 
