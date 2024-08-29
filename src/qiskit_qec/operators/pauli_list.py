@@ -13,7 +13,7 @@
 """Module fo Pauli List"""
 import numbers
 from collections import defaultdict
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Optional
 
 import numpy as np
 import rustworkx as rx
@@ -40,20 +40,47 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         input_pauli_encoding: str = BasePauli.EXTERNAL_PAULI_ENCODING,
         input_qubit_order: str = "right-to-left",
         tuple_order: str = "zx",
+        order: str = "xz",
+        num_qubits: Optional[int] = None,
         fast_load: bool = True,
     ) -> None:
         """Inits a PauliList
 
         Args:
-            data (str): List of Pauli Operators. Ex: 'IIXXZ'
+            data (BasePauli, np.ndarray, Tuple[np.ndarray], Iterable, None): List of Pauli Operators.
+                Ex: ['IIXXZ',...], np.array([[1,0,1,1],[0,1,0,1]]), ...
             phase_exp (int, optional): i**phase_exp. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
+            order (str, optional): Order in which data input lists X and Z. Defaults to 'xz'
+            num_qubits (int, optional): Number of qubits to use in Pauli. Defaults to None.
             fast_load (bool, optional): If True class stores individual Pauls for fast element selection.
                 The fast_load options is much faster when loading elements from the list, say 100ns versus 2.3 us
                 but does so at the cost of initializing speed and memory. Defaults to True
 
+
         Raises:
             QiskitError: Something went wrong.
+
+        Examples:
+            >>>PauliList(["IIX", "iIYI", "ZII"], num_qubits=10)
+            PauliList(['IIIIIIIIIX', 'iIIIIIIIIYI', 'IIIIIIIZII'])
+
+            >>>paulis = PauliList(["IIX", "iIYI", "ZII"])
+            >>>%timeit pauli[1]
+            97.1 ns ± 0.463 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+
+            >>>paulis.set_fast_load(False)
+
+            >>>%timeit pauli[1]
+            2.33 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+            >>>PauliList(["IIX", "iIYI", "ZII"], fast_load=False)
+
+            >>>PauliList(np.array([[1,1,0,0],[0,1,0,1]]), order = 'zx')
+            PauliList(['ZZ', 'YI'])
+
+            >>>PauliList(['XZX','XXX','YIX'], input_qubit_order="left-to-right")
+            PauliList(['XZX', 'XXX', 'XIY'])
         """
 
         self.fast_load = fast_load
@@ -110,11 +137,16 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             else:
                 matrix, phase_exp = self._from_paulis(data, input_qubit_order)
 
+        # Add extra qubits if requested
+        if num_qubits is not None and num_qubits > matrix.shape[1] // 2:
+            extend_num = num_qubits - matrix.shape[1] // 2
+            matrix = pauli_rep._extend_symplectic(matrix, extend_num)
+
         super().__init__(matrix, phase_exp)
 
         if self.fast_load is True:
             self.paulis = [
-                Pauli(self.matrix[i], phase_exp=self.phase_exp[i])
+                Pauli(self.matrix[i], phase_exp=self.phase_exp[i], order=order)
                 for i in range(self.matrix.shape[0])
             ]
 
