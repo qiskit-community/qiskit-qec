@@ -57,29 +57,29 @@ class Pauli(BasePauli):
         Args:
             data (str | tuple | List | np.ndarray | BasePauli | None): Input data.
 
-            x (Union[List, np.ndarray, None], optional): 
+            x (Union[List, np.ndarray, None], optional):
                 X part. Defaults to None.
 
-            z (Union[List, np.ndarray, None], optional): 
+            z (Union[List, np.ndarray, None], optional):
                 Z part. Defaults to None.
 
-            phase_exp (Union[str, np.ndarray, None], optional): 
+            phase_exp (Union[str, np.ndarray, None], optional):
                 Phase expression of Pauli. Defaults to None.
 
-            input_pauli_encoding (str, optional): 
-                What encoding is used for the input data. Defaults to 
+            input_pauli_encoding (str, optional):
+                What encoding is used for the input data. Defaults to
                 BasePauli.EXTERNAL_PAULI_ENCODING.
 
-            input_qubit_order (str, optional): 
+            input_qubit_order (str, optional):
                 Qubit read order. Defaults to "right-to-left".
 
-            order (str, optional): 
+            order (str, optional):
                 Order in which data lists X and Z. Defaults to 'xz'.
 
-            tuple_order (str, optional): 
+            tuple_order (str, optional):
                 Order in data for X and Z parts of tuples. Defaults to 'zx'.
 
-            num_qubits (int, optional): 
+            num_qubits (int, optional):
                 Number of qubits to use in Pauli. Defaults to None.
 
         Raises:
