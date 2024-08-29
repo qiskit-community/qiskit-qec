@@ -53,9 +53,10 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
             order (str, optional): Order in which data input lists X and Z. Defaults to 'xz'
             num_qubits (int, optional): Number of qubits to use in Pauli. Defaults to None.
-            fast_load (bool, optional): If True class stores individual Pauls for fast element selection.
-                The fast_load options is much faster when loading elements from the list, say 100ns versus 2.3 us
-                but does so at the cost of initializing speed and memory. Defaults to True
+            fast_load (bool, optional): If True class stores individual Pauls for fast element
+                selection. The fast_load options is much faster when loading elements from the list,
+                say 100ns versus 2.3 us but does so at the cost of initializing speed and memory.
+                Defaults to True
 
 
         Raises:
@@ -291,7 +292,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             # Single Pauli
             try:
                 return self.paulis[index]
-            except TypeError as load_error:
+            except TypeError:
                 return BasePauli(self.matrix[index], self._phase_exp[index])
         elif isinstance(index, (slice, list, np.ndarray)):
             # Sub-Table view
@@ -308,7 +309,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         """
         try:
             return self.paulis[slc]
-        except TypeError as load_error:
+        except TypeError:
             return [
                 BasePauli(self.matrix[index], self._phase_exp[index]) for index in self.num_paulis
             ]
@@ -388,6 +389,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         return self._num_paulis
 
     def set_fast_load(self, fast_load: bool):
+        """Set if class uses the fast_store method. Storing Pauli variables"""
         self.fast_load = fast_load
         if self.fast_load is True:
             self.paulis = [

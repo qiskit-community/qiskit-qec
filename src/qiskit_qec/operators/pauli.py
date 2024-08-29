@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for Pauli"""
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from qiskit.circuit import Instruction, QuantumCircuit
@@ -47,7 +47,6 @@ class Pauli(BasePauli):
         z: Union[List, np.ndarray, None] = None,
         phase_exp: Union[int, str, np.ndarray, None] = None,
         input_pauli_encoding: Optional[str] = BasePauli.EXTERNAL_PAULI_ENCODING,
-        label: Optional[str] = None,
         input_qubit_order: Optional[str] = "right-to-left",
         order: Optional[str] = "xz",
         tuple_order: Optional[str] = "zx",
@@ -61,12 +60,14 @@ class Pauli(BasePauli):
             data (str | tuple | List | np.ndarray | BasePauli | None): Input data
             x (Union[List, np.ndarray, None], optional): X Part. Defaults to None.
             z (Union[List, np.ndarray, None], optional): Z Part. Defaults to None.
-            phase_exp (Union[str, np.ndarray, None], optional): Phase expression of Pauli. Defaults to None.
-            input_pauli_encoding (str, optional): What encoding is used for the input data. Default = BasePauli.EXTERNAL_PAULI_ENCODING
-            label ([str], optional): Deprecated. Defaults to None.
+            phase_exp (Union[str, np.ndarray, None], optional): Phase expression of
+                Pauli. Defaults to None.
+            input_pauli_encoding (str, optional): What encoding is used for the input
+                data. Default = BasePauli.EXTERNAL_PAULI_ENCODING
             input_qubit_order (str, optional): Qubit read order. Defaults to "right-to-left".
             order (str, optional): Order in which data lists X and Z. Defaults to 'xz'
-            tuple_order (str, optional): Order in data for X and Z parts of tuples. Defaults to 'zx'
+            tuple_order (str, optional): Order in data for X and Z parts of tuples.
+                Defaults to 'zx'
             num_qubits (int, optional): Number of qubits to use in Pauli. Defaults to None.
 
 
@@ -94,7 +95,9 @@ class Pauli(BasePauli):
             >>>Pauli(None, x=[0,1],z=[1,1],phase_exp = '-i')
             Pauli('-iYZ')
 
-            >>>Pauli(np.array([[0,1,1,1]]),phase_exp="(-i,1)(-1,0)", num_qubits=10, order="zx", input_pauli_encoding='-isXZ')
+            >>>Pauli(np.array([[0,1,1,1]]),
+                            phase_exp="(-i,1)(-1,0)",
+                            num_qubits=10, order="zx", input_pauli_encoding='-isXZ')
             Pauli('-iIIIIIIIIYX')
 
             >>>Pauli(([0,1],[1,1],'-i'), tuple_order='xz')
@@ -399,7 +402,7 @@ class Pauli(BasePauli):
             i (int): index of qubit
 
         Returns:
-            str: Streing representing the Pauli acting on qubit i,
+            str: String representing the Pauli acting on qubit i,
             (0,0):"I", (1,0):"X", (0,1):"Z", (1,1):"Y"
         """
         return Pauli.pltb_str[(self.matrix[0][i], self.matrix[0][i + self.num_qubits])]
