@@ -40,6 +40,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         input_pauli_encoding: str = BasePauli.EXTERNAL_PAULI_ENCODING,
         input_qubit_order: str = "right-to-left",
         tuple_order: str = "zx",
+        fast_load: bool = True,
     ) -> None:
         """Inits a PauliList
 
@@ -47,10 +48,17 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             data (str): List of Pauli Operators. Ex: 'IIXXZ'
             phase_exp (int, optional): i**phase_exp. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
+            fast_load (bool, optional): If True class stores individual Pauls for fast element selection.
+                The fast_load options is much faster when loading elements from the list, say 100ns versus 2.3 us
+                but does so at the cost of initializing speed and memory. Defaults to True
 
         Raises:
             QiskitError: Something went wrong.
         """
+
+        self.fast_load = fast_load
+        self.paulis = None
+
         if data is None:
             matrix = np.empty(shape=(0, 0), dtype=np.bool_)
             phase_exp = np.empty(shape=(0,), dtype=np.int8)
@@ -104,9 +112,11 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
 
         super().__init__(matrix, phase_exp)
 
-        self.paulis = [
-            Pauli(self.matrix[i], phase_exp=self._phase_exp[i]) for i in range(self.matrix.shape[0])
-        ]
+        if self.fast_load is True:
+            self.paulis = [
+                Pauli(self.matrix[i], phase_exp=self.phase_exp[i])
+                for i in range(self.matrix.shape[0])
+            ]
 
     # ---------------------------------------------------------------------
     # Init Methods
@@ -247,7 +257,10 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         # Row-only indexing
         if isinstance(index, (int, np.integer)):
             # Single Pauli
-            return self.paulis[index]
+            try:
+                return self.paulis[index]
+            except TypeError as load_error:
+                return BasePauli(self.matrix[index], self._phase_exp[index])
         elif isinstance(index, (slice, list, np.ndarray)):
             # Sub-Table view
             return PauliList(BasePauli(self.matrix[index], self._phase_exp[index]))
@@ -261,7 +274,12 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         Returns:
             _type_: _description_
         """
-        return self.paulis[slc]
+        try:
+            return self.paulis[slc]
+        except TypeError as load_error:
+            return [
+                BasePauli(self.matrix[index], self._phase_exp[index]) for index in self.num_paulis
+            ]
 
     def __setitem__(self, index, value):
         """Update PauliList."""
@@ -336,6 +354,16 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
     def __len__(self):
         """Return the number of Pauli rows in the table."""
         return self._num_paulis
+
+    def set_fast_load(self, fast_load: bool):
+        self.fast_load = fast_load
+        if self.fast_load is True:
+            self.paulis = [
+                Pauli(self.matrix[i], phase_exp=self.phase_exp[i])
+                for i in range(self.matrix.shape[0])
+            ]
+        else:
+            self.paulis = None
 
     # ----
     #

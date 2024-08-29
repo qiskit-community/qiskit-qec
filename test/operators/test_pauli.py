@@ -215,6 +215,12 @@ class TestPauliProperties(QiskitTestCase):
         pauli = pauli.delete([0, 2])
         self.assertEqual(str(pauli), "IY")
 
+    def test_delete(self):
+        """Test delete method"""
+        pauli = Pauli("IXYZ")
+        pauli = pauli.delete([1])
+        self.assertEqual(str(pauli), "IXZ")
+
 
 @ddt
 class TestPauli(QiskitTestCase):

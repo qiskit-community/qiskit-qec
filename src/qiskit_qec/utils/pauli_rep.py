@@ -26,8 +26,7 @@ from qiskit.circuit.library.standard_gates import IGate, XGate, YGate, ZGate
 from qiskit.exceptions import QiskitError
 from qiskit.quantum_info.operators.scalar_op import ScalarOp
 from scipy.sparse import csr_matrix
-from qiskit_qec.linear.symplectic import count_num_y, is_symplectic_matrix_form
-
+from qiskit_qec.linear.symplectic import count_num_y, is_symplectic_matrix_form, _extend_symplectic
 
 # -------------------------------------------------------------------------------
 # Module Variables/States
@@ -212,15 +211,15 @@ TENSOR_LATEX_PATTERN = {
 }
 
 
-ENC_PRODUCT_XZ_CAP = r"\(([XZ]|XZ|I)\)"
-ENC_PRODUCT_ZX_CAP = r"\(([ZX]|ZX|I)\)"
+ENC_PRODUCT_XZ_CAP = r"\((XZ|XI|IZ|II)\)"
+ENC_PRODUCT_ZX_CAP = r"\((ZX|IX|ZI|II)\)"
 
 PRODUCT_XZ_PATTERN_CAP = re.compile(f"{ENC_PRODUCT_XZ_CAP}")
 PRODUCT_ZX_PATTERN_CAP = re.compile(f"{ENC_PRODUCT_ZX_CAP}")
 
-ENC_PRODUCT_XZ_REGEX = r"(\(([XZ]|XZ|I)\))+"
+ENC_PRODUCT_XZ_REGEX = r"(\((XZ|XI|IZ|II)\))+"
 ENC_PRODUCT_XZY_REGEX = r"[XZYI]+"
-ENC_PRODUCT_ZX_REGEX = r"(\(([ZX]|ZX|I)\))+"
+ENC_PRODUCT_ZX_REGEX = r"(\((ZX|IX|ZI|II)\))+"
 ENC_PRODUCT_YZX_REGEX = r"[XZYI]+"
 
 PRODUCT_XZ_PATTERN = re.compile(f"^{ENC_PRODUCT_XZ_REGEX}$")
@@ -398,7 +397,7 @@ def change_pauli_encoding(
     phase exponent independently of a Pauli operator - i.e. assumes that y_count = 0.
 
     So for example a the Pauli operator "(-i,2)XYIX" ( = -XYIX ) when encoded using the "-iXZY"
-    encoding is equal to the Pauli operator "(-i,1)(-1,0)(X)(XZ)(I)(X)" when encoded using the
+    encoding is equal to the Pauli operator "(-i,1)(-1,0)(XI)(XZ)(II)(XI)" when encoded using the
     "-isXZ" encoding since:
 
     -XYIX = (-i)^2 XYIX
@@ -639,8 +638,8 @@ def _stand_phase_str(phase_string: np.ndarray, imaginary: str) -> np.ndarray:
     """
     res = []
     for string in phase_string:
-        ans = re.sub("\+?1?[ij]", imaginary, string)
-        ans = re.sub("\+?1", "1", ans)
+        ans = re.sub(r"\+?1?[ij]", imaginary, string)
+        ans = re.sub(r"\+?1", "1", ans)
         ans = re.sub("0-", "-", ans)
         res.append(ans)
     return np.array(res)
@@ -1327,7 +1326,7 @@ def exp2exp(
     output_encoding=DEFAULT_EXTERNAL_PHASE_ENCODING,
     same_type: bool = True,
 ):
-    """Convert between the different phase exponents of encoded phase
+    r"""Convert between the different phase exponents of encoded phase
 
     The possible phase encodings are:
         a) ['i'] :math:`i^r` where :math:`r \in \mathbb{Z}_4`
@@ -1382,7 +1381,7 @@ def exp2exp(
 
 
 def _exp2exp(phase_exp, input_encoding, output_encoding):
-    """Convert between the different phase exponents of encoded phase
+    r"""Convert between the different phase exponents of encoded phase
 
     The possible phase encodings are:
         a) ['i'] :math:`i^r` where :math:`r \in \mathbb{Z}_4`
@@ -2065,6 +2064,7 @@ def str2symplectic(
     output_encoding: Optional[str] = INTERNAL_PAULI_ENCODING,
     index_start: int = 0,
     same_type: bool = True,
+    num_qubits: Optional[int] = None,
 ) -> Tuple[np.ndarray, Union[np.array, Any]]:
     """Converts strings of Pauli group elements into phase exponents and their
     symplectic matrix representation.
@@ -2078,6 +2078,7 @@ def str2symplectic(
         index_start (optional): Lowest value for index in index syntax tensors.
             Defaults to 0
         same_type (optional): Scalar/Vector return flag. Defaults to True.
+        num_qubits (int, optional): Number of qubits to use. Defaults to None to autocalculate.
 
     Raises:
         QiskitError: Negative index_start values are not supported
@@ -2139,9 +2140,13 @@ def str2symplectic(
     pauli_str = np.atleast_1d(pauli_str)
 
     if scalar:
-        matrix, phase_exp = _str2symplectic(pauli_str, qubit_order, output_encoding, index_start)
+        matrix, phase_exp = _str2symplectic(
+            pauli_str, qubit_order, output_encoding, index_start, num_qubits=num_qubits
+        )
         return matrix, squeeze(phase_exp, scalar=scalar)
-    return _str2symplectic(pauli_str, qubit_order, output_encoding, index_start)
+    return _str2symplectic(
+        pauli_str, qubit_order, output_encoding, index_start, num_qubits=num_qubits
+    )
 
 
 def _str2symplectic(
@@ -2149,6 +2154,7 @@ def _str2symplectic(
     qubit_order: str,
     output_encoding: str,
     index_start: int,
+    num_qubits: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Converts strings of Pauli group elements into phase exponents and their
     symplectic matrix representation.
@@ -2159,6 +2165,7 @@ def _str2symplectic(
             Defaults to "right-to-left". Alternative is "left-to-right".
         output_encoding: Pauli encoding for phase_exponent matrix pair.
         index_start: Lowest value for index in index syntax tensors. Defaults to 0
+        num_qubits: (int, optional)" Number of qubits. Defaults to None for autocalculation.
 
     Returns:
         symplectic_matrix, phase_exp : Returns the phase exponent(s) and
@@ -2172,7 +2179,8 @@ def _str2symplectic(
     tensor_store = []
     num_qubits_store = []
 
-    _TRANS = {"I": "I", "X": "X", "Z": "Z", "XZ": "Y", "ZX": "Y"}
+    # _TRANS = {"I": "I", "X": "X", "Z": "Z", "XZ": "Y", "ZX": "Y"}
+    _TRANS = {"II": "I", "XI": "X", "IX": "X", "ZI": "Z", "IZ": "Z", "XZ": "Y", "ZX": "Y"}
 
     for tensor, (tensor_encodings, syntax) in zip(tensor_str, tensor_enc):
         if syntax == PRODUCT_SYNTAX:
@@ -2187,12 +2195,12 @@ def _str2symplectic(
             else:
                 new_tensor = tensor
 
-            num_qubits = len(new_tensor)
+            num_qubits_auto = len(new_tensor)
 
             if qubit_order == "right-to-left":
-                indices = list(reversed(range(num_qubits)))
+                indices = list(reversed(range(num_qubits_auto)))
             else:
-                indices = list(range(num_qubits))
+                indices = list(range(num_qubits_auto))
 
         elif syntax == INDEX_SYNTAX:
             if "XZ" in tensor_encodings:
@@ -2204,8 +2212,8 @@ def _str2symplectic(
             else:
                 new_tensor = tensor
 
-            indices = list(map(int, re.findall("\d+", tensor)))
-            num_qubits = max(indices) - index_start + 1
+            indices = list(map(int, re.findall(r"\d+", tensor)))
+            num_qubits_auto = max(indices) - index_start + 1
             new_tensor = re.findall(f"{PAULI_REGEX}+", tensor)
         elif syntax == LATEX_SYNTAX:
             if "XZ" in tensor_encodings:
@@ -2217,17 +2225,17 @@ def _str2symplectic(
             else:
                 new_tensor = tensor
 
-            indices = list(map(int, re.findall("\d+", tensor)))
-            num_qubits = max(indices) - index_start + 1
+            indices = list(map(int, re.findall(r"\d+", tensor)))
+            num_qubits_auto = max(indices) - index_start + 1
             new_tensor = re.findall(f"{PAULI_REGEX}+", tensor)
         else:
             raise QiskitError(f"Unknown input syntax: {syntax}")
         index_store.append(indices)
         tensor_store.append(new_tensor)
-        num_qubits_store.append(num_qubits)
+        num_qubits_store.append(num_qubits_auto)
 
-    num_qubits = max(num_qubits_store)
-    matrix = np.zeros(shape=(len(tensor_store), 2 * num_qubits), dtype=np.bool_)
+    num_qubits_auto = max(num_qubits_store)
+    matrix = np.zeros(shape=(len(tensor_store), 2 * num_qubits_auto), dtype=np.bool_)
     for row_index, (indices, tensor, (tensor_encodings, syntax)) in enumerate(
         zip(index_store, tensor_store, tensor_enc)
     ):
@@ -2240,10 +2248,10 @@ def _str2symplectic(
             if char == "X":
                 matrix[row_index, index] = True
             elif char == "Z":
-                matrix[row_index, index + num_qubits] = True
+                matrix[row_index, index + num_qubits_auto] = True
             elif char == "Y":
                 matrix[row_index, index] = True
-                matrix[row_index, index + num_qubits] = True
+                matrix[row_index, index + num_qubits_auto] = True
 
     out_phase_enc, _ = split_pauli_enc(output_encoding)
     if out_phase_enc in PHASE_ENCODINGS_ISMIS:
@@ -2263,6 +2271,12 @@ def _str2symplectic(
             output_pauli_encoding=output_encoding,
         )
         new_phase_exp[index] = n_exp
+
+    # Pad with identity qubits to desired number of qubits
+    if num_qubits is not None:
+        if matrix.shape[1] // 2 < num_qubits:
+            extend_num = num_qubits - matrix.shape[1] // 2
+            matrix = _extend_symplectic(matrix, extend_num)
 
     return matrix, new_phase_exp
 
@@ -2604,6 +2618,8 @@ def from_array(
     Returns:
         _type_: _description_
     """
+    # print(f"matrix={matrix.astype(int)}")
+    # print(f"phase_exp={phase_exp}")
     if input_pauli_encoding is None:
         input_pauli_encoding = DEFAULT_EXTERNAL_PAULI_ENCODING
     if isinstance(matrix, np.ndarray) and matrix.dtype == bool:
@@ -2614,8 +2630,12 @@ def from_array(
     if not is_symplectic_matrix_form(matrix_data):
         raise QiskitError("Input matrix not a symplectic matrix or symplectic vector")
     if phase_exp is None or (isinstance(phase_exp, numbers.Integral) and phase_exp == 0):
-        phase_exp = np.zeros(shape=(matrix_data.shape[0],))
+        phase_exp = np.zeros(shape=(matrix_data.shape[0],), dtype=np.int8)
+
     y_count = count_num_y(matrix_data)
+    # print(f"y_count = {y_count}")
+    # print(f"phase_exp={phase_exp} before change_pauli_encoding")
+    # print(f"input_pauli_encoding = {input_pauli_encoding}")
     in_phase_exp = change_pauli_encoding(
         phase_exp,
         y_count,
@@ -2623,6 +2643,8 @@ def from_array(
         output_pauli_encoding=INTERNAL_PAULI_ENCODING,
         same_type=False,
     )
+    # print(f"f matrix = {matrix}")
+    # print(f"f in_phase_exp = {in_phase_exp}")
     return matrix_data, in_phase_exp
 
 
