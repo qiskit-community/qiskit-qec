@@ -52,33 +52,27 @@ class Pauli(BasePauli):
         tuple_order: Optional[str] = "zx",
         num_qubits: Optional[int] = None,
     ):
-        r"""Initialize the Pauli
+        """Initialize the Pauli
+
+        Initialiazation of the N-qubit Pauli operator
 
         Args:
-            data (str | tuple | List | np.ndarray | BasePauli | None): Input data.
-
+            data (Union[str, tuple, List, np.ndarray, BasePauli, None]): Input data.
             x (Union[List, np.ndarray, None], optional):
                 X part. Defaults to None.
-
             z (Union[List, np.ndarray, None], optional):
                 Z part. Defaults to None.
-
             phase_exp (Union[str, np.ndarray, None], optional):
                 Phase expression of Pauli. Defaults to None.
-
             input_pauli_encoding (str, optional):
                 What encoding is used for the input data. Defaults to
                 BasePauli.EXTERNAL_PAULI_ENCODING.
-
             input_qubit_order (str, optional):
                 Qubit read order. Defaults to "right-to-left".
-
             order (str, optional):
                 Order in which data lists X and Z. Defaults to 'xz'.
-
             tuple_order (str, optional):
                 Order in data for X and Z parts of tuples. Defaults to 'zx'.
-
             num_qubits (int, optional):
                 Number of qubits to use in Pauli. Defaults to None.
 
@@ -86,35 +80,34 @@ class Pauli(BasePauli):
             QiskitError: Something went wrong.
 
         Examples:
-            >>>Pauli('XYXXIZ')
+            >>> Pauli('XYXXIZ')
             Pauli('XYXXIZ')
 
-            >>>Pauli('X1Y3Z12')
+            >>> Pauli('X1Y3Z12')
             Pauli('ZIIIIIIIIYIXI')
 
-            >>>Pauli('X', num_qubits=12)
+            >>> Pauli('X', num_qubits=12)
             Pauli('IIIIIIIIIIIX')
 
-            >>>Pauli(np.array([[0,1,1,1]]), phase_exp="(-i,1)", num_qubits=10)
+            >>> Pauli(np.array([[0,1,1,1]]), phase_exp="(-i,1)", num_qubits=10)
             Pauli('-iIIIIIIIIYZ')
 
-            >>>Pauli(np.array([[0,1,1,1]]),phase_exp="(-i,1)", num_qubits=10, order="zx")
+            >>> Pauli(np.array([[0,1,1,1]]),phase_exp="(-i,1)", num_qubits=10, order="zx")
             Pauli('-iIIIIIIIIYX')
 
-            >>>Pauli(None, x=[0,1],z=[1,1],phase_exp = '-i')
+            >>> Pauli(None, x=[0,1],z=[1,1],phase_exp = '-i')
             Pauli('-iYZ')
 
-            >>>Pauli(np.array([[0,1,1,1]]),
+            >>> Pauli(np.array([[0,1,1,1]]),
                             phase_exp="(-i,1)(-1,0)",
                             num_qubits=10, order="zx", input_pauli_encoding='-isXZ')
             Pauli('-iIIIIIIIIYX')
 
-            >>>Pauli(([0,1],[1,1],'-i'), tuple_order='xz')
+            >>> Pauli(([0,1],[1,1],'-i'), tuple_order='xz')
             Pauli('-iYZ')
 
-            >>>Pauli(([0,1],[1,1],'-i'))
+            >>> Pauli(([0,1],[1,1],'-i'))
             Pauli('-iYX')
-
         """
         # str
         if isinstance(data, str):
