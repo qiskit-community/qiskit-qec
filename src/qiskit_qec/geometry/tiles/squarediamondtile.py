@@ -104,7 +104,7 @@ class SquareDiamondTile(Tile):
         operators=None,
         optype="pXZXZ",
     ) -> Shell:
-        """Square Diamond Tile
+        r"""Square Diamond Tile
 
         The following labels are used::
 

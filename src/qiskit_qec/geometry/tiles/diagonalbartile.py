@@ -112,7 +112,7 @@ class DiagonalBarTile(Tile):
         operators=None,
         optype="pXXZZXX",
     ) -> Shell:
-        """Diagonal Hour Glass Tile
+        r"""Diagonal Hour Glass Tile
 
         The diagram is as follows::
 

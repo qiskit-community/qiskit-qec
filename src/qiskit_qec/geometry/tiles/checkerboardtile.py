@@ -127,7 +127,7 @@ class CheckerBoardTile(Tile):
         operators=None,
         optype="pXZXZ",
     ) -> Shell:
-        """Creates a Checker Board Tile (Shell)
+        r"""Creates a Checker Board Tile (Shell)
 
         ::
 

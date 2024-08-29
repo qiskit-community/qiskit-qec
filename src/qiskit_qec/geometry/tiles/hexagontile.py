@@ -273,7 +273,7 @@ class HexagonTile(Tile):
         operators=None,
         optype="cZ-aXX",
     ) -> Shell:
-        """Hexagon Tile
+        r"""Hexagon Tile
 
         Tile::
 
