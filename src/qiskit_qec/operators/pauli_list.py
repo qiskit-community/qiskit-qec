@@ -27,7 +27,7 @@ from qiskit_qec.utils import pauli_rep
 
 
 class PauliList(BasePauli, LinearMixin, GroupMixin):
-    """`PauliList` inherits from `BasePauli`"""
+    r"""`PauliList` inherits from `BasePauli`"""
 
     # Set the max number of qubits * paulis before string truncation
     _truncate__ = 2000
@@ -44,7 +44,7 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         num_qubits: Optional[int] = None,
         fast_load: bool = True,
     ) -> None:
-        """Inits a PauliList
+        r"""Inits a PauliList
 
         Args:
             data (BasePauli, np.ndarray, Tuple[np.ndarray], Iterable, None): List of Pauli Operators.

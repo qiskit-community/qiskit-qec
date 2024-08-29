@@ -22,7 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class CheckerBoardTile(Tile):
-    """Checker Board Tile
+    r"""Checker Board Tile
 
     The diagram is as follows::
 

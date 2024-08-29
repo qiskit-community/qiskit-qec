@@ -70,9 +70,6 @@ class Pauli(BasePauli):
                 Defaults to 'zx'
             num_qubits (int, optional): Number of qubits to use in Pauli. Defaults to None.
 
-
-
-
         Raises:
             QiskitError: Something went wrong.
 
