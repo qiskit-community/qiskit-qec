@@ -26,7 +26,7 @@ class TriangularColorCodeBuilder(Builder):
 
     # pylint: disable=anomalous-backslash-in-string
     def __init__(self, d: int) -> None:
-        """Initializes a triangular color code builder
+        r"""Initializes a triangular color code builder
 
         Example:d=3
                         o

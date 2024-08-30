@@ -2178,3 +2178,10 @@ def _normailzer_group(matrix):
     center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, [], [])
 
     return _normalizer_group_preserve(center_, hyper1, hyper2)
+
+
+def _extend_symplectic(matrix: np.array, extend: int):
+    n = matrix.shape[1] // 2
+    ext_part = np.zeros(shape=(matrix.shape[0], extend), dtype=matrix.dtype)
+    ext_matrix = np.hstack((matrix[:, 0:n], ext_part, matrix[:, n:], ext_part))
+    return ext_matrix

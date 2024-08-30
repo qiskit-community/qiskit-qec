@@ -22,7 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class HexagonTile(Tile):
-    """Hexagon Tile
+    r"""Hexagon Tile
 
     Weight 6 operators (0,1,2)::
 
@@ -273,7 +273,7 @@ class HexagonTile(Tile):
         operators=None,
         optype="cZ-aXX",
     ) -> Shell:
-        """Hexagon Tile
+        r"""Hexagon Tile
 
         Tile::
 

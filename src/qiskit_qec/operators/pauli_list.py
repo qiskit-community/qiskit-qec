@@ -13,7 +13,7 @@
 """Module fo Pauli List"""
 import numbers
 from collections import defaultdict
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Optional
 
 import numpy as np
 import rustworkx as rx
@@ -27,7 +27,7 @@ from qiskit_qec.utils import pauli_rep
 
 
 class PauliList(BasePauli, LinearMixin, GroupMixin):
-    """`PauliList` inherits from `BasePauli`"""
+    r"""`PauliList` inherits from `BasePauli`"""
 
     # Set the max number of qubits * paulis before string truncation
     _truncate__ = 2000
@@ -40,17 +40,53 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         input_pauli_encoding: str = BasePauli.EXTERNAL_PAULI_ENCODING,
         input_qubit_order: str = "right-to-left",
         tuple_order: str = "zx",
+        order: str = "xz",
+        num_qubits: Optional[int] = None,
+        fast_load: bool = True,
     ) -> None:
-        """Inits a PauliList
+        r"""Inits a PauliList
 
         Args:
-            data (str): List of Pauli Operators. Ex: 'IIXXZ'
+            data (BasePauli, np.ndarray, Tuple[np.ndarray], Iterable, None): List of Pauli Operators.
+                Ex: ['IIXXZ',...], np.array([[1,0,1,1],[0,1,0,1]]), ...
             phase_exp (int, optional): i**phase_exp. Defaults to 0.
             input_qubit_order (str, optional): Order to read pdata. Defaults to "right-to-left".
+            order (str, optional): Order in which data input lists X and Z. Defaults to 'xz'
+            num_qubits (int, optional): Number of qubits to use in Pauli. Defaults to None.
+            fast_load (bool, optional): If True class stores individual Pauls for fast element
+                selection. The fast_load options is much faster when loading elements from the list,
+                say 100ns versus 2.3 us but does so at the cost of initializing speed and memory.
+                Defaults to True
+
 
         Raises:
             QiskitError: Something went wrong.
+
+        Examples:
+            >>>PauliList(["IIX", "iIYI", "ZII"], num_qubits=10)
+            PauliList(['IIIIIIIIIX', 'iIIIIIIIIYI', 'IIIIIIIZII'])
+
+            >>>paulis = PauliList(["IIX", "iIYI", "ZII"])
+            >>>%timeit pauli[1]
+            97.1 ns ± 0.463 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+
+            >>>paulis.set_fast_load(False)
+
+            >>>%timeit pauli[1]
+            2.33 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+            >>>PauliList(["IIX", "iIYI", "ZII"], fast_load=False)
+
+            >>>PauliList(np.array([[1,1,0,0],[0,1,0,1]]), order = 'zx')
+            PauliList(['ZZ', 'YI'])
+
+            >>>PauliList(['XZX','XXX','YIX'], input_qubit_order="left-to-right")
+            PauliList(['XZX', 'XXX', 'XIY'])
         """
+
+        self.fast_load = fast_load
+        self.paulis = None
+
         if data is None:
             matrix = np.empty(shape=(0, 0), dtype=np.bool_)
             phase_exp = np.empty(shape=(0,), dtype=np.int8)
@@ -102,11 +138,18 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
             else:
                 matrix, phase_exp = self._from_paulis(data, input_qubit_order)
 
+        # Add extra qubits if requested
+        if num_qubits is not None and num_qubits > matrix.shape[1] // 2:
+            extend_num = num_qubits - matrix.shape[1] // 2
+            matrix = pauli_rep._extend_symplectic(matrix, extend_num)
+
         super().__init__(matrix, phase_exp)
 
-        self.paulis = [
-            Pauli(self.matrix[i], phase_exp=self._phase_exp[i]) for i in range(self.matrix.shape[0])
-        ]
+        if self.fast_load is True:
+            self.paulis = [
+                Pauli(self.matrix[i], phase_exp=self.phase_exp[i], order=order)
+                for i in range(self.matrix.shape[0])
+            ]
 
     # ---------------------------------------------------------------------
     # Init Methods
@@ -247,7 +290,10 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         # Row-only indexing
         if isinstance(index, (int, np.integer)):
             # Single Pauli
-            return self.paulis[index]
+            try:
+                return self.paulis[index]
+            except TypeError:
+                return BasePauli(self.matrix[index], self._phase_exp[index])
         elif isinstance(index, (slice, list, np.ndarray)):
             # Sub-Table view
             return PauliList(BasePauli(self.matrix[index], self._phase_exp[index]))
@@ -261,7 +307,12 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
         Returns:
             _type_: _description_
         """
-        return self.paulis[slc]
+        try:
+            return self.paulis[slc]
+        except TypeError:
+            return [
+                BasePauli(self.matrix[index], self._phase_exp[index]) for index in self.num_paulis
+            ]
 
     def __setitem__(self, index, value):
         """Update PauliList."""
@@ -336,6 +387,17 @@ class PauliList(BasePauli, LinearMixin, GroupMixin):
     def __len__(self):
         """Return the number of Pauli rows in the table."""
         return self._num_paulis
+
+    def set_fast_load(self, fast_load: bool):
+        """Set if class uses the fast_store method. Storing Pauli variables"""
+        self.fast_load = fast_load
+        if self.fast_load is True:
+            self.paulis = [
+                Pauli(self.matrix[i], phase_exp=self.phase_exp[i])
+                for i in range(self.matrix.shape[0])
+            ]
+        else:
+            self.paulis = None
 
     # ----
     #
