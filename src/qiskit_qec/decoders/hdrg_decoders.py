@@ -19,11 +19,14 @@
 from abc import ABC
 from copy import copy
 from dataclasses import dataclass
+from time import perf_counter
 from typing import Dict, List, Set, Tuple
 
+import numpy as np
 from rustworkx import PyGraph, connected_components, distance_matrix
 import numpy as np
 
+from qiskit_qec.analysis.lse_solvers import solve
 from qiskit_qec.decoders.decoding_graph import DecodingGraph
 from qiskit_qec.utils import DecodingGraphEdge
 
@@ -685,3 +688,295 @@ class UnionFindDecoder(ClusteringDecoder):
                 self.graph.incident_edge_index_map(node_index)
             ).items()
         ]
+    
+class TannerUnionFindOptimized:
+    def __init__(self, adj_mat: np.ndarray) -> None:
+        """ Initializes the Tanner graph (simply with reduced adjacency matrix) """
+        self.adj_mat = adj_mat
+        self.decoders = {}
+
+    class Cluster:
+        def __init__(self, checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error) -> None:
+            self.checks_interior = checks_interior
+            self.data_interior = data_interior
+            self.cluster_surface = cluster_surface
+            self.cluster_surface_type = cluster_surface_type
+            self.valid = valid
+            self.internal_error = internal_error
+
+        @property
+        def checks(self):
+            """ return all checks """
+            if self.cluster_surface_type == 'c':
+                return self.checks_interior | self.cluster_surface
+            return self.checks_interior
+        
+        @property
+        def data(self):
+            """ return all data qubits """
+            if self.cluster_surface_type == 'd':
+                return self.data_interior | self.cluster_surface
+            return self.data_interior
+
+        def touches(self, other: "TannerUnionFindOptimized.Cluster") -> bool:
+            return self.cluster_surface_type == other.cluster_surface_type and np.any(self.cluster_surface & other.cluster_surface)
+        
+        def merge(self, other: "TannerUnionFindOptimized.Cluster") -> None:
+            """ merging happens in place. This assumes that touches is true """
+            self.checks_interior |= other.checks_interior
+            self.data_interior |= other.data_interior
+            self.cluster_surface |= other.cluster_surface
+            # self.cluster_surface_type not affected
+            self.valid = False
+            self.internal_error = None
+
+        def size(self):
+            return self.checks.sum(), self.data.sum()
+        
+        def __repr__(self) -> str:
+            string = f'checks: {list(np.where(self.checks_interior)[0])}\n'
+            string += f'data: {list(np.where(self.data_interior)[0])}\n'
+            string += f'surface: {list(np.where(self.cluster_surface)[0])}, type: {self.cluster_surface_type}\n'
+            if self.valid:
+                string += f'internal error: {list(np.where(self.internal_error)[0])}\n'
+            else:
+                string += f'Not valid'
+            return string
+        
+    class Decoder:
+        def __init__(self, adj_mat: np.ndarray, T: int) -> None:
+            m, n = adj_mat.shape
+            if T > 1: # in this case (more than two consecutive SM rounds) assume with measurement error
+                self.adj_mat_T = np.zeros((T*m, (T+1)*m + T*n), dtype=bool) # reduced adjacency matrix of T-foliated Tanner graph
+                for i in range(T):
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n): i*(m+n) + m] = np.eye(m, dtype=bool)
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n) + m: i*(m+n) + m+n] = adj_mat
+                    self.adj_mat_T[i*m:i*m+m, i*(m+n) + m+n: i*(m+n) + 2*m+n] = np.eye(m, dtype=bool)
+            else:
+                self.adj_mat_T = adj_mat # otherwise assume no measurement errors -> decode on unfoliated (in particular no boundary virtual qubits) Tanner graph
+            self.m = m
+            self.n = n
+            self.T = T
+            #self.adj_mat_T = adj_mat
+
+        def predecode(self, syndrome):
+            pre_error = self.adj_mat_T.T @ syndrome == 3
+            pre_syndrome = self.adj_mat_T @ pre_error % 2 ^ syndrome
+            return pre_error, pre_syndrome
+
+        def decode(self, clusters: List["TannerUnionFindOptimized.Cluster"], syndrome, history=None, lse_solver=None):
+            # kinda horrible place to put it but whatever
+            clusters = self.extra_merging_strategy(clusters)
+            
+            if history is None:# benchmarking
+                history = []# benchmarking
+
+            step_history = {}# benchmarking
+            step_history['num_clust'] = len(clusters)# benchmarking
+
+            cluster_figs = []  # benchmarking
+            all_valid = True
+            decoded_error = np.zeros(self.adj_mat_T.shape[1], dtype=np.uint8)
+            #new_clusters = []
+            for cluster in clusters:
+                if cluster.valid:
+                    decoded_error |= cluster.internal_error
+                    cluster_figs.append({'valid': True, 'cluster_nodes': (list(np.where(cluster.checks)[0]), list(np.where(cluster.data)[0]))})
+                    continue
+
+                valid, x, figs = self.is_valid(cluster, syndrome, lse_solver=lse_solver)  # benchmarking
+                cluster_figs.append(figs)  # benchmarking
+                if not valid:
+                    all_valid = False
+                else:
+                    decoded_error |= x
+                    cluster.valid = True
+                    cluster.internal_error = x
+
+            step_history['clusters'] =  cluster_figs# benchmarking
+            
+            if all_valid:
+                step_history['t_grow'] = 0
+                #figs = (size, t_con, num_clust, cluster_figs, None) # benchmarking
+                history.append(step_history)
+                #history.append(figs) # benchmarking
+                return decoded_error, history # benchmarking
+            t0 = perf_counter() # benchmarking
+            clusters = self.grow(clusters)
+            t_grow = perf_counter() - t0 # benchmarking
+            #figs = (size, t_con, num_clust, cluster_figs, t_grow) # benchmarking
+            step_history['t_grow'] = t_grow# benchmarking
+            history.append(step_history) # benchmarking
+            return self.decode(clusters, syndrome, history=history, lse_solver=lse_solver)      # benchmarking
+
+        def is_valid(self, cluster: "TannerUnionFindOptimized.Cluster", syndrome, lse_solver=None):
+            # checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+            # if cluster_surface_type == 'c':
+            #     checks = checks_interior | cluster_surface
+            #     data = data_interior
+            # else:
+            #     checks = checks_interior
+            #     data = data_interior | cluster_surface
+
+            clust_size = cluster.size() # benchmarking
+
+            t0 = perf_counter() # benchmarking
+            a, true_interior_data = self.get_cluster_LSE(cluster) # benchmarking
+            b = syndrome[cluster.checks]
+            t_int = perf_counter() - t0 # t_int really doesn't say much, just means how long to copy the array
+
+            int_size = true_interior_data.sum() # benchmarking
+
+            #t0 = perf_counter() # benchmarking
+
+            valid, x, solve_stats = solve(a, b, minimize_weight=True, stats=True, lse_solver=lse_solver)
+            if valid:
+            # x is sparse, contains true indices of error within interior
+                int_x = np.zeros_like(cluster.data)
+                int_x[true_interior_data] = x
+            else: int_x = None
+            # now int_x contains the interior error in dense format with respect to whole graph
+            
+            #t_valid = perf_counter() - t0 # benchmarking
+
+            stats = {'valid': valid, 'clust_size': clust_size, 'cluster_nodes': (list(np.where(cluster.checks)[0]), list(np.where(cluster.data)[0])), 'int_size': int_size, 't_int': t_int}
+            for solve_stat in solve_stats:
+                stats[solve_stat] = solve_stats[solve_stat]
+
+            # if figs is not None: # benchmarking
+            #     t_valid -= (figs[0] + figs[2]) # benchmarking
+            #     figs = (clust_size, t_int, int_size, t_valid, *figs) # benchmarking
+            # else:
+            #     figs = (clust_size, t_int, int_size, t_valid, None, None, None)
+            
+            return valid, int_x, stats
+            
+
+        def get_cluster_LSE(self, cluster: "TannerUnionFindOptimized.Cluster"):
+            """ajd_mat is the reduced (bipartite) adjaceny matrix (n//2 x n) of the whole tanner (X or Z) graph.
+            cluster = (check_selector, data_selector)
+            check_selector is a binary array of size n//2, where a 1 means the corresponing check node is in E.
+            data_selector is a binary array of size n, where a 1 means the corresponing data node is in E."""
+            # checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+            # if cluster_surface_type == 'c':
+            #     check_selector = checks_interior | cluster_surface
+            #     data_selector = data_interior
+            # else:
+            #     check_selector = checks_interior
+            #     data_selector = data_interior | cluster_surface
+
+            # First we want to find the interior of E. But we only care about the data qubits in Int(E)
+            no_outside = self.adj_mat_T[~cluster.checks].sum(axis=0) == 0 # selector for all data qubits that do not have connection to any check outside of E
+            interior = cluster.data & no_outside
+            return self.adj_mat_T[cluster.checks][:,interior], interior
+        
+        def grow(self, clusters: List["TannerUnionFindOptimized.Cluster"], grow_valid=False, merging_strategy = None):
+            grown_clusters: List[TannerUnionFindOptimized.Cluster] = []
+            for cluster in clusters:
+                #checks_interior, data_interior, cluster_surface, cluster_surface_type, valid, internal_error = cluster
+                if not cluster.valid or grow_valid:
+                    if cluster.cluster_surface_type == 'c':
+                        cluster.checks_interior |= cluster.cluster_surface
+                        cluster.cluster_surface = np.any(self.adj_mat_T[cluster.cluster_surface], axis=0) &~cluster.data_interior
+                        cluster.cluster_surface_type = 'd'
+                    elif cluster.cluster_surface_type == 'd':
+                        cluster.data_interior |= cluster.cluster_surface
+                        cluster.cluster_surface =  np.any(self.adj_mat_T[:, cluster.cluster_surface], axis=1) &~cluster.checks_interior
+                        cluster.cluster_surface_type = 'c'
+
+                # merge directly
+                merged_away = []
+                for i, other in enumerate(grown_clusters):
+                    if cluster.touches(other): # these 2 clusters are now connected
+                        # keep track of merged
+                        merged_away.append(i)
+                        cluster.merge(other) # merges other into cluster in place
+
+                for i in merged_away[::-1]: # delete the merged clusters in reverse order so indices keep making sense
+                    del grown_clusters[i]
+                # append the merged cluster
+                grown_clusters.append(cluster)
+            # very inefficient, but let's just hack this in:
+            # want to add and merge all clusters when a data node is outside of any cluster but touches only clusters
+            # get all such data nodes:
+            # all data nodes not in clusters
+            if merging_strategy is None:
+                grown_clusters = self.extra_merging_strategy(grown_clusters)
+            return grown_clusters
+    
+        def extra_merging_strategy(self, clusters: List["TannerUnionFindOptimized.Cluster"]):
+            # This strategy will be removed again...
+            return clusters
+            data_in_clusters = np.zeros_like(clusters[0].data)
+            check_in_clusters = np.zeros_like(clusters[0].checks)
+            for cluster in clusters:
+                data_in_clusters |= cluster.data
+                check_in_clusters |= cluster.checks
+            data_outside_clusters = ~data_in_clusters
+            checks_outside_clusters = ~check_in_clusters
+            data_touching_checks_outside = np.any(self.adj_mat_T[checks_outside_clusters], axis=0)
+            data_to_merge = data_outside_clusters & ~data_touching_checks_outside
+            # data_to_merge contains all data nodes that only touch clustesr but aren't in clusters
+            # iterate through all of them
+            data_to_merge = np.where(data_to_merge)[0]
+            for data_node in data_to_merge:
+                # find connected checks (grow to checks):
+                conn_checks = self.adj_mat_T[:, data_node]
+                # find what clusters that corresponds too
+                corresponding_cluster_indices = []
+                for i, cluster in enumerate(clusters):
+                    if np.any(conn_checks & cluster.checks):
+                        corresponding_cluster_indices.append(i)
+                # corresponding_cluster indices must contain at least one entry
+                this_idx = corresponding_cluster_indices[0]
+                clusters[this_idx].data_interior[data_node] = 1
+                # merge others into this
+                for other_idx in corresponding_cluster_indices[1:]:
+                    clusters[this_idx].merge(clusters[other_idx])
+                for i in corresponding_cluster_indices[1:][::-1]: # delete the merged clusters in reverse order so indices keep making sense
+                    del clusters[i]
+            return clusters
+
+    def get_decoder(self, T: int) -> "TannerUnionFindOptimized.Decoder":
+        if T not in self.decoders:
+            self.decoders[T] = TannerUnionFindOptimized.Decoder(self.adj_mat, T)
+        return self.decoders[T]
+
+    def decode(self, syndrome: np.ndarray, predecode=False, lse_solver=None) -> Tuple[np.ndarray, List[Tuple[Tuple[int,int], float, int, List[Tuple[Tuple[int,int], float, int, float, float, int, float]], float]]]:
+        """ Main entry point for decoding, takes syndrome and initialized clusters. In optimized version actually creates the clusters. """
+
+        "Syndrome can be from multiple measurement rounds"
+        m, n = self.adj_mat.shape
+        l = len(syndrome)
+        # syndrome length should be T*m where T+1 is number of SM rounds (i.e T number of parity comparisons between them)
+        if l % m != 0:
+            raise ValueError("Syndrome not of valid length (valid <=> multiple of number of checks)")
+        
+        T = l // m
+
+        decoder = self.get_decoder(T)
+
+        if predecode:
+            pre_error, syndrome = decoder.predecode(syndrome=syndrome)
+
+        clusters = []
+        for check in np.where(syndrome)[0]:
+            checks = np.zeros(T*m, dtype=bool)
+            if T > 1:
+                data = np.zeros((T+1)*m + T*n, dtype=bool)
+            else:
+                data = np.zeros(n, dtype=bool)
+            cluster_surface = np.zeros(T*m, dtype=bool)
+            cluster_surface[check] = True
+            cluster_surface_type = 'c'
+            valid = False
+            internal_error = None
+            cluster = TannerUnionFindOptimized.Cluster(checks, data, cluster_surface, cluster_surface_type, valid, internal_error)
+            clusters.append(cluster)
+
+
+        decoded_error, history = decoder.decode(clusters, syndrome, lse_solver=lse_solver)
+        if predecode:
+            decoded_error ^= pre_error
+
+        return decoded_error, history

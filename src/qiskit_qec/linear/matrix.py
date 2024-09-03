@@ -493,3 +493,9 @@ def istack(mat: np.ndarray, size: int, interleave: bool = False) -> np.ndarray:
     if interleave:
         return np.hstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
     return np.vstack(size * [mat]).reshape((size * len(mat),) + mat.shape[1:])
+
+class LinAlgError(ValueError):
+    pass
+
+def solve2():
+    pass
