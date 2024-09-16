@@ -140,8 +140,10 @@ class CodeLibrary:
                                 codes_json_file = json_bytes.decode(
                                     "utf-8"
                                 )  # Decode bytes to string
-                                self.data[n][k] = json.loads(codes_json_file)
+                                # index needs to be converted to integer from string
+                                self.data[n][k] = {int(index): data for index, data in json.loads(codes_json_file).items()}
 
+ 
     @staticmethod
     def data2code(**record) -> Code:
         """_summary_
@@ -226,7 +228,7 @@ class CodeLibrary:
                         codes.append(Properties(**code_data))
                     else:
                         codes.append(self.data2code(**code_data))
-                except KeyError:
+                except KeyError as e:
                     pass
                 return codes
 
