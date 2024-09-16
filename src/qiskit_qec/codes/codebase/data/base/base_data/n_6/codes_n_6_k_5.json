@@ -1,0 +1,318 @@
+{
+ "0": {
+  "aut_group_generators": [
+   "V5",
+   "H5",
+   "V4",
+   "H4",
+   "(4,5)",
+   "V3",
+   "H3",
+   "(3,4)",
+   "V2",
+   "H2",
+   "(2,3)",
+   "V1",
+   "V0",
+   "(0,1)"
+  ],
+  "aut_group_size": 248832,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 0,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0X1"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z0Z1",
+   "Z2",
+   "Z3",
+   "Z4",
+   "Z5"
+  ],
+  "n": 6,
+  "uuid": "aa1d77b5-0527-41ce-b23a-f17ea6ff1a08",
+  "weight_enumerator": [
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "1": {
+  "aut_group_generators": [
+   "V5",
+   "H5",
+   "V4",
+   "H4",
+   "(4,5)",
+   "V3",
+   "H3",
+   "(3,4)",
+   "V2",
+   "V1",
+   "(1,2)",
+   "V0",
+   "(0,1)"
+  ],
+  "aut_group_size": 62208,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 1,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0X1X2"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z0Z1",
+   "Z0Z2",
+   "Z3",
+   "Z4",
+   "Z5"
+  ],
+  "n": 6,
+  "uuid": "9f160d6b-ecf9-4040-979d-63f4e0ef8bc7",
+  "weight_enumerator": [
+   1,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0
+  ]
+ },
+ "2": {
+  "aut_group_generators": [
+   "V5",
+   "H5",
+   "V4",
+   "H4",
+   "(4,5)",
+   "V3",
+   "V2",
+   "(2,3)",
+   "V1",
+   "(1,2)",
+   "V0",
+   "(0,1)"
+  ],
+  "aut_group_size": 27648,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 2,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0X1X2X3"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z0Z1",
+   "Z0Z2",
+   "Z0Z3",
+   "Z4",
+   "Z5"
+  ],
+  "n": 6,
+  "uuid": "f6c88360-8004-4ea1-88d1-589fa978f3c8",
+  "weight_enumerator": [
+   1,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0
+  ]
+ },
+ "3": {
+  "aut_group_generators": [
+   "V5",
+   "H5",
+   "V4",
+   "V3",
+   "(3,4)",
+   "V2",
+   "(2,3)",
+   "V1",
+   "(1,2)",
+   "V0",
+   "(0,1)"
+  ],
+  "aut_group_size": 23040,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 3,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0X1X2X3X4"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z0Z1",
+   "Z0Z2",
+   "Z0Z3",
+   "Z0Z4",
+   "Z5"
+  ],
+  "n": 6,
+  "uuid": "e442cc18-d9ec-4a44-a978-e34bde7196cd",
+  "weight_enumerator": [
+   1,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0
+  ]
+ },
+ "4": {
+  "aut_group_generators": [
+   "V5",
+   "V4",
+   "(4,5)",
+   "V3",
+   "(3,4)",
+   "V2",
+   "(2,3)",
+   "V1",
+   "(1,2)",
+   "V0",
+   "(0,1)"
+  ],
+  "aut_group_size": 46080,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 4,
+  "is_css": 1,
+  "is_decomposable": 0,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0X1X2X3X4X5"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z0Z1",
+   "Z0Z2",
+   "Z0Z3",
+   "Z0Z4",
+   "Z0Z5"
+  ],
+  "n": 6,
+  "uuid": "16a9239f-bfe3-435e-8071-74f83dda0e37",
+  "weight_enumerator": [
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1
+  ]
+ },
+ "5": {
+  "aut_group_generators": [
+   "V5",
+   "H5",
+   "V4",
+   "H4",
+   "(4,5)",
+   "V3",
+   "H3",
+   "(3,4)",
+   "V2",
+   "H2",
+   "(2,3)",
+   "V1",
+   "H1",
+   "(1,2)",
+   "V0"
+  ],
+  "aut_group_size": 1866240,
+  "code_type": "StabSubSystemCode",
+  "d": 1,
+  "index": 5,
+  "is_css": 1,
+  "is_decomposable": 1,
+  "is_degenerate": 0,
+  "is_gf4linear": 0,
+  "is_subsystem": 1,
+  "isotropic_generators": [
+   "X0"
+  ],
+  "k": 5,
+  "logical_ops": [
+   "X1",
+   "X2",
+   "X3",
+   "X4",
+   "X5",
+   "Z1",
+   "Z2",
+   "Z3",
+   "Z4",
+   "Z5"
+  ],
+  "n": 6,
+  "uuid": "d176bb50-87fd-4e5e-87dc-adffec16ea7b",
+  "weight_enumerator": [
+   1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ }
+}
