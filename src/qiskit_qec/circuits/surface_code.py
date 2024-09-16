@@ -23,7 +23,6 @@ from qiskit_qec.circuits.code_circuit import CodeCircuit
 
 
 class SurfaceCodeCircuit(CodeCircuit):
-
     """Distance d rotated surface code with  T syndrome measurement rounds."""
 
     def __init__(self, d: int, T: int, basis: str = "z", resets=True):

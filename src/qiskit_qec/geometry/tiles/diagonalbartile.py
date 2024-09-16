@@ -22,8 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class DiagonalBarTile(Tile):
-    """Diagonal Bar Tile
-
+    r"""Diagonal Bar Tile
     The diagram is as follows::
 
         q0           q1     q1           q2
@@ -113,7 +112,7 @@ class DiagonalBarTile(Tile):
         operators=None,
         optype="pXXZZXX",
     ) -> Shell:
-        """Diagonal Hour Glass Tile
+        r"""Diagonal Hour Glass Tile
 
         The diagram is as follows::
 

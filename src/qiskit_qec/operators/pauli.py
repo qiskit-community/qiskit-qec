@@ -11,7 +11,7 @@
 # that they have been altered from the originals.
 # Part of the QEC framework
 """Module for Pauli"""
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from qiskit.circuit import Instruction, QuantumCircuit
@@ -29,7 +29,7 @@ from qiskit_qec.utils import pauli_rep
 
 
 class Pauli(BasePauli):
-    """`Pauli` inherits from `BasePauli`"""
+    r"""N-qubit Pauli operator"""
 
     # Set the max Pauli string size before truncation
     _truncate__ = 50
@@ -41,87 +41,163 @@ class Pauli(BasePauli):
 
     def __init__(
         self,
-        data: Any,
+        data: Union[str, tuple, List, np.ndarray, BasePauli, None] = None,
         *,
         x: Union[List, np.ndarray, None] = None,
         z: Union[List, np.ndarray, None] = None,
-        phase_exp: Union[int, np.ndarray, None] = None,
-        input_pauli_encoding: str = BasePauli.EXTERNAL_PAULI_ENCODING,
-        label: Optional[str] = None,
-        input_qubit_order: str = "right-to-left",
-        tuple_order: str = "zx",
+        phase_exp: Union[int, str, np.ndarray, None] = None,
+        input_pauli_encoding: Optional[str] = BasePauli.EXTERNAL_PAULI_ENCODING,
+        input_qubit_order: Optional[str] = "right-to-left",
+        order: Optional[str] = "xz",
+        tuple_order: Optional[str] = "zx",
+        num_qubits: Optional[int] = None,
     ):
-        """Pauli Init
+        """Initialize the Pauli
+
+        Initialiazation of the N-qubit Pauli operator
 
         Args:
-            data (str): Still in progress
-            x ([type], optional): [description]. Defaults to None.
-            z ([type], optional): [description]. Defaults to None.
-            phase_exponent ([type], optional): [description]. Defaults to None.
-            stype (str, optional): [description]. Defaults to "numpy".
-            label ([type], optional): [description]. Defaults to None.
-            input_qubit_order (str, optional): [description]. Defaults to "right-to-left".
-            tuple_prder (optional): Defaults to 'zx'
+            data (Union[str, tuple, List, np.ndarray, BasePauli, None]): Input data.
+            x (Union[List, np.ndarray, None], optional):
+                X part. Defaults to None.
+            z (Union[List, np.ndarray, None], optional):
+                Z part. Defaults to None.
+            phase_exp (Union[str, np.ndarray, None], optional):
+                Phase expression of Pauli. Defaults to None.
+            input_pauli_encoding (str, optional):
+                What encoding is used for the input data. Defaults to
+                BasePauli.EXTERNAL_PAULI_ENCODING.
+            input_qubit_order (str, optional):
+                Qubit read order. Defaults to "right-to-left".
+            order (str, optional):
+                Order in which data lists X and Z. Defaults to 'xz'.
+            tuple_order (str, optional):
+                Order in data for X and Z parts of tuples. Defaults to 'zx'.
+            num_qubits (int, optional):
+                Number of qubits to use in Pauli. Defaults to None.
 
         Raises:
             QiskitError: Something went wrong.
+
+        Examples:
+            >>> Pauli('XYXXIZ')
+            Pauli('XYXXIZ')
+
+            >>> Pauli('X1Y3Z12')
+            Pauli('ZIIIIIIIIYIXI')
+
+            >>> Pauli('X', num_qubits=12)
+            Pauli('IIIIIIIIIIIX')
+
+            >>> Pauli(np.array([[0,1,1,1]]), phase_exp="(-i,1)", num_qubits=10)
+            Pauli('-iIIIIIIIIYZ')
+
+            >>> Pauli(np.array([[0,1,1,1]]),phase_exp="(-i,1)", num_qubits=10, order="zx")
+            Pauli('-iIIIIIIIIYX')
+
+            >>> Pauli(None, x=[0,1],z=[1,1],phase_exp = '-i')
+            Pauli('-iYZ')
+
+            >>> Pauli(np.array([[0,1,1,1]]),
+                            phase_exp="(-i,1)(-1,0)",
+                            num_qubits=10, order="zx", input_pauli_encoding='-isXZ')
+            Pauli('-iIIIIIIIIYX')
+
+            >>> Pauli(([0,1],[1,1],'-i'), tuple_order='xz')
+            Pauli('-iYZ')
+
+            >>> Pauli(([0,1],[1,1],'-i'))
+            Pauli('-iYX')
         """
-        if isinstance(data, np.ndarray):
+        # str
+        if isinstance(data, str):
+            matrix, phase_exp = pauli_rep.str2symplectic(
+                data, qubit_order=input_qubit_order, num_qubits=num_qubits
+            )
+
+        # numpy or list
+        elif isinstance(data, (np.ndarray, list)):
             matrix = np.atleast_2d(data)
-            if phase_exp is None:
-                phase_exp = 0
+            phase_enc, _ = pauli_rep.split_pauli_enc(input_pauli_encoding)
+            if isinstance(phase_exp, str):
+                phase_exp = pauli_rep.str2exp(
+                    pauli_rep.stand_phase_str(phase_exp), encoding=phase_enc
+                )
+            elif phase_exp is None:
+                phase_exp = pauli_rep.exp2exp(0, pauli_rep.INTERNAL_PHASE_ENCODING, phase_enc)
+            matrix, phase_exp = pauli_rep.from_array(
+                matrix, phase_exp, input_pauli_encoding=input_pauli_encoding
+            )
+
+        # tuple (x,z,phase), (z,x,phase), (x,z), (z,x)
+        elif isinstance(data, tuple):
+            p1 = np.atleast_2d(data[0])
+            p2 = np.atleast_2d(data[1])
+            matrix = np.hstack((p1, p2))
+            phase_enc, _ = pauli_rep.split_pauli_enc(input_pauli_encoding)
+            if len(data) == 3:
+                phase_exp = data[2]
+                order = tuple_order
+            if isinstance(phase_exp, str):
+                phase_exp = pauli_rep.str2exp(
+                    pauli_rep.stand_phase_str(phase_exp), encoding=phase_enc
+                )
+            elif phase_exp is None:
+                phase_exp = pauli_rep.exp2exp(0, pauli_rep.INTERNAL_PHASE_ENCODING, phase_enc)
+            matrix, phase_exp = pauli_rep.from_array(
+                matrix, phase_exp, input_pauli_encoding=input_pauli_encoding
+            )
+            order = tuple_order
+
+        # BasePauli
         elif isinstance(data, BasePauli):
             matrix = data.matrix[:, :]
             phase_exp = data._phase_exp[:]
-        elif isinstance(data, (tuple, list)):
-            if len(data) not in [2, 3]:
-                raise QiskitError(
-                    "Invalid input tuple for Pauli, input tuple must be `(z, x, phase)` or `(z, x)`"
-                )
-            if tuple_order not in ["zx", "xz"]:
-                raise QiskitError(f"`tuple_order` {tuple_order} not valid")
-            if len(data) == 3:
-                if tuple_order == "zx":
-                    matrix, phase_exp = pauli_rep.from_split_array(
-                        data[1], data[0], data[2], input_pauli_encoding=input_pauli_encoding
-                    )
-                else:
-                    matrix, phase_exp = pauli_rep.from_split_array(
-                        *data, input_pauli_encoding=input_pauli_encoding
-                    )
-            elif tuple_order == "zx":
-                matrix, phase_exp = pauli_rep.from_split_array(
-                    data[1], data[0], 0, input_pauli_encoding=input_pauli_encoding
-                )
-            else:
-                matrix, phase_exp = pauli_rep.from_array(
-                    *data, 0, input_pauli_encoding=input_pauli_encoding
-                )
 
-        elif isinstance(data, str):
-            matrix, phase_exp = pauli_rep.str2symplectic(data, qubit_order=input_qubit_order)
+        # ScalarOp
         elif isinstance(data, ScalarOp):
             matrix, phase_exp = pauli_rep.scalar_op2symplectic(
                 data, output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING
             )
+
+        # Quantum Circuit or Instruction
         elif isinstance(data, (QuantumCircuit, Instruction)):
             matrix, phase_exp = self.instrs2symplectic(data)
-        elif x is not None:  # DEPRECATED
-            if z is None:
-                # Using old Pauli initialization with positional args instead of kwargs
-                z = data
-            matrix, phase_exp = self._from_split_array_deprecated(z, x, phase_exp)
 
-        elif label is not None:  # DEPRECATED
-            matrix, phase_exp = self._from_label_deprecated(label, qubit_order=input_qubit_order)
+        # x= ... , z= ..., [phase_exp = ...]
+
+        elif (
+            data is None and isinstance(x, (List, np.ndarray)) and isinstance(z, (List, np.ndarray))
+        ):
+            x = np.atleast_2d(x)
+            z = np.atleast_2d(z)
+            matrix = np.hstack((x, z))
+
+            phase_enc, _ = pauli_rep.split_pauli_enc(input_pauli_encoding)
+            if isinstance(phase_exp, str):
+                phase_exp = pauli_rep.str2exp(
+                    pauli_rep.stand_phase_str(phase_exp), encoding=phase_enc
+                )
+            if phase_exp is None:
+                phase_exp = pauli_rep.exp2exp(0, pauli_rep.INTERNAL_PHASE_ENCODING, phase_enc)
+            matrix, phase_exp = pauli_rep.from_array(
+                matrix, phase_exp, input_pauli_encoding=input_pauli_encoding
+            )
+
+        # Error: no input is suitable
         else:
             raise QiskitError("Invalid input data for Pauli.")
+
+        # Add extra qubits if requested
+        if num_qubits is not None and num_qubits > matrix.shape[1] // 2:
+            extend_num = num_qubits - matrix.shape[1] // 2
+            matrix = pauli_rep._extend_symplectic(matrix, extend_num)
 
         # Initialize BasePauli
         if matrix.shape[0] != 1:
             raise QiskitError("Input is not a single Pauli")
 
-        super().__init__(matrix, phase_exp)
+        super().__init__(matrix, phase_exp, order=order)
         self.vlist = self.matrix[0].tolist()
 
     # ---------------------------------------------------------------------
@@ -328,7 +404,7 @@ class Pauli(BasePauli):
             i (int): index of qubit
 
         Returns:
-            str: Streing representing the Pauli acting on qubit i,
+            str: String representing the Pauli acting on qubit i,
             (0,0):"I", (1,0):"X", (0,1):"Z", (1,1):"Y"
         """
         return Pauli.pltb_str[(self.matrix[0][i], self.matrix[0][i + self.num_qubits])]
@@ -408,7 +484,7 @@ class Pauli(BasePauli):
         z = np.delete(self._z, qubits, axis=1)
         x = np.delete(self._x, qubits, axis=1)
         matrix = np.hstack((x, z))
-        return Pauli(matrix, phase_exp=self._phase_exp)
+        return Pauli(matrix, phase_exp=self.phase_exp)
 
     def insert(self, qubits: Union[int, List[int]], value: "Pauli") -> "Pauli":
         """Insert a Pauli at specific qubit value.
@@ -704,7 +780,11 @@ class Pauli(BasePauli):
                 output_encoding=pauli_rep.INTERNAL_PHASE_ENCODING,
             )
         # Recursively apply instructions
-        for dinstr, qregs, cregs in instr.data:
+        # for dinstr, qregs, cregs in instr.data:
+        for instruction in instr.data:
+            dinstr = instruction.operation
+            qregs = instruction.qubits
+            cregs = instruction.clbits
             if cregs:
                 raise QiskitError(
                     f"Cannot apply instruction with classical registers: {dinstr.name}"

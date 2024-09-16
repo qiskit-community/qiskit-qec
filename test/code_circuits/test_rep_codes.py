@@ -86,7 +86,7 @@ class TestRepCodes(unittest.TestCase):
             circuit_name = {}
             depth = len(qc)
             for j in range(depth):
-                qubits = qc.data[j][1]
+                qubits = qc.data[j].qubits
                 for qubit in qubits:
                     for error in ["x", "y", "z"]:
                         temp_qc = blank_qc.copy()
@@ -101,7 +101,7 @@ class TestRepCodes(unittest.TestCase):
             job = simulator.run(list(error_circuit.values()), shots=1)
 
             for j in range(depth):
-                qubits = qc.data[j][1]
+                qubits = qc.data[j].qubits
                 for qubit in qubits:
                     for error in ["x", "y", "z"]:
                         results = job.result().get_counts(str((j, qubit, error)))
@@ -352,7 +352,7 @@ class TestARCCodes(unittest.TestCase):
                         error_qc.add_register(creg)
                     barrier_num = 0
                     for gate in qc.data:
-                        if gate[0].name == "barrier":
+                        if gate.operation.name == "barrier":
                             barrier_num += 1
                             if barrier_num == 2 * t + 1:
                                 if q % 2 == 0:

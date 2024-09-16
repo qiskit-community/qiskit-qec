@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstdint> 
+
 
 // Iterate over a product of finite sets {0, 1, ..., n_i-1}
 // for i = 1, 2, ..., m.

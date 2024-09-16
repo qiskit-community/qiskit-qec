@@ -22,7 +22,7 @@ from qiskit_qec.operators.pauli_list import PauliList
 
 # pylint: disable=anomalous-backslash-in-string)
 class SquareDiamondTile(Tile):
-    """Square Diamond Tile (Square or non-Rotated orientation)
+    r"""Square Diamond Tile (Square or non-Rotated orientation)
 
     The follow labelling is used::
 
@@ -104,7 +104,7 @@ class SquareDiamondTile(Tile):
         operators=None,
         optype="pXZXZ",
     ) -> Shell:
-        """Square Diamond Tile
+        r"""Square Diamond Tile
 
         The following labels are used::
 

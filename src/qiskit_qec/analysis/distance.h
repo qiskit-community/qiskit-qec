@@ -6,6 +6,8 @@
 #include <set>
 #include <exception>
 #include <iterator>
+#include <iostream>
+#include <cassert>
 
 #include "linear.h"
 #include "combinations.h"

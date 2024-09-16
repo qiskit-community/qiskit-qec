@@ -62,6 +62,9 @@ int minimum_distance(std::vector<std::vector<int> > &symplectic_vectors,
  *
  * Pauli operators on n qubits are represented as integer arrays
  * of length 2n in the order [X-part, Z-part].
+ * 
+ * As the powers of 3 are stored in a unit64_t we must have 
+ * symplectic_vectors.size() < 64 to prevent overflow 
  *
  * Returns True or False.
  */
@@ -71,9 +74,10 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
 {
   int n = symplectic_vectors[0].size() / 2;  // num. qubits
   int m = symplectic_vectors.size();
-  std::vector<int> pow2;
+  assert(m<63 && "n-k must be < 63 for this version not to overflow.");
+  std::vector<uint64_t> pow2;
   for (int i = 0; i < m+1; i++)
-    pow2.push_back(1 << i);
+    pow2.push_back(static_cast<uint64_t>(1) << i);
   int w1 = 0;
   int w2 = 0;
   if (weight % 2 == 0) {
@@ -83,17 +87,18 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
     w1 = (weight + 1) / 2;
     w2 = (weight - 1) / 2;
   }
+
   // Compute syndromes of all single-qubit errors
-  std::vector<int> single_qubit_syndromes;
+  std::vector<uint64_t> single_qubit_syndromes;
   for (int q=0; q < n; q++) {
-    int syndX = 0;
+    uint64_t syndX = 0;
     for (int i=0; i < m; i++) {
       if (symplectic_vectors[i][n + q] == 1)
         syndX += pow2[i];
     }
     if (symplectic_logical_op[n + q] == 1)
       syndX += pow2[m];
-    int syndZ = 0;
+    uint64_t syndZ = 0;
     for (int i=0; i < m; i++) {
       if (symplectic_vectors[i][q] == 1)
         syndZ += pow2[i];
@@ -105,14 +110,14 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
     single_qubit_syndromes.push_back(syndX ^ syndZ);
   }
   // Examine all errors with weight w1
-  int mask1 = 1 << m;
-  std::set<int> T1c;
-  std::set<int> T1a;
+  uint64_t mask1 = static_cast<uint64_t>(1) << m;
+  std::set<uint64_t> T1c;
+  std::set<uint64_t> T1a;
   if (w1 > 0) {
     Combinations c(single_qubit_syndromes.size(), w1);
     std::vector<int> state;
     while (c.next_combination(state)) {
-      int synd = 0;
+      uint64_t synd = 0;
       for (int i=0; i < w1; i++)
         synd ^= single_qubit_syndromes[state[i]];
       if (synd & mask1)
@@ -122,14 +127,14 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
     }
   }
   // Examine all errors with weight w2
-  std::set<int> T2c;
-  std::set<int> T2a;
+  std::set<uint64_t> T2c;
+  std::set<uint64_t> T2a;
   if (w1 != w2) {
     if (w2 > 0) {
       Combinations c(single_qubit_syndromes.size(), w2);
       std::vector<int> state;
       while (c.next_combination(state)) {
-        int synd = 0;
+        uint64_t synd = 0;
         for (int i=0; i < w2; i++)
           synd ^= single_qubit_syndromes[state[i]];
         if (synd & mask1)
@@ -142,7 +147,7 @@ bool distance_test(std::vector<std::vector<int> > &symplectic_vectors,
     T2c = T1c;
     T2a = T1a;
   }
-  std::set<int> intersect;
+  std::set<uint64_t> intersect;
   std::set_intersection(T1c.begin(), T1c.end(), T2a.begin(), T2a.end(),
                         std::inserter(intersect, intersect.begin()));
   if (intersect.size() > 0) return true;
@@ -169,7 +174,9 @@ int minimum_distance_by_tests(std::vector<std::vector<int> > &symplectic_vectors
                               std::vector<std::vector<int> > &symplectic_xl,
                               std::vector<std::vector<int> > &symplectic_zl,
                               int max_weight) {
+
     int weight = max_weight + 1;
+
     for (int row=0; row < symplectic_xl.size(); row++) {
       for (int w=1; w < max_weight + 1; w++) {
         if (distance_test(symplectic_vectors, symplectic_xl[row], w)) {
@@ -178,6 +185,7 @@ int minimum_distance_by_tests(std::vector<std::vector<int> > &symplectic_vectors
         }
       }
     }
+
     for (int row=0; row < symplectic_zl.size(); row++) {
       for (int w=1; w < max_weight + 1; w++) {
         if (distance_test(symplectic_vectors, symplectic_zl[row], w)) {
@@ -186,6 +194,7 @@ int minimum_distance_by_tests(std::vector<std::vector<int> > &symplectic_vectors
         }
       }
     }
+
     if (weight < max_weight + 1)
       return weight;
     else

@@ -28,7 +28,7 @@ import numpy as np
 import rustworkx as rx
 
 from qiskit import QuantumCircuit
-from qiskit_aer.noise.errors.quantum_error import QuantumChannelInstruction
+from qiskit_aer.noise.errors.base_quantum_error import QuantumChannelInstruction
 from qiskit_aer.noise import pauli_error
 from qiskit_qec.utils.decoding_graph_attributes import (
     DecodingGraphNode,
@@ -131,7 +131,11 @@ def get_stim_circuits(
         creg_offset = {}
         prevq_offset = 0
         prevc_offset = 0
-        for inst, qargs, cargs in circ.data:
+
+        for instruction in circ.data:
+            inst = instruction.operation
+            qargs = instruction.qubits
+            cargs = instruction.clbits
             for qubit in qargs:
                 if qubit._register.name not in qreg_offset:
                     qreg_offset[qubit._register.name] = prevq_offset

@@ -1,4 +1,5 @@
 """Pauli noise model tests."""
+
 import unittest
 from qiskit_qec.noise.paulinoisemodel import PauliNoiseModel
 

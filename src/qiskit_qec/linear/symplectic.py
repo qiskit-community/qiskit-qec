@@ -196,7 +196,7 @@ def _symplectic_product_vv_boolean(vec1: np.ndarray, vec2: np.ndarray, n: int) -
     assert vec1.dtype == bool
     r = False
     for i in range(n):
-        r += vec1[i] & vec2[n + i] ^ vec1[n + i] & vec2[i]
+        r ^= vec1[i] & vec2[n + i] ^ vec1[n + i] & vec2[i]
     return int(r)
 
 
@@ -2178,3 +2178,10 @@ def _normailzer_group(matrix):
     center_, hyper1, hyper2 = _symplectic_gram_schmidt(matrix, [], [])
 
     return _normalizer_group_preserve(center_, hyper1, hyper2)
+
+
+def _extend_symplectic(matrix: np.array, extend: int):
+    n = matrix.shape[1] // 2
+    ext_part = np.zeros(shape=(matrix.shape[0], extend), dtype=matrix.dtype)
+    ext_matrix = np.hstack((matrix[:, 0:n], ext_part, matrix[:, n:], ext_part))
+    return ext_matrix

@@ -1,4 +1,5 @@
 """Test fault enumerator."""
+
 import unittest
 from qiskit import QuantumCircuit
 from qiskit.circuit.library import IGate

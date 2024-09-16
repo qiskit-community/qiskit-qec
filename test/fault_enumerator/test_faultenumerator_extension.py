@@ -1,4 +1,5 @@
 """Test the compiled fault enumerator."""
+
 import unittest
 from qiskit_qec.analysis.extensions import _CFaultEnumerator
 
