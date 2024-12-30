@@ -56,9 +56,7 @@ def test_single_char_arguments():
 
     assert m.ord_char("a") == 0x61  # simple ASCII
     assert m.ord_char_lv("b") == 0x62
-    assert (
-        m.ord_char("é") == 0xE9
-    )  # requires 2 bytes in utf-8, but can be stuffed in a char
+    assert m.ord_char("é") == 0xE9  # requires 2 bytes in utf-8, but can be stuffed in a char
     with pytest.raises(ValueError) as excinfo:
         assert m.ord_char("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
     assert str(excinfo.value) == toobig_message(0x100)
@@ -108,9 +106,7 @@ def test_single_char_arguments():
     if hasattr(m, "has_u8string"):
         assert m.ord_char8("a") == 0x61  # simple ASCII
         assert m.ord_char8_lv("b") == 0x62
-        assert (
-            m.ord_char8("é") == 0xE9
-        )  # requires 2 bytes in utf-8, but can be stuffed in a char
+        assert m.ord_char8("é") == 0xE9  # requires 2 bytes in utf-8, but can be stuffed in a char
         with pytest.raises(ValueError) as excinfo:
             assert m.ord_char8("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
         assert str(excinfo.value) == toobig_message(0x100)

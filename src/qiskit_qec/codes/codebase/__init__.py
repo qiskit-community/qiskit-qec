@@ -141,9 +141,11 @@ class CodeLibrary:
                                     "utf-8"
                                 )  # Decode bytes to string
                                 # index needs to be converted to integer from string
-                                self.data[n][k] = {int(index): data for index, data in json.loads(codes_json_file).items()}
+                                self.data[n][k] = {
+                                    int(index): data
+                                    for index, data in json.loads(codes_json_file).items()
+                                }
 
- 
     @staticmethod
     def data2code(**record) -> Code:
         """_summary_
