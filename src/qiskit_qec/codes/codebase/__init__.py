@@ -230,7 +230,7 @@ class CodeLibrary:
                         codes.append(Properties(**code_data))
                     else:
                         codes.append(self.data2code(**code_data))
-                except KeyError as e:
+                except KeyError:
                     pass
                 return codes
 
