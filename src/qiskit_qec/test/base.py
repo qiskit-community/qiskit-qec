@@ -119,7 +119,6 @@ Right circuit:
 {qc2}"""
         raise self.failureException(msg)
 
-
     # pylint: disable=too-many-arguments
     def assertDictAlmostEqual(
         self, dict1, dict2, delta=None, msg=None, places=None, default_value=0
