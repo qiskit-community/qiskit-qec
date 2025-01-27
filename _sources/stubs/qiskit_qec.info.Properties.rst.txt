@@ -13,6 +13,7 @@
 
    .. rubric:: Attributes
 
+   .. autoattribute:: AUT_GROUP_GENERATORS
    .. autoattribute:: AUT_GROUP_SIZE
    .. autoattribute:: CITATION
    .. autoattribute:: CODE_TYPES
