@@ -1,0 +1,30 @@
+{
+    "0": {
+        "aut_group_generators": [
+            "R0",
+            "S0"
+        ],
+        "aut_group_size": 6,
+        "code_type": "StabSubSystemCode",
+        "d": 1,
+        "index": 0,
+        "is_css": 1,
+        "is_decomposable": 0,
+        "is_degenerate": 0,
+        "is_gf4linear": 0,
+        "is_subsystem": 1,
+        "isotropic_generators": [
+            "I"
+        ],
+        "k": 1,
+        "logical_ops": [
+            "X0",
+            "Z0"
+        ],
+        "n": 1,
+        "uuid": "ac86a85a-dce3-45da-b5f9-6ba51709df70",
+        "weight_enumerator": [
+            1
+        ]
+    }
+}

@@ -451,9 +451,7 @@ def test_non_converting_constructors():
         for move in [True, False]:
             with pytest.raises(TypeError) as excinfo:
                 m.nonconverting_constructor(t, v, move)
-            expected_error = (
-                f"Object of type '{type(v).__name__}' is not an instance of '{t}'"
-            )
+            expected_error = f"Object of type '{type(v).__name__}' is not an instance of '{t}'"
             assert str(excinfo.value) == expected_error
 
 

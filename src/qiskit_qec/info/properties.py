@@ -69,6 +69,7 @@ class Properties:
     WEIGHT_ENUMERATOR = "weight_enumerator"
     GAUGE_GROUP = "gauge_group"
     AUT_GROUP_SIZE = "aut_group_size"
+    AUT_GROUP_GENERATORS = "aut_group_generators"
     CITATION = "citation"
     NAME = "name"
     UUID = "uuid"

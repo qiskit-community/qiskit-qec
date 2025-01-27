@@ -12,16 +12,13 @@ def test_function_signatures(doc):
     assert doc(m.kw_func_udl) == "kw_func_udl(x: int, y: int = 300) -> str"
     assert doc(m.kw_func_udl_z) == "kw_func_udl_z(x: int, y: int = 0) -> str"
     assert doc(m.args_function) == "args_function(*args) -> tuple"
-    assert (
-        doc(m.args_kwargs_function) == "args_kwargs_function(*args, **kwargs) -> tuple"
-    )
+    assert doc(m.args_kwargs_function) == "args_kwargs_function(*args, **kwargs) -> tuple"
     assert (
         doc(m.KWClass.foo0)
         == "foo0(self: m.kwargs_and_defaults.KWClass, arg0: int, arg1: float) -> None"
     )
     assert (
-        doc(m.KWClass.foo1)
-        == "foo1(self: m.kwargs_and_defaults.KWClass, x: int, y: float) -> None"
+        doc(m.KWClass.foo1) == "foo1(self: m.kwargs_and_defaults.KWClass, x: int, y: float) -> None"
     )
 
 
@@ -43,8 +40,7 @@ def test_named_arguments(msg):
         # noinspection PyArgumentList
         m.kw_func2(x=5, y=10, z=12)
     assert excinfo.match(
-        r"(?s)^kw_func2\(\): incompatible.*Invoked with: kwargs: ((x=5|y=10|z=12)(, |$))"
-        + "{3}$"
+        r"(?s)^kw_func2\(\): incompatible.*Invoked with: kwargs: ((x=5|y=10|z=12)(, |$))" + "{3}$"
     )
 
     assert m.kw_func4() == "{13 17}"
@@ -335,10 +331,7 @@ def test_signatures():
     assert "kw_only_mixed(i: int, *, j: int) -> tuple\n" == m.kw_only_mixed.__doc__
     assert "pos_only_all(i: int, j: int, /) -> tuple\n" == m.pos_only_all.__doc__
     assert "pos_only_mix(i: int, /, j: int) -> tuple\n" == m.pos_only_mix.__doc__
-    assert (
-        "pos_kw_only_mix(i: int, /, j: int, *, k: int) -> tuple\n"
-        == m.pos_kw_only_mix.__doc__
-    )
+    assert "pos_kw_only_mix(i: int, /, j: int, *, k: int) -> tuple\n" == m.pos_kw_only_mix.__doc__
 
 
 def test_args_refcount():

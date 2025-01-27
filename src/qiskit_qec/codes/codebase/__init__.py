@@ -17,6 +17,7 @@ import warnings
 from typing import Union, List, Optional, Tuple, Dict, Callable
 import configparser
 from itertools import product
+import gzip
 
 from qiskit.exceptions import QiskitError
 
@@ -57,7 +58,7 @@ class CodeLibrary:
         _library_config = configparser.ConfigParser()
         _library_config.read(self.config_file)
 
-        # Set the location fort the data files (data_path)
+        # Set the location for the data files (data_path)
         try:
             data_dir = _library_config["Data Directory"]["data_dir"]
         except KeyError:
@@ -131,6 +132,19 @@ class CodeLibrary:
                                 int(index): data
                                 for index, data in json.load(codes_json_file).items()
                             }
+                    else:
+                        file_to_load = file_to_load + ".gz"
+                        if os.path.exists(file_to_load):
+                            with gzip.open(file_to_load, "rb") as file:
+                                json_bytes = file.read()  # Read the entire file as bytes
+                                codes_json_file = json_bytes.decode(
+                                    "utf-8"
+                                )  # Decode bytes to string
+                                # index needs to be converted to integer from string
+                                self.data[n][k] = {
+                                    int(index): data
+                                    for index, data in json.loads(codes_json_file).items()
+                                }
 
     @staticmethod
     def data2code(**record) -> Code:
@@ -320,7 +334,7 @@ class CodeLibrarian:
 
         # Read the config file to determine which method
         # (memory, file or http) to use for each
-        # code library. Default is order is http, file, memory
+        # code library. Default order is http, file, memory
         _config = configparser.ConfigParser()
         if config is None:
             _config.read(default_config)
