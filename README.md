@@ -1,6 +1,6 @@
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-informational)
 [![Python](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-informational)](https://www.python.org/)
-[![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%200.34.2-6133BD)](https://github.com/Qiskit/qiskit)
+[![Qiskit](https://img.shields.io/badge/Qiskit-%E2%89%A5%201.0-6133BD)](https://github.com/Qiskit/qiskit)
 [![License](https://img.shields.io/github/license/qiskit-community/quantum-prototype-template?label=License)](./LICENSE.txt)
 [![Code style: Black](https://img.shields.io/badge/Code%20style-Black-000.svg)](https://github.com/psf/black)
 [![Tests, linter and coverage](https://github.com/qiskit-community/qiskit-qec/actions/workflows/tests.yml/badge.svg)](https://github.com/qiskit-community/qiskit-qec/actions/workflows/tests.yml)
