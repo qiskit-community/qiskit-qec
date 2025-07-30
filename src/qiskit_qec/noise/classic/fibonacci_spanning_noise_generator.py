@@ -37,10 +37,10 @@ def generate_spanning_error(
         generate_spanning_error will use as a base for it's error
         offset (int, optional): Offset for where spanning error begins. Offset will be a
         horizontal offset from the left if is_vertical=False and, otherwise,
-        a vertical offsetfrom the top if is_vertical=True). Defaults to 0.
+        a vertical offset from the top if is_vertical=True). Defaults to 0.
         probability_of_error (float, optional): Error probability. Defaults to 1e-7.
         width (int, optional): How wide the error should be. If is_vertical=True, width
-        willbe how wide the spanning error is across from left to right. Otherwrise, if
+        will be how wide the spanning error is across from left to right. Otherwise, if
         is_vertical=False width will be the height of the spanning error from top to bottom.
         Defaults to None.
         is_vertical (bool, optional): If true, the error will span top to bottom. Otherwise,

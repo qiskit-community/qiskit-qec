@@ -48,7 +48,7 @@ class FaultSampler:
         """
         self.model = model
         if method not in self.AVAILABLE_METHODS:
-            raise QiskitQECError("fmethod {methid} is not supported.")
+            raise QiskitQECError(f"method {method} is not supported.")
         self.method = method
 
         self.location_types = self.model.get_operations()

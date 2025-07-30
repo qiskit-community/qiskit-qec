@@ -27,7 +27,7 @@ class Properties:
     # that is used by the web server database as well as this class. Here
     # for now to get things moving. Also these fields are likely to change
     # as the final taxonomy is developed. Therefore code should not rely
-    # on the exact naming etc used below. So for example a used should
+    # on the exact naming etc used below. So for example a user should
     # not use CodeLibrarian.IS_CSS but instead use the string "is_css".
 
     # Boolean Fields

@@ -47,7 +47,7 @@ class RotatedSurfaceCodeBuilder(Builder):
             d: distance of code
             dx (optional): X distance of code. Default is d.
             dz (optional): Z distance of code. Default is d.
-            ul_op (optional): operator type for upper left corder weight
+            ul_op (optional): operator type for upper left corner weight
                 four stabilizer operator.
 
         Examples:
@@ -61,7 +61,7 @@ class RotatedSurfaceCodeBuilder(Builder):
             dx = d
             dz = d
         elif dx is None or dz is None:
-            raise QiskitError(f"Both dx:{dx} and dz:{dz} must be speicifed.")
+            raise QiskitError(f"Both dx:{dx} and dz:{dz} must be specified.")
         elif not bool(dx % 2) or dx < 3 or not bool(dz % 2) or dz < 3:
             raise QiskitError(f"dx:{dx} and dz:{dz} must be odd positive integers ≥ 3")
 

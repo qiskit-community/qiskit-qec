@@ -9,7 +9,7 @@
 # Any modifications or derivative works of this code must retain this
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
-"""Decoder for Spanning Errors on the the ClassicFibonacciCode"""
+"""Decoder for Spanning Errors on the ClassicFibonacciCode"""
 import copy
 import logging
 import math
@@ -142,7 +142,7 @@ class ClassicFibonacciSpanningErrorDecoder:
         return res[self.fund_hori_probe_indx], res[self.fund_verti_probe_indx], res
 
     def bit_to_rc(self, bit: int):
-        """Maps maps from bit index (0 to   (L**2)//2) - 1) to (row, column) indexing
+        """Maps from bit index (0 to   (L**2)//2) - 1) to (row, column) indexing
 
         In bit notation we think of all the bits of the codeword as being in a line:
         So we have bit 0, bit 1, ... all the way until the last bit ((L**2)//2) - 1
@@ -181,7 +181,7 @@ class ClassicFibonacciSpanningErrorDecoder:
         return (rindx, cindx)
 
     def rc_to_bit(self, row: int, col: int):
-        """Maps maps from (row, column) index to bit index (0 to   (L**2)//2) - 1)
+        """Maps from (row, column) index to bit index (0 to   (L**2)//2) - 1)
 
         In bit notation we think of all the bits of the codeword as being in a line:
         So we have bit 0, bit 1, ... all the way until the last bit ((L**2)//2) - 1

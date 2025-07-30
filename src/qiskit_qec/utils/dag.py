@@ -10,7 +10,7 @@
 # copyright notice, and modified files need to carry a notice indicating
 # that they have been altered from the originals.
 
-""" Utililities for Qiskit DAGs"""
+""" Utilities for Qiskit DAGs"""
 
 from qiskit.dagcircuit.dagnode import DAGNode
 

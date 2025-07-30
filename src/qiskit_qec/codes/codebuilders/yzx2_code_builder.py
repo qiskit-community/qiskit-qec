@@ -70,7 +70,7 @@ class YZX2CodeBuilder(Builder):
         # Exclude method used to select the required boundary
         # pylint: disable=unused-variable, unused-argument
         def exclude(vertex_paths, qubit_data: QubitData) -> bool:
-            """exlude method for Shell class to use for building boundary operators"""
+            """exclude method for Shell class to use for building boundary operators"""
 
             def _weight_len(path) -> int:
                 """Find the weight of the operator from the vertex path listing"""

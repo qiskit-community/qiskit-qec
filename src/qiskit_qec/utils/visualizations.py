@@ -26,7 +26,7 @@ class Pixel:
     def __init__(self, layout, active=False):
         """
         Args:
-            layout (ipywidgets.Layout): Layout in which which the pixels are embedded.
+            layout (ipywidgets.Layout): Layout in which the pixels are embedded.
             active (bool): Whether the pixels should be clickable.
         """
         self.disabled = not active

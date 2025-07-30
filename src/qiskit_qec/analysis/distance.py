@@ -95,7 +95,7 @@ def _minimum_distance_2_python(stabilizer: np.ndarray, gauge: np.ndarray, max_we
     stabilizer is a symplectic matrix generating the stabilizer group.
     gauge is a symplectic matrix generating the gauge group, if any.
 
-    Second method based on parititioning errors.
+    Second method based on partitioning errors.
 
     Restrictions: n < 63 to avoid overflows in numpy
 
@@ -194,7 +194,7 @@ def _minimum_distance_2_compiled(stabilizer: np.ndarray, gauge: np.ndarray, max_
     stabilizer is a symplectic matrix generating the stabilizer group.
     gauge is a symplectic matrix generating the gauge group, if any.
 
-    Second method based on parititioning errors, using compiled implementation.
+    Second method based on partitioning errors, using compiled implementation.
 
     Returns the minimum distance of the code, or 0 if greater than max_weight.
     """
