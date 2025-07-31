@@ -35,7 +35,7 @@ class Decodoku:
             d (int): Code distance.
             process (Callable): Function cluster and decode syndrome.
             errors (list): List of tuples of the form `(x0, y0, x1, y1)`, specifying the
-            coordinates of the plaquttes either side of the error.
+            coordinates of the plaquettes either side of the error.
             nonabelian (bool): Whether to present as non-Abelian anyons.
         """
         self.p = p

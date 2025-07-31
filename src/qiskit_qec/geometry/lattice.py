@@ -65,7 +65,7 @@ class Lattice:
         if self.points is None:
             return f"Lattice(u_vec={np.array2string(self.u_vec, separator=', ')},\
                  v_vec={np.array2string(self.v_vec, separator=', ')})"
-        outstr = "Lattive["
+        outstr = "Lattice["
         for point in self.points[:-1]:
             outstr += np.array2string(point, separator=", ")
             outstr += ", "

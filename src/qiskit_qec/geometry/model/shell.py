@@ -100,11 +100,11 @@ class Shell(ShapeObject):
                     pass
 
                 Will return a True value if the given operator (given by the vertex_paths)
-                is to be excluded. Deflault always returns False. That is exlude nothing
+                is to be excluded. Default always returns False. That is exclude nothing
                 extra.
             boundary_strategy (str, optional): _description_. Defaults to "combine".
             debug (optional) : With debug set to True a range of intermediate details are printed. Used
-            for debuging the addition of features to the method.
+            for debugging the addition of features to the method.
 
         Returns:
             Tuple[Shell, QubitData, QubitCount]: _description_
@@ -157,7 +157,7 @@ class Shell(ShapeObject):
                     vertex_path.append(n_vertex)
 
                 if n_vertex == v_start:
-                    # Path is a cycle returing to start
+                    # Path is a cycle returning to start
                     return vertex_path
 
                 edges_of_n_vertex = n_vertex.parents
@@ -173,7 +173,7 @@ class Shell(ShapeObject):
 
                 if r_vertex == n_vertex:
                     if is_inside[r_vertex]:
-                        # self loop at end of path (should not really happend but just in case)
+                        # self loop at end of path (should not really happened but just in case)
                         vertex_path.append(r_vertex)
                     return vertex_path
 

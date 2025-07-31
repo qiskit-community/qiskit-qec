@@ -32,7 +32,7 @@ from qiskit_qec.geometry.model.shell import Shell
 
 
 class TileCodeFactory:
-    """ "Tile Code Factory"""
+    """Tile Code Factory"""
 
     MANIFOLD_PARAMETERS = ["manifold"]
     TILE_PARAMETERS = ["tile", "tile_optype"]
@@ -341,11 +341,11 @@ class TileCodeFactory:
             cutter_color (str, optional): _description_. Defaults to "magenta".
 
         Raises:
-            QiskitError: No shell, cutter or lattive provided
+            QiskitError: No shell, cutter or lattice provided
 
         """
         if lattice is None and cutter is None and shell is None:
-            raise QiskitError("No shell, cutter or lattive provided")
+            raise QiskitError("No shell, cutter or lattice provided")
 
         if figsize is None:
             figsize = (10, 10)

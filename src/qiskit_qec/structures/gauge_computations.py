@@ -1,1 +1,1 @@
-"""Guage computations."""
+"""Gauge computations."""

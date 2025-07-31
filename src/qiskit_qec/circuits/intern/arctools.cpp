@@ -27,7 +27,7 @@ std::vector<int> check_nodes(
     std::vector<int> output;
 
     // we convert to flat nodes, which are a std::tuple with (q0, q1, boundary/logical)
-    // here boundary/logical is 0 if the node is neither boundary or logical, 1 for logical, 2 for bounary and 3 for both
+    // here boundary/logical is 0 if the node is neither boundary or logical, 1 for logical, 2 for boundary and 3 for both
     // if we have an even number of corresponding nodes, they cancel
     std::map<std::tuple<int, int, int>, int> node_counts;
     for (auto & node : nodes) {

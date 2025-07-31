@@ -64,7 +64,7 @@ class SurfaceCodeBuilder(Builder):
             dx = d
             dz = d
         elif dx is None or dz is None:
-            raise QiskitError(f"Both dx:{dx} and dz:{dz} must be speicifed.")
+            raise QiskitError(f"Both dx:{dx} and dz:{dz} must be specified.")
         elif not bool(dx % 2) or dx < 3 or not bool(dz % 2) or dz < 3:
             raise QiskitError(f"dx:{dx} and dz:{dz} must be odd positive integers ≥ 3")
 

@@ -51,7 +51,7 @@ class PyMatchingDecoder:
     def logical_flips(self, syndrome: Union[List[DecodingGraphNode], List[int]]) -> List[int]:
         """
         Args:
-            syndrome: Either a list of DecodingGraphNode objects returnes by string2nodes,
+            syndrome: Either a list of DecodingGraphNode objects returned by string2nodes,
             or a list of binaries indicating which node is highlighted, e.g.,
             the output of a stim detector sampler
         Returns: list of binaries indicating which logical is flipped
@@ -85,7 +85,7 @@ class PyMatchingDecoder:
     ) -> List[DecodingGraphEdge]:
         """
         Args:
-            syndrome: Either a list of DecodingGraphNode objects returnes by string2nodes,
+            syndrome: Either a list of DecodingGraphNode objects returned by string2nodes,
             or a list of binaries indicating which node is highlighted.
         Returns: list of DecodingGraphEdge-s included in the matching
         """

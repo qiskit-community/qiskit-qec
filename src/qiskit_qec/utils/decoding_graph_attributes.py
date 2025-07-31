@@ -30,7 +30,7 @@ class DecodingGraphNode:
     Attributes:
      - is_boundary (bool): whether or not the node is a boundary node.
      - is_logical (bool): whether or not the node is a logical node.
-     - time (int): what syndrome node the node corrsponds to. Doesn't
+     - time (int): what syndrome node the node corresponds to. Doesn't
         need to be set if it's a boundary node.
      - qubits (List[int]): List of indices which are stabilized by
         this ancilla.

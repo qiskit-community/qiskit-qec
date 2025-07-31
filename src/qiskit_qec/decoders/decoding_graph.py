@@ -71,7 +71,7 @@ class DecodingGraph:
     def update_attributes(self):
         """
         Calculates properties of the graph used by `node_index` and `edge_in_graph`.
-        If `graph` is updated this method should called to update these properties.
+        If `graph` is updated this method should be called to update these properties.
         """
         self._edge_set = set(self.graph.edge_list())
         self._node_index = {}
@@ -82,7 +82,7 @@ class DecodingGraph:
 
     def node_index(self, node):
         """
-        Given a node of `graph`, returns the corrsponding index.
+        Given a node of `graph`, returns the corresponding index.
 
         Args:
             node (DecodingGraphNode): Node of the graph.
@@ -188,7 +188,7 @@ class DecodingGraph:
         shots = sum(counts.values())
 
         if method not in self.AVAILABLE_METHODS:
-            raise QiskitQECError("fmethod {method} is not supported.")
+            raise QiskitQECError(f"method {method} is not supported.")
 
         # method for edges
         if method == self.METHOD_SPITZ:

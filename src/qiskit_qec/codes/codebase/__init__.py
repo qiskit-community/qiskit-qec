@@ -252,7 +252,7 @@ class CodeLibrary:
                     continue
             return codes
         else:
-            raise QiskitError("Only mempory method currently implemented")
+            raise QiskitError("Only memory method currently implemented")
 
     def in_range(self, n, k, index) -> bool:
         """_summary_

@@ -15,7 +15,7 @@ import logging  # for logging!
 
 logger = logging.getLogger(__name__)
 
-# Load extensions if available and set appriate indicator flags
+# Load extensions if available and set appropriate indicator flags
 
 try:
     from qiskit_qec.analysis._c_analysis import _CErrorPropagator  # pylint: disable=unused-import

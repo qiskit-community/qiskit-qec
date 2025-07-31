@@ -59,10 +59,10 @@ class CSSCodeCircuit(CodeCircuit):
                 'n' (number of qubits),
             T: Number of syndrome measurement rounds
             basis: basis for encoding ('x' or 'z')
-            round_schedule: Order in which to measureme gauge operators ('zx' or 'xz')
+            round_schedule: Order in which to measurement gauge operators ('zx' or 'xz')
             noise_model: Pauli noise model used in the construction of noisy circuits.
-            If a tuple, a pnenomological noise model is used with the entries being
-            probabity of depolarizing noise on code qubits between rounds and
+            If a tuple, a phenomenological noise model is used with the entries being
+            probability of depolarizing noise on code qubits between rounds and
             probability of measurement errors, respectively.
 
         Examples:

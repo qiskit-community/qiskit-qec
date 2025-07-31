@@ -42,7 +42,7 @@ class StabSubSystemCode(Code):
 
         Args:
             gauge_group (optional): Gauge group defining the subsystem. Defaults to None.
-            shell (optional): Shell definging the subsystem. Defaults to None.
+            shell (optional): Shell defining the subsystem. Defaults to None.
             qubit_data (optional): Qubit data associated with defining shell. Defaults to None.
             qubit_count (optional): Qubit count data associated with defining shell. Defaults to None.
 
@@ -103,6 +103,6 @@ class StabSubSystemCode(Code):
         return self.gauge_group.generators
 
     def draw(self, **kwargs) -> None:
-        """Draws the subsytem code if a shell exists"""
+        """Draws the subsystem code if a shell exists"""
         if self.shell is not None:
             self.shell.draw(qubit_data=self.qubit_data, qubit_count=self.qubit_count, **kwargs)
